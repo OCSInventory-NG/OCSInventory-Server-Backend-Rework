@@ -1,0 +1,3 @@
+codecov==2.1.11
+coverage==5.5
+Django==2.2.12
