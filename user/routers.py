@@ -1,5 +1,6 @@
 from user.views import UserViewSet
 
+
 class UserRouter():
     """
     Router class is intended to define the route related to an app
