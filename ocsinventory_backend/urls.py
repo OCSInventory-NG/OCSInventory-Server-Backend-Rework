@@ -17,21 +17,23 @@ Including another URLconf
 # Base import to get API Working
 from django.urls import path, include
 from django.contrib.auth.models import User
-from rest_framework import serializers, viewsets, routers
+from rest_framework import serializers, viewsets
+from rest_framework.routers import DefaultRouter
 
 # Import dedicated routers and provide different endpoint
 from user.routers import UserRouter
 
 # Routers provide a way of automatically determining the URL conf.
-router = routers.DefaultRouter()
+defaultRouter = DefaultRouter()
 
 # Add userRoute declaration
 userRouter = UserRouter()
-userRouter.defineRoutes(router)
+userRouter = userRouter.defineRoutes(defaultRouter)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
-    path('', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
+
+urlpatterns += userRouter.urls
