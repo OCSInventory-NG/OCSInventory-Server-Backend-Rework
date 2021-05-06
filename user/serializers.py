@@ -8,10 +8,10 @@ class UserSerializer(serializers.ModelSerializer):
     Args:
         serializers ([ModelSerializer])
     """
+
     class Meta:
-        """
-        Define the linked model and the fields registered in the API
-        """
+        """ Define the linked model and the fields registered in the API """
+        
         model = User
         fields = ['id', 'username', 'email', 'first_name', 'last_name',  'password', 'is_staff']
         extra_kwargs = {'password': {'write_only': True}}
