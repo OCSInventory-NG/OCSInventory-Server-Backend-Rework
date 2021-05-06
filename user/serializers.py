@@ -18,7 +18,8 @@ class UserSerializer(serializers.ModelSerializer):
                   'last_name',  'password', 'is_staff']
         extra_kwargs = {'password': {'write_only': True}}
 
-    def create(self, validated_data):
+    @staticmethod
+    def create(validated_data):
         """
         Override existing create method to ensure password is encrypted
 
