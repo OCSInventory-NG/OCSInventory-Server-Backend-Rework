@@ -36,4 +36,6 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
 
+# Add URL Patterns comming from routers
 urlpatterns += userRouter.urls
+

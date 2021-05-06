@@ -1,7 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-
 class UserSerializer(serializers.ModelSerializer):
     """
     This serialize class provide the API representation
@@ -29,6 +28,7 @@ class UserSerializer(serializers.ModelSerializer):
         Returns:
             [user]
         """
+        
         user = User(
             email=validated_data['email'],
             username=validated_data['username'],
@@ -40,3 +40,4 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
 
         return user
+
