@@ -38,4 +38,3 @@ urlpatterns = [
 
 # Add URL Patterns comming from routers
 urlpatterns += userRouter.urls
-
