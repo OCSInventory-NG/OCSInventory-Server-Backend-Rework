@@ -19,6 +19,7 @@ from django.urls import path, include
 from django.contrib.auth.models import User
 from rest_framework import serializers, viewsets
 from rest_framework.routers import DefaultRouter
+from rest_framework.authtoken.views import obtain_auth_token
 
 # Import dedicated routers and provide different endpoint
 from user.routers import UserRouter
@@ -34,6 +35,7 @@ userRouter = userRouter.defineRoutes(defaultRouter)
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('api-auth/token', obtain_auth_token, name='api_token_auth'),
 ]
 
 # Add URL Patterns comming from routers
