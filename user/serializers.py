@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
+
 class UserSerializer(serializers.ModelSerializer):
     """
     This serialize class provide the API representation
@@ -13,9 +14,9 @@ class UserSerializer(serializers.ModelSerializer):
         Define the linked model and the fields registered in the API
         """
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name',  'password', 'is_staff']
+        fields = ['id', 'username', 'email', 'first_name',
+                  'last_name',  'password', 'is_staff']
         extra_kwargs = {'password': {'write_only': True}}
-
 
     def create(self, validated_data):
         """
