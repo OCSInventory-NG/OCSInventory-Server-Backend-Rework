@@ -12,7 +12,8 @@ class UserViewSet(viewsets.ModelViewSet):
         viewsets ([ModelViewSet])
     """
 
-    permission_classes = [IsAuthenticated] # Need to be authenticated to consult
+    # Need to be authenticated to consult
+    permission_classes = [IsAuthenticated]
 
     queryset = User.objects.all()
     serializer_class = UserSerializer
