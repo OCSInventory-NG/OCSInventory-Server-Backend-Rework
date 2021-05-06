@@ -29,7 +29,6 @@ class UserSerializer(serializers.ModelSerializer):
         Returns:
             [user]
         """
-
         user = User(
             email=validated_data['email'],
             username=validated_data['username'],
