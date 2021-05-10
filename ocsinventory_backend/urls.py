@@ -23,11 +23,16 @@ from rest_framework.authtoken.views import obtain_auth_token
 
 
 # Import dedicated routers and provide different endpoint
+from permission.routers import PermissionRouter
 from user.routers import UserRouter
 from group.routers import GroupRouter
 
 # Routers provide a way of automatically determining the URL conf.
 defaultRouter = DefaultRouter()
+
+# Add permissionsRoute declaration
+permissionRouter = PermissionRouter()
+permissionRouter = permissionRouter.defineRoutes(defaultRouter)
 
 # Add userRoute declaration
 userRouter = UserRouter()
