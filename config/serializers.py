@@ -4,16 +4,15 @@ from rest_framework import serializers
 
 class ConfigSerializer(serializers.ModelSerializer):
     """
-    [summary]
+    This serialize class provide the API representation
 
     Args:
-        serializers ([type]): [description]
+        serializers ([ModelSerializer])
     """
 
     class Meta:
         model = Config
         fields = ['name', 'value']
-        # list_serializer_class = UpdateConfigSerializer
 
 
 
