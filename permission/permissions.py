@@ -2,12 +2,13 @@ from rest_framework import permissions
 
 class DefaultModelPermissions(permissions.DjangoObjectPermissions):
     """
-    This class define the default required permissions to list / add / edit / delete an object
+    This class define the default required permissions access objects
+    i.e. : to list / add / edit / delete
 
     Args:
         permissions ([type]): [description]
     """
-    
+
     perms_map = {
         'GET': ['%(app_label)s.view_%(model_name)s'],
         'OPTIONS': ['%(app_label)s.view_%(model_name)s'],
