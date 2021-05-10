@@ -1,8 +1,6 @@
 from django.contrib.auth.models import Group
 from rest_framework import viewsets
-from rest_framework import status
 from permission.permissions import DefaultModelPermissions
-from rest_framework.response import Response
 from group.serializers import GroupSerializer
 
 
