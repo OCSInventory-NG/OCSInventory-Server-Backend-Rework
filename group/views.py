@@ -1,10 +1,9 @@
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, Permission
 from rest_framework import viewsets
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from group.serializers import GroupSerializer
-from django.contrib.auth.models import Permission
 
 
 class GroupViewSet(viewsets.ModelViewSet):
