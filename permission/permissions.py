@@ -1,5 +1,6 @@
 from rest_framework import permissions
 
+
 class DefaultModelPermissions(permissions.DjangoObjectPermissions):
     """
     This class define the default required permissions access objects
