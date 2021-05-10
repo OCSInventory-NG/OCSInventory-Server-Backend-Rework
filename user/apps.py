@@ -8,4 +8,5 @@ class UserConfig(AppConfig):
     Args:
         AppConfig ([AppConfig])
     """
+    
     name = 'user'

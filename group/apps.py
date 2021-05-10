@@ -8,4 +8,5 @@ class GroupConfig(AppConfig):
     Args:
         AppConfig ([AppConfig])
     """
+    
     name = 'group'
