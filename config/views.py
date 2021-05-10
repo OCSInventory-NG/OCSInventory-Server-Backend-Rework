@@ -3,8 +3,6 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from config.serializers import ConfigSerializer
-from rest_framework.exceptions import ValidationError
-
 
 class ConfigViewSet(viewsets.ModelViewSet):
     """
@@ -20,20 +18,42 @@ class ConfigViewSet(viewsets.ModelViewSet):
     queryset = Config.objects.all()
     serializer_class = ConfigSerializer
 
-    def _perform_update(self, elm):
-        print(elm)
-        pk = Config.objects.update(**elm)
-        print(pk)
-        db_instance = Config.objects.filter(pk=pk).first()
-        print(db_instance)
+    def _perform_update(self, name, data):
+        """
+        performs update or create if no correponding instance found
+
+        Args:
+            name ([str]): config element name, must be unique
+            data ([dict]): set of values
+
+        Returns:
+            [serialized]
+        """
+        created, updated, deleted, errors = []
+        try :
+            instance = Config.objects.get(name=name)
+            updated += [name]
+        except :
+            instance = None
+            created += [name]
+
+        serialized = self.serializer_class(instance, data=data)
+        serialized.is_valid()
+        serialized.save()
+
+        return serialized, created, updated
+
 
     def put(self, request):
         data = request.data
-        serialized = self.serializer_class(data=data, many=isinstance(data, list))
-        serialized.is_valid(raise_exception=True)
-        if isinstance(data, list):  # Update multiple elements
-            for elm in serialized.validated_data:
-                self._perform_update(elm)
-        else:  # Update one element
-            self._perform_update(serialized.validated_data)
+        # MULTIPLE ENTRIES
+        if isinstance(data, list):
+            for elem in data:
+                self._perform_update(elem['name'], elem)
+
+        # SINGLE ENTRY
+        else :
+            name = data.get('name', None)
+            self._perform_update(name, data)
+
         return Response({'msg': 'updated'})

@@ -2,10 +2,6 @@ from config.models import Config
 from rest_framework import serializers
 
 
-
-
-
-
 class ConfigSerializer(serializers.ModelSerializer):
     """
     [summary]
