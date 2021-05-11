@@ -1,7 +1,9 @@
 version = 1
 
 exclude_patterns = [
-    "**/migrations/**"
+    "**/migrations/**",
+    "manage.py",
+    "**/settings.py",
 ]
 
 [[analyzers]]
