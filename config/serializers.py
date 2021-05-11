@@ -13,6 +13,3 @@ class ConfigSerializer(serializers.ModelSerializer):
     class Meta:
         model = Config
         fields = ['name', 'value']
-
-
-
