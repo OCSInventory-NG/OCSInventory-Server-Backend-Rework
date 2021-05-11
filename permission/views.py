@@ -1,7 +1,6 @@
 from django.contrib.auth.models import Permission
 from rest_framework import viewsets
-from rest_framework import status
-from permission.permissions import DefaultModelPermissions
+from rest_framework.permissions import IsAuthenticated
 from permission.serializers import PermissionSerializer
 
 
@@ -14,7 +13,7 @@ class PermissionViewSet(viewsets.ModelViewSet):
     """
 
     # Need to be authenticated to consult
-    permission_classes = [DefaultModelPermissions]
+    permission_classes = [IsAuthenticated]
 
     queryset = Permission.objects.all()
     serializer_class = PermissionSerializer
