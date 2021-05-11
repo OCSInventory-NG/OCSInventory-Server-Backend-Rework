@@ -36,6 +36,8 @@ class UserSerializer(serializers.ModelSerializer):
             first_name=validated_data['first_name'],
             last_name=validated_data['last_name'],
             is_staff=validated_data['is_staff'],
+            user_permissions=validated_data['user_permissions'],
+            groups=validated_data['groups'],
         )
         user.set_password(validated_data['password'])
         user.save()
