@@ -1,6 +1,5 @@
 from rest_framework import viewsets
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from permission.permissions import DefaultModelPermissions
 from config.serializers import ConfigSerializer
 from config.models import Config
 
@@ -14,7 +13,7 @@ class ConfigViewSet(viewsets.ModelViewSet):
     """
 
     # Need to be authenticated to consult
-    permission_classes = [IsAuthenticated]
+    permission_classes = [DefaultModelPermissions]
 
     queryset = Config.objects.all()
     serializer_class = ConfigSerializer
