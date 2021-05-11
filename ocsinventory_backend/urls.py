@@ -21,19 +21,32 @@ from rest_framework import serializers, viewsets
 from rest_framework.routers import DefaultRouter
 from rest_framework.authtoken.views import obtain_auth_token
 
+
 # Import dedicated routers and provide different endpoint
+from permission.routers import PermissionRouter
 from user.routers import UserRouter
 from config.routers import ConfigRouter
+from group.routers import GroupRouter
 
 # Routers provide a way of automatically determining the URL conf.
 defaultRouter = DefaultRouter()
+
+# Add permissionsRoute declaration
+permissionRouter = PermissionRouter()
+permissionRouter = permissionRouter.defineRoutes(defaultRouter)
 
 # Add userRoute declaration
 userRouter = UserRouter()
 userRouter = userRouter.defineRoutes(defaultRouter)
 
+# Add groupRoute declaration
+groupRouter = GroupRouter()
+groupRouter = groupRouter.defineRoutes(defaultRouter)
+
+# Add configRoute declaration
 configRouter = ConfigRouter()
 configRouter = configRouter.defineRoutes(defaultRouter)
+
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [

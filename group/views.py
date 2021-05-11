@@ -1,10 +1,10 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import Group
 from rest_framework import viewsets
 from permission.permissions import DefaultModelPermissions
-from user.serializers import UserSerializer
+from group.serializers import GroupSerializer
 
 
-class UserViewSet(viewsets.ModelViewSet):
+class GroupViewSet(viewsets.ModelViewSet):
     """
     This class will define the view behavior
 
@@ -15,5 +15,5 @@ class UserViewSet(viewsets.ModelViewSet):
     # Need to be authenticated to consult
     permission_classes = [DefaultModelPermissions]
 
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+    queryset = Group.objects.all()
+    serializer_class = GroupSerializer

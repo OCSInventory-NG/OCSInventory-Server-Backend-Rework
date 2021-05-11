@@ -1,7 +1,7 @@
 from django.apps import AppConfig
 
 
-class UserConfig(AppConfig):
+class GroupConfig(AppConfig):
     """
     Base definition of the django app
 
@@ -9,4 +9,4 @@ class UserConfig(AppConfig):
         AppConfig ([AppConfig])
     """
 
-    name = 'user'
+    name = 'group'
