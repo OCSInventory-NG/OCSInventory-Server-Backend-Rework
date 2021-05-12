@@ -1,4 +1,4 @@
-from user.views import UserViewSet
+from user.views import MyAccountViewSet, UserViewSet
 
 
 class UserRouter():
@@ -19,4 +19,5 @@ class UserRouter():
             [DefaultRouter]: Updated router with app's dedicated routes
         """
         defaultRouter.register(r'users', UserViewSet)
+        defaultRouter.register(r'myaccount', MyAccountViewSet, basename="MyAccount")
         return defaultRouter
