@@ -1,9 +1,7 @@
 from django.contrib.auth.models import User
-from rest_framework import viewsets
+from rest_framework import viewsets, permissions
 from permission.permissions import DefaultModelPermissions
 from user.serializers import UserSerializer, MyAccountSerializer
-from rest_framework.permissions import IsAuthenticated
-
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -21,10 +19,10 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class MyAccountViewSet(viewsets.ModelViewSet):
-    """ This class will define the view behavior """
+    """This class will define the view behavior"""
 
     # Need to be authenticated to consult
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = MyAccountSerializer
     http_method_names = ['get', 'patch']
 
