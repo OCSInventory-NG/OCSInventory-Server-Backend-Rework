@@ -19,5 +19,6 @@ class UserRouter():
             [DefaultRouter]: Updated router with app's dedicated routes
         """
         defaultRouter.register(r'users', UserViewSet)
-        defaultRouter.register(r'myaccount', MyAccountViewSet, basename="MyAccount")
+        defaultRouter.register(
+            r'myaccount', MyAccountViewSet, basename="MyAccount")
         return defaultRouter
