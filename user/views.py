@@ -20,6 +20,7 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+
 class MyAccountViewSet(viewsets.ModelViewSet):
     """
     This class will define the view behavior

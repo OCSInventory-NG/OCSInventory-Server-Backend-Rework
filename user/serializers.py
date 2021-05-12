@@ -44,6 +44,7 @@ class UserSerializer(serializers.ModelSerializer):
 
         return user
 
+
 class MyAccountSerializer(UserSerializer):
     """
     This serialize class provide the API representation
