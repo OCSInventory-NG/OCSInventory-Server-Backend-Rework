@@ -3,6 +3,7 @@ from rest_framework import viewsets, permissions
 from permission.permissions import DefaultModelPermissions
 from user.serializers import UserSerializer, MyAccountSerializer
 
+
 class UserViewSet(viewsets.ModelViewSet):
     """
     This class will define the view behavior
