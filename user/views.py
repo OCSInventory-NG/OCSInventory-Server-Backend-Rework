@@ -21,9 +21,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class MyAccountViewSet(viewsets.ModelViewSet):
-    """
-    This class will define the view behavior
-    """
+    """ This class will define the view behavior """
 
     # Need to be authenticated to consult
     permission_classes = [IsAuthenticated]
