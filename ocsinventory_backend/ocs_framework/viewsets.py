@@ -1,10 +1,9 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
-from rest_framework import status 
+from rest_framework import status
 
 
 class OCSViewSet(viewsets.ModelViewSet):
-        
 
     def create(self, request, *args, **kwargs):
         """
@@ -16,10 +15,11 @@ class OCSViewSet(viewsets.ModelViewSet):
         Returns:
             [type]: [description]
         """
-        # 'many' allows multi creation but any error 
-        # will fail the whole transaction 
+        # 'many' allows multi creation but any error
+        # will fail the whole transaction
         try:
-            serializer = self.get_serializer(data=request.data, many=isinstance(request.data, list))
+            serializer = self.get_serializer(
+                data=request.data, many=isinstance(request.data, list))
             serializer.is_valid(raise_exception=True)
             self.perform_create(serializer)
         except:
@@ -83,7 +83,7 @@ class OCSViewSet(viewsets.ModelViewSet):
                 return Response({'partial success': failed}, status=status.HTTP_200_OK)
             else:
                 return Response({'failed': failed}, status=status.HTTP_400_BAD_REQUEST)
-                
+
         else:
             try:
                 self.update_instance(request.data, partial)
