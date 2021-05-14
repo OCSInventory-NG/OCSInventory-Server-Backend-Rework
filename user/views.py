@@ -3,14 +3,15 @@ from rest_framework import viewsets, permissions
 from permission.permissions import DefaultModelPermissions
 from user.serializers import UserSerializer, MyAccountSerializer
 
-from ocsinventory_backend.bulk_processing import ocs_views
+# alias ocs_viewsets avoids conflict w/ rest_framework's imported viewsets
+from ocsinventory_backend.ocs_framework import viewsets as ocs_viewsets
 
-class UserViewSet(ocs_views.OCSViewSet):
+class UserViewSet(ocs_viewsets.OCSViewSet):
     """
     This class will define the view behavior
 
     Args:
-        viewsets ([ModelViewSet])
+        viewsets ([OCSVIewSet])
     """
 
     # Need to have permissions to consult
@@ -19,7 +20,6 @@ class UserViewSet(ocs_views.OCSViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     model = User
-    uniq_field = 'id'
 
 class MyAccountViewSet(viewsets.ModelViewSet):
     """This class will define the view behavior"""

@@ -3,15 +3,16 @@ from permission.permissions import DefaultModelPermissions
 from config.serializers import ConfigSerializer
 from config.models import Config
 
-from ocsinventory_backend.bulk_processing import ocs_views
+# alias ocs_viewsets avoids conflict w/ rest_framework's imported viewsets
+from ocsinventory_backend.ocs_framework import viewsets as ocs_viewsets
 
 
-class ConfigViewSet(ocs_views.OCSViewSet):
+class ConfigViewSet(ocs_viewsets.OCSViewSet):
     """
     This class will define the view behavior
 
     Args:
-        viewsets ([ModelViewSet])
+        viewsets ([OCSViewSet])
     """
 
     # Need to be authenticated to consult
@@ -20,4 +21,3 @@ class ConfigViewSet(ocs_views.OCSViewSet):
     queryset = Config.objects.all()
     serializer_class = ConfigSerializer
     model = Config
-    uniq_field = 'username'
