@@ -3,8 +3,10 @@ from permission.permissions import DefaultModelPermissions
 from config.serializers import ConfigSerializer
 from config.models import Config
 
+from ocsinventory_backend.bulk_processing import ocs_views
 
-class ConfigViewSet(viewsets.ModelViewSet):
+
+class ConfigViewSet(ocs_views.OCSViewSet):
     """
     This class will define the view behavior
 
@@ -17,3 +19,5 @@ class ConfigViewSet(viewsets.ModelViewSet):
 
     queryset = Config.objects.all()
     serializer_class = ConfigSerializer
+    model = Config
+    uniq_field = 'username'

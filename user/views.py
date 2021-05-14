@@ -3,8 +3,9 @@ from rest_framework import viewsets, permissions
 from permission.permissions import DefaultModelPermissions
 from user.serializers import UserSerializer, MyAccountSerializer
 
+from ocsinventory_backend.bulk_processing import ocs_views
 
-class UserViewSet(viewsets.ModelViewSet):
+class UserViewSet(ocs_views.OCSViewSet):
     """
     This class will define the view behavior
 
@@ -17,7 +18,8 @@ class UserViewSet(viewsets.ModelViewSet):
 
     queryset = User.objects.all()
     serializer_class = UserSerializer
-
+    model = User
+    uniq_field = 'id'
 
 class MyAccountViewSet(viewsets.ModelViewSet):
     """This class will define the view behavior"""
