@@ -1,14 +1,22 @@
-from rest_framework import viewsets
+from django.core.exceptions import FieldError, ObjectDoesNotExist
+from rest_framework import views, viewsets
 from rest_framework.response import Response
-from rest_framework import status 
+from rest_framework import status
+from rest_framework.exceptions import APIException
 
 
 class OCSViewSet(viewsets.ModelViewSet):
+    """
+    [summary]
+
+    Args:
+        viewsets ([type]): [description]
+    """
         
 
     def create(self, request, *args, **kwargs):
         """
-        handles post request, suitable for single and multi creation
+        Handle post request, suitable for single and multi creation
 
         Args:
             request ([dict]): can be dict or list of dicts
@@ -22,13 +30,23 @@ class OCSViewSet(viewsets.ModelViewSet):
             serializer = self.get_serializer(data=request.data, many=isinstance(request.data, list))
             serializer.is_valid(raise_exception=True)
             self.perform_create(serializer)
-        except:
+        except (APIException, FieldError, ObjectDoesNotExist):
             # serializer.errors may return more details
             return Response({'failed': request.data}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({'success': '200'}, status=status.HTTP_200_OK)
 
     def update_instance(self, elem, partial):
+        """
+        Update (may be partial) instance
+
+        Args:
+            elem ([type]): [description]
+            partial ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
         instance = self.model.objects.get(id=elem['id'])
         serializer = self.get_serializer(instance, data=elem, partial=partial)
         serializer.is_valid(raise_exception=True)
@@ -38,7 +56,7 @@ class OCSViewSet(viewsets.ModelViewSet):
 
     def patch(self, request, *args, **kwargs):
         """
-        handles incoming patch request, will redirect to put method
+        Handle incoming patch request, will redirect to put method
 
         Args:
             request ([type]): [description]
@@ -51,9 +69,9 @@ class OCSViewSet(viewsets.ModelViewSet):
 
     def put(self, request, *args, **kwargs):
         """
-        handles put request, either as an update or partial update
+        Handle put request, either as an update or partial update
 
-        2 cases : 
+        2 cases :
             - request is a list : bulk update will be performed
             - request is a dict : single update
 
@@ -63,7 +81,7 @@ class OCSViewSet(viewsets.ModelViewSet):
         Returns:
             [dict] :
                 - success : all updates were successful
-                - partial success : some updates have failed
+                - partial success : some updates have failed, see 
                 - failed : total failure
         """
         partial = kwargs.pop('partial', False)
@@ -74,7 +92,7 @@ class OCSViewSet(viewsets.ModelViewSet):
                 try:
                     self.update_instance(elem, partial)
                     success += [elem]
-                except:
+                except (APIException, FieldError):
                     failed += [elem]
 
             if not failed:
@@ -87,7 +105,7 @@ class OCSViewSet(viewsets.ModelViewSet):
         else:
             try:
                 self.update_instance(request.data, partial)
-            except:
+            except (APIException, FieldError):
                 return Response({'failed': request.data}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({'success': '200'}, status=status.HTTP_200_OK)
