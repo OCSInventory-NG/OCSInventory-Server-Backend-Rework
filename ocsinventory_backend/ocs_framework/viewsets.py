@@ -81,8 +81,8 @@ class OCSViewSet(viewsets.ModelViewSet):
         Returns:
             [dict] :
                 - success : all updates were successful
-                - partial success : some updates have failed, see 
-                - failed : total failure
+                - partial success : some updates have failed, see attached objects
+                - failed : total failure, see attached failing objects
         """
         partial = kwargs.pop('partial', False)
         success = []
