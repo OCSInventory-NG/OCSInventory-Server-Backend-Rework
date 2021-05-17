@@ -101,7 +101,7 @@ class OCSViewSet(viewsets.ModelViewSet):
                 return Response({'partial success': failed}, status=status.HTTP_200_OK)
 
             return Response({'failed': failed}, status=status.HTTP_400_BAD_REQUEST)
-                
+
         else:
             try:
                 self.update_instance(request.data, partial)
