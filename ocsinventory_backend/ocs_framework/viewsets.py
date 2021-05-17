@@ -7,12 +7,12 @@ from rest_framework.exceptions import APIException
 
 class OCSViewSet(viewsets.ModelViewSet):
     """
-    [summary]
+    This class will define the general view behavior for the framework
 
     Args:
-        viewsets ([type]): [description]
+        viewsets ([ModelViewSet])
     """
-        
+
 
     def create(self, request, *args, **kwargs):
         """
@@ -97,10 +97,10 @@ class OCSViewSet(viewsets.ModelViewSet):
 
             if not failed:
                 return Response({'success': '200'}, status=status.HTTP_200_OK)
-            elif failed and success:
+            if failed and success:
                 return Response({'partial success': failed}, status=status.HTTP_200_OK)
-            else:
-                return Response({'failed': failed}, status=status.HTTP_400_BAD_REQUEST)
+
+            return Response({'failed': failed}, status=status.HTTP_400_BAD_REQUEST)
                 
         else:
             try:
