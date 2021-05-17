@@ -1,10 +1,10 @@
 from django.contrib.auth.models import Group
-from rest_framework import viewsets
 from permission.permissions import DefaultModelPermissions
 from group.serializers import GroupSerializer
+from ocsinventory_backend.ocs_framework import viewsets
 
 
-class GroupViewSet(viewsets.ModelViewSet):
+class GroupViewSet(viewsets.OCSViewSet):
     """
     This class will define the view behavior
 

@@ -1,13 +1,11 @@
 from django.contrib.auth.models import User
-from rest_framework import viewsets, permissions
+from rest_framework import permissions
 from permission.permissions import DefaultModelPermissions
 from user.serializers import UserSerializer, MyAccountSerializer
-
-# alias ocs_viewsets avoids conflict w/ rest_framework's imported viewsets
-from ocsinventory_backend.ocs_framework import viewsets as ocs_viewsets
+from ocsinventory_backend.ocs_framework import viewsets
 
 
-class UserViewSet(ocs_viewsets.OCSViewSet):
+class UserViewSet(viewsets.OCSViewSet):
     """
     This class will define the view behavior
 
@@ -23,7 +21,7 @@ class UserViewSet(ocs_viewsets.OCSViewSet):
     model = User
 
 
-class MyAccountViewSet(viewsets.ModelViewSet):
+class MyAccountViewSet(viewsets.OCSViewSet):
     """This class will define the view behavior"""
 
     # Need to be authenticated to consult
