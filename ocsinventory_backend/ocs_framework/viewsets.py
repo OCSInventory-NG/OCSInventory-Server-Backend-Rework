@@ -101,11 +101,9 @@ class OCSViewSet(viewsets.ModelViewSet):
                 return Response({'partial success': failed}, status=status.HTTP_200_OK)
 
             return Response({'failed': failed}, status=status.HTTP_400_BAD_REQUEST)
-
-        else:
-            try:
-                self.update_instance(request.data, partial)
-            except (APIException, FieldError):
-                return Response({'failed': request.data}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            self.update_instance(request.data, partial)
+        except (APIException, FieldError):
+            return Response({'failed': request.data}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({'success': '200'}, status=status.HTTP_200_OK)
