@@ -1,7 +1,7 @@
 from permission.permissions import DefaultModelPermissions
 from config.serializers import ConfigSerializer
 from config.models import Config
-from ocsinventory_backend.ocs_framework import viewsets 
+from ocsinventory_backend.ocs_framework import viewsets
 
 
 class ConfigViewSet(viewsets.OCSViewSet):
