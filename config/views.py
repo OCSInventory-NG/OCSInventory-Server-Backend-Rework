@@ -12,6 +12,9 @@ class ConfigViewSet(viewsets.OCSViewSet):
         viewsets ([OCSViewSet])
     """
 
+    # No id for config overriding reconciliation_field
+    reconciliation_field = "name"
+
     # Need to be authenticated to consult
     permission_classes = [DefaultModelPermissions]
 
