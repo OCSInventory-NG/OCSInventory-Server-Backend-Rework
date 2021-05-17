@@ -1,13 +1,10 @@
-from rest_framework import viewsets
 from permission.permissions import DefaultModelPermissions
 from config.serializers import ConfigSerializer
 from config.models import Config
-
-# alias ocs_viewsets avoids conflict w/ rest_framework's imported viewsets
-from ocsinventory_backend.ocs_framework import viewsets as ocs_viewsets
+from ocsinventory_backend.ocs_framework import viewsets 
 
 
-class ConfigViewSet(ocs_viewsets.OCSViewSet):
+class ConfigViewSet(viewsets.OCSViewSet):
     """
     This class will define the view behavior
 
