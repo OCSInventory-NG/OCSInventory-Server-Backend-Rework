@@ -13,6 +13,9 @@ class OCSViewSet(viewsets.ModelViewSet):
         viewsets ([ModelViewSet])
     """
 
+    # This is the default reconciliation id for objets, can overrided
+    reconciliation_field = "id"
+
     def create(self, request, *args, **kwargs):
         """
         Handle post request, suitable for single and multi creation
@@ -36,6 +39,15 @@ class OCSViewSet(viewsets.ModelViewSet):
 
         return Response({'success': '200'}, status=status.HTTP_200_OK)
 
+    def get_reconciliation_filter(self, elem):
+        """
+        Get the reconciliation filter depending on the reconciliation_field
+
+        Args:
+            elem ([dict]): update_instance elem list
+        """
+        return {self.reconciliation_field: elem[self.reconciliation_field]}
+
     def update_instance(self, elem, partial):
         """
         Update (may be partial) instance
@@ -47,7 +59,8 @@ class OCSViewSet(viewsets.ModelViewSet):
         Returns:
             [type]: [description]
         """
-        instance = self.model.objects.get(id=elem['id'])
+        filters = self.get_reconciliation_filter(elem)
+        instance = self.model.objects.filter(**filters)[0]
         serializer = self.get_serializer(instance, data=elem, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
@@ -92,7 +105,7 @@ class OCSViewSet(viewsets.ModelViewSet):
                 try:
                     self.update_instance(elem, partial)
                     success += [elem]
-                except (APIException, FieldError):
+                except (APIException, FieldError, KeyError):
                     failed += [elem]
 
             if not failed:
