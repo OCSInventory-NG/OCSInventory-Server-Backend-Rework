@@ -6,6 +6,7 @@ from user.serializers import UserSerializer, MyAccountSerializer
 # alias ocs_viewsets avoids conflict w/ rest_framework's imported viewsets
 from ocsinventory_backend.ocs_framework import viewsets as ocs_viewsets
 
+
 class UserViewSet(ocs_viewsets.OCSViewSet):
     """
     This class will define the view behavior
@@ -20,6 +21,7 @@ class UserViewSet(ocs_viewsets.OCSViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     model = User
+
 
 class MyAccountViewSet(viewsets.ModelViewSet):
     """This class will define the view behavior"""

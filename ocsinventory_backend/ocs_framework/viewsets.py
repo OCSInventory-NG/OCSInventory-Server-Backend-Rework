@@ -13,7 +13,6 @@ class OCSViewSet(viewsets.ModelViewSet):
         viewsets ([ModelViewSet])
     """
 
-
     def create(self, request, *args, **kwargs):
         """
         Handle post request, suitable for single and multi creation
@@ -24,10 +23,11 @@ class OCSViewSet(viewsets.ModelViewSet):
         Returns:
             [type]: [description]
         """
-        # 'many' allows multi creation but any error 
-        # will fail the whole transaction 
+        # 'many' allows multi creation but any error
+        # will fail the whole transaction
         try:
-            serializer = self.get_serializer(data=request.data, many=isinstance(request.data, list))
+            serializer = self.get_serializer(
+                data=request.data, many=isinstance(request.data, list))
             serializer.is_valid(raise_exception=True)
             self.perform_create(serializer)
         except (APIException, FieldError, ObjectDoesNotExist):
