@@ -4,6 +4,7 @@ exclude_patterns = [
     "**/migrations/**",
     "manage.py",
     "**/settings.py",
+    "tools/",
 ]
 
 [[analyzers]]
