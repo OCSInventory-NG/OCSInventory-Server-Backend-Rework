@@ -7,12 +7,19 @@ class Command(BaseCommand):
     Args:
         BaseCommand ([type]): base class for management commands
     """
+
     help = 'any arg passed to this cmd will be printed back'
 
     def add_arguments(self, parser):
+        """Add custom argument
+
+        Args:
+            parser ([type]): [description]
+        """
         parser.add_argument('msg', type=str, help='string')
 
     def handle(self, *args, **options):
+        """Must be implemented, define the logic behind the command"""
         msg = options['msg']
         # let's just print back the arg
         self.stdout.write(str(msg))
