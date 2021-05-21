@@ -44,6 +44,23 @@ class UserSerializer(serializers.ModelSerializer):
 
         return user
 
+    def update(self, instance, validated_data):
+        """Override update method to manage password setting
+
+        Args:
+            instance ([User]): User object currently edited
+            validated_data ([Array]): Data provided to the API
+
+        Returns:
+            [User]: Updated user
+        """
+        instance = super().update(instance, validated_data)
+
+        instance.set_password(validated_data['password'])
+        instance.save()
+
+        return instance
+
 
 class MyAccountSerializer(UserSerializer):
     """
