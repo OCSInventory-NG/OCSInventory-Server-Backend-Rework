@@ -36,10 +36,13 @@ class UserSerializer(serializers.ModelSerializer):
             first_name=validated_data['first_name'],
             last_name=validated_data['last_name'],
             is_staff=validated_data['is_staff'],
-            user_permissions=validated_data['user_permissions'],
-            groups=validated_data['groups'],
         )
+
         user.set_password(validated_data['password'])
+        user.save()
+
+        user.user_permissions.set(validated_data['user_permissions'])
+        user.groups.set(validated_data['groups'])
         user.save()
 
         return user
@@ -56,6 +59,8 @@ class UserSerializer(serializers.ModelSerializer):
         """
         instance = super().update(instance, validated_data)
 
+        instance.groups.set(validated_data['groups'])
+        instance.user_permissions.set(validated_data['user_permissions'])
         instance.set_password(validated_data['password'])
         instance.save()
 
