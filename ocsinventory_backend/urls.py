@@ -27,25 +27,35 @@ from permission.routers import PermissionRouter
 from user.routers import UserRouter
 from config.routers import ConfigRouter
 from group.routers import GroupRouter
+from inventory.template.routers import TemplateRouter
+from inventory.section.routers import SectionRouter
 
 # Routers provide a way of automatically determining the URL conf.
 defaultRouter = DefaultRouter()
 
-# Add permissionsRoute declaration
+# Add permissionsRouter declaration
 permissionRouter = PermissionRouter()
 permissionRouter = permissionRouter.defineRoutes(defaultRouter)
 
-# Add userRoute declaration
+# Add userRouter declaration
 userRouter = UserRouter()
 userRouter = userRouter.defineRoutes(defaultRouter)
 
-# Add groupRoute declaration
+# Add groupRouter declaration
 groupRouter = GroupRouter()
 groupRouter = groupRouter.defineRoutes(defaultRouter)
 
-# Add configRoute declaration
+# Add configRouter declaration
 configRouter = ConfigRouter()
 configRouter = configRouter.defineRoutes(defaultRouter)
+
+# Add templateRouter declaration
+tplRouter = TemplateRouter()
+tplRouter = tplRouter.defineRoutes(defaultRouter)
+
+# Add sectionRouter declaration
+sectionRouter = SectionRouter()
+sectionRouter = sectionRouter.defineRoutes(defaultRouter)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
