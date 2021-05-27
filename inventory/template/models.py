@@ -24,4 +24,4 @@ class Template:
         choices=OS_CHOICES,
         default="WIN"
     )
-    revision = models.IntegerField()
+    last_update = models.DateTimeField(auto_now=True)
