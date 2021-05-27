@@ -1,5 +1,5 @@
 from django.db import models
-from inventory.template import models
+from inventory.template.models import Template
 
 
 # Create your models here.
@@ -29,4 +29,4 @@ class Section(models.Model):
     target = models.CharField(
         max_length=255
     )
-    template = models.ForeignKey(models.Template, on_delete=models.CASCADE)
+    template = models.ForeignKey(Template, on_delete=models.CASCADE)
