@@ -2,7 +2,7 @@ from inventory.template.models import Template
 from rest_framework import serializers
 
 
-class UserSerializer(serializers.ModelSerializer):
+class TemplateSerializer(serializers.ModelSerializer):
     """
     This serialize class provide the API representation
 
