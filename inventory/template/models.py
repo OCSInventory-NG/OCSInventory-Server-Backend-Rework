@@ -2,7 +2,7 @@ from django.db import models
 
 
 # Create your models here.
-class Template:
+class Template(models.Model):
     """
     Template model class definition
 

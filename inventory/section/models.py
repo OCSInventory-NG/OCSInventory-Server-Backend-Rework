@@ -3,7 +3,7 @@ from inventory.template import models
 
 
 # Create your models here.
-class Section:
+class Section(models.Model):
     """
     Template model class definition
 
@@ -11,7 +11,7 @@ class Section:
     - Name
     - Operating system
     - Sections template link
-    - Revision (Read Only)
+    - Last update (Read Only)
     """
     RETRIVAL_CHOICES = (
         ("FILE", "Read file"),
