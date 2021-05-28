@@ -12,6 +12,7 @@ class Template(models.Model):
     - Sections template link
     - Revision (Read Only)
     """
+
     OS_CHOICES = (
         ("WIN", "Windows"),
         ("LIN", "Linux"),

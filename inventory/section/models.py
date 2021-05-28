@@ -13,6 +13,7 @@ class Section(models.Model):
     - Sections template link
     - Last update (Read Only)
     """
+
     RETRIVAL_CHOICES = (
         ("FILE", "Read file"),
         ("BASH", "Bash command"),
