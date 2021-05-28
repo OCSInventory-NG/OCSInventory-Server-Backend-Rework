@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'mgmt.apps.MgmtConfig',
     'inventory.template.apps.TemplateConfig',
     'inventory.section.apps.SectionConfig',
+    'inventory.field.apps.FieldConfig',
 ]
 
 MIDDLEWARE = [
