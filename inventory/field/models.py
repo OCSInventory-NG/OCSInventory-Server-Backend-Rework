@@ -11,7 +11,7 @@ class Field(models.Model):
     - Name
     - Retrival value
 
-    Some explanation on the retrival value : 
+    Some explanation on the retrival value :
     - Depending on the retrival output, the value is diffrent
     - If the output is JSON we expect a JSON position
     - If the output is Plain Text we expect a line number
