@@ -14,4 +14,11 @@ class SectionSerializer(serializers.ModelSerializer):
         """Define the linked model and the fields registered in the API"""
 
         model = Section
-        fields = ['id', 'name', 'retrival_method', 'target', 'template']
+        fields = [
+            'id',
+            'name',
+            'retrival_method',
+            'retrival_output',
+            'target',
+            'template'
+        ]
