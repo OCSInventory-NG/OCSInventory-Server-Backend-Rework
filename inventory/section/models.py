@@ -5,12 +5,13 @@ from inventory.template.models import Template
 # Create your models here.
 class Section(models.Model):
     """
-    Template model class definition
+    Section model class definition
 
     The model will contain the following info
     - Name
-    - Operating system
-    - Sections template link
+    - Retrival method
+    - Retrival output
+    - Template link
     - Last update (Read Only)
     """
 
