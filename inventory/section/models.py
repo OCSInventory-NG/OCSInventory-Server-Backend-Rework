@@ -21,11 +21,22 @@ class Section(models.Model):
         ("CMD", "Cmd command"),
     )
 
+    RETRIVAL_OUTPUT = (
+        ("PTXT", "Plain text"),
+        ("JSON", "JSON format"),
+        ("TBLE", "Table format")
+    )
+
     name = models.CharField(max_length=50)
     retrival_method = models.CharField(
         max_length=4,
         choices=RETRIVAL_CHOICES,
         default="FILE"
+    )
+    retrival_output = models.CharField(
+        max_length=4,
+        choices=RETRIVAL_OUTPUT,
+        default="JSON"
     )
     target = models.CharField(
         max_length=255
