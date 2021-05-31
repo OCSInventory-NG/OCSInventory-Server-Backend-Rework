@@ -30,6 +30,7 @@ from group.routers import GroupRouter
 from inventory.template.routers import TemplateRouter
 from inventory.section.routers import SectionRouter
 from inventory.field.routers import FieldRouter
+from asset.base.routers import BaseRouter
 
 # Routers provide a way of automatically determining the URL conf.
 defaultRouter = DefaultRouter()
@@ -61,6 +62,10 @@ sectionRouter = sectionRouter.defineRoutes(defaultRouter)
 # Add fieldRouter declaration
 fieldRouter = FieldRouter()
 fieldRouter = fieldRouter.defineRoutes(defaultRouter)
+
+# Add baseRouter declaration
+baseRouter = BaseRouter()
+baseRouter = baseRouter.defineRoutes(defaultRouter)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
