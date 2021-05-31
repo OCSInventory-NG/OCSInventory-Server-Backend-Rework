@@ -14,10 +14,18 @@ class UserSerializer(serializers.ModelSerializer):
         """Define the linked model and the fields registered in the API"""
 
         model = User
-        fields = ['id', 'username', 'email', 'first_name',
-                  'last_name',  'password', 'is_staff',
-                  'groups', 'user_permissions']
-        extra_kwargs = {'password': {'write_only': True}}
+        fields = [
+            "id",
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "password",
+            "is_staff",
+            "groups",
+            "user_permissions",
+        ]
+        extra_kwargs = {"password": {"write_only": True}}
 
     @staticmethod
     def create(validated_data):
@@ -31,18 +39,21 @@ class UserSerializer(serializers.ModelSerializer):
             [user]
         """
         user = User(
-            email=validated_data['email'],
-            username=validated_data['username'],
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name'],
-            is_staff=validated_data['is_staff'],
+            email=validated_data["email"],
+            username=validated_data["username"],
+            first_name=validated_data["first_name"],
+            last_name=validated_data["last_name"],
+            is_staff=validated_data["is_staff"],
         )
 
-        user.set_password(validated_data['password'])
+        user.set_password(validated_data["password"])
         user.save()
 
-        user.user_permissions.set(validated_data['user_permissions'])
-        user.groups.set(validated_data['groups'])
+        if validated_data.get("groups") is not None:
+            user.groups.set(validated_data["groups"])
+        if validated_data.get("user_permissions") is not None:
+            user.user_permissions.set(validated_data["user_permissions"])
+
         user.save()
 
         return user
@@ -59,9 +70,12 @@ class UserSerializer(serializers.ModelSerializer):
         """
         instance = super().update(instance, validated_data)
 
-        instance.groups.set(validated_data['groups'])
-        instance.user_permissions.set(validated_data['user_permissions'])
-        instance.set_password(validated_data['password'])
+        if validated_data.get("groups") is not None:
+            instance.groups.set(validated_data["groups"])
+        if validated_data.get("user_permissions") is not None:
+            instance.user_permissions.set(validated_data["user_permissions"])
+        if validated_data.get("password") is not None:
+            instance.set_password(validated_data["password"])
         instance.save()
 
         return instance
@@ -79,7 +93,15 @@ class MyAccountSerializer(UserSerializer):
         """Define the linked model and the fields registered in the API"""
 
         model = User
-        fields = ['id', 'username', 'email', 'first_name',
-                  'last_name',  'password', 'is_staff',
-                  'groups', 'user_permissions']
-        extra_kwargs = {'password': {'write_only': True}}
+        fields = [
+            "id",
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "password",
+            "is_staff",
+            "groups",
+            "user_permissions",
+        ]
+        extra_kwargs = {"password": {"write_only": True}}
