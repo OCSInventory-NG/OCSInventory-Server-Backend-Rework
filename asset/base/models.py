@@ -29,9 +29,9 @@ class Base(models.Model):
     srcmac = models.CharField(max_length=255)
     domain = models.CharField(max_length=255)
     template = models.ForeignKey(
-        Template, 
-        on_delete=models.CASCADE, 
-        blank=True, 
+        Template,
+        on_delete=models.CASCADE,
+        blank=True,
         null=False
     )
     last_update = models.DateTimeField(auto_now=True)
