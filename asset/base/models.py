@@ -28,5 +28,10 @@ class Base(models.Model):
     srcip = models.CharField(max_length=255)
     srcmac = models.CharField(max_length=255)
     domain = models.CharField(max_length=255)
-    template = models.ForeignKey(Template, on_delete=models.CASCADE)
+    template = models.ForeignKey(
+        Template, 
+        on_delete=models.CASCADE, 
+        blank=True, 
+        null=False
+    )
     last_update = models.DateTimeField(auto_now=True)
