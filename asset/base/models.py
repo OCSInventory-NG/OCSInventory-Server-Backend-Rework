@@ -23,7 +23,7 @@ class Base(models.Model):
     serial = models.CharField(max_length=255, null=False)
     osname = models.CharField(max_length=255, null=False)
     osversion = models.CharField(max_length=255, null=False)
-    uuid = models.CharField(max_length=255, null=False)
+    uuid = models.CharField(max_length=255, null=False, unique=True)
     srcip = models.CharField(max_length=255)
     srcmac = models.CharField(max_length=255)
     domain = models.CharField(max_length=255)
