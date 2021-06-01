@@ -16,6 +16,7 @@ class Base(models.Model):
     - UUID
     - SRCIP
     - SRCMAC
+    - Template
     - Domain
     """
 
@@ -32,6 +33,6 @@ class Base(models.Model):
         Template,
         on_delete=models.CASCADE,
         blank=True,
-        null=False
+        null=True
     )
     last_update = models.DateTimeField(auto_now=True)
