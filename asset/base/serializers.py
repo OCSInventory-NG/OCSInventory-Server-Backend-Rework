@@ -1,6 +1,7 @@
 from asset.base.models import Base
 from rest_framework import serializers
 from inventory.template.models import Template
+from rest_framework.exceptions import APIException
 
 
 class BaseSerializer(serializers.ModelSerializer):
@@ -63,7 +64,7 @@ class BaseSerializer(serializers.ModelSerializer):
                 assetBase.template = Template.objects.filter(os="MAC")[0]
 
             assetBase.save()
-        except Exception:
+        except APIException:
             print("An error happenned")
 
         return assetBase
