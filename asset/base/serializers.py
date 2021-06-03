@@ -64,7 +64,7 @@ class BaseSerializer(serializers.ModelSerializer):
                 assetBase.template = Template.objects.filter(os="MAC")[0]
 
             assetBase.save()
-        except APIException:
+        except IndexError:
             print("An error happenned")
 
         return assetBase
