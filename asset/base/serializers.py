@@ -1,7 +1,7 @@
 from asset.base.models import Base
 from rest_framework import serializers
-from inventory.template.models import Template
 from rest_framework.exceptions import APIException
+from inventory.template.models import Template
 
 
 class BaseSerializer(serializers.ModelSerializer):
