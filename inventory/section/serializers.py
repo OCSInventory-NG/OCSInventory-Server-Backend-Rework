@@ -1,4 +1,5 @@
 from inventory.section.models import Section
+from inventory.field.serializers import FieldSerializer
 from rest_framework import serializers
 
 
@@ -10,6 +11,8 @@ class SectionSerializer(serializers.ModelSerializer):
         serializers ([ModelSerializer])
     """
 
+    fields = FieldSerializer(many=True, read_only=True)
+
     class Meta:
         """Define the linked model and the fields registered in the API"""
 
@@ -20,5 +23,6 @@ class SectionSerializer(serializers.ModelSerializer):
             'retrival_method',
             'retrival_output',
             'target',
-            'template'
+            'template',
+            'fields'
         ]
