@@ -1,4 +1,5 @@
 from django.core.exceptions import FieldError, ObjectDoesNotExist
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import views, viewsets
 from rest_framework.response import Response
 from rest_framework import status
@@ -12,6 +13,12 @@ class OCSViewSet(viewsets.ModelViewSet):
     Args:
         viewsets ([ModelViewSet])
     """
+
+    # Set default filter
+    filter_backends = [DjangoFilterBackend]
+
+    # Filter on all by default
+    filterset_fields = '__all__'
 
     # This is the default reconciliation id for objets, can overrided
     reconciliation_field = "id"
