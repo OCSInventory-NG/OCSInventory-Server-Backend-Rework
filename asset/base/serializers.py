@@ -56,11 +56,11 @@ class BaseSerializer(serializers.ModelSerializer):
 
         # Determine OS for template management
         try:
-            if self.OS_WIN in osname:
+            if self.OS_WIN in osname.lower():
                 assetBase.template = Template.objects.filter(os="WIN")[0]
-            elif self.OS_LIN in osname:
+            elif self.OS_LIN in osname.lower():
                 assetBase.template = Template.objects.filter(os="LIN")[0]
-            elif self.OS_MAC in osname:
+            elif self.OS_MAC in osname.lower():
                 assetBase.template = Template.objects.filter(os="MAC")[0]
 
             assetBase.save()
