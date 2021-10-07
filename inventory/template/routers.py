@@ -1,4 +1,4 @@
-from inventory.template.views import TemplateViewSet, FullTemplateViewSet
+from inventory.template.views import TemplateViewSet
 
 
 class TemplateRouter():
@@ -19,6 +19,4 @@ class TemplateRouter():
             [DefaultRouter]: Updated router with app's dedicated routes
         """
         defaultRouter.register(r'templates', TemplateViewSet)
-        defaultRouter.register(
-            r'fulltemplates', FullTemplateViewSet, basename="FullTemplate")
         return defaultRouter
