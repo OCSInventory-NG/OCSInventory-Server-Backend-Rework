@@ -36,10 +36,12 @@ class MyAccountViewSet(viewsets.OCSViewSet):
         return User.objects.filter(username=self.request.user)
 
     def list(self, request, *args, **kwargs):
+        """Dedicated my account json response"""
         user = User.objects.filter(username=self.request.user).first()
         raw_permissions = user.get_all_permissions()
         refined_permissions = []
 
+        # Remove the first part of the permission "object.permname"
         for permission in raw_permissions:
             splitted_permission = permission.split(".")
             refined_permissions.append(splitted_permission[1])
