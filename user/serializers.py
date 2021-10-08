@@ -22,6 +22,7 @@ class UserSerializer(serializers.ModelSerializer):
             "last_name",
             "password",
             "is_staff",
+            "is_superuser",
             "groups",
             "user_permissions",
         ]
