@@ -45,13 +45,13 @@ class MyAccountViewSet(viewsets.OCSViewSet):
             refined_permissions.append(splitted_permission[1])
 
         reponse = {
-            'id': getattr(user, 'id'),
-            'username': getattr(user, 'username'),
-            'email': getattr(user, 'email'),
-            'first_name': getattr(user, 'first_name'),
-            'last_name': getattr(user, 'last_name'),
-            'is_staff': getattr(user, 'is_staff'),
-            'is_superuser': getattr(user, 'is_superuser'),
+            'id': getattr(user, 'id', ''),
+            'username': getattr(user, 'username', ''),
+            'email': getattr(user, 'email', ''),
+            'first_name': getattr(user, 'first_name', ''),
+            'last_name': getattr(user, 'last_name', ''),
+            'is_staff': getattr(user, 'is_staff', False),
+            'is_superuser': getattr(user, 'is_superuser', False),
             'full_permissions': refined_permissions
         }
         return Response(reponse)
