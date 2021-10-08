@@ -12,6 +12,9 @@ class ConfigViewSet(viewsets.OCSViewSet):
         viewsets ([OCSViewSet])
     """
 
+    # Set default filter
+    filter_backends = []
+
     # No id for config overriding reconciliation_field
     reconciliation_field = "name"
 
