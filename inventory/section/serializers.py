@@ -29,7 +29,6 @@ class SectionSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Override create to allow nested creation of fields"""
-
         # If sections are present
         fields = validated_data.pop('fields')
         parent = super().create(validated_data)
