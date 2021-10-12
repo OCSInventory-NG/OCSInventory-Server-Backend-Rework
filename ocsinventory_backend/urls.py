@@ -30,6 +30,9 @@ from group.routers import GroupRouter
 from inventory.template.routers import TemplateRouter
 from inventory.section.routers import SectionRouter
 from inventory.field.routers import FieldRouter
+from ipdiscover.netgroup.routers import NetgroupRouter
+from ipdiscover.network.routers import NetworkRouter
+from ipdiscover.netdevice.routers import NetdeviceRouter
 from asset.base.routers import BaseRouter
 
 # Routers provide a way of automatically determining the URL conf.
@@ -62,6 +65,10 @@ sectionRouter = sectionRouter.defineRoutes(defaultRouter)
 # Add fieldRouter declaration
 fieldRouter = FieldRouter()
 fieldRouter = fieldRouter.defineRoutes(defaultRouter)
+
+# Add Netdevicce declaration
+netrouter = NetdeviceRouter()
+netrouter = netrouter.defineRoutes(defaultRouter)
 
 # Add baseRouter declaration
 baseRouter = BaseRouter()
