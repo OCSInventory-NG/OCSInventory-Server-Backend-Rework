@@ -38,7 +38,7 @@ class OCSViewSet(viewsets.ModelViewSet):
         try:
             serializer = self.get_serializer(
                 data=request.data, many=isinstance(request.data, list))
-            serializer.is_valid(raise_exception=True)
+            serializer.is_valid(raise_exception=False)
             self.perform_create(serializer)
         except (APIException, FieldError, ObjectDoesNotExist):
             # serializer.errors may return more details
