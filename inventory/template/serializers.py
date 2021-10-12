@@ -11,7 +11,7 @@ class TemplateSerializer(serializers.ModelSerializer):
         serializers ([ModelSerializer])
     """
 
-    sections = SectionSerializer(many=True, read_only=True)
+    sections = SectionSerializer(many=True)
 
     class Meta:
         """Define the linked model and the fields registered in the API"""
@@ -19,3 +19,15 @@ class TemplateSerializer(serializers.ModelSerializer):
         model = Template
         fields = ['id', 'name', 'os', 'last_update', 'sections']
         extra_kwargs = {'last_update': {'read_only': True}}
+
+    def create(self, validated_data):
+
+        # If sections are present
+        sections = validated_data.pop('sections')
+        parent = super().create(validated_data)
+        
+        for section in sections:
+            section['template'] = parent
+        self.fields['sections'].create(sections)
+
+        return parent
