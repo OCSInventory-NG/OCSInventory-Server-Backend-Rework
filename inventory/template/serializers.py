@@ -25,7 +25,7 @@ class TemplateSerializer(serializers.ModelSerializer):
         # If sections are present
         sections = validated_data.pop('sections')
         parent = super().create(validated_data)
-        
+
         for section in sections:
             section['template'] = parent
         self.fields['sections'].create(sections)
