@@ -21,6 +21,7 @@ class TemplateSerializer(serializers.ModelSerializer):
         extra_kwargs = {'last_update': {'read_only': True}}
 
     def create(self, validated_data):
+        """Override create to allow nested creation of sections"""
 
         # If sections are present
         sections = validated_data.pop('sections')
