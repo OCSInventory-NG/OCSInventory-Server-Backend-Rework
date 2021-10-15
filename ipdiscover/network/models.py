@@ -19,4 +19,4 @@ class Network(models.Model):
     netid = models.GenericIPAddressField()
     mask = models.GenericIPAddressField()
     group = models.ForeignKey(
-        Netgroup, related_name="netgroups", on_delete=models.CASCADE, null=True)
+        Netgroup, related_name="networks", on_delete=models.CASCADE, null=True)

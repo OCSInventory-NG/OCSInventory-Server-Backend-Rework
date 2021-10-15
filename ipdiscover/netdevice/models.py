@@ -18,4 +18,4 @@ class Netdevice(models.Model):
     netname = models.CharField(max_length=128)
     mac = models.CharField(max_length=20)
     network = models.ForeignKey(
-        Network, related_name="networks", on_delete=models.CASCADE)
+        Network, related_name="netdevices", on_delete=models.CASCADE)
