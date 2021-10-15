@@ -3,4 +3,4 @@ from django.apps import AppConfig
 
 class NetgroupConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'netgroup'
+    name = 'ipdiscover.netgroup'

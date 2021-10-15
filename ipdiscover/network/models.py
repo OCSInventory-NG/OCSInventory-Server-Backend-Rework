@@ -1,4 +1,5 @@
 from django.db import models
+from ipdiscover.netgroup.models import Netgroup
 
 # Create your models here.
 class Network(models.Model):
@@ -18,4 +19,4 @@ class Network(models.Model):
     netid = models.GenericIPAddressField()
     mask = models.GenericIPAddressField()
     group = models.ForeignKey(
-        Template, related_name="networks", on_delete=models.CASCADE)
+        Netgroup, related_name="netgroups", on_delete=models.CASCADE)
