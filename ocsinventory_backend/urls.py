@@ -70,6 +70,14 @@ fieldRouter = fieldRouter.defineRoutes(defaultRouter)
 netrouter = NetdeviceRouter()
 netrouter = netrouter.defineRoutes(defaultRouter)
 
+# Add Netdevicce declaration
+netrouter = NetworkRouter()
+netrouter = netrouter.defineRoutes(defaultRouter)
+
+# Add Netdevicce declaration
+netrouter = NetgroupRouter()
+netrouter = netrouter.defineRoutes(defaultRouter)
+
 # Add baseRouter declaration
 baseRouter = BaseRouter()
 baseRouter = baseRouter.defineRoutes(defaultRouter)
