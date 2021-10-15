@@ -11,7 +11,7 @@ class SectionSerializer(serializers.ModelSerializer):
         serializers ([ModelSerializer])
     """
 
-    fields = FieldSerializer(many=True)
+    fields = FieldSerializer(many=True, required=False)
 
     class Meta:
         """Define the linked model and the fields registered in the API"""
@@ -29,12 +29,16 @@ class SectionSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Override create to allow nested creation of fields"""
-        # If sections are present
-        fields = validated_data.pop('fields')
-        parent = super().create(validated_data)
 
-        for field in fields:
-            field['section'] = parent
-        self.fields['fields'].create(fields)
+        if 'fields' in validated_data.keys():
+            # If fields are present
+            fields = validated_data.pop('fields')
+            parent = super().create(validated_data)
+
+            for field in fields:
+                field['section'] = parent
+            self.fields['fields'].create(fields)
+        else:
+            parent = super().create(validated_data)
 
         return parent
