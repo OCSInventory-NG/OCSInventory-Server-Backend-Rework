@@ -22,7 +22,6 @@ class TemplateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Override create to allow nested creation of sections"""
-
         if 'sections' in validated_data.keys():
             # If sections are present
             sections = validated_data.pop('sections')
