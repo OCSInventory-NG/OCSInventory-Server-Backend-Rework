@@ -28,6 +28,10 @@ class NetworkSerializer(serializers.ModelSerializer):
             'netdevices',
             'group'
         ]
+        extra_kwargs = {
+            "name": {"required": False},
+            "description":  {"required": False}
+        }
 
     def create(self, validated_data):
         """Override create to allow nested creation of fields"""
