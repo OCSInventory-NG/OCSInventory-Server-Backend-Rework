@@ -2,6 +2,8 @@ from django.db import models
 from ipdiscover.network.models import Network
 
 # Create your models here.
+
+
 class Netdevice(models.Model):
     """
     Netdevice model class definition

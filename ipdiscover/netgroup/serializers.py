@@ -19,4 +19,3 @@ class NetgroupSerializer(serializers.ModelSerializer):
             'name',
             'description'
         ]
-

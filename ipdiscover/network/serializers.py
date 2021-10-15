@@ -47,4 +47,3 @@ class NetworkSerializer(serializers.ModelSerializer):
             parent = super().create(validated_data)
 
         return parent
-

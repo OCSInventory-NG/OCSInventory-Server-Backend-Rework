@@ -22,4 +22,3 @@ class NetdeviceSerializer(serializers.ModelSerializer):
             'network'
         ]
         extra_kwargs = {"network": {"required": False}}
-

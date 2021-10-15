@@ -1,6 +1,8 @@
 from django.db import models
 
 # Create your models here.
+
+
 class Netgroup(models.Model):
     """
     Netgroup model class definition

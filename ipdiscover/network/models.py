@@ -2,6 +2,8 @@ from django.db import models
 from ipdiscover.netgroup.models import Netgroup
 
 # Create your models here.
+
+
 class Network(models.Model):
     """
     Network model class definition
