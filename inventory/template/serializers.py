@@ -1,5 +1,6 @@
 from inventory.template.models import Template
 from inventory.section.serializers import SectionSerializer
+from inventory.section.models import Section
 from rest_framework import serializers
 
 

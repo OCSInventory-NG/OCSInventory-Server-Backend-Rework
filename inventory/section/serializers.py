@@ -1,5 +1,6 @@
 from inventory.section.models import Section
 from inventory.field.serializers import FieldSerializer
+from inventory.field.models import Field
 from rest_framework import serializers
 
 
