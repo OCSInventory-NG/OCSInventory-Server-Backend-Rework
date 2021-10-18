@@ -43,7 +43,7 @@ class Section(models.Model):
         max_length=255
     )
     template = models.ForeignKey(
-        Template, related_name="sections", 
+        Template, related_name="sections",
         on_delete=models.CASCADE,
         null=True
     )
