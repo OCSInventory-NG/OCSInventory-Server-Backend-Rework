@@ -11,6 +11,7 @@ class Network(models.Model):
     The model will contain the following info
     - Name
     - Description
+    - Location
     - NetID
     - Mask
     - Group
@@ -18,6 +19,7 @@ class Network(models.Model):
 
     name = models.CharField(max_length=128)
     description = models.TextField(max_length=1024)
+    location = models.CharField(max_length=128, null=True)
     netid = models.GenericIPAddressField()
     mask = models.GenericIPAddressField()
     group = models.ForeignKey(

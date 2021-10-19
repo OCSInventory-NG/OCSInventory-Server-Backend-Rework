@@ -30,7 +30,8 @@ class NetworkSerializer(serializers.ModelSerializer):
         ]
         extra_kwargs = {
             "name": {"required": False},
-            "description":  {"required": False}
+            "description":  {"required": False},
+            "location": {'required': False}
         }
 
     def create(self, validated_data):
