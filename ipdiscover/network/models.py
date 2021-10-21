@@ -9,6 +9,7 @@ class Network(models.Model):
     Network model class definition
 
     The model will contain the following info
+    - Nettag
     - Name
     - Description
     - Location
@@ -17,6 +18,7 @@ class Network(models.Model):
     - Group
     """
 
+    nettag = models.CharField(max_length=128, unique=True, default='DefaultNettag')
     name = models.CharField(max_length=128)
     description = models.TextField(max_length=1024)
     location = models.CharField(max_length=128, null=True)
