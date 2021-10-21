@@ -12,7 +12,6 @@ class NetworkSerializer(serializers.ModelSerializer):
         serializers ([ModelSerializer])
     """
 
-    group = NetgroupSerializer(required=False)
     netdevices = NetdeviceSerializer(many=True, required=False)
 
     class Meta:
