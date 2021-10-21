@@ -1,12 +1,15 @@
 from django.core.management.base import BaseCommand
-from ipdiscover.network.models import Network
-from ipdiscover.netdevice.models import Netdevice
 from django.forms.models import model_to_dict
 
+from ipdiscover.network.serializers import NetworkSerializer
+from ipdiscover.network.models import Network
+
+
+from ipaddress import IPv4Network
 import nmap
 import re
+import os
 
-from ipdiscover.network.serializers import NetworkSerializer
 
 class Command(BaseCommand):
     """Name of the file equals command, e.g. 'demo'
@@ -15,7 +18,7 @@ class Command(BaseCommand):
         BaseCommand ([type]): base class for management commands
     """
 
-    help = 'any arg passed to this cmd will be printed back'
+    help = 'Launch IpDiscover scan with nmap'
 
     def add_arguments(self, parser):
         """Add custom argument
@@ -23,8 +26,11 @@ class Command(BaseCommand):
         Args:
             parser ([type]): [description]
         """
+        # ipd scan args = --network (multi)
         parser.add_argument('--network', action='append', type=str, help='targeted network for nmap scan (e.g. 172.18.26.0/24)')
+        # ipd list
         parser.add_argument('--list', action='store_true', help='')
+        
 
     def handle(self, *args, **options):
         """Must be implemented, defines the logic behind the command"""
@@ -41,17 +47,25 @@ class Command(BaseCommand):
             results = []
             # multiple network might have been passed in args
             for net in subnet:
+                netmask = str(IPv4Network(net).netmask)
                 result = nm.scan(hosts=net, arguments='-sP')
                 print("IpDiscover scan found "+ result['nmap']['scanstats']['uphosts'] + " hosts for subnet " + net + " in " + result['nmap']['scanstats']['elapsed'] + "s.")
                 net = re.sub('/24', '', net)
-                data = {"name": "testnetwork", "description": "ipd from server watch this", "netid": net, "mask": "255.255.255.0", 
+                data = {"name": net, "description": "ipd from server watch this", "netid": net, "mask": netmask, 
                         "netdevices": []}
 
                 for device in result['scan'] :
                     netname = result['scan'][device]['hostnames'][0]['name']
-                    data['netdevices'].append({"ip" : device, "netname" : netname, "mac" : "55:55:55:55:55"}) 
+                    # if nmap didn't return mac addresses > use ip instead 
+                    if not 'mac' in result['scan'][device]['addresses']:
+                        mac = device
+                    else :
+                        mac = result['scan'][device]['addresses']['mac']
+                    
+                    data['netdevices'].append({"ip" : device, "netname" : netname, "mac" : mac}) 
 
                 results.append(data)
+                # print(results)
             
             network = NetworkSerializer()
             for res in results:
@@ -63,6 +77,8 @@ class Command(BaseCommand):
 
         def ipd_list():
             """Get all networks discovered
+
+            TODO : return linked netdevices
 
             Returns:
                 [dict]: 
