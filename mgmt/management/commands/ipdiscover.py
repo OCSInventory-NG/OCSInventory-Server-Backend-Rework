@@ -50,15 +50,15 @@ class Command(BaseCommand):
             results = []
             
             # multiple networks might have been passed in args
-            print(subnet, nettag, name, desc)
             for net, tag, name, desc in zip(subnet, nettag, name, desc):
                 netmask = str(IPv4Network(net).netmask)
                 result = nm.scan(hosts=net, arguments='-sP')
                 print("IpDiscover scan found "+ result['nmap']['scanstats']['uphosts'] + " hosts for subnet " + net + " in " + result['nmap']['scanstats']['elapsed'] + "s.")
+                net = re.sub('/24', '', net)
                 # nettag is required, set a default value if not provided by the user
-                if options['nettag']:
+                if options['nettag'] != 'default':
                     subnettag = net + ":" + tag
-                else :
+                else:
                     subnettag = net
                 data = {"nettag": subnettag, "name": name, "description": desc, "netid": net, "mask": netmask, 
                         "netdevices": []}
@@ -90,13 +90,15 @@ class Command(BaseCommand):
             with open(file, newline='', encoding='utf-8') as f:
                 reader = csv.reader(f)
                 for row in reader:
+                    #get fields name
                     if 'network' in row:
                         for field in row:
                             fields += [field]
                             options[field] = []
                     else :
                         for elem, field in zip(row, fields):
-                                options[field] += [elem] 
+                                options[field] += [elem]
+            print('Data imported from CSV')
             
 
         def ipd_list():
@@ -117,21 +119,27 @@ class Command(BaseCommand):
 
         # assign default value to name, desc and nettag if missing any
         if options['name'] == None:
-            options['name'] = options['network']
+            options['name'] = re.sub('/24', '', str(options['network']))
         if options['description'] == None:
             options['description'] = 'default description'
         if options['nettag'] == None:
-            options['nettag'] = options['network']
+            # nettag is modified later in the process but still needs a default
+            options['nettag'] = 'default'
 
         if options['network']:
-            if ipd_scan_subnet(options['network'], options['nettag'], options['name'], options['description']):
+            try:
+                ipd_scan_subnet(options['network'], options['nettag'], options['name'], options['description'])
                 output = 'IpDiscover scan ran successfully'
-            else :
+            except :
                 output = 'IpDiscover scan failed'
+
         elif options['file']:
-            from_file(options['file'])
-            ipd_scan_subnet(options['network'], options['nettag'], options['name'], options['description'])
-            output = 'Import from file successful'
+            try:
+                from_file(options['file'])
+                ipd_scan_subnet(options['network'], options['nettag'], options['name'], options['description'])
+                output = 'IpDiscover scan ran successfully'
+            except Exception as e:
+                output = "IpDiscover failed : " + str(e.__cause__)
 
         elif options['list']:
             output = ipd_list()
