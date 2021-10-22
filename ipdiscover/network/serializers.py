@@ -36,7 +36,7 @@ class NetworkSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Override create to allow nested creation of fields"""
-        
+
         if 'nettag' not in validated_data.keys():
             validated_data['nettag'] = validated_data['netid']
 
