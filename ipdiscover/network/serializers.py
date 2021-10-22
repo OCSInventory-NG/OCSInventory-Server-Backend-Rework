@@ -12,7 +12,6 @@ class NetworkSerializer(serializers.ModelSerializer):
         serializers ([ModelSerializer])
     """
 
-    group = NetgroupSerializer(required=False)
     netdevices = NetdeviceSerializer(many=True, required=False)
 
     class Meta:
@@ -21,6 +20,7 @@ class NetworkSerializer(serializers.ModelSerializer):
         model = Network
         fields = [
             'id',
+            'nettag',
             'name',
             'description',
             'netid',
@@ -36,6 +36,9 @@ class NetworkSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Override create to allow nested creation of fields"""
+        if 'nettag' not in validated_data.keys():
+            validated_data['nettag'] = validated_data['netid']
+
         if 'netdevices' in validated_data.keys():
             # If netdevices are present
             netdevices = validated_data.pop('netdevices')
