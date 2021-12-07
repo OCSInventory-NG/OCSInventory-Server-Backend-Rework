@@ -16,7 +16,7 @@ class AccountinfoConfig(models.Model):
 
     ACC_TYPE_CHOICES = (
         ("TEXT", "Text"),
-        ("TEXTAREA", "Textarza"),
+        ("TEXTAREA", "Textarea"),
         ("SELECT", "Select"),
         ("CHECKBOX", "Checkbox")
     )
@@ -50,6 +50,8 @@ class AccountinfoValue(models.Model):
     - accountconfig link
     - value
     """ 
+    accountinfo_config = models.ForeignKey(
+        AccountinfoConfig, related_name="accountinfo_config", on_delete=models.CASCADE)
     value = models.CharField(max_length=100)
 
 
@@ -58,15 +60,6 @@ class AccountinfoData(models.Model):
     Accountinfo data model class definition
 
     The model will contain the following info
-    - accountdata
-    - content_type
-    - object_id
-    - content_object
+    - accountdata : JSON representation of the account infos
     """
-
     accountdata = models.JSONField()
-
-    # Below the mandatory fields for generic relation
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey()
