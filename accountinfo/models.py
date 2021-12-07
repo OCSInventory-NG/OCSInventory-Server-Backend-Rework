@@ -63,3 +63,7 @@ class AccountinfoData(models.Model):
     - accountdata : JSON representation of the account infos
     """
     accountdata = models.JSONField()
+
+    content_type =   models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object=GenericForeignKey('content_type', 'object_id')
