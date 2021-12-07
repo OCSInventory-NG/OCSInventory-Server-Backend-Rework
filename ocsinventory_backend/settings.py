@@ -37,7 +37,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.contenttypes',
     'django_filters',
     'corsheaders',
     'rest_framework',
@@ -53,6 +52,7 @@ INSTALLED_APPS = [
     'ipdiscover.netdevice.apps.NetdeviceConfig',
     'ipdiscover.network.apps.NetworkConfig',
     'ipdiscover.netgroup.apps.NetgroupConfig',
+    'accountinfo.apps.AccountinfoConfig',
     'asset.base.apps.BaseConfig',
 ]
 

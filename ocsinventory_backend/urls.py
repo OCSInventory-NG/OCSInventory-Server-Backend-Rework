@@ -34,6 +34,7 @@ from ipdiscover.netgroup.routers import NetgroupRouter
 from ipdiscover.network.routers import NetworkRouter
 from ipdiscover.netdevice.routers import NetdeviceRouter
 from asset.base.routers import BaseRouter
+from accountinfo.routers import AccountinfoRouter
 
 # Routers provide a way of automatically determining the URL conf.
 defaultRouter = DefaultRouter()
@@ -81,6 +82,10 @@ netrouter = netrouter.defineRoutes(defaultRouter)
 # Add baseRouter declaration
 baseRouter = BaseRouter()
 baseRouter = baseRouter.defineRoutes(defaultRouter)
+
+# Add accountinfo declaration
+accountinfoRouter = AccountinfoRouter()
+accountinfoRouter = accountinfoRouter.defineRoutes(defaultRouter)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
