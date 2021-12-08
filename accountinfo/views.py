@@ -1,6 +1,8 @@
 from permission.permissions import DefaultModelPermissions
 from accountinfo.models import AccountinfoConfig, AccountinfoData, AccountinfoValue
-from accountinfo.serializers import AccountinfoConfigSerializer, AccountinfoDataSerializer, AccountinfoValueSerializer
+from accountinfo.serializers import AccountinfoConfigSerializer, \
+    AccountinfoDataSerializer, \
+    AccountinfoValueSerializer
 from rest_framework import viewsets
 
 

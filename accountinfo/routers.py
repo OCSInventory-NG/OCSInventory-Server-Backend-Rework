@@ -1,4 +1,6 @@
-from accountinfo.views import AccountinfoConfigViewSet, AccountinfoDataViewSet, AccountinfoValueViewSet
+from accountinfo.views import AccountinfoConfigViewSet,\
+    AccountinfoDataViewSet, \
+    AccountinfoValueViewSet
 
 
 class AccountinfoRouter():
