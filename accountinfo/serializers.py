@@ -2,44 +2,6 @@ from accountinfo.models import AccountinfoValue, AccountinfoData, AccountinfoCon
 from rest_framework import serializers
 from asset.base.models import Base
 
-class AccountinfoConfigSerializer(serializers.ModelSerializer):
-    """
-    This serialize class provide the API representation
-
-    Args:
-        serializers ([ModelSerializer])
-    """
-
-    class Meta:
-        """Define the linked model and the fields registered in the API"""
-
-        model = AccountinfoConfig
-        fields = [
-            'id',
-            'name',
-            'description',
-            'datatype',
-            'datatarget'
-        ]
-
-class AccountinfoValueSerializer(serializers.ModelSerializer):
-    """
-    This serialize class provide the API representation
-
-    Args:
-        serializers ([ModelSerializer])
-    """
-
-    class Meta:
-        """Define the linked model and the fields registered in the API"""
-
-        model = AccountinfoValue
-        fields = [
-            'id',
-            'accountinfo_config',
-            'value'
-        ]
-
 class AccountinfoGenericRelation(serializers.RelatedField):
 
     def to_representation(self, value):
@@ -68,4 +30,47 @@ class AccountinfoDataSerializer(serializers.ModelSerializer):
             'generic_data'
         ]
 
+        extra_kwargs = {
+            'content_type': {'required': False},
+        }
 
+
+class AccountinfoValueSerializer(serializers.ModelSerializer):
+    """
+    This serialize class provide the API representation
+
+    Args:
+        serializers ([ModelSerializer])
+    """
+
+    class Meta:
+        """Define the linked model and the fields registered in the API"""
+
+        model = AccountinfoValue
+        fields = [
+            'id',
+            'accountinfo_config',
+            'value'
+        ]
+
+class AccountinfoConfigSerializer(serializers.ModelSerializer):
+    """
+    This serialize class provide the API representation
+
+    Args:
+        serializers ([ModelSerializer])
+    """
+
+    accountinfo_values = AccountinfoValueSerializer(many=True, required=False)
+
+    class Meta:
+        """Define the linked model and the fields registered in the API"""
+
+        model = AccountinfoConfig
+        fields = [
+            'id',
+            'name',
+            'description',
+            'datatype',
+            'datatarget'
+        ]
