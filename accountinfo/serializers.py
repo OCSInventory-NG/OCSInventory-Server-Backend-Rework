@@ -1,14 +1,7 @@
 from accountinfo.models import AccountinfoValue, AccountinfoData, AccountinfoConfig
 from rest_framework import serializers
 from asset.base.models import Base
-
-class AccountinfoGenericRelation(serializers.RelatedField):
-
-    def to_representation(self, value):
-
-        if isinstance(value, Base):
-            return value.id
-        raise Exception('Unexpected type of tagged object')
+from django.contrib.contenttypes.models import ContentType
 
 class AccountinfoDataSerializer(serializers.ModelSerializer):
     """
@@ -18,8 +11,6 @@ class AccountinfoDataSerializer(serializers.ModelSerializer):
         serializers ([ModelSerializer])
     """
 
-    generic_data = AccountinfoGenericRelation(source='content_object', read_only=True)
-
     class Meta:
         """Define the linked model and the fields registered in the API"""
 
@@ -27,12 +18,26 @@ class AccountinfoDataSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'accountdata',
-            'generic_data'
+            'object_slug', 
+            'object_id'
         ]
 
-        extra_kwargs = {
-            'content_type': {'required': False},
-        }
+    def create(self, validated_data):
+        """Override create to allow nested creation of fields"""
+        content_type = validated_data.get('object_slug')
+        app, model = content_type.split(".")
+        ct = ContentType.objects.get_by_natural_key(
+            app_label="asset.base",
+            model="Base"
+        )
+
+        object_id = validated_data.get('object_id')
+
+        self.save(
+            accountdata=validated_data.get('accountdata'), 
+            content_type=ct, 
+            object_id=object_id
+        )
 
 
 class AccountinfoValueSerializer(serializers.ModelSerializer):
