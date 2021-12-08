@@ -18,7 +18,7 @@ class AccountinfoRouter():
         Returns:
             [DefaultRouter]: Updated router with app's dedicated routes
         """
+        defaultRouter.register(r'accountinfo/value', AccountinfoValueViewSet)
         defaultRouter.register(r'accountinfo/config', AccountinfoConfigViewSet)
         defaultRouter.register(r'accountinfo/data', AccountinfoDataViewSet)
-        defaultRouter.register(r'accountinfo/value', AccountinfoValueViewSet)
         return defaultRouter
