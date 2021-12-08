@@ -28,8 +28,8 @@ class AccountinfoDataSerializer(serializers.ModelSerializer):
         content_type = validated_data.get('object_slug')
         app, model = content_type.split(".")
         ct = ContentType.objects.get_by_natural_key(
-            app_label="asset.base",
-            model="Base"
+            app_label=app,
+            model=model
         )
 
         object_id = validated_data.get('object_id')
