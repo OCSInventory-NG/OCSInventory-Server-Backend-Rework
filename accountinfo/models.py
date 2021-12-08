@@ -68,6 +68,6 @@ class AccountinfoData(models.Model):
     accountdata = models.JSONField()
 
     object_slug = models.CharField(null=True, max_length=100)
-    content_type =   models.ForeignKey(ContentType, on_delete=models.PROTECT)
+    content_type = models.ForeignKey(ContentType, on_delete=models.PROTECT)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')

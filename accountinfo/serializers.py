@@ -19,7 +19,7 @@ class AccountinfoDataSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'accountdata',
-            'object_slug', 
+            'object_slug',
             'object_id'
         ]
 
@@ -35,8 +35,8 @@ class AccountinfoDataSerializer(serializers.ModelSerializer):
         object_id = validated_data.get('object_id')
 
         self.save(
-            accountdata=validated_data.get('accountdata'), 
-            content_type=ct, 
+            accountdata=validated_data.get('accountdata'),
+            content_type=ct,
             object_id=object_id
         )
 
