@@ -20,8 +20,13 @@ class AccountinfoDataSerializer(serializers.ModelSerializer):
             'id',
             'accountdata',
             'object_slug',
+            'content_type',
             'object_id'
         ]
+
+        extra_kwargs = {
+            'content_type': {'read_only': True}
+        }
 
     def create(self, validated_data):
         """Override create to allow nested creation of fields"""
@@ -34,11 +39,9 @@ class AccountinfoDataSerializer(serializers.ModelSerializer):
 
         object_id = validated_data.get('object_id')
 
-        self.save(
-            accountdata=validated_data.get('accountdata'),
-            content_type=ct,
-            object_id=object_id
-        )
+        validated_data["content_type"] = ct
+
+        return super().create(validated_data)
 
 
 class AccountinfoValueSerializer(serializers.ModelSerializer):
