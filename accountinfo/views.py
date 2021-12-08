@@ -19,6 +19,7 @@ class AccountinfoConfigViewSet(viewsets.ModelViewSet):
     serializer_class = AccountinfoConfigSerializer
     model = AccountinfoConfig
 
+
 class AccountinfoValueViewSet(viewsets.ModelViewSet):
     """
     This class will define the view behavior
@@ -33,6 +34,7 @@ class AccountinfoValueViewSet(viewsets.ModelViewSet):
     queryset = AccountinfoValue.objects.all()
     serializer_class = AccountinfoValueSerializer
     model = AccountinfoValue
+
 
 class AccountinfoDataViewSet(viewsets.ModelViewSet):
     """
