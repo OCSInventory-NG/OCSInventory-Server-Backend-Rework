@@ -66,7 +66,7 @@ class AccountinfoData(models.Model):
     The model will contain the following info
     - accountdata : JSON representation of the account infos
     """
-    
+
     accountdata = models.JSONField()
 
     object_slug = models.CharField(null=True, max_length=100)
