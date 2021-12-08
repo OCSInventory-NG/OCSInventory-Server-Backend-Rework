@@ -72,5 +72,7 @@ class AccountinfoConfigSerializer(serializers.ModelSerializer):
             'name',
             'description',
             'datatype',
-            'datatarget'
+            'datatarget',
+            'accountinfo_values'
         ]
+        extra_kwargs = {'accountinfo_values': {'read_only': True}}
