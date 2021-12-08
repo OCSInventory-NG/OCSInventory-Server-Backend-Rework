@@ -3,6 +3,7 @@ from rest_framework import serializers
 from asset.base.models import Base
 from django.contrib.contenttypes.models import ContentType
 
+
 class AccountinfoDataSerializer(serializers.ModelSerializer):
     """
     This serialize class provide the API representation
@@ -57,6 +58,7 @@ class AccountinfoValueSerializer(serializers.ModelSerializer):
             'accountinfo_config',
             'value'
         ]
+
 
 class AccountinfoConfigSerializer(serializers.ModelSerializer):
     """

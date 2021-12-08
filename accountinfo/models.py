@@ -3,6 +3,8 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 
 # Create your models here.
+
+
 class AccountinfoConfig(models.Model):
     """
     Accountinfo configuration model class definition
@@ -41,7 +43,8 @@ class AccountinfoConfig(models.Model):
         choices=ACC_TARGET_CHOICES,
         default="ASSET"
     )
-    
+
+
 class AccountinfoValue(models.Model):
     """
     Accountinfo value model class definition
@@ -49,7 +52,7 @@ class AccountinfoValue(models.Model):
     The model will contain the following info
     - accountconfig link
     - value
-    """ 
+    """
     accountinfo_config = models.ForeignKey(
         AccountinfoConfig, related_name="accountinfo_values", on_delete=models.CASCADE)
     value = models.CharField(max_length=100)
@@ -67,4 +70,4 @@ class AccountinfoData(models.Model):
     object_slug = models.CharField(null=True, max_length=100)
     content_type =   models.ForeignKey(ContentType, on_delete=models.PROTECT)
     object_id = models.PositiveIntegerField()
-    content_object=GenericForeignKey('content_type', 'object_id')
+    content_object = GenericForeignKey('content_type', 'object_id')
