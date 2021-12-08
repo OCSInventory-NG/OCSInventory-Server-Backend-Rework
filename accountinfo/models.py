@@ -51,7 +51,7 @@ class AccountinfoValue(models.Model):
     - value
     """ 
     accountinfo_config = models.ForeignKey(
-        AccountinfoConfig, related_name="accountinfo_config", on_delete=models.CASCADE)
+        AccountinfoConfig, related_name="accountinfo_values", on_delete=models.CASCADE)
     value = models.CharField(max_length=100)
 
 
