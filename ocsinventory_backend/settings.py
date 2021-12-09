@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'ipdiscover.netdevice.apps.NetdeviceConfig',
     'ipdiscover.network.apps.NetworkConfig',
     'ipdiscover.netgroup.apps.NetgroupConfig',
+    'accountinfo.apps.AccountinfoConfig',
     'asset.base.apps.BaseConfig',
 ]
 
