@@ -37,8 +37,6 @@ class AccountinfoDataSerializer(serializers.ModelSerializer):
             model=model
         )
 
-        object_id = validated_data.get('object_id')
-
         validated_data["content_type"] = ct
 
         return super().create(validated_data)
