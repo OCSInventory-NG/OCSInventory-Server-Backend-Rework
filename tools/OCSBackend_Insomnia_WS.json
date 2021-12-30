@@ -1175,6 +1175,42 @@
             "_type": "request"
         },
         {
+            "_id": "req_d358a1193f7845c99c9783560665988d",
+            "parentId": "fld_e25865cc294a40d190407848f6432217",
+            "modified": 1640857874311,
+            "created": 1640857865319,
+            "url": "{{ _.base_url }}/accountinfo/value/",
+            "name": "CREATE multiple value",
+            "description": "",
+            "method": "POST",
+            "body": {
+                "mimeType": "application/json",
+                "text": "[\n\t{\n\t\t\"accountinfo_config\":5,\n\t\t\"value\":\"Ma valeur1\"\n\t},\n\t{\n\t\t\"accountinfo_config\":5,\n\t\t\"value\":\"Ma valeur 2\"\n\t}\n]"
+            },
+            "parameters": [],
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "value": "application/json",
+                    "id": "pair_709127865f674d22bc1a9bea2b9abd29"
+                }
+            ],
+            "authentication": {
+                "type": "bearer",
+                "token": "{% response 'body', 'req_c3d582641ff24854a8dbc3061f4e73c2', 'b64::JC50b2tlbg==::46b', 'always', 60 %}",
+                "prefix": "Token"
+            },
+            "metaSortKey": -1638869763138.5,
+            "isPrivate": false,
+            "settingStoreCookies": true,
+            "settingSendCookies": true,
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingFollowRedirects": "global",
+            "_type": "request"
+        },
+        {
             "_id": "req_59b2bab8266247a3801f63ef2ceb1dc7",
             "parentId": "fld_e25865cc294a40d190407848f6432217",
             "modified": 1638871739373,
