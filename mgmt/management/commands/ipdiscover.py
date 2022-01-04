@@ -148,20 +148,22 @@ class Command(BaseCommand):
             Args:
                 file ([str]): path to CSV file
             """
-            fields = []
+            static_fields = ['network', 'nettag', 'name', 'description']
+            imported_fields = []
             with open(file, newline='', encoding='utf-8') as f:
                 reader = csv.reader(f)
                 for row in reader:
-                    #get fields name
+                    #get fields from file
                     if 'network' in row:
                         for field in row:
-                            fields += [field]
+                            imported_fields += [field]
                             options[field] = []
                     else :
-                        for elem, field in zip(row, fields):
+                        for elem, field in zip(row, imported_fields):
                                 options[field] += [elem]
-            print('Data imported from CSV')
-            
+
+            if not set(static_fields) == set(imported_fields):
+                exit('Please check that all required fields are present in the csv file (network,nettag,name,description)')
 
         def ipd_list():
             """Get all networks discovered
@@ -193,7 +195,6 @@ class Command(BaseCommand):
                 output = 'IpDiscover scan ran successfully'
             except CommandError as e:
                 output = "IpDiscover failed : " + str(e.__cause__)
-
         elif options['list']:
             output = ipd_list()
 
