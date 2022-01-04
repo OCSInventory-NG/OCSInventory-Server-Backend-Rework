@@ -102,14 +102,14 @@ class Command(BaseCommand):
 
             results = []
             
-            for net, tag, name, desc in zip(subnet, nettag, name, desc):          
+            for net, tag, name, desc in zip(subnet, nettag, name, desc):
                 ip = re.sub('/24', '', net)
                 netmask = str(IPv4Network(net).netmask)
                 # nettag is required, set a default value if not provided by the user
-                if tag != 'default':
-                    subnettag = ip + ":" + tag
-                else:
+                if tag == 'default' or tag == '':
                     subnettag = ip
+                else:
+                    subnettag = ip + ":" + tag
                 data = {"nettag": subnettag, "name": name, "description": desc, "netid": ip, "mask": netmask, 
                         "netdevices": []}
 
