@@ -85,10 +85,19 @@ class Command(BaseCommand):
                 network = NetworkSerializer()
                 for sub in subnets:
                     try:
-                        NetworkSerializer.create(network, sub)
-                    except Exception as e:
-                        print('Failed to insert subnet ' + sub['netid'] + ' into database, see error : ' + str(e.__cause__))
-                return 
+                        update = Network.objects.get(nettag=sub['nettag'])
+                        print('Network already exists : updating ' + str(sub['nettag']))
+                    except Network.DoesNotExist:
+                        print('Network does not exists : creating ' + str(sub['nettag']))
+                        update = None
+                    if update:
+                        NetworkSerializer.update(network, update, sub)
+                    else :
+                        try:
+                            NetworkSerializer.create(network, sub)
+                        except Exception as e:
+                            print('Failed to insert subnet ' + sub['netid'] + ' into database, see error : ' + str(e.__cause__))
+
 
             # assign default value to name, desc and nettag if unique scan is missing any
             if len(subnet) == 1:
@@ -105,7 +114,7 @@ class Command(BaseCommand):
             for net, tag, name, desc in zip(subnet, nettag, name, desc):
                 ip = re.sub('/24', '', net)
                 netmask = str(IPv4Network(net).netmask)
-                # nettag is required, set a default value if not provided by the user
+                # nettag is reconciliation field = needs at least a default value
                 if tag == 'default' or tag == '':
                     subnettag = ip
                 else:
@@ -166,9 +175,7 @@ class Command(BaseCommand):
                 exit('Please check that all required fields are present in the csv file (network,nettag,name,description)')
 
         def ipd_list():
-            """Get all networks discovered
-
-            TODO : return linked netdevices ?
+            """Get list of discovered networks
 
             Returns:
                 [dict]: already scanned network infos
