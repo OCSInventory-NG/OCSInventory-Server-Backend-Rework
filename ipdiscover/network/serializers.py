@@ -1,3 +1,5 @@
+from django.forms.models import model_to_dict
+from ipdiscover.netdevice.models import Netdevice
 from ipdiscover.network.models import Network
 from ipdiscover.netgroup.serializers import NetgroupSerializer
 from ipdiscover.netdevice.serializers import NetdeviceSerializer
@@ -51,3 +53,39 @@ class NetworkSerializer(serializers.ModelSerializer):
             parent = super().create(validated_data)
 
         return parent
+
+    def update(self, instance, validated_data):
+        """Override update to allow nested updates"""
+        netdevices = validated_data.pop('netdevices')
+
+        instance.nettag = validated_data.get('nettag', instance.nettag)
+        instance.name = validated_data.get('name', instance.name)
+        instance.description = validated_data.get('description', instance.description)
+        instance.netid = validated_data.get('netid', instance.netid)
+        instance.mask = validated_data.get('mask', instance.mask)
+        instance.save()
+
+        # get all existing netdevices in database for this network
+        set_netdevice = list(Netdevice.objects.filter(network=instance).values('ip'))
+        set_netdevice = [device['ip'] for device in set_netdevice]
+
+        for device in netdevices:
+            try:
+                netdevice = Netdevice.objects.get(ip=device['ip'], network=instance)
+                netdevice.ip = device.get('ip', netdevice.ip)
+                netdevice.netname = device.get('netname', netdevice.netname)
+                netdevice.mac = device.get('mac', netdevice.mac)
+                netdevice.save()
+            except Netdevice.DoesNotExist:
+                device['network'] = instance
+                netdevice = Netdevice.objects.create(**device)
+            
+            # compare db list of netdevices w/ scan returned netdevices
+            if device['ip'] in set_netdevice:
+                # each updated/created netdevice is removed from db list
+                set_netdevice.remove(device['ip'])
+            
+        # delete netdevices not present in latest scan
+        set_netdevice = Netdevice.objects.filter(network=instance, ip__in=set_netdevice).delete()
+
+        return instance
