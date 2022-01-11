@@ -87,16 +87,10 @@ class Command(BaseCommand):
                     try:
                         update = Network.objects.get(nettag=sub['nettag'])
                         print('Network already exists : updating ' + str(sub['nettag']))
+                        NetworkSerializer.update(network, update, sub)
                     except Network.DoesNotExist:
                         print('Network does not exists : creating ' + str(sub['nettag']))
-                        update = None
-                    if update:
-                        NetworkSerializer.update(network, update, sub)
-                    else :
-                        try:
-                            NetworkSerializer.create(network, sub)
-                        except Exception as e:
-                            print('Failed to insert subnet ' + sub['netid'] + ' into database, see error : ' + str(e.__cause__))
+                        NetworkSerializer.create(network, sub)
 
 
             # assign default value to name, desc and nettag if unique scan is missing any
