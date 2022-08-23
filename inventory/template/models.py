@@ -20,9 +20,5 @@ class Template(models.Model):
     )
 
     name = models.CharField(max_length=50)
-    os = models.CharField(
-        max_length=3,
-        choices=OS_CHOICES,
-        default="WIN"
-    )
+    os = models.CharField(max_length=3, choices=OS_CHOICES, default="WIN")
     last_update = models.DateTimeField(auto_now=True)

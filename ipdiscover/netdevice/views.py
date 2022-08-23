@@ -1,6 +1,6 @@
-from permission.permissions import DefaultModelPermissions
 from ipdiscover.netdevice.models import Netdevice
 from ipdiscover.netdevice.serializers import NetdeviceSerializer
+from permission.permissions import DefaultModelPermissions
 from rest_framework import viewsets
 
 

@@ -1,7 +1,7 @@
 from group.views import GroupViewSet
 
 
-class GroupRouter():
+class GroupRouter:
     """
     Router class is intended to define the route related to an app
     defineRoutes method need to be defined and called in main urls.py
@@ -18,5 +18,5 @@ class GroupRouter():
         Returns:
             [DefaultRouter]: Updated router with app's dedicated routes
         """
-        defaultRouter.register(r'groups', GroupViewSet)
+        defaultRouter.register(r"groups", GroupViewSet)
         return defaultRouter

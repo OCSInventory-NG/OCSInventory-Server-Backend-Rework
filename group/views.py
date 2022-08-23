@@ -1,7 +1,7 @@
 from django.contrib.auth.models import Group
-from permission.permissions import DefaultModelPermissions
 from group.serializers import GroupSerializer
 from ocsinventory_backend.ocs_framework import viewsets
+from permission.permissions import DefaultModelPermissions
 
 
 class GroupViewSet(viewsets.OCSViewSet):

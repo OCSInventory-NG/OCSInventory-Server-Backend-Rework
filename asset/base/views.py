@@ -1,7 +1,7 @@
-from permission.permissions import DefaultModelPermissions
 from asset.base.models import Base
 from asset.base.serializers import BaseSerializer
 from ocsinventory_backend.ocs_framework import viewsets
+from permission.permissions import DefaultModelPermissions
 
 
 class BaseViewSet(viewsets.OCSViewSet):

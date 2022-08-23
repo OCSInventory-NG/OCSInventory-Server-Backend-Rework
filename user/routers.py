@@ -1,7 +1,7 @@
 from user.views import MyAccountViewSet, UserViewSet
 
 
-class UserRouter():
+class UserRouter:
     """
     Router class is intended to define the route related to an app
     defineRoutes method need to be defined and called in main urls.py
@@ -18,7 +18,6 @@ class UserRouter():
         Returns:
             [DefaultRouter]: Updated router with app's dedicated routes
         """
-        defaultRouter.register(r'users', UserViewSet)
-        defaultRouter.register(
-            r'myaccount', MyAccountViewSet, basename="MyAccount")
+        defaultRouter.register(r"users", UserViewSet)
+        defaultRouter.register(r"myaccount", MyAccountViewSet, basename="MyAccount")
         return defaultRouter

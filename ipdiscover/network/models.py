@@ -18,12 +18,12 @@ class Network(models.Model):
     - Group
     """
 
-    nettag = models.CharField(
-        max_length=128, unique=True, default='DefaultNettag')
+    nettag = models.CharField(max_length=128, unique=True, default="DefaultNettag")
     name = models.CharField(max_length=128)
     description = models.TextField(max_length=1024)
     location = models.CharField(max_length=128, null=True)
     netid = models.GenericIPAddressField()
     mask = models.GenericIPAddressField()
     group = models.ForeignKey(
-        Netgroup, related_name="networks", on_delete=models.CASCADE, null=True)
+        Netgroup, related_name="networks", on_delete=models.CASCADE, null=True
+    )

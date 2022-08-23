@@ -1,9 +1,11 @@
-from accountinfo.views import AccountinfoConfigViewSet,\
-    AccountinfoDataViewSet, \
-    AccountinfoValueViewSet
+from accountinfo.views import (
+    AccountinfoConfigViewSet,
+    AccountinfoDataViewSet,
+    AccountinfoValueViewSet,
+)
 
 
-class AccountinfoRouter():
+class AccountinfoRouter:
     """
     Router class is intended to define the route related to an app
     defineRoutes method need to be defined and called in main urls.py
@@ -20,7 +22,7 @@ class AccountinfoRouter():
         Returns:
             [DefaultRouter]: Updated router with app's dedicated routes
         """
-        defaultRouter.register(r'accountinfo/value', AccountinfoValueViewSet)
-        defaultRouter.register(r'accountinfo/config', AccountinfoConfigViewSet)
-        defaultRouter.register(r'accountinfo/data', AccountinfoDataViewSet)
+        defaultRouter.register(r"accountinfo/value", AccountinfoValueViewSet)
+        defaultRouter.register(r"accountinfo/config", AccountinfoConfigViewSet)
+        defaultRouter.register(r"accountinfo/data", AccountinfoDataViewSet)
         return defaultRouter

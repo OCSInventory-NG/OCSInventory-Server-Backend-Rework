@@ -1,7 +1,7 @@
-from permission.permissions import DefaultModelPermissions
 from inventory.field.models import Field
 from inventory.field.serializers import FieldSerializer
 from ocsinventory_backend.ocs_framework import viewsets
+from permission.permissions import DefaultModelPermissions
 
 
 class FieldViewSet(viewsets.OCSViewSet):

@@ -14,4 +14,4 @@ class PermissionSerializer(serializers.ModelSerializer):
         """Define the linked model and the fields registered in the API"""
 
         model = Permission
-        fields = ['id', 'name', 'content_type', 'codename']
+        fields = ["id", "name", "content_type", "codename"]

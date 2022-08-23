@@ -1,7 +1,7 @@
 from inventory.field.views import FieldViewSet
 
 
-class FieldRouter():
+class FieldRouter:
     """
     Router class is intended to define the route related to an app
     defineRoutes method need to be defined and called in main urls.py
@@ -18,5 +18,5 @@ class FieldRouter():
         Returns:
             [DefaultRouter]: Updated router with app's dedicated routes
         """
-        defaultRouter.register(r'fields', FieldViewSet)
+        defaultRouter.register(r"fields", FieldViewSet)
         return defaultRouter

@@ -9,5 +9,5 @@ class BaseConfig(AppConfig):
         AppConfig ([AppConfig])
     """
 
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'asset.base'
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "asset.base"

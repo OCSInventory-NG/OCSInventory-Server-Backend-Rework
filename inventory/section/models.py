@@ -25,25 +25,17 @@ class Section(models.Model):
     RETRIVAL_OUTPUT = (
         ("PTXT", "Plain text"),
         ("JSON", "JSON format"),
-        ("TBLE", "Table format")
+        ("TBLE", "Table format"),
     )
 
     name = models.CharField(max_length=50)
     retrival_method = models.CharField(
-        max_length=4,
-        choices=RETRIVAL_CHOICES,
-        default="FILE"
+        max_length=4, choices=RETRIVAL_CHOICES, default="FILE"
     )
     retrival_output = models.CharField(
-        max_length=4,
-        choices=RETRIVAL_OUTPUT,
-        default="JSON"
+        max_length=4, choices=RETRIVAL_OUTPUT, default="JSON"
     )
-    target = models.CharField(
-        max_length=255
-    )
+    target = models.CharField(max_length=255)
     template = models.ForeignKey(
-        Template, related_name="sections",
-        on_delete=models.CASCADE,
-        null=True
+        Template, related_name="sections", on_delete=models.CASCADE, null=True
     )

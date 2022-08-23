@@ -9,4 +9,4 @@ class UserConfig(AppConfig):
         AppConfig ([AppConfig])
     """
 
-    name = 'user'
+    name = "user"

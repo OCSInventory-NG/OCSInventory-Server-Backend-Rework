@@ -9,4 +9,4 @@ class PermissionConfig(AppConfig):
         AppConfig ([AppConfig])
     """
 
-    name = 'permission'
+    name = "permission"

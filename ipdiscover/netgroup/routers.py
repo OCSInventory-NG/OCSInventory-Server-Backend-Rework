@@ -1,7 +1,7 @@
 from ipdiscover.netgroup.views import NetgroupViewSet
 
 
-class NetgroupRouter():
+class NetgroupRouter:
     """
     Router class is intended to define the route related to an app
     defineRoutes method need to be defined and called in main urls.py
@@ -18,5 +18,5 @@ class NetgroupRouter():
         Returns:
             [DefaultRouter]: Updated router with app's dedicated routes
         """
-        defaultRouter.register(r'netgroups', NetgroupViewSet)
+        defaultRouter.register(r"netgroups", NetgroupViewSet)
         return defaultRouter

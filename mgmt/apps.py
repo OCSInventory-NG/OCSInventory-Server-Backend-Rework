@@ -8,4 +8,4 @@ class MgmtConfig(AppConfig):
         AppConfig ([type]): [description]
     """
 
-    name = 'mgmt'
+    name = "mgmt"

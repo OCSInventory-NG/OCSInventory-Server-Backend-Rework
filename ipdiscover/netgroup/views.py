@@ -1,6 +1,6 @@
-from permission.permissions import DefaultModelPermissions
 from ipdiscover.netgroup.models import Netgroup
 from ipdiscover.netgroup.serializers import NetgroupSerializer
+from permission.permissions import DefaultModelPermissions
 from rest_framework import viewsets
 
 
