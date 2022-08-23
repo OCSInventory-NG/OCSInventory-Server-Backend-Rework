@@ -10,3 +10,4 @@ DISABLE:
   - SPELL # Comment to disable checks of spelling mistakes # - SPELL # Uncomment to disable checks of spelling mistakes
 SHOW_ELAPSED_TIME: true
 FILEIO_REPORTER: false
+PYTHON_MYPY_FILTER_REGEX_EXCLUDE: "migrations/"
