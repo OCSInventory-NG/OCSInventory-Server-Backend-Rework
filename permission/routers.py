@@ -1,7 +1,7 @@
 from permission.views import PermissionViewSet
 
 
-class PermissionRouter():
+class PermissionRouter:
     """
     Router class is intended to define the route related to an app
     defineRoutes method need to be defined and called in main urls.py
@@ -18,5 +18,5 @@ class PermissionRouter():
         Returns:
             [DefaultRouter]: Updated router with app's dedicated routes
         """
-        defaultRouter.register(r'permissions', PermissionViewSet)
+        defaultRouter.register(r"permissions", PermissionViewSet)
         return defaultRouter

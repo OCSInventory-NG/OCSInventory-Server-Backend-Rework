@@ -1,6 +1,5 @@
-from inventory.section.models import Section
 from inventory.field.serializers import FieldSerializer
-from inventory.field.models import Field
+from inventory.section.models import Section
 from rest_framework import serializers
 
 
@@ -19,25 +18,25 @@ class SectionSerializer(serializers.ModelSerializer):
 
         model = Section
         fields = [
-            'id',
-            'name',
-            'retrival_method',
-            'retrival_output',
-            'target',
-            'template',
-            'fields'
+            "id",
+            "name",
+            "retrival_method",
+            "retrival_output",
+            "target",
+            "template",
+            "fields",
         ]
 
     def create(self, validated_data):
         """Override create to allow nested creation of fields"""
-        if 'fields' in validated_data.keys():
+        if "fields" in validated_data.keys():
             # If fields are present
-            fields = validated_data.pop('fields')
+            fields = validated_data.pop("fields")
             parent = super().create(validated_data)
 
             for field in fields:
-                field['section'] = parent
-            self.fields['fields'].create(fields)
+                field["section"] = parent
+            self.fields["fields"].create(fields)
         else:
             parent = super().create(validated_data)
 

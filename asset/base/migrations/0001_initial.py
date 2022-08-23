@@ -7,24 +7,31 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Base',
+            name="Base",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=50)),
-                ('description', models.CharField(max_length=255)),
-                ('serial', models.CharField(max_length=255)),
-                ('osname', models.CharField(max_length=255)),
-                ('osversion', models.CharField(max_length=255)),
-                ('uuid', models.CharField(max_length=255)),
-                ('srcip', models.CharField(max_length=255)),
-                ('srcmac', models.CharField(max_length=255)),
-                ('domain', models.CharField(max_length=255)),
-                ('last_update', models.DateTimeField(auto_now=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=50)),
+                ("description", models.CharField(max_length=255)),
+                ("serial", models.CharField(max_length=255)),
+                ("osname", models.CharField(max_length=255)),
+                ("osversion", models.CharField(max_length=255)),
+                ("uuid", models.CharField(max_length=255)),
+                ("srcip", models.CharField(max_length=255)),
+                ("srcmac", models.CharField(max_length=255)),
+                ("domain", models.CharField(max_length=255)),
+                ("last_update", models.DateTimeField(auto_now=True)),
             ],
         ),
     ]

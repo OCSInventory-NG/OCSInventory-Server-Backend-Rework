@@ -1,7 +1,7 @@
 from ipdiscover.network.views import NetworkViewSet
 
 
-class NetworkRouter():
+class NetworkRouter:
     """
     Router class is intended to define the route related to an app
     defineRoutes method need to be defined and called in main urls.py
@@ -18,5 +18,5 @@ class NetworkRouter():
         Returns:
             [DefaultRouter]: Updated router with app's dedicated routes
         """
-        defaultRouter.register(r'networks', NetworkViewSet)
+        defaultRouter.register(r"networks", NetworkViewSet)
         return defaultRouter

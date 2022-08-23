@@ -9,5 +9,5 @@ class NetdeviceConfig(AppConfig):
         AppConfig ([AppConfig])
     """
 
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'ipdiscover.netdevice'
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "ipdiscover.netdevice"

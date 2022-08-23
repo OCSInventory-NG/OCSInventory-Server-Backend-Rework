@@ -1,7 +1,7 @@
-from permission.permissions import DefaultModelPermissions
 from inventory.section.models import Section
 from inventory.section.serializers import SectionSerializer
 from ocsinventory_backend.ocs_framework import viewsets
+from permission.permissions import DefaultModelPermissions
 
 
 class SectionViewSet(viewsets.OCSViewSet):

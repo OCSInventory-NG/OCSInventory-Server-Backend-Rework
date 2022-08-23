@@ -9,5 +9,5 @@ class NetgroupConfig(AppConfig):
         AppConfig ([AppConfig])
     """
 
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'ipdiscover.netgroup'
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "ipdiscover.netgroup"

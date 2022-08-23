@@ -7,16 +7,17 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Config',
+            name="Config",
             fields=[
-                ('name', models.CharField(max_length=100,
-                 primary_key=True, serialize=False)),
-                ('vaue', models.JSONField()),
+                (
+                    "name",
+                    models.CharField(max_length=100, primary_key=True, serialize=False),
+                ),
+                ("vaue", models.JSONField()),
             ],
         ),
     ]

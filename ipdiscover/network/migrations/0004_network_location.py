@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('network', '0003_alter_network_group'),
+        ("network", "0003_alter_network_group"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='network',
-            name='location',
+            model_name="network",
+            name="location",
             field=models.CharField(max_length=128, null=True),
         ),
     ]

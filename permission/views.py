@@ -1,7 +1,7 @@
 from django.contrib.auth.models import Permission
+from permission.serializers import PermissionSerializer
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-from permission.serializers import PermissionSerializer
 
 
 class PermissionViewSet(viewsets.ModelViewSet):
@@ -17,4 +17,4 @@ class PermissionViewSet(viewsets.ModelViewSet):
 
     queryset = Permission.objects.all()
     serializer_class = PermissionSerializer
-    http_method_names = ['get']
+    http_method_names = ["get"]

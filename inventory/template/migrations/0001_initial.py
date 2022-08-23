@@ -7,17 +7,31 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Template',
+            name="Template",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=50)),
-                ('os', models.CharField(choices=[('WIN', 'Windows'), ('LIN', 'Linux'), ('MAC', 'Mac')], default='WIN', max_length=3)),
-                ('last_update', models.DateTimeField(auto_now=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=50)),
+                (
+                    "os",
+                    models.CharField(
+                        choices=[("WIN", "Windows"), ("LIN", "Linux"), ("MAC", "Mac")],
+                        default="WIN",
+                        max_length=3,
+                    ),
+                ),
+                ("last_update", models.DateTimeField(auto_now=True)),
             ],
         ),
     ]

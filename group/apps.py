@@ -9,4 +9,4 @@ class GroupConfig(AppConfig):
         AppConfig ([AppConfig])
     """
 
-    name = 'group'
+    name = "group"

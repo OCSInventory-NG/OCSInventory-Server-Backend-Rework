@@ -14,8 +14,4 @@ class NetgroupSerializer(serializers.ModelSerializer):
         """Define the linked model and the fields registered in the API"""
 
         model = Netgroup
-        fields = [
-            'id',
-            'name',
-            'description'
-        ]
+        fields = ["id", "name", "description"]
