@@ -16,7 +16,7 @@ jobs:
         if: always()
         with:
           type: ${{ job.status }}
-          job_name: ${{ format('New pull request {0} => {1}', github.event.pull_request.number, github.event.pull_request.title) }}
+          job_name: ${{ format('*New pull request {0}* => {1}', github.event.pull_request.number, github.event.pull_request.title) }}
           mention: 'here'
           mention_if: 'failure'
           channel: ${{ secrets.ROCKET_CHAT_PR_CHAN }}
