@@ -1,5 +1,5 @@
 ---
-name: Rocket Chat Message
+name: New pull request
 
 on:
   pull_request:
@@ -16,7 +16,7 @@ jobs:
         if: always()
         with:
           type: ${{ job.status }}
-          job_name: '*Pull Request Message*'
+          job_name: '*New PR to review*'
           mention: 'here'
           mention_if: 'failure'
           channel: ${{ secrets.ROCKET_CHAT_CHAN }}
