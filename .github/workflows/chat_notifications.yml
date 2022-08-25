@@ -20,5 +20,5 @@ jobs:
           mention: 'here'
           mention_if: 'failure'
           channel: ${{ secrets.ROCKET_CHAT_CHAN }}
-          url: ${{ secrets.ROCKETCHAT_WEBHOOK }}
+          url: ${{ secrets.ROCKET_CHAT_PR_HOOK }}
 
