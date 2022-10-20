@@ -1,7 +1,6 @@
 from ipdiscover.network.models import Network
 from ipdiscover.network.serializers import NetworkSerializer
 from permission.permissions import DefaultModelPermissions
-from rest_framework import viewsets
 from ocsinventory_backend.ocs_framework import viewsets
 
 
