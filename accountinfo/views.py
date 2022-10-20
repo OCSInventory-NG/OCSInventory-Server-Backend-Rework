@@ -5,10 +5,10 @@ from accountinfo.serializers import (
     AccountinfoValueSerializer,
 )
 from permission.permissions import DefaultModelPermissions
-from rest_framework import viewsets
+from ocsinventory_backend.ocs_framework import viewsets
 
 
-class AccountinfoConfigViewSet(viewsets.ModelViewSet):
+class AccountinfoConfigViewSet(viewsets.OCSViewSet):
     """
     This class will define the view behavior
 
@@ -24,7 +24,7 @@ class AccountinfoConfigViewSet(viewsets.ModelViewSet):
     model = AccountinfoConfig
 
 
-class AccountinfoValueViewSet(viewsets.ModelViewSet):
+class AccountinfoValueViewSet(viewsets.OCSViewSet):
     """
     This class will define the view behavior
 
@@ -40,7 +40,7 @@ class AccountinfoValueViewSet(viewsets.ModelViewSet):
     model = AccountinfoValue
 
 
-class AccountinfoDataViewSet(viewsets.ModelViewSet):
+class AccountinfoDataViewSet(viewsets.OCSViewSet):
     """
     This class will define the view behavior
 
