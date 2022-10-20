@@ -1,10 +1,10 @@
 from ipdiscover.netgroup.models import Netgroup
 from ipdiscover.netgroup.serializers import NetgroupSerializer
 from permission.permissions import DefaultModelPermissions
-from rest_framework import viewsets
+from ocsinventory_backend.ocs_framework import viewsets
 
 
-class NetgroupViewSet(viewsets.ModelViewSet):
+class NetgroupViewSet(viewsets.OCSViewSet):
     """
     This class will define the view behavior
 

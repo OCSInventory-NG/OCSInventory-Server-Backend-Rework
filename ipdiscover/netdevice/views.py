@@ -1,10 +1,10 @@
 from ipdiscover.netdevice.models import Netdevice
 from ipdiscover.netdevice.serializers import NetdeviceSerializer
 from permission.permissions import DefaultModelPermissions
-from rest_framework import viewsets
+from ocsinventory_backend.ocs_framework import viewsets
 
 
-class NetdeviceViewSet(viewsets.ModelViewSet):
+class NetdeviceViewSet(viewsets.OCSViewSet):
     """
     This class will define the view behavior
 
