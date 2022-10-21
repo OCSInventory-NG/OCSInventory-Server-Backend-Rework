@@ -1,0 +1,16 @@
+# Configuration file for Mega-Linter
+# See all available variables at https://oxsecurity.github.io/megalinter/configuration/ and in linters documentation
+
+APPLY_FIXES: all # all, none, or list of linter keys
+DEFAULT_BRANCH: dev # Usually master or main
+# ENABLE: # If you use ENABLE variable, all other languages/formats/tooling-formats will be disabled by default
+# ENABLE_LINTERS: # If you use ENABLE_LINTERS variable, all other linters will be disabled by default
+DISABLE_LINTERS: [PYTHON_MYPY, PYTHON_PYLINT, PYTHON_PYRIGHT, REPOSITORY_DEVSKIM]
+DISABLE:
+  - COPYPASTE # Comment to disable checks of abusive copy-pastes
+  - SPELL # Comment to disable checks of spelling mistakes # - SPELL # Uncomment to disable checks of spelling mistakes
+SHOW_ELAPSED_TIME: true
+FILEIO_REPORTER: false
+PYTHON_MYPY_FILTER_REGEX_EXCLUDE: "migrations/"
+PYTHON_FLAKE8_FILTER_REGEX_EXCLUDE: "tests.py|settings.py"
+PYTHON_BANDIT_FILTER_REGEX_EXCLUDE: "settings.py"

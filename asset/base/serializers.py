@@ -1,7 +1,6 @@
 from asset.base.models import Base
-from rest_framework import serializers
-from rest_framework.exceptions import APIException
 from inventory.template.models import Template
+from rest_framework import serializers
 
 
 class BaseSerializer(serializers.ModelSerializer):
@@ -22,23 +21,21 @@ class BaseSerializer(serializers.ModelSerializer):
 
         model = Base
         fields = [
-            'id',
-            'name',
-            'description',
-            'serial',
-            'osname',
-            'osversion',
-            'uuid',
-            'srcip',
-            'srcmac',
-            'domain',
-            'template',
-            'last_update'
+            "id",
+            "name",
+            "description",
+            "serial",
+            "osname",
+            "osversion",
+            "uuid",
+            "srcip",
+            "srcmac",
+            "domain",
+            "template",
+            "last_update",
         ]
-        extra_kwargs = {
-            'last_update': {'read_only': True}
-        }
-        http_method_names = ['get', 'post', 'patch', 'delete']
+        extra_kwargs = {"last_update": {"read_only": True}}
+        http_method_names = ["get", "post", "patch", "delete"]
 
     def create(self, validated_data):
         """
@@ -52,7 +49,7 @@ class BaseSerializer(serializers.ModelSerializer):
         """
         assetBase = super().create(validated_data)
 
-        osname = validated_data['osname'].lower()
+        osname = validated_data["osname"].lower()
 
         # Determine OS for template management
         try:

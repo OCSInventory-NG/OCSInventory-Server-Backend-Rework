@@ -1,7 +1,7 @@
 from inventory.template.views import TemplateViewSet
 
 
-class TemplateRouter():
+class TemplateRouter:
     """
     Router class is intended to define the route related to an app
     defineRoutes method need to be defined and called in main urls.py
@@ -18,5 +18,5 @@ class TemplateRouter():
         Returns:
             [DefaultRouter]: Updated router with app's dedicated routes
         """
-        defaultRouter.register(r'templates', TemplateViewSet)
+        defaultRouter.register(r"templates", TemplateViewSet)
         return defaultRouter

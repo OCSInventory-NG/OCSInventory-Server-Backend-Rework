@@ -14,11 +14,5 @@ class NetdeviceSerializer(serializers.ModelSerializer):
         """Define the linked model and the fields registered in the API"""
 
         model = Netdevice
-        fields = [
-            'id',
-            'ip',
-            'netname',
-            'mac',
-            'network'
-        ]
+        fields = ["id", "ip", "netname", "mac", "network"]
         extra_kwargs = {"network": {"required": False}}

@@ -1,7 +1,7 @@
 from ipdiscover.netdevice.views import NetdeviceViewSet
 
 
-class NetdeviceRouter():
+class NetdeviceRouter:
     """
     Router class is intended to define the route related to an app
     defineRoutes method need to be defined and called in main urls.py
@@ -18,5 +18,5 @@ class NetdeviceRouter():
         Returns:
             [DefaultRouter]: Updated router with app's dedicated routes
         """
-        defaultRouter.register(r'netdevices', NetdeviceViewSet)
+        defaultRouter.register(r"netdevices", NetdeviceViewSet)
         return defaultRouter

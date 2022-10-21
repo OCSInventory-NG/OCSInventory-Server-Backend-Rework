@@ -1,9 +1,8 @@
 from django.core.exceptions import FieldError, ObjectDoesNotExist
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import views, viewsets
-from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, viewsets
 from rest_framework.exceptions import APIException
+from rest_framework.response import Response
 
 
 class OCSViewSet(viewsets.ModelViewSet):
@@ -18,7 +17,7 @@ class OCSViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
 
     # Filter on all by default
-    filterset_fields = '__all__'
+    filterset_fields = "__all__"
 
     # This is the default reconciliation id for objets, can overrided
     reconciliation_field = "id"
@@ -37,14 +36,17 @@ class OCSViewSet(viewsets.ModelViewSet):
         # will fail the whole transaction
         try:
             serializer = self.get_serializer(
-                data=request.data, many=isinstance(request.data, list))
+                data=request.data, many=isinstance(request.data, list)
+            )
             serializer.is_valid(raise_exception=True)
             self.perform_create(serializer)
         except (APIException, FieldError, ObjectDoesNotExist):
             # serializer.errors may return more details
-            return Response({'failed': request.data}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"failed": request.data}, status=status.HTTP_400_BAD_REQUEST
+            )
 
-        return Response({'success': '200'}, status=status.HTTP_200_OK)
+        return Response({"success": "200"}, status=status.HTTP_200_OK)
 
     def get_reconciliation_filter(self, elem):
         """
@@ -84,7 +86,7 @@ class OCSViewSet(viewsets.ModelViewSet):
         Returns:
             [type]: [description]
         """
-        kwargs['partial'] = True
+        kwargs["partial"] = True
         return self.put(request, *args, **kwargs)
 
     def put(self, request, *args, **kwargs):
@@ -104,7 +106,7 @@ class OCSViewSet(viewsets.ModelViewSet):
                 - partial success : some updates have failed, see attached objects
                 - failed : total failure, see attached failing objects
         """
-        partial = kwargs.pop('partial', False)
+        partial = kwargs.pop("partial", False)
         success = []
         failed = []
         if isinstance(request.data, list):
@@ -116,14 +118,16 @@ class OCSViewSet(viewsets.ModelViewSet):
                     failed += [elem]
 
             if not failed:
-                return Response({'success': '200'}, status=status.HTTP_200_OK)
+                return Response({"success": "200"}, status=status.HTTP_200_OK)
             if failed and success:
-                return Response({'partial success': failed}, status=status.HTTP_200_OK)
+                return Response({"partial success": failed}, status=status.HTTP_200_OK)
 
-            return Response({'failed': failed}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"failed": failed}, status=status.HTTP_400_BAD_REQUEST)
         try:
             self.update_instance(request.data, partial)
         except (APIException, FieldError):
-            return Response({'failed': request.data}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"failed": request.data}, status=status.HTTP_400_BAD_REQUEST
+            )
 
-        return Response({'success': '200'}, status=status.HTTP_200_OK)
+        return Response({"success": "200"}, status=status.HTTP_200_OK)

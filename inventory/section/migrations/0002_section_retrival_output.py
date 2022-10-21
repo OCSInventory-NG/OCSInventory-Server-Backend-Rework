@@ -6,13 +6,21 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('section', '0001_initial'),
+        ("section", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='section',
-            name='retrival_output',
-            field=models.CharField(choices=[('PTXT', 'Plain text'), ('JSON', 'JSON format'), ('TBLE', 'Table format')], default='JSON', max_length=4),
+            model_name="section",
+            name="retrival_output",
+            field=models.CharField(
+                choices=[
+                    ("PTXT", "Plain text"),
+                    ("JSON", "JSON format"),
+                    ("TBLE", "Table format"),
+                ],
+                default="JSON",
+                max_length=4,
+            ),
         ),
     ]

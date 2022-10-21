@@ -21,7 +21,5 @@ class Field(models.Model):
     name = models.CharField(max_length=50)
     retrival_value = models.CharField(max_length=255)
     section = models.ForeignKey(
-        Section, related_name="fields",
-        on_delete=models.CASCADE,
-        null=True
+        Section, related_name="fields", on_delete=models.CASCADE, null=True
     )

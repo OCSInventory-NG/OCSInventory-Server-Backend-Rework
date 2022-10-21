@@ -6,13 +6,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('network', '0004_network_location'),
+        ("network", "0004_network_location"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='network',
-            name='nettag',
-            field=models.CharField(default='DefaultNettag', max_length=128, unique=True),
+            model_name="network",
+            name="nettag",
+            field=models.CharField(
+                default="DefaultNettag", max_length=128, unique=True
+            ),
         ),
     ]

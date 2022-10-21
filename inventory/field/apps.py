@@ -9,5 +9,5 @@ class FieldConfig(AppConfig):
         AppConfig ([AppConfig])
     """
 
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'inventory.field'
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "inventory.field"

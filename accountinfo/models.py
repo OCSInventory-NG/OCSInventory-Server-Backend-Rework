@@ -1,6 +1,6 @@
-from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.db import models
 
 # Create your models here.
 
@@ -20,28 +20,22 @@ class AccountinfoConfig(models.Model):
         ("TEXT", "Text"),
         ("TEXTAREA", "Textarea"),
         ("SELECT", "Select"),
-        ("CHECKBOX", "Checkbox")
+        ("CHECKBOX", "Checkbox"),
     )
 
     ACC_TARGET_CHOICES = (
         ("ASSET", "Assets"),
         ("SNMP", "SNMP"),
-        ("IPDISCOVER", "IPDiscover")
+        ("IPDISCOVER", "IPDiscover"),
     )
 
     name = models.CharField(max_length=100, unique=True)
     description = models.CharField(max_length=512)
 
-    datatype = models.CharField(
-        max_length=10,
-        choices=ACC_TYPE_CHOICES,
-        default="TEXT"
-    )
+    datatype = models.CharField(max_length=10, choices=ACC_TYPE_CHOICES, default="TEXT")
 
     datatarget = models.CharField(
-        max_length=10,
-        choices=ACC_TARGET_CHOICES,
-        default="ASSET"
+        max_length=10, choices=ACC_TARGET_CHOICES, default="ASSET"
     )
 
 
@@ -55,7 +49,8 @@ class AccountinfoValue(models.Model):
     """
 
     accountinfo_config = models.ForeignKey(
-        AccountinfoConfig, related_name="accountinfo_values", on_delete=models.CASCADE)
+        AccountinfoConfig, related_name="accountinfo_values", on_delete=models.CASCADE
+    )
     value = models.CharField(max_length=100)
 
 
@@ -72,4 +67,4 @@ class AccountinfoData(models.Model):
     object_slug = models.CharField(null=True, max_length=100)
     content_type = models.ForeignKey(ContentType, on_delete=models.PROTECT)
     object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey('content_type', 'object_id')
+    content_object = GenericForeignKey("content_type", "object_id")

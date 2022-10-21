@@ -1,8 +1,5 @@
-from django.forms.models import model_to_dict
-from ipdiscover.netdevice.models import Netdevice
-from ipdiscover.network.models import Network
-from ipdiscover.netgroup.serializers import NetgroupSerializer
 from ipdiscover.netdevice.serializers import NetdeviceSerializer
+from ipdiscover.network.models import Network
 from rest_framework import serializers
 
 
@@ -21,34 +18,34 @@ class NetworkSerializer(serializers.ModelSerializer):
 
         model = Network
         fields = [
-            'id',
-            'nettag',
-            'name',
-            'description',
-            'netid',
-            'mask',
-            'netdevices',
-            'group'
+            "id",
+            "nettag",
+            "name",
+            "description",
+            "netid",
+            "mask",
+            "netdevices",
+            "group",
         ]
         extra_kwargs = {
             "name": {"required": False},
-            "description":  {"required": False},
-            "location": {'required': False}
+            "description": {"required": False},
+            "location": {"required": False},
         }
 
     def create(self, validated_data):
         """Override create to allow nested creation of fields"""
-        if 'nettag' not in validated_data.keys():
-            validated_data['nettag'] = validated_data['netid']
+        if "nettag" not in validated_data.keys():
+            validated_data["nettag"] = validated_data["netid"]
 
-        if 'netdevices' in validated_data.keys():
+        if "netdevices" in validated_data.keys():
             # If netdevices are present
-            netdevices = validated_data.pop('netdevices')
+            netdevices = validated_data.pop("netdevices")
             parent = super().create(validated_data)
 
             for netdevice in netdevices:
-                netdevice['network'] = parent
-            self.fields['netdevices'].create(netdevices)
+                netdevice["network"] = parent
+            self.fields["netdevices"].create(netdevices)
         else:
             parent = super().create(validated_data)
 

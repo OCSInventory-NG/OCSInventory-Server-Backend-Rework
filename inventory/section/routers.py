@@ -1,7 +1,7 @@
 from inventory.section.views import SectionViewSet
 
 
-class SectionRouter():
+class SectionRouter:
     """
     Router class is intended to define the route related to an app
     defineRoutes method need to be defined and called in main urls.py
@@ -18,5 +18,5 @@ class SectionRouter():
         Returns:
             [DefaultRouter]: Updated router with app's dedicated routes
         """
-        defaultRouter.register(r'sections', SectionViewSet)
+        defaultRouter.register(r"sections", SectionViewSet)
         return defaultRouter

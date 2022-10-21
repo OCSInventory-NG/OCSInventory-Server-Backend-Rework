@@ -14,4 +14,4 @@ class ConfigSerializer(serializers.ModelSerializer):
         """Define the linked model and the fields registered in the API"""
 
         model = Config
-        fields = ['name', 'value']
+        fields = ["name", "value"]

@@ -1,7 +1,7 @@
-from permission.permissions import DefaultModelPermissions
 from inventory.template.models import Template
 from inventory.template.serializers import TemplateSerializer
 from ocsinventory_backend.ocs_framework import viewsets
+from permission.permissions import DefaultModelPermissions
 
 
 class TemplateViewSet(viewsets.OCSViewSet):

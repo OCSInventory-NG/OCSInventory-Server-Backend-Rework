@@ -14,27 +14,25 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-# Base import to get API Working
-from django.urls import path, include
-from django.contrib.auth.models import User
-from rest_framework import serializers, viewsets
-from rest_framework.routers import DefaultRouter
-from rest_framework.authtoken.views import obtain_auth_token
+from accountinfo.routers import AccountinfoRouter
+from asset.base.routers import BaseRouter
+from config.routers import ConfigRouter
 
+# Base import to get API Working
+from django.urls import include, path
+from group.routers import GroupRouter
+from inventory.field.routers import FieldRouter
+from inventory.section.routers import SectionRouter
+from inventory.template.routers import TemplateRouter
+from ipdiscover.netdevice.routers import NetdeviceRouter
+from ipdiscover.netgroup.routers import NetgroupRouter
+from ipdiscover.network.routers import NetworkRouter
 
 # Import dedicated routers and provide different endpoint
 from permission.routers import PermissionRouter
+from rest_framework.authtoken.views import obtain_auth_token
+from rest_framework.routers import DefaultRouter
 from user.routers import UserRouter
-from config.routers import ConfigRouter
-from group.routers import GroupRouter
-from inventory.template.routers import TemplateRouter
-from inventory.section.routers import SectionRouter
-from inventory.field.routers import FieldRouter
-from ipdiscover.netgroup.routers import NetgroupRouter
-from ipdiscover.network.routers import NetworkRouter
-from ipdiscover.netdevice.routers import NetdeviceRouter
-from asset.base.routers import BaseRouter
-from accountinfo.routers import AccountinfoRouter
 
 # Routers provide a way of automatically determining the URL conf.
 defaultRouter = DefaultRouter()
@@ -90,10 +88,7 @@ accountinfoRouter = accountinfoRouter.defineRoutes(defaultRouter)
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    path('api-auth/token', obtain_auth_token, name='api_token_auth'),
+    path('', include(defaultRouter.urls)),
+    path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
+    path("api-auth/token", obtain_auth_token, name="api_token_auth"),
 ]
-
-# Add URL Patterns comming from routers
-urlpatterns += userRouter.urls
-urlpatterns += configRouter.urls

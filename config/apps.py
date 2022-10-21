@@ -9,4 +9,4 @@ class ConfigConfig(AppConfig):
         AppConfig ([AppConfig])
     """
 
-    name = 'config'
+    name = "config"
