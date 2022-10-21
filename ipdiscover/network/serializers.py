@@ -58,9 +58,15 @@ class NetworkSerializer(serializers.ModelSerializer):
         """Override update to allow nested updates"""
         netdevices = validated_data.pop('netdevices')
 
+        # if value not specified, current data should not be updated 
+        # w/ default or blank but left as is (name and description especiallly)
         instance.nettag = validated_data.get('nettag', instance.nettag)
-        instance.name = validated_data.get('name', instance.name)
-        instance.description = validated_data.get('description', instance.description)
+        # user did no provide a name, do not update if current name != default value (netid)
+        update_name = validated_data.get('name', instance.name)
+        instance.name = update_name if update_name != instance.netid else instance.name
+        # same goes for description (default = "default description")
+        update_description = validated_data.get('description', instance.description)
+        instance.description = update_description if update_description != "default description" else instance.description
         instance.netid = validated_data.get('netid', instance.netid)
         instance.mask = validated_data.get('mask', instance.mask)
         instance.save()
