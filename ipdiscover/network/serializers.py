@@ -1,5 +1,6 @@
 from ipdiscover.netdevice.serializers import NetdeviceSerializer
 from ipdiscover.network.models import Network
+from ipdiscover.netdevice.models import Netdevice
 from rest_framework import serializers
 
 
