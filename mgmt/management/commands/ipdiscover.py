@@ -128,7 +128,7 @@ class Command(BaseCommand):
                 data = {"nettag": subnettag, "name": name, "description": desc,
                         "netid": ip, "mask": netmask, "netdevices": []}
 
-                if scantype[0] == 'fping':
+                if scantype is not None and scantype[0] == 'fping':
                     result = fping_scan(net)
                     for device in result:
                         netname = ''
@@ -139,7 +139,7 @@ class Command(BaseCommand):
 
                     results.append(data)
 
-                elif scantype[0] == 'nmap':
+                elif scantype is not None and scantype[0] == 'nmap':
                     result = nmap_scan(net)
                     for device in result:
                         netname = result[device]['hostnames'][0]['name']
@@ -154,6 +154,11 @@ class Command(BaseCommand):
                                                   "mac": mac})
 
                     results.append(data)
+
+                else:
+                    print("Please make sure to provide a supported --scantype"
+                          " (nmap or fping), exiting process ..")
+                    exit()
 
             insert_subnet(results)
 
