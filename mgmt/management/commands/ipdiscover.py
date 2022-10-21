@@ -28,16 +28,22 @@ class Command(BaseCommand):
             parser ([type]): [description]
         """
         # ipd scan args = --scantype --network --name --description --nettag
-        parser.add_argument('--scantype', action='append', type=str, help='Ipdiscover scan type (either nmap or fping')
-        parser.add_argument('--network', action='append', type=str, help='Cidr notation')
-        parser.add_argument('--name', action='append', type=str, help='Name of the subnet')
-        parser.add_argument('--description', action='append', type=str, help='Description of subnet')
-        parser.add_argument('--nettag', action='append', type=str, help='Unique id, by default will be netid of the subnet')
+        parser.add_argument('--scantype', action='append', type=str,
+                            help='Ipdiscover scan type (either nmap or fping')
+        parser.add_argument('--network', action='append', type=str,
+                            help='Cidr notation')
+        parser.add_argument('--name', action='append', type=str,
+                            help='Name of the subnet')
+        parser.add_argument('--description', action='append', type=str,
+                            help='Description of subnet')
+        parser.add_argument('--nettag', action='append', type=str,
+                            help='Unique id, by default will be netid of the subnet')
         # ipd list
-        parser.add_argument('--list', action='store_true', help='List already scanned subnets')
+        parser.add_argument('--list', action='store_true',
+                            help='List already scanned subnets')
         # import ipd scan arguments from csv file
-        parser.add_argument('--file', type=str, help='Scan multiple networks by importing a csv file')
-        
+        parser.add_argument('--file', type=str,
+                            help='Scan multiple networks by importing a csv file')
 
     def handle(self, *args, **options):
         """Must be implemented, defines the logic behind the command"""
@@ -50,28 +56,33 @@ class Command(BaseCommand):
             """
 
             def fping_scan(net):
-                """Scan devices present on specific subnet and return their ip addresses if alive
+                """Scan devices present on specific subnet and return their ip addresses
+                 if alive
 
                 Args:
                     net ([str]): e.g. 172.18.26.0/24
                 """
-                ping_cmd = ['fping', '-g',  '--quiet',  '-a', str(net)] 
-                process = subprocess.Popen(ping_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8')
+                ping_cmd = ['fping', '-g',  '--quiet',  '-a', str(net)]
+                process = subprocess.Popen(ping_cmd, stdout=subprocess.PIPE,
+                                           stderr=subprocess.PIPE, encoding='utf-8')
                 output = process.stdout.read()
                 result = output.split()
-                print("IpDiscover scan found " + str(len(result)) + " hosts for subnet " + net)
+                print("IpDiscover scan found " + str(len(result))
+                      + " hosts for subnet " + net)
 
-                return result
+                return results
 
             def nmap_scan(net):
-                """Scan devices present on specific submet and return their ip addresses and mac addresses if available
+                """Scan devices present on specific submet and return their ip addresses
+                 and mac addresses if available
 
                 Args:
                     net ([str]): e.g. 172.18.26.0/24
                 """
                 nm = nmap.PortScanner()
                 results = nm.scan(hosts=net, arguments='-sP')
-                print("IpDiscover scan found "+ results['nmap']['scanstats']['uphosts'] + " hosts for subnet " + net)
+                print("IpDiscover scan found " + results['nmap']['scanstats']['uphosts']
+                      + " hosts for subnet " + net)
                 results = results['scan']
 
                 return results
@@ -80,7 +91,8 @@ class Command(BaseCommand):
                 """Insert subnets and related netdevices into database
 
                 Args:
-                    subnets ([dict]): dict of subnets w/ netdevices discovered by either nmap or fping scan
+                    subnets ([dict]): dict of subnets w/ netdevices discovered by either
+                     nmap or fping scan
                 """
                 network = NetworkSerializer()
                 for sub in subnets:
@@ -89,22 +101,22 @@ class Command(BaseCommand):
                         print('Network already exists : updating ' + str(sub['nettag']))
                         NetworkSerializer.update(network, update, sub)
                     except Network.DoesNotExist:
-                        print('Network does not exists : creating ' + str(sub['nettag']))
+                        print('Network does not exists : creating '
+                              + str(sub['nettag']))
                         NetworkSerializer.create(network, sub)
 
-
-            # assign default value to name, desc and nettag if unique scan is missing any
+            # assign default value to name, desc and nettag if scan is missing any
             if len(subnet) == 1:
-                if name == None:
+                if name is None:
                     name = [re.sub('/24', '', subnet[0])]
-                if desc == None:
+                if desc is None:
                     desc = ['default description']
-                if nettag == None:
+                if nettag is None:
                     # nettag is modified later in the process but still needs a default
                     nettag = ['default']
 
             results = []
-            
+
             for net, tag, name, desc in zip(subnet, nettag, name, desc):
                 ip = re.sub('/24', '', net)
                 netmask = str(IPv4Network(net).netmask)
@@ -113,8 +125,8 @@ class Command(BaseCommand):
                     subnettag = ip
                 else:
                     subnettag = ip + ":" + tag
-                data = {"nettag": subnettag, "name": name, "description": desc, "netid": ip, "mask": netmask, 
-                        "netdevices": []}
+                data = {"nettag": subnettag, "name": name, "description": desc,
+                        "netid": ip, "mask": netmask, "netdevices": []}
 
                 if scantype[0] == 'fping':
                     result = fping_scan(net)
@@ -122,26 +134,26 @@ class Command(BaseCommand):
                         netname = ''
                         # fping scan will not return mac, use ip instead
                         mac = device
-                        data['netdevices'].append({"ip" : device, "netname" : netname, "mac" : mac})
+                        data['netdevices'].append({"ip": device, "netname": netname,
+                                                  "mac": mac})
 
                     results.append(data)
-                    # print(results)
 
                 elif scantype[0] == 'nmap':
                     result = nmap_scan(net)
                     for device in result:
                         netname = result[device]['hostnames'][0]['name']
-                        # if scan didn't return mac addresses > use ip instead 
-                        if not 'mac' in result[device]['addresses']:
+                        # if scan didn't return mac addresses > use ip instead
+                        if 'mac' not in result[device]['addresses']:
                             mac = device
                         else:
                             mac = result[device]['addresses']['mac']
                             print('device is : ' + device)
-                
-                        data['netdevices'].append({"ip" : device, "netname" : netname, "mac" : mac})
+
+                        data['netdevices'].append({"ip": device, "netname": netname,
+                                                  "mac": mac})
 
                     results.append(data)
-                    # print(results)
 
             insert_subnet(results)
 
@@ -156,17 +168,18 @@ class Command(BaseCommand):
             with open(file, newline='', encoding='utf-8') as f:
                 reader = csv.reader(f)
                 for row in reader:
-                    #get fields from file
+                    # get fields from file
                     if 'network' in row:
                         for field in row:
                             imported_fields += [field]
                             options[field] = []
-                    else :
+                    else:
                         for elem, field in zip(row, imported_fields):
-                                options[field] += [elem]
+                            options[field] += [elem]
 
             if not set(static_fields) == set(imported_fields):
-                exit('Please check that all required fields are present in the csv file (network,nettag,name,description)')
+                exit("Please check that all required fields are present in the csv file"
+                     " (network,nettag,name,description)")
 
         def ipd_list():
             """Get list of discovered networks
@@ -181,10 +194,11 @@ class Command(BaseCommand):
 
             return networks_list
 
-
         if options['network']:
             try:
-                ipd_scan_subnet(options['scantype'], options['network'], options['nettag'], options['name'], options['description'])
+                ipd_scan_subnet(options['scantype'], options['network'],
+                                options['nettag'], options['name'],
+                                options['description'])
                 output = 'IpDiscover scan ran successfully'
             except CommandError as e:
                 output = "IpDiscover failed : " + str(e.__cause__)
@@ -192,13 +206,13 @@ class Command(BaseCommand):
         elif options['file']:
             try:
                 from_file(options['file'])
-                ipd_scan_subnet(options['scantype'], options['network'], options['nettag'], options['name'], options['description'])
+                ipd_scan_subnet(options['scantype'], options['network'],
+                                options['nettag'], options['name'],
+                                options['description'])
                 output = 'IpDiscover scan ran successfully'
             except CommandError as e:
                 output = "IpDiscover failed : " + str(e.__cause__)
         elif options['list']:
             output = ipd_list()
 
-
-        
         self.stdout.write(str(output))
