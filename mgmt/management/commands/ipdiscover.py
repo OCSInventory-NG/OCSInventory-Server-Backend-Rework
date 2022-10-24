@@ -10,6 +10,7 @@ import csv
 import nmap
 import subprocess
 import re
+import os
 
 
 class Command(BaseCommand):
@@ -104,6 +105,10 @@ class Command(BaseCommand):
                         print('Network does not exists : creating '
                               + str(sub['nettag']))
                         NetworkSerializer.create(network, sub)
+
+            if os.geteuid() != 0:
+                print("Running this command as unprivileged user will not provide"
+                      " optimal results. Consider running as root instead.")
 
             # assign default value to name, desc and nettag if scan is missing any
             if len(subnet) == 1:
