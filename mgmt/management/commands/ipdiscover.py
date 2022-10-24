@@ -5,7 +5,7 @@ from ipdiscover.network.serializers import NetworkSerializer
 from ipdiscover.network.models import Network
 
 
-from ipaddress import IPv4Network
+from ipaddress import AddressValueError, IPv4Network
 import csv
 import nmap
 import subprocess
@@ -119,7 +119,13 @@ class Command(BaseCommand):
 
             for net, tag, name, desc in zip(subnet, nettag, name, desc):
                 ip = re.sub('/24', '', net)
-                netmask = str(IPv4Network(net).netmask)
+                try:
+                    netmask = str(IPv4Network(net).netmask)
+                except AddressValueError:
+                    print("Invalid subnet provided (" + ip + "), no update will be"
+                          " done, exiting ..")
+                    exit()
+
                 # nettag is reconciliation field = needs at least a default value
                 if tag == 'default' or tag == '':
                     subnettag = ip
