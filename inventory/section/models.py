@@ -26,6 +26,8 @@ class Section(models.Model):
         ("PTXT", "Plain text"),
         ("JSON", "JSON format"),
         ("TBLE", "Table format"),
+        ("REGX", "Regex processing"),
+        ("GREP", "Grep command output"),
     )
 
     name = models.CharField(max_length=50)
