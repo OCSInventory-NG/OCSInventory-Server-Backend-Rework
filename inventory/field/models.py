@@ -18,8 +18,31 @@ class Field(models.Model):
     - If the output is a table we expect an index
     """
 
+    RETRIVAL_CHOICES = (
+        ("FILE", "Read file"),
+        ("BASH", "Bash command"),
+        ("PW", "Powershell command"),
+        ("CMD", "Cmd command"),
+    )
+
+    RETRIVAL_OUTPUT = (
+        ("PTXT", "Plain text"),
+        ("JSON", "JSON format"),
+        ("TBLE", "Table format"),
+        ("REGX", "Regex processing"),
+        ("GREP", "Grep command output"),
+    )
+
     name = models.CharField(max_length=50)
     retrival_value = models.CharField(max_length=255)
+    override_target = models.BooleanField(default=False, null=True)
+    new_target = models.CharField(max_length=255, null=True)
+    retrival_method = models.CharField(
+        max_length=4, choices=RETRIVAL_CHOICES, null=True
+    )
+    retrival_output = models.CharField(
+        max_length=4, choices=RETRIVAL_OUTPUT, null=True
+    )
     section = models.ForeignKey(
         Section, related_name="fields", on_delete=models.CASCADE, null=True
     )
