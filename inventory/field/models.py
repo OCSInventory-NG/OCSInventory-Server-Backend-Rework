@@ -46,3 +46,4 @@ class Field(models.Model):
     section = models.ForeignKey(
         Section, related_name="fields", on_delete=models.CASCADE, null=True
     )
+    options = models.JSONField(null=True)
