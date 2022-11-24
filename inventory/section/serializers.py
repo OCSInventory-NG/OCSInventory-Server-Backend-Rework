@@ -25,6 +25,7 @@ class SectionSerializer(serializers.ModelSerializer):
             "target",
             "template",
             "fields",
+            "options"
         ]
 
     def create(self, validated_data):
