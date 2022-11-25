@@ -33,15 +33,17 @@ class PackageSerializer(serializers.ModelSerializer):
         # keep the parent created
         parent = super().create(validated_data)
         # create actions
-        for action in actions:
-            action["package"] = parent
-        # actions serializer
-        self.fields["actions"].create(actions)
+        if "actions" in validated_data.keys():
+            for action in actions:
+                action["package"] = parent
+            # actions serializer
+            self.fields["actions"].create(actions)
 
         # create result
-        for res in result:
-            res["package"] = parent
-        # result serializer
-        self.fields["result"].create(result)
+        if "result" in validated_data.keys():
+            for res in result:
+                res["package"] = parent
+            # result serializer
+            self.fields["result"].create(result)
 
         return parent
