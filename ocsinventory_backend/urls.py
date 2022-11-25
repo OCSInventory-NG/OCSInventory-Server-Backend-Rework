@@ -34,8 +34,17 @@ from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.routers import DefaultRouter
 from user.routers import UserRouter
 
+from autoaction.tasks.routers import TasksRouter
+from autoaction.history.routers import HistoryRouter
+
 # Routers provide a way of automatically determining the URL conf.
 defaultRouter = DefaultRouter()
+
+taskRouter = TasksRouter()
+taskRouter = taskRouter.defineRoutes(defaultRouter)
+
+historyRouter = HistoryRouter()
+historyRouter = historyRouter.defineRoutes(defaultRouter)
 
 # Add permissionsRouter declaration
 permissionRouter = PermissionRouter()
