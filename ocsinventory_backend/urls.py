@@ -27,6 +27,10 @@ from inventory.template.routers import TemplateRouter
 from ipdiscover.netdevice.routers import NetdeviceRouter
 from ipdiscover.netgroup.routers import NetgroupRouter
 from ipdiscover.network.routers import NetworkRouter
+from deployment.package.routers import PackageRouter
+from deployment.action.routers import ActionRouter
+from deployment.result.routers import ResultRouter
+from deployment.history.routers import HistoryRouter
 
 # Import dedicated routers and provide different endpoint
 from permission.routers import PermissionRouter
@@ -84,6 +88,22 @@ baseRouter = baseRouter.defineRoutes(defaultRouter)
 # Add accountinfo declaration
 accountinfoRouter = AccountinfoRouter()
 accountinfoRouter = accountinfoRouter.defineRoutes(defaultRouter)
+
+# Add package declaration
+packageRouter = PackageRouter()
+packageRouter = packageRouter.defineRoutes(defaultRouter)
+
+# Add action declaration
+actionRouter = ActionRouter()
+actionRouter = actionRouter.defineRoutes(defaultRouter)
+
+# Add result declaration
+resultRouter = ResultRouter()
+resultRouter = resultRouter.defineRoutes(defaultRouter)
+
+# Add history declaration
+historyRouter = HistoryRouter()
+historyRouter = historyRouter.defineRoutes(defaultRouter)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
