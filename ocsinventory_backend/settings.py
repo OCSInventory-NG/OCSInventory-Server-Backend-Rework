@@ -54,6 +54,10 @@ INSTALLED_APPS = [
     "ipdiscover.netgroup.apps.NetgroupConfig",
     "accountinfo.apps.AccountinfoConfig",
     "asset.base.apps.BaseConfig",
+    "deployment.package.apps.PackageConfig",
+    "deployment.action.apps.ActionConfig",
+    "deployment.result.apps.ResultConfig",
+    "deployment.history.apps.HistoryConfig",
 ]
 
 MIDDLEWARE = [
@@ -104,6 +108,8 @@ LOGGING = {
         },
     },
 }
+
+
 
 WSGI_APPLICATION = "ocsinventory_backend.wsgi.application"
 
