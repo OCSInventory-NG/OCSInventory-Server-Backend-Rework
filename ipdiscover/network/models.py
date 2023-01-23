@@ -16,6 +16,7 @@ class Network(models.Model):
     - NetID
     - Mask
     - Group
+    - Last update
     """
 
     nettag = models.CharField(max_length=128, unique=True, default="DefaultNettag")
@@ -27,3 +28,4 @@ class Network(models.Model):
     group = models.ForeignKey(
         Netgroup, related_name="networks", on_delete=models.CASCADE, null=True
     )
+    last_update = models.DateTimeField(auto_now=True)
