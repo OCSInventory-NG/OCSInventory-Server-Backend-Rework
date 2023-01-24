@@ -15,5 +15,7 @@ class NetdeviceSerializer(serializers.ModelSerializer):
 
         model = Netdevice
         fields = ["id", "ip", "netname", "mac", "network", "last_seen"]
-        extra_kwargs = {"network": {"required": False},
-                        "last_seen": {"read_only": True}}
+        extra_kwargs = {
+            "network": {"required": False},
+            "last_seen": {"read_only": True}
+        }
