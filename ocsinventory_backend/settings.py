@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = "p#_sy0hz&z!n_1-fzz$xbg2_jhw8!vqhn0txu-5w*x%6d-3z-="
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     "ipdiscover.netgroup.apps.NetgroupConfig",
     "accountinfo.apps.AccountinfoConfig",
     "asset.base.apps.BaseConfig",
+    "asset.inventory.apps.InventoryConfig",
     "autoaction.tasks.apps.TasksConfig",
     "autoaction.history.apps.HistoryConfig"
 ]
