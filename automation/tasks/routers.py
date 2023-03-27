@@ -1,4 +1,4 @@
-from autoaction.tasks.views import TasksViewSet
+from automation.tasks.views import TasksViewSet
 
 
 class TasksRouter:
