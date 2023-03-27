@@ -1,5 +1,5 @@
 from django.db import models
-from autoaction.tasks.models import Tasks
+from automation.tasks.models import Tasks
 
 # Create your models here.
 class History(models.Model):
