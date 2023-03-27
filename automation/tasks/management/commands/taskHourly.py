@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from autoaction.tasks.models import Tasks
+from automation.tasks.models import Tasks
 
 class Command(BaseCommand):
     help = 'Test command'
