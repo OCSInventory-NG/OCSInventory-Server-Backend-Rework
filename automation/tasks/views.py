@@ -1,5 +1,5 @@
-from autoaction.tasks.models import Tasks
-from autoaction.tasks.serializers import TasksSerializer
+from automation.tasks.models import Tasks
+from automation.tasks.serializers import TasksSerializer
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
 
