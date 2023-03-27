@@ -1,5 +1,5 @@
-from autoaction.history.models import History
-from autoaction.history.serializers import HistorySerializer
+from automation.history.models import History
+from automation.history.serializers import HistorySerializer
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
 
