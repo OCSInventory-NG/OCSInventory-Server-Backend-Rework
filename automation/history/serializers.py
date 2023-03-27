@@ -1,4 +1,4 @@
-from autoaction.history.models import History
+from automation.history.models import History
 from rest_framework import serializers
 
 
