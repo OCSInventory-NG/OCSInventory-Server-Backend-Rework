@@ -1,4 +1,4 @@
-from autoaction.history.views import HistoryViewSet
+from automation.history.views import HistoryViewSet
 
 
 class HistoryRouter:
