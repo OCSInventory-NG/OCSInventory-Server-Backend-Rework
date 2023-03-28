@@ -18,6 +18,15 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         """Execute all Tasks"""
+    
+        def updateHistory(task, comment):
+            """Update history with task and comment"""
+            h = History(
+                task=task, 
+                comment=comment
+            )
+            h.save()
+
         tasks = Scheduler.objects.all()
         for task in tasks:
             #Set up task name
@@ -40,7 +49,7 @@ class Command(BaseCommand):
             # Check if task need to be start
             if(task.last_exec is None or task.last_exec.replace(tzinfo=self.utc) + delta < now):
                 # Save history
-                self.updateHistory(task, "Start")
+                updateHistory(task, "Start")
 
                 # Import module task
                 taskClass = module_loading.import_string(completeName)
@@ -53,13 +62,5 @@ class Command(BaseCommand):
                 task.save()
 
                 # Save finish history
-                self.updateHistory(task, "End")
-    
-        def updateHistory(task, comment):
-            """Update history with task and comment"""
-            h = History(
-                task=task, 
-                comment=comment
-            )
-            h.save()
+                updateHistory(task, "End")
             
