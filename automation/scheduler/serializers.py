@@ -2,7 +2,7 @@ from automation.scheduler.models import Scheduler
 from rest_framework import serializers
 
 
-class TasksSerializer(serializers.ModelSerializer):
+class SchedulerSerializer(serializers.ModelSerializer):
     """
     This serialize class provide the API representation
 
