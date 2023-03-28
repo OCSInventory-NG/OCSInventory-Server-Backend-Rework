@@ -34,14 +34,14 @@ from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.routers import DefaultRouter
 from user.routers import UserRouter
 
-from automation.tasks.routers import TasksRouter
+from automation.scheduler.routers import SchedulerRouter
 from automation.history.routers import HistoryRouter
 
 # Routers provide a way of automatically determining the URL conf.
 defaultRouter = DefaultRouter()
 
-taskRouter = TasksRouter()
-taskRouter = taskRouter.defineRoutes(defaultRouter)
+schedulerRouter = SchedulerRouter()
+schedulerRouter = schedulerRouter.defineRoutes(defaultRouter)
 
 historyRouter = HistoryRouter()
 historyRouter = historyRouter.defineRoutes(defaultRouter)

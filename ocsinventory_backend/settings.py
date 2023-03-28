@@ -55,7 +55,7 @@ INSTALLED_APPS = [
     "ipdiscover.netgroup.apps.NetgroupConfig",
     "accountinfo.apps.AccountinfoConfig",
     "asset.base.apps.BaseConfig",
-    "automation.tasks.apps.TasksConfig",
+    "automation.scheduler.apps.SchedulerConfig",
     "automation.history.apps.HistoryConfig"
 ]
 
