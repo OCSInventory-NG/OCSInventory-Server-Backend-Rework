@@ -20,3 +20,4 @@ class Scheduler(models.Model):
     recurence = models.CharField(
         max_length=7, choices=RECURENCE_CHOICES, default="daily"
     )
+    last_exec = models.DateTimeField(null=True)
