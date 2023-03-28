@@ -55,8 +55,8 @@ INSTALLED_APPS = [
     "ipdiscover.netgroup.apps.NetgroupConfig",
     "accountinfo.apps.AccountinfoConfig",
     "asset.base.apps.BaseConfig",
-    "autoaction.tasks.apps.TasksConfig",
-    "autoaction.history.apps.HistoryConfig"
+    "automation.tasks.apps.TasksConfig",
+    "automation.history.apps.HistoryConfig"
 ]
 
 MIDDLEWARE = [
