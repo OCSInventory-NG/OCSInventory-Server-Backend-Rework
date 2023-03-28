@@ -1,5 +1,4 @@
 from django.db import models
-from automation.tasks.models import Tasks
 
 # Create your models here.
 class Scheduler(models.Model):
@@ -18,9 +17,6 @@ class Scheduler(models.Model):
 
     name      = models.CharField(max_length=255)
     status    = models.CharField(max_length=255, null=True)
-    task      = models.OneToOneField(
-        Tasks, on_delete=models.CASCADE, primary_key=True
-    )
     recurence = models.CharField(
         max_length=7, choices=RECURENCE_CHOICES, default="daily"
     )
