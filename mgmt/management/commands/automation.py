@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 from automation.scheduler.models import Scheduler
+from automation.history.models import History
 from django.utils import module_loading
 from datetime import datetime, timedelta
 import pytz
@@ -28,10 +29,20 @@ class Command(BaseCommand):
             now = datetime.now().replace(tzinfo=self.utc)
 
             if(task.last_exec is None or task.last_exec.replace(tzinfo=self.utc) + delta < now):
+                self.updateHistory(task, "Start")
                 taskClass = module_loading.import_string(completeName)
                 taskClass.execute()
 
                 task.last_exec = datetime.now(tz=self.utc)
                 task.save()
+
+                self.updateHistory(task, "End")
                 print("Done")
+    
+    def updateHistory(task, comment):
+        h = History(
+            task=task, 
+            comment=comment
+        )
+        h.save()
             
