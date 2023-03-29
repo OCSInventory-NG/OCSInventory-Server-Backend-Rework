@@ -16,6 +16,7 @@ Including another URLconf
 
 from accountinfo.routers import AccountinfoRouter
 from asset.base.routers import BaseRouter
+from asset.log.routers import LogRouter
 from config.routers import ConfigRouter
 
 # Base import to get API Working
@@ -80,6 +81,10 @@ netrouter = netrouter.defineRoutes(defaultRouter)
 # Add baseRouter declaration
 baseRouter = BaseRouter()
 baseRouter = baseRouter.defineRoutes(defaultRouter)
+
+# Add logRouter declaration
+logRouter = LogRouter()
+logRouter = logRouter.defineRoutes(defaultRouter)
 
 # Add accountinfo declaration
 accountinfoRouter = AccountinfoRouter()
