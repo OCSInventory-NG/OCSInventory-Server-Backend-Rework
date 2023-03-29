@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "ipdiscover.netgroup.apps.NetgroupConfig",
     "accountinfo.apps.AccountinfoConfig",
     "asset.base.apps.BaseConfig",
+    "asset.log.apps.LogConfig",
 ]
 
 MIDDLEWARE = [
