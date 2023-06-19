@@ -18,3 +18,5 @@ class ActionViewSet(viewsets.OCSViewSet):
     queryset = Action.objects.all()
     serializer_class = ActionSerializer
     model = Action
+    filterset_fields = ['id', 'package', 'name', 'priority', 'date_created',
+                        'action_type', 'command', 'output']

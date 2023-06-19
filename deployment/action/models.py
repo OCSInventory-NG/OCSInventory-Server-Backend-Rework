@@ -13,7 +13,7 @@ class Action(models.Model):
     - Date of creation
     - Type of action
     - Command
-    - File (TODO : fix django-filters raising error if using FileField)
+    - File
     - Output
     """
 
@@ -24,6 +24,5 @@ class Action(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     action_type = models.CharField(max_length=128)
     command = models.CharField(max_length=200)
-    # field disabled for now : django-filters issue
-    # file = models.FileField(upload_to="files/", null=True, blank=True)
+    file = models.FileField(upload_to="files/", null=True, blank=True)
     output = models.CharField(max_length=200)
