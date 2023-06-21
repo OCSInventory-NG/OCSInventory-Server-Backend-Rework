@@ -25,4 +25,4 @@ class Action(models.Model):
     action_type = models.CharField(max_length=128)
     command = models.CharField(max_length=200)
     file = models.FileField(upload_to="files/", null=True, blank=True)
-    output = models.CharField(max_length=200)
+    output = models.TextField()
