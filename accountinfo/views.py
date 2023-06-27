@@ -47,6 +47,8 @@ class AccountinfoDataViewSet(viewsets.OCSViewSet):
     Args:
         viewsets ([OCSVIewSet])
     """
+    # filters
+    filterset_fields = ['object_slug', 'object_id']
 
     # Need to have permissions to consult
     permission_classes = [DefaultModelPermissions]
