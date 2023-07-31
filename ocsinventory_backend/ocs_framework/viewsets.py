@@ -3,6 +3,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets
 from rest_framework.exceptions import APIException
 from rest_framework.response import Response
+from rest_framework.renderers import JSONRenderer
+from django.core import serializers
 
 
 class OCSViewSet(viewsets.ModelViewSet):
@@ -131,3 +133,13 @@ class OCSViewSet(viewsets.ModelViewSet):
             )
 
         return Response({"success": "200"}, status=status.HTTP_200_OK)
+
+    def options(self, request, *args, **kwargs):
+        serializer = self.get_serializer()
+        data = {}
+        index = 0
+
+        for field, type in serializer.fields.items():
+            data[field] = field
+
+        return Response(data, status=status.HTTP_200_OK)
