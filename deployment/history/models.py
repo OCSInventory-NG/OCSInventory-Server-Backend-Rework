@@ -3,9 +3,9 @@ from deployment.package.models import Package
 from asset.base.models import Base
 
 
-class History(models.Model):
+class DeploymentHistory(models.Model):
     """
-    History model class definition
+    DeploymentHistory model class definition
 
     The model will contain the following info
     - Package ID
