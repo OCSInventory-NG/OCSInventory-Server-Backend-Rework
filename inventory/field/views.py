@@ -18,3 +18,5 @@ class FieldViewSet(viewsets.OCSViewSet):
     queryset = Field.objects.all()
     serializer_class = FieldSerializer
     model = Field
+
+    filterset_fields = ['id', 'name', 'retrival_value', 'override_target', 'new_target', 'retrival_method', 'retrival_output', 'section' ]

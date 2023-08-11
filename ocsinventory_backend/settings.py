@@ -55,6 +55,10 @@ INSTALLED_APPS = [
     "accountinfo.apps.AccountinfoConfig",
     "asset.base.apps.BaseConfig",
     "asset.inventory.apps.InventoryConfig",
+    "deployment.package.apps.PackageConfig",
+    "deployment.action.apps.ActionConfig",
+    "deployment.result.apps.ResultConfig",
+    "deployment.history.apps.HistoryConfig",
 ]
 
 MIDDLEWARE = [
@@ -90,11 +94,25 @@ TEMPLATES = [
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": '{levelname} - {asctime} - {module} {process:d} : {message}',
+            "style": '{',
+        },
+        "simple": {
+            "format": "{levelname} - {asctime} - {module} : {message}",
+            "style": "{",
+        },
+    },
     "handlers": {
         "file": {
             "level": "DEBUG",
             "class": "logging.FileHandler",
             "filename": f"{BASE_DIR}/logs/ocsbackend.log",
+        },
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
         },
     },
     "loggers": {
@@ -103,8 +121,15 @@ LOGGING = {
             "level": "DEBUG",
             "propagate": True,
         },
+        # ipdiscover command logger
+        "ipdiscover": {
+            "handlers": ["console"],
+            "level": "INFO",
+        },
     },
 }
+
+
 
 WSGI_APPLICATION = "ocsinventory_backend.wsgi.application"
 
