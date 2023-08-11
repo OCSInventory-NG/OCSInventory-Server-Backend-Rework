@@ -62,7 +62,7 @@ INSTALLED_APPS = [
     "deployment.package.apps.PackageConfig",
     "deployment.action.apps.ActionConfig",
     "deployment.result.apps.ResultConfig",
-    "deployment.history.apps.HistoryConfig",
+    "deployment.history.apps.DeploymentHistoryConfig",
 ]
 
 MIDDLEWARE = [

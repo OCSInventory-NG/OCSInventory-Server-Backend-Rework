@@ -1,8 +1,8 @@
 from rest_framework import serializers
-from deployment.history.models import History
+from deployment.history.models import DeploymentHistory
 
 
-class HistorySerializer(serializers.ModelSerializer):
+class DeploymentHistorySerializer(serializers.ModelSerializer):
     """
     This serializer class provides the API representation
 
@@ -13,6 +13,6 @@ class HistorySerializer(serializers.ModelSerializer):
     class Meta:
         """Define the linked model and the fields registered in the API"""
 
-        model = History
+        model = DeploymentHistory
         fields = ["id", "package", "asset", "date_assigned", "status"]
         extra_kwargs = {"status": {"required": False}}

@@ -1,10 +1,10 @@
-from deployment.history.models import History
-from deployment.history.serializers import HistorySerializer
+from deployment.history.models import DeploymentHistory
+from deployment.history.serializers import DeploymentHistorySerializer
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
 
 
-class HistoryViewSet(viewsets.OCSViewSet):
+class DeploymentHistoryViewSet(viewsets.OCSViewSet):
     """
     View behavior
 
@@ -15,6 +15,6 @@ class HistoryViewSet(viewsets.OCSViewSet):
     # Need to have permissions to consult
     permission_classes = [DefaultModelPermissions]
 
-    queryset = History.objects.all()
-    serializer_class = HistorySerializer
-    model = History
+    queryset = DeploymentHistory.objects.all()
+    serializer_class = DeploymentHistorySerializer
+    model = DeploymentHistory

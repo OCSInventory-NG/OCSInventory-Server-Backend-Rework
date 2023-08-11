@@ -1,7 +1,7 @@
-from deployment.history.views import HistoryViewSet
+from deployment.history.views import DeploymentHistoryViewSet
 
 
-class HistoryRouter:
+class DeploymentHistoryRouter:
     """
     Router class is intended to define the route related to an app
     defineRoutes method need to be defined and called in main urls.py
@@ -18,5 +18,5 @@ class HistoryRouter:
         Returns:
             [DefaultRouter]: Updated router with app's dedicated routes
         """
-        defaultRouter.register(r"deployment/history", HistoryViewSet)
+        defaultRouter.register(r"deployment/history", DeploymentHistoryViewSet)
         return defaultRouter
