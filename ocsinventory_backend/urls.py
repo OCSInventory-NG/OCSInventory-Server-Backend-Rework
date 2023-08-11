@@ -16,6 +16,7 @@ Including another URLconf
 
 from accountinfo.routers import AccountinfoRouter
 from asset.base.routers import BaseRouter
+from asset.inventory.routers import InventoryRouter
 from config.routers import ConfigRouter
 
 # Base import to get API Working
@@ -84,6 +85,10 @@ netrouter = netrouter.defineRoutes(defaultRouter)
 # Add baseRouter declaration
 baseRouter = BaseRouter()
 baseRouter = baseRouter.defineRoutes(defaultRouter)
+
+# Add inventoryRouter declaration
+inventoryRouter = InventoryRouter()
+inventoryRouter = inventoryRouter.defineRoutes(defaultRouter)
 
 # Add accountinfo declaration
 accountinfoRouter = AccountinfoRouter()

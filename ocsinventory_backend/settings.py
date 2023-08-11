@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "ipdiscover.netgroup.apps.NetgroupConfig",
     "accountinfo.apps.AccountinfoConfig",
     "asset.base.apps.BaseConfig",
+    "asset.inventory.apps.InventoryConfig",
     "deployment.package.apps.PackageConfig",
     "deployment.action.apps.ActionConfig",
     "deployment.result.apps.ResultConfig",
