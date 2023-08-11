@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_filters",
+    'django_extensions',
     "corsheaders",
     "rest_framework",
     "rest_framework.authtoken",
@@ -54,6 +55,8 @@ INSTALLED_APPS = [
     "ipdiscover.netgroup.apps.NetgroupConfig",
     "accountinfo.apps.AccountinfoConfig",
     "asset.base.apps.BaseConfig",
+    "automation.scheduler.apps.SchedulerConfig",
+    "automation.history.apps.HistoryConfig"
     "asset.inventory.apps.InventoryConfig",
     "deployment.package.apps.PackageConfig",
     "deployment.action.apps.ActionConfig",
