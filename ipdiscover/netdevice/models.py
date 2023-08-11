@@ -12,8 +12,8 @@ class Netdevice(models.Model):
     - IP
     - Netname
     - MAC
-    - Lastupdate
     - Network
+    - Last seen
     """
 
     ip = models.GenericIPAddressField()
@@ -22,3 +22,4 @@ class Netdevice(models.Model):
     network = models.ForeignKey(
         Network, related_name="netdevices", on_delete=models.CASCADE
     )
+    last_seen = models.DateTimeField(auto_now=True)

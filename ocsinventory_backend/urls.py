@@ -17,6 +17,7 @@ Including another URLconf
 from accountinfo.routers import AccountinfoRouter
 from asset.base.routers import BaseRouter
 from asset.log.routers import LogRouter
+from asset.inventory.routers import InventoryRouter
 from config.routers import ConfigRouter
 
 # Base import to get API Working
@@ -28,6 +29,10 @@ from inventory.template.routers import TemplateRouter
 from ipdiscover.netdevice.routers import NetdeviceRouter
 from ipdiscover.netgroup.routers import NetgroupRouter
 from ipdiscover.network.routers import NetworkRouter
+from deployment.package.routers import PackageRouter
+from deployment.action.routers import ActionRouter
+from deployment.result.routers import ResultRouter
+from deployment.history.routers import HistoryRouter
 
 # Import dedicated routers and provide different endpoint
 from permission.routers import PermissionRouter
@@ -35,8 +40,17 @@ from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.routers import DefaultRouter
 from user.routers import UserRouter
 
+from automation.scheduler.routers import SchedulerRouter
+from automation.history.routers import HistoryRouter
+
 # Routers provide a way of automatically determining the URL conf.
 defaultRouter = DefaultRouter()
+
+schedulerRouter = SchedulerRouter()
+schedulerRouter = schedulerRouter.defineRoutes(defaultRouter)
+
+historyRouter = HistoryRouter()
+historyRouter = historyRouter.defineRoutes(defaultRouter)
 
 # Add permissionsRouter declaration
 permissionRouter = PermissionRouter()
@@ -86,9 +100,29 @@ baseRouter = baseRouter.defineRoutes(defaultRouter)
 logRouter = LogRouter()
 logRouter = logRouter.defineRoutes(defaultRouter)
 
+# Add inventoryRouter declaration
+inventoryRouter = InventoryRouter()
+inventoryRouter = inventoryRouter.defineRoutes(defaultRouter)
+
 # Add accountinfo declaration
 accountinfoRouter = AccountinfoRouter()
 accountinfoRouter = accountinfoRouter.defineRoutes(defaultRouter)
+
+# Add package declaration
+packageRouter = PackageRouter()
+packageRouter = packageRouter.defineRoutes(defaultRouter)
+
+# Add action declaration
+actionRouter = ActionRouter()
+actionRouter = actionRouter.defineRoutes(defaultRouter)
+
+# Add result declaration
+resultRouter = ResultRouter()
+resultRouter = resultRouter.defineRoutes(defaultRouter)
+
+# Add history declaration
+historyRouter = HistoryRouter()
+historyRouter = historyRouter.defineRoutes(defaultRouter)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.

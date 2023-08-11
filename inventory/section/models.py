@@ -41,3 +41,4 @@ class Section(models.Model):
     template = models.ForeignKey(
         Template, related_name="sections", on_delete=models.CASCADE, null=True
     )
+    options = models.JSONField(null=True)

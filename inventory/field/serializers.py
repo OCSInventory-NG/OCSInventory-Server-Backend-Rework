@@ -14,4 +14,4 @@ class FieldSerializer(serializers.ModelSerializer):
         """Define the linked model and the fields registered in the API"""
 
         model = Field
-        fields = ["id", "name", "retrival_value", "override_target", "new_target", "retrival_method", "retrival_output", "section"]
+        fields = ["id", "name", "retrival_value", "override_target", "new_target", "retrival_method", "retrival_output", "section", "options"]
