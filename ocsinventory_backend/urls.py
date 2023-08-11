@@ -16,6 +16,7 @@ Including another URLconf
 
 from accountinfo.routers import AccountinfoRouter
 from asset.base.routers import BaseRouter
+from asset.log.routers import LogRouter
 from asset.inventory.routers import InventoryRouter
 from config.routers import ConfigRouter
 
@@ -94,6 +95,10 @@ netrouter = netrouter.defineRoutes(defaultRouter)
 # Add baseRouter declaration
 baseRouter = BaseRouter()
 baseRouter = baseRouter.defineRoutes(defaultRouter)
+
+# Add logRouter declaration
+logRouter = LogRouter()
+logRouter = logRouter.defineRoutes(defaultRouter)
 
 # Add inventoryRouter declaration
 inventoryRouter = InventoryRouter()
