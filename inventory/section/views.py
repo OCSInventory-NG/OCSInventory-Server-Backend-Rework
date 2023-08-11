@@ -18,3 +18,6 @@ class SectionViewSet(viewsets.OCSViewSet):
     queryset = Section.objects.all()
     serializer_class = SectionSerializer
     model = Section
+
+    filterset_fields = ['id', 'name', 'target', 'retrival_method', 'retrival_output', 'template' ]
+
