@@ -32,7 +32,7 @@ from ipdiscover.network.routers import NetworkRouter
 from deployment.package.routers import PackageRouter
 from deployment.action.routers import ActionRouter
 from deployment.result.routers import ResultRouter
-from deployment.history.routers import HistoryRouter
+from deployment.history.routers import DeploymentHistoryRouter
 
 # Import dedicated routers and provide different endpoint
 from permission.routers import PermissionRouter
@@ -46,9 +46,11 @@ from automation.history.routers import HistoryRouter
 # Routers provide a way of automatically determining the URL conf.
 defaultRouter = DefaultRouter()
 
+# Automation scheduler
 schedulerRouter = SchedulerRouter()
 schedulerRouter = schedulerRouter.defineRoutes(defaultRouter)
 
+# Automation History
 historyRouter = HistoryRouter()
 historyRouter = historyRouter.defineRoutes(defaultRouter)
 
@@ -120,9 +122,9 @@ actionRouter = actionRouter.defineRoutes(defaultRouter)
 resultRouter = ResultRouter()
 resultRouter = resultRouter.defineRoutes(defaultRouter)
 
-# Add history declaration
-historyRouter = HistoryRouter()
-historyRouter = historyRouter.defineRoutes(defaultRouter)
+# Add deployment history declaration
+deployHistoryRouter = DeploymentHistoryRouter()
+deployHistoryRouter = deployHistoryRouter.defineRoutes(defaultRouter)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
