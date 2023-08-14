@@ -57,12 +57,12 @@ INSTALLED_APPS = [
     "asset.base.apps.BaseConfig",
     "asset.log.apps.LogConfig",
     "automation.scheduler.apps.SchedulerConfig",
-    "automation.history.apps.HistoryConfig"
+    "automation.history.apps.HistoryConfig",
     "asset.inventory.apps.InventoryConfig",
     "deployment.package.apps.PackageConfig",
     "deployment.action.apps.ActionConfig",
     "deployment.result.apps.ResultConfig",
-    "deployment.history.apps.DeploymentHistoryConfig",
+    "deployment.deploymenthistory.apps.DeploymentHistoryConfig",
 ]
 
 MIDDLEWARE = [

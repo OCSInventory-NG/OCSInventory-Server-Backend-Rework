@@ -32,7 +32,7 @@ from ipdiscover.network.routers import NetworkRouter
 from deployment.package.routers import PackageRouter
 from deployment.action.routers import ActionRouter
 from deployment.result.routers import ResultRouter
-from deployment.history.routers import DeploymentHistoryRouter
+from deployment.deploymenthistory.routers import DeploymentHistoryRouter
 
 # Import dedicated routers and provide different endpoint
 from permission.routers import PermissionRouter
