@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from deployment.history.models import DeploymentHistory
+from deployment.deploymenthistory.models import DeploymentHistory
 
 
 class DeploymentHistorySerializer(serializers.ModelSerializer):

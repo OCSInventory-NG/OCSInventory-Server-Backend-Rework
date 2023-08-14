@@ -1,4 +1,4 @@
-from deployment.history.views import DeploymentHistoryViewSet
+from deployment.deploymenthistory.views import DeploymentHistoryViewSet
 
 
 class DeploymentHistoryRouter:

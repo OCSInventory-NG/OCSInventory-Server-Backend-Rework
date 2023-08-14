@@ -1,5 +1,5 @@
-from deployment.history.models import DeploymentHistory
-from deployment.history.serializers import DeploymentHistorySerializer
+from deployment.deploymenthistory.models import DeploymentHistory
+from deployment.deploymenthistory.serializers import DeploymentHistorySerializer
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
 
