@@ -129,7 +129,7 @@ deployHistoryRouter = deployHistoryRouter.defineRoutes(defaultRouter)
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
-    path('', include(defaultRouter.urls)),
+    path(r'', include(defaultRouter.urls)),
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
     path("api-auth/token", obtain_auth_token, name="api_token_auth"),
 ]
