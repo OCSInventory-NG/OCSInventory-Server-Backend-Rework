@@ -89,45 +89,4 @@ class OCSViewSet(viewsets.ModelViewSet):
         kwargs["partial"] = True
         return self.put(request, *args, **kwargs)
 
-    def put(self, request, *args, **kwargs):
-        """
-        Handle put request, either as an update or partial update
 
-        2 cases :
-            - request is a list : bulk update will be performed
-            - request is a dict : single update
-
-        Args:
-            request ([type])
-
-        Returns:
-            [dict] :
-                - success : all updates were successful
-                - partial success : some updates have failed, see attached objects
-                - failed : total failure, see attached failing objects
-        """
-        partial = kwargs.pop("partial", False)
-        success = []
-        failed = []
-        if isinstance(request.data, list):
-            for elem in request.data:
-                try:
-                    self.update_instance(elem, partial)
-                    success += [elem]
-                except (APIException, FieldError, KeyError):
-                    failed += [elem]
-
-            if not failed:
-                return Response({"success": "200"}, status=status.HTTP_200_OK)
-            if failed and success:
-                return Response({"partial success": failed}, status=status.HTTP_200_OK)
-
-            return Response({"failed": failed}, status=status.HTTP_400_BAD_REQUEST)
-        try:
-            self.update_instance(request.data, partial)
-        except (APIException, FieldError):
-            return Response(
-                {"failed": request.data}, status=status.HTTP_400_BAD_REQUEST
-            )
-
-        return Response({"success": "200"}, status=status.HTTP_200_OK)
