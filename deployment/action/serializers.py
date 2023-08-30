@@ -14,8 +14,6 @@ class ActionSerializer(serializers.ModelSerializer):
         """Define the linked model and the fields registered in the API"""
 
         model = Action
-        fields = ["id", "package_id", "name", "priority", "date_created",
-                  "action_type", "command", "file", "output"]
-        extra_kwargs = {"package_id": {"required": False},
-                        "file": {"required": False},
-                        "output": {"required": False}}
+        fields = ["id", "package", "name", "priority", "date_created",
+                  "action_type", "command", "file"]
+        extra_kwargs = {"file": {"required": False}}
