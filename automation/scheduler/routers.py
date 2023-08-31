@@ -18,5 +18,5 @@ class SchedulerRouter:
         Returns:
             [DefaultRouter]: Updated router with app's dedicated routes
         """
-        defaultRouter.register(r"scheduler", SchedulerViewSet)
+        defaultRouter.register(r"automation/scheduler", SchedulerViewSet)
         return defaultRouter

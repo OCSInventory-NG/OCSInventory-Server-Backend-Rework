@@ -14,4 +14,4 @@ class HistorySerializer(serializers.ModelSerializer):
         """Define the linked model and the fields registered in the API"""
 
         model = History
-        fields = ["id", "tasks", "comment"]
+        fields = ["id", "scheduler", "date", "status", "comment"]
