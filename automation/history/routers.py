@@ -18,5 +18,5 @@ class HistoryRouter:
         Returns:
             [DefaultRouter]: Updated router with app's dedicated routes
         """
-        defaultRouter.register(r"history", HistoryViewSet)
+        defaultRouter.register(r"automation/history", HistoryViewSet)
         return defaultRouter
