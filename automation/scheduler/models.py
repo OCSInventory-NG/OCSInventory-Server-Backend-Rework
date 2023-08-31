@@ -15,9 +15,10 @@ class Scheduler(models.Model):
         ("monthly", "monthly")
     )
 
-    name      = models.CharField(max_length=255)
-    status    = models.CharField(max_length=255, null=True)
+    name      = models.CharField(max_length=100)
+    description = models.CharField(max_length=1024)
+    active    = models.BooleanField()
     recurence = models.CharField(
         max_length=7, choices=RECURENCE_CHOICES, default="daily"
     )
-    last_exec = models.DateTimeField(null=True)
+    last_execution = models.DateTimeField(null=True)

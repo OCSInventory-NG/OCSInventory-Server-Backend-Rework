@@ -14,4 +14,4 @@ class SchedulerSerializer(serializers.ModelSerializer):
         """Define the linked model and the fields registered in the API"""
 
         model = Scheduler
-        fields = ["id", "name", "status", "task", "recurence"]
+        fields = ["id", "name", "description", "active", "recurence", "last_execution"]
