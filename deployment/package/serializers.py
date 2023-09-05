@@ -12,7 +12,7 @@ class PackageSerializer(serializers.ModelSerializer):
         serializers ([ModelSerializer])
     """
 
-    actions = ActionSerializer(many=True, required=False)
+    actions_list = ActionSerializer(many=True, required=False)
     result = ResultSerializer(many=True, required=False)
 
     class Meta:
@@ -20,7 +20,7 @@ class PackageSerializer(serializers.ModelSerializer):
 
         model = Package
         fields = ["id", "name", "description", "date_created",
-                  "target_os", "actions", "result"]
+                  "target_os", "actions_list", "result"]
 
     def create(self, validated_data):
         """Override create to allow nested creation of fields"""
