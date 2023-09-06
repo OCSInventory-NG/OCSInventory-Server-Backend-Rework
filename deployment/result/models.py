@@ -17,7 +17,7 @@ class Result(models.Model):
     """
 
     package = models.ForeignKey(
-        Package, related_name="package", on_delete=models.CASCADE, null=True
+        Package, related_name="result", on_delete=models.CASCADE, null=True
     )
     asset = models.ForeignKey(
         Base, related_name="asset", on_delete=models.CASCADE, null=True
