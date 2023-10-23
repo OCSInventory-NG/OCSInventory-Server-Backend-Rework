@@ -61,7 +61,11 @@ INSTALLED_APPS = [
     "asset.inventory.apps.InventoryConfig",
     "deployment.package.apps.PackageConfig",
     "deployment.action.apps.ActionConfig",
-    "deployment.result.apps.ResultConfig"
+    "deployment.result.apps.ResultConfig",
+    "auth.auth_method.apps.AuthMethodConfig",
+    "auth.auth_config.apps.AuthConfigConfig",
+    "auth.auth_mapping.apps.AuthMappingConfig",
+    "django_cas_ng",
 ]
 
 MIDDLEWARE = [
@@ -73,6 +77,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django_cas_ng.middleware.CASMiddleware",
 ]
 
 ROOT_URLCONF = "ocsinventory_backend.urls"
@@ -202,3 +207,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = "/static/"
+
+# Custom auth backend
+AUTHENTICATION_BACKENDS = ['auth.backends.AuthBackend']
