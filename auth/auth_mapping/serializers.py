@@ -14,4 +14,4 @@ class AuthMappingSerializer(serializers.ModelSerializer):
         """Define the linked model and the fields registered in the API"""
 
         model = AuthMapping
-        fields = ["id", "auth_method", "auth_config", "external_field", "internal_field"]
+        fields = ["id", "auth_config", "external_field", "internal_field"]

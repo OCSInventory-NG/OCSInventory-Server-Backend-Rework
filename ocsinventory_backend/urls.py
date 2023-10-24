@@ -147,5 +147,5 @@ urlpatterns = [
     # hit login view first to determine which auth method to use
     path('login/', AuthView.as_view(), name='login'),
     path('logout/', AuthView.as_view(), name='logout'),
-    path('callback/', CASAuthView.as_view(), name='callback'),
+    path('callback/', AuthView.as_view(), name='callback'),
 ]

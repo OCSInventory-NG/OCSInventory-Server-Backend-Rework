@@ -12,11 +12,6 @@ class AuthMapping(models.Model):
     - internal field
     """
 
-    auth_method = models.ForeignKey(
-        "auth_method.AuthMethod",
-        related_name="auth_mappings",
-        on_delete=models.CASCADE,
-    )
     auth_config = models.ForeignKey(
         "auth_config.AuthConfig",
         related_name="auth_mappings",

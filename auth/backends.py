@@ -3,7 +3,6 @@ import logging
 
 from auth.auth_method.models import AuthMethod
 from auth.auth_backend.ldap_backend import CustomLDAPBackend
-from auth.auth_backend.cas_backend import CustomCASBackend
 
 
 class AuthBackend:
@@ -14,10 +13,11 @@ class AuthBackend:
 
     logger = logging.getLogger(__name__)
 
+    # oidc and cas are handled earlier a custom view and do not need to be
+    # handled here
     METHOD_TO_BACKEND = {
         "LOCAL": ModelBackend,
         "LDAP": CustomLDAPBackend,
-        # "CAS": CustomCASBackend,
     }
 
     def __init__(self):
