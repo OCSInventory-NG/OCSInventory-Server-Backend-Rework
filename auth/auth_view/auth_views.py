@@ -27,18 +27,21 @@ class AuthView(View):
         self.auth_methods = AuthMethod.objects.filter(
             enabled=True,
             priority__gte=0,
+            name__in=["OIDC", "CAS"]
         ).order_by("priority")
 
         # get all enabled auth configs, grouped by auth method and in ordered by priority
         self.auth_configs = AuthConfig.objects.filter(
             enabled=True,
             auth_method__enabled=True,
+            auth_method__name__in=["OIDC", "CAS"]
         ).order_by("auth_method__priority", "priority")
 
         # get all enabled auth mappings, grouped by auth method
         self.auth_mappings = AuthMapping.objects.filter(
             auth_config__auth_method__enabled=True,
             auth_config__enabled=True,
+            auth_config__auth_method__name__in=["OIDC", "CAS"]
         ).order_by("auth_config__auth_method__priority")
 
     def get(self, request, *args, **kwargs):
@@ -60,7 +63,6 @@ class AuthView(View):
             # check if either CAS or OIDC is enabled
             # these are already ordered by priority
             for auth_method in self.auth_methods:
-                print(auth_method.name)
                 if auth_method.name == "CAS":
                     # call cas_login
                     casView = CASAuthView()
@@ -108,7 +110,6 @@ class CASAuthView(AuthView):
 
     def cas_login(self):
         # redirect the user to the CAS server
-        print("CASAuthView.cas_login")
         # TODO : getting the 1st for now but need a way to handle multiple (or prevent multiple)
         if len(self.configs) > 0:
             cas_config = self.configs[0]
@@ -155,7 +156,6 @@ class OIDCAuthView(AuthView):
 
     def oidc_login(self):
         # redirect the user to the OIDC server
-        print("OIDCAuthView.oidc_login")
         # TODO : getting the 1st for now but need a way to handle multiple (or prevent multiple)
         if len(self.configs) > 0:
             oidc_config = self.configs[0]
@@ -173,7 +173,6 @@ class OIDCAuthView(AuthView):
         query = urlencode(params, quote_via=quote)
 
         redirect_url = "{url}?{query}".format(url=oidc_config.config['AUTHORIZATION_ENDPOINT'], query=query)
-        print(redirect_url)
         return HttpResponseRedirect(redirect_url)
 
     def oidc_callback(self, request):

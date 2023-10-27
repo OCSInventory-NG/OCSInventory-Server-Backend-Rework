@@ -21,7 +21,7 @@ class CustomLDAPBackend(LDAPBackend):
         self.configs = AuthConfig.objects.filter(auth_method__name="LDAP",
                                                  enabled=True).order_by("priority")
         # and mappings
-        self.mappings = AuthMapping.objects.filter(auth_method__name="LDAP",
+        self.mappings = AuthMapping.objects.filter(auth_config__enabled=True,
                                                    auth_config__auth_method__name="LDAP"
                                                    )
 
@@ -41,7 +41,6 @@ class CustomLDAPBackend(LDAPBackend):
                 )
 
                 self.defineMapping(config)
-
                 ldap.set_option(ldap.OPT_PROTOCOL_VERSION,
                                 config.config['PROTOCOL_VERSION'])
 

@@ -28,19 +28,17 @@ class AuthBackend:
         auth_methods = AuthMethod.objects.filter(
             enabled=True,
             priority__gte=0,
+            name__in=["LOCAL", "LDAP"]
         ).order_by("priority")
 
         for auth_method in auth_methods:
             # get the backend class for the auth method
             BackendClass = self.METHOD_TO_BACKEND.get(auth_method.name)
-            # skip if the backend class is not defined
-            if not BackendClass:
-                self.logger.warning(f"Auth method {auth_method.name} has no backend")
-                continue
 
             # try authenticating with the backend
             backend = BackendClass()
-            print(f"Authenticating with {auth_method.name} backend")
+            self.logger.debug(
+                f"Attempting authentication with {auth_method.name} backend")
             user = backend.authenticate(request, username=username, password=password,
                                         **kwargs)
             if user:
