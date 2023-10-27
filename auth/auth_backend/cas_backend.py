@@ -10,30 +10,45 @@ class CustomCASBackend(CASBackend):
     """
     This backend extends the CASBackend from django-cas-ng to allow
     for dynamic configuration of the CAS server.
+
+    Note : contrary to OIDC, CAS does not provide a way to choose which field from 
+    the user model to use for reconciliation. The default is username.
     """
 
     logger = logging.getLogger(__name__)
 
     def __init__(self):
         super(CustomCASBackend, self).__init__()
+        # fetch configurations and mappings
         self.configs = AuthConfig.objects.filter(auth_method__name="CAS",
                                                  enabled=True).order_by("priority")
-        self.mappings = AuthMapping.objects.filter(auth_method__name="CAS",
+        self.mappings = AuthMapping.objects.filter(auth_config__enabled=True,
                                                    auth_config__auth_method__name="CAS")
-
-    def authenticate(self, request, ticket, service):
-        print("CustomCASBackend.authenticate")
-        # TODO : get the first enabled config for now but figure out how to handle multiple configs (or prevent it)
+        # TODO: get the first enabled config for now but figure out
+        # how to handle multiple configs (or prevent it)
         cas_config = self.configs[0]
 
-        # TODO : better way to set settings ?
+        # update settings
         settings.CAS_SERVER_URL = cas_config.config['SERVER_URL']
         settings.CAS_LOGIN_URL = cas_config.config['SERVER_URL'] + cas_config.config['LOGIN_ROUTE']
         settings.CAS_LOGOUT_URL = cas_config.config['SERVER_URL'] + cas_config.config['LOGOUT_ROUTE']
+        settings.CAS_VERSION = cas_config.config['VERSION']
+        # which field to use for reconciliation (CAS side)
+        # using the mapping for internal field username
+        settings.CAS_USERNAME_ATTRIBUTE = self.mappings.get(internal_field="username"
+                                                            ).external_field
+        # build the CAS_RENAME_ATTRIBUTES dict from the mappings
+        settings.CAS_RENAME_ATTRIBUTES = {mapping.external_field: mapping.internal_field
+                                          for mapping in self.mappings}
+        # allow attributes to be applied to the user
+        settings.CAS_APPLY_ATTRIBUTES_TO_USER = True
 
+        # TODO: handle certificate
+        # settings.CAS_VERIFY_SSL_CERTIFICATE = cas_config.config['VERIFY_SSL_CERTIFICATE']
+
+    def authenticate(self, request, ticket, service):
         # try to authenticate the user
-        casBackend = CASBackend()
-        user = casBackend.authenticate(request=request, ticket=ticket, service=service)
+        user = super().authenticate(request=request, ticket=ticket, service=service)
 
         if user is not None:
             return user
