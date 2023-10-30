@@ -19,5 +19,4 @@ class AuthConfig(models.Model):
     )
     config = models.JSONField()
     priority = models.IntegerField()
-    # TODO : is enabled needed here? allow user to enable/disable a specific config could prove useful
     enabled = models.BooleanField(default=False)

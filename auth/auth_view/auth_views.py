@@ -30,7 +30,7 @@ class AuthView(View):
             name__in=["OIDC", "CAS"]
         ).order_by("priority")
 
-        # get all enabled auth configs, grouped by auth method and in ordered by priority
+        # get all enabled auth configs, grouped by auth method and ordered by priority
         self.auth_configs = AuthConfig.objects.filter(
             enabled=True,
             auth_method__enabled=True,
@@ -96,7 +96,7 @@ class CASAuthView(AuthView):
     def __init__(self):
         # get all CAS config from database
         self.configs = AuthConfig.objects.filter(auth_method__name="CAS",
-                                                enabled=True).order_by("priority")
+                                                 enabled=True).order_by("priority")
         self.mappings = AuthMapping.objects.filter(
                                                 auth_config__auth_method__name="CAS")
 
@@ -110,14 +110,15 @@ class CASAuthView(AuthView):
 
     def cas_login(self):
         # redirect the user to the CAS server
-        # TODO : getting the 1st for now but need a way to handle multiple (or prevent multiple)
+        # TODO : getting 1st for now but need to handle multiple (or prevent multiple)
         if len(self.configs) > 0:
             cas_config = self.configs[0]
         else:
             # no CAS config found, redirect to login page
             return redirect("/login")
 
-        cas_login_url = cas_config.config['SERVER_URL'] + cas_config.config['LOGIN_ROUTE']
+        cas_login_url = (cas_config.config['SERVER_URL'] +
+                         cas_config.config['LOGIN_ROUTE'])
         # TODO : application url
         service_url = "http://localhost:8000/callback/"
         return redirect(cas_login_url + '?service=' + service_url)
@@ -156,7 +157,7 @@ class OIDCAuthView(AuthView):
 
     def oidc_login(self):
         # redirect the user to the OIDC server
-        # TODO : getting the 1st for now but need a way to handle multiple (or prevent multiple)
+        # TODO : getting 1st for now but need to handle multiple (or prevent multiple)
         if len(self.configs) > 0:
             oidc_config = self.configs[0]
         else:
@@ -172,7 +173,8 @@ class OIDCAuthView(AuthView):
         }
         query = urlencode(params, quote_via=quote)
 
-        redirect_url = "{url}?{query}".format(url=oidc_config.config['AUTHORIZATION_ENDPOINT'], query=query)
+        redirect_url = "{url}?{query}".format(
+            url=oidc_config.config['AUTHORIZATION_ENDPOINT'], query=query)
         return HttpResponseRedirect(redirect_url)
 
     def oidc_callback(self, request):

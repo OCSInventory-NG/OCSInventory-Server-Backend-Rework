@@ -45,7 +45,8 @@ class CustomOIDCBackend(OIDCAuthenticationBackend):
         if self.OIDC_RP_SIGN_ALGO.startswith("RS") and (
             self.OIDC_RP_IDP_SIGN_KEY is None and self.OIDC_OP_JWKS_ENDPOINT is None
         ):
-            msg = "{} alg requires OIDC_RP_IDP_SIGN_KEY or OIDC_OP_JWKS_ENDPOINT to be configured."
+            msg = "{} alg requires OIDC_RP_IDP_SIGN_KEY or OIDC_OP_JWKS_ENDPOINT "
+            "to be configured."
             self.logger.error(msg.format(self.OIDC_RP_SIGN_ALGO))
 
         self.UserModel = get_user_model()
@@ -101,8 +102,8 @@ class CustomOIDCBackend(OIDCAuthenticationBackend):
             # if no mapping defined, or no mapping matches the reconciliation field
             # then we default to using the 'sub' claim
             self.logger.debug(
-                f"No mapping found for internal field '{self.user_reconciliation_field}'. "
-                "Defaulting to using the 'sub' claim for reconciliation."
+                f"No mapping found for internal field '{self.user_reconciliation_field}"
+                "'. Defaulting to using the 'sub' claim for reconciliation."
             )
             reconciliation = claims.get("sub")
 

@@ -53,7 +53,7 @@ class CustomCASBackend(CASBackend):
             settings.CAS_APPLY_ATTRIBUTES_TO_USER = True
 
         # TODO: handle SSL verification
-        # settings.CAS_VERIFY_SSL_CERTIFICATE = cas_config.config['VERIFY_SSL_CERTIFICATE']
+        # settings.CAS_VERIFY_SSL_CERTIFICATE = True
 
     def authenticate(self, request, ticket, service):
         # try to authenticate the user
