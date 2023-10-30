@@ -3,6 +3,7 @@ from urllib.parse import quote, urlencode
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect
 from django.contrib.auth import login
+from django.urls import reverse
 from django.views import View
 from rest_framework.authtoken.models import Token
 
@@ -66,14 +67,15 @@ class AuthView(View):
                 if auth_method.name == "CAS":
                     # call cas_login
                     casView = CASAuthView()
-                    return casView.cas_login()
+                    return casView.cas_login(request)
                 elif auth_method.name == "OIDC":
                     # call oidc_login
                     oidcView = OIDCAuthView()
-                    return oidcView.oidc_login()
-                else:
-                    # TODO : redirect to basic login form
-                    return HttpResponseRedirect("/")
+                    return oidcView.oidc_login(request)
+
+            # TODO : redirect to basic login form
+            return HttpResponseRedirect("/")
+
         # /callback (OIDC provider or CAS server redirect back to this url)
         elif request.path == "/callback/":
             # if request contains ticket, call cas_callback
@@ -100,15 +102,7 @@ class CASAuthView(AuthView):
         self.mappings = AuthMapping.objects.filter(
                                                 auth_config__auth_method__name="CAS")
 
-    def get(self, request, *args, **kwargs):
-        """
-        If GET contains service ticket from CAS, calls cas_callback
-        """
-        ticket = request.GET.get('ticket')
-        if ticket:
-            return self.cas_callback(request)
-
-    def cas_login(self):
+    def cas_login(self, request):
         # redirect the user to the CAS server
         # TODO : getting 1st for now but need to handle multiple (or prevent multiple)
         if len(self.configs) > 0:
@@ -119,14 +113,13 @@ class CASAuthView(AuthView):
 
         cas_login_url = (cas_config.config['SERVER_URL'] +
                          cas_config.config['LOGIN_ROUTE'])
-        # TODO : application url
-        service_url = "http://localhost:8000/callback/"
+        service_url = request.build_absolute_uri(reverse('callback'))
+
         return redirect(cas_login_url + '?service=' + service_url)
 
     def cas_callback(self, request):
         ticket = request.GET.get('ticket')
-        # TODO : change this to use the service url from the CAS config
-        service_url = "http://localhost:8000"
+        service_url = request.build_absolute_uri()
         # pass the ticket to CustomCASBackend
         customCASBackend = CustomCASBackend()
         user = customCASBackend.authenticate(request, ticket, service_url)
@@ -155,7 +148,7 @@ class OIDCAuthView(AuthView):
         self.mappings = AuthMapping.objects.filter(
                                                  auth_config__auth_method__name="OIDC")
 
-    def oidc_login(self):
+    def oidc_login(self, request):
         # redirect the user to the OIDC server
         # TODO : getting 1st for now but need to handle multiple (or prevent multiple)
         if len(self.configs) > 0:
@@ -167,7 +160,7 @@ class OIDCAuthView(AuthView):
         params = {
             "response_type": "code",
             "client_id": oidc_config.config['CLIENT_ID'],
-            "redirect_uri": "http://localhost:8000/callback/",
+            "redirect_uri": request.build_absolute_uri(reverse('callback')),
             "state": None,
             "scope": oidc_config.config['SCOPES'],
         }
