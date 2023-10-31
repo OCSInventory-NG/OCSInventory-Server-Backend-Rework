@@ -1,3 +1,4 @@
+import logging
 from typing import Any
 from urllib.parse import quote, urlencode
 from django.http import HttpResponseRedirect, JsonResponse
@@ -7,7 +8,6 @@ from django.urls import reverse
 from django.views import View
 from rest_framework.authtoken.models import Token
 
-
 from auth.auth_backend.cas_backend import CustomCASBackend
 from auth.auth_backend.oidc_backend import CustomOIDCBackend
 
@@ -16,108 +16,105 @@ from auth.auth_config.models import AuthConfig
 from auth.auth_mapping.models import AuthMapping
 
 
-class AuthView(View):
+class BaseAuthView(View):
     """
-    Special view meant to be called without authentication to determine
-    authentication methods and configuration.
+    Base view for authentication, to be inherited by LoginView and CallbackView.
+    Retrieves enabled auth methods, configs and mappings.
     """
+
+    logger = logging.getLogger(__name__)
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        # get all enabled auth methods in order of priority
+
+        # authentication methods we're interested in
+        methods = ["OIDC", "CAS"]
+
+        # get enabled auth methods based on priority
         self.auth_methods = AuthMethod.objects.filter(
             enabled=True,
             priority__gte=0,
-            name__in=["OIDC", "CAS"]
-        ).order_by("priority")
+            name__in=methods
+        )
 
-        # get all enabled auth configs, grouped by auth method and ordered by priority
+        # get enabled auth configs for the above auth methods
         self.auth_configs = AuthConfig.objects.filter(
             enabled=True,
-            auth_method__enabled=True,
-            auth_method__name__in=["OIDC", "CAS"]
-        ).order_by("auth_method__priority", "priority")
+            auth_method__in=self.auth_methods
+        )
 
-        # get all enabled auth mappings, grouped by auth method
+        # get mappings of the above auth configs
+        # TODO : is it possible to have multiple mappings for a given config ?
         self.auth_mappings = AuthMapping.objects.filter(
-            auth_config__auth_method__enabled=True,
-            auth_config__enabled=True,
-            auth_config__auth_method__name__in=["OIDC", "CAS"]
+            auth_config__in=self.auth_configs
         ).order_by("auth_config__auth_method__priority")
+
+
+class LoginView(BaseAuthView):
+    """
+    View to handle login requests.
+    """
 
     def get(self, request, *args, **kwargs):
         """
-        Determine the appropriate authentication method and redirect to the
-        appropriate view.
-        LDAP authentication is handled by the basic login form but CAS and OIDC
-        will require redirection to the appropriate server.
-
-        This function will only redirect to the CAS or OIDC server if the method
-        is enabled and a configuration exists.
-        If method is LDAP, it will redirect to the basic login form.
+        Verify if CAS or OIDC is enabled and configured and redirect to the
+        appropriate login page.
         """
+        # at this point auth_configs should only contain one config (because
+        # multiple cannot be enabled), we check just in case
+        if len(self.auth_methods) == 1:
+            self.current_auth_config = self.auth_configs[0]
+            # check if CAS is enabled
+            if self.current_auth_config.auth_method.name == "CAS":
+                return self.cas_login(request)
+            # check if OIDC is enabled
+            elif self.current_auth_config.auth_method.name == "OIDC":
+                return self.oidc_login(request)
 
-        # need to handle both /login and the redirect to /callback
-
-        # /login
-        if request.path == "/login/":
-            # check if either CAS or OIDC is enabled
-            # these are already ordered by priority
-            for auth_method in self.auth_methods:
-                if auth_method.name == "CAS":
-                    # call cas_login
-                    casView = CASAuthView()
-                    return casView.cas_login(request)
-                elif auth_method.name == "OIDC":
-                    # call oidc_login
-                    oidcView = OIDCAuthView()
-                    return oidcView.oidc_login(request)
-
-            # TODO : redirect to basic login form
-            return HttpResponseRedirect("/")
-
-        # /callback (OIDC provider or CAS server redirect back to this url)
-        elif request.path == "/callback/":
-            # if request contains ticket, call cas_callback
-            ticket = request.GET.get('ticket')
-            if ticket:
-                casView = CASAuthView()
-                return casView.cas_callback(request)
-            # if request contains code, call oidc_callback
-            code = request.GET.get('code')
-            if code:
-                oidcView = OIDCAuthView()
-                return oidcView.oidc_callback(request)
-
-
-class CASAuthView(AuthView):
-    """
-    Special view to handle CAS authentication
-    """
-
-    def __init__(self):
-        # get all CAS config from database
-        self.configs = AuthConfig.objects.filter(auth_method__name="CAS",
-                                                 enabled=True).order_by("priority")
-        self.mappings = AuthMapping.objects.filter(
-                                                auth_config__auth_method__name="CAS")
+        # no CAS or OIDC config found : default login page
+        return redirect("/")
 
     def cas_login(self, request):
-        # redirect the user to the CAS server
-        # TODO : getting 1st for now but need to handle multiple (or prevent multiple)
-        if len(self.configs) > 0:
-            cas_config = self.configs[0]
-        else:
-            # no CAS config found, redirect to login page
-            return redirect("/login")
-
-        cas_login_url = (cas_config.config['SERVER_URL'] +
-                         cas_config.config['LOGIN_ROUTE'])
+        """Redirect to CAS login page"""
+        cas_login_url = (self.current_auth_config.config['SERVER_URL'] +
+                         self.current_auth_config.config['LOGIN_ROUTE'])
         service_url = request.build_absolute_uri(reverse('callback'))
 
         return redirect(cas_login_url + '?service=' + service_url)
 
+    def oidc_login(self, request):
+        """Redirect to OIDC login page"""
+        params = {
+            "response_type": "code",
+            "client_id": self.current_auth_config.config['CLIENT_ID'],
+            "redirect_uri": request.build_absolute_uri(reverse('callback')),
+            "state": None,
+            "scope": self.current_auth_config.config['SCOPES'],
+        }
+        query = urlencode(params, quote_via=quote)
+
+        redirect_url = "{url}?{query}".format(
+            url=self.current_auth_config.config['AUTHORIZATION_ENDPOINT'], query=query)
+        return HttpResponseRedirect(redirect_url)
+
+
+class CallbackView(BaseAuthView):
+    """
+    View to handle callback requests.
+    """
+
+    def get(self, request, *args, **kwargs):
+        """Handle callback requests from CAS or OIDC"""
+        ticket = request.GET.get('ticket')
+        if ticket:
+            return self.cas_callback(request)
+
+        code = request.GET.get('code')
+        if code:
+            return self.oidc_callback(request)
+
     def cas_callback(self, request):
+        """Handle CAS callback requests"""
         ticket = request.GET.get('ticket')
         service_url = request.build_absolute_uri()
         # pass the ticket to CustomCASBackend
@@ -126,62 +123,25 @@ class CASAuthView(AuthView):
 
         if user is not None:
             login(request, user)
-
             # Generate a token for the user
             token, created = Token.objects.get_or_create(user=user)
-
             # Include the token in the response
             return JsonResponse({'token_authentication': token.key})
+
         else:
             return HttpResponseRedirect("/")
 
-
-class OIDCAuthView(AuthView):
-    """
-    Special view to handle OIDC authentication
-    """
-
-    def __init__(self):
-        # get all OIDC config from database
-        self.configs = AuthConfig.objects.filter(auth_method__name="OIDC",
-                                                 enabled=True).order_by("priority")
-        self.mappings = AuthMapping.objects.filter(
-                                                 auth_config__auth_method__name="OIDC")
-
-    def oidc_login(self, request):
-        # redirect the user to the OIDC server
-        # TODO : getting 1st for now but need to handle multiple (or prevent multiple)
-        if len(self.configs) > 0:
-            oidc_config = self.configs[0]
-        else:
-            # no OIDC config found, redirect to login page
-            return redirect("/login")
-
-        params = {
-            "response_type": "code",
-            "client_id": oidc_config.config['CLIENT_ID'],
-            "redirect_uri": request.build_absolute_uri(reverse('callback')),
-            "state": None,
-            "scope": oidc_config.config['SCOPES'],
-        }
-        query = urlencode(params, quote_via=quote)
-
-        redirect_url = "{url}?{query}".format(
-            url=oidc_config.config['AUTHORIZATION_ENDPOINT'], query=query)
-        return HttpResponseRedirect(redirect_url)
-
     def oidc_callback(self, request):
-        # pass the ticket to CustomCASBackend
+        """Handle OIDC callback requests"""
         customOIDCBackend = CustomOIDCBackend()
         user = customOIDCBackend.authenticate(request)
 
         if user is not None:
             login(request, user)
-
             # Generate a token for the user
             token, created = Token.objects.get_or_create(user=user)
-
             # Include the token in the response
             return JsonResponse({'token_authentication': token.key})
+
         else:
             return HttpResponseRedirect("/")
