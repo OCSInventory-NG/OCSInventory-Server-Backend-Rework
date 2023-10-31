@@ -13,7 +13,6 @@ from auth.auth_backend.oidc_backend import CustomOIDCBackend
 
 from auth.auth_method.models import AuthMethod
 from auth.auth_config.models import AuthConfig
-from auth.auth_mapping.models import AuthMapping
 
 
 class BaseAuthView(View):
@@ -42,12 +41,6 @@ class BaseAuthView(View):
             enabled=True,
             auth_method__in=self.auth_methods
         )
-
-        # get mappings of the above auth configs
-        # TODO : is it possible to have multiple mappings for a given config ?
-        self.auth_mappings = AuthMapping.objects.filter(
-            auth_config__in=self.auth_configs
-        ).order_by("auth_config__auth_method__priority")
 
 
 class LoginView(BaseAuthView):
