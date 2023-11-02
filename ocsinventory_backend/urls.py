@@ -35,7 +35,7 @@ from deployment.result.routers import ResultRouter
 from auth.auth_config.routers import AuthConfigRouter
 from auth.auth_method.routers import AuthMethodRouter
 from auth.auth_mapping.routers import AuthMappingRouter
-from auth.auth_view.auth_views import LoginView, CallbackView
+from auth.auth_view.auth_views import LoginView, CallbackView, BaseAuthView
 
 
 # Import dedicated routers and provide different endpoint
@@ -144,7 +144,8 @@ urlpatterns = [
     path(r'', include(defaultRouter.urls)),
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
     path("api-auth/token", obtain_auth_token, name="api_token_auth"),
-    # hit login view first to determine which auth method to use
-    path('login/', LoginView.as_view(), name='login'),
+
+    # Authentication
+    path("login/", BaseAuthView.as_view(), name="login"),
     path('callback/', CallbackView.as_view(), name='callback'),
 ]
