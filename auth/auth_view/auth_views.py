@@ -49,7 +49,7 @@ class BaseAuthView(View):
             self.current_auth_config = self.auth_configs[0]
         elif len(self.auth_methods) == 0:
             self.logger.debug("No SSO authentication method enabled")
-            return redirect("/")
+            return JsonResponse({"SSO": False})
 
     def get(self, request, *args, **kwargs):
         """
@@ -64,17 +64,20 @@ class BaseAuthView(View):
                 url_redirect = getattr(login_view,
                                        f"{supported_method.lower()}_login")(request)
 
-        # check if AUTO_REDIRECT is enabled
-        # TODO : additonal check to check for NO_AUTO=1
-        if self.current_auth_config.config['AUTO_REDIRECT'] is True:
-            return JsonResponse({'SSO': True, 'auto_redirect': True,
-                                 'redirect_url': url_redirect})
+        no_auto = int(request.GET.get('noAUTO')) if request.GET.get('noAUTO') else 0
+        response = {"SSO": True, "auto_redirect": True, "redirect_url": url_redirect}
+
+        # AUTO_REDIRECT is not enabled
+        if self.current_auth_config.config['AUTO_REDIRECT'] == 0:
+            response['auto_redirect'] = False
+            return JsonResponse(response)
+
         else:
-            # OIDC/CAS is enabled but AUTO_REDIRECT is disabled
-            # front will display the 'SSO Login' button and we specify the url
-            # to use for the redirect
-            return JsonResponse({'SSO': True, 'auto_redirect': False,
-                                 'redirect_url': url_redirect})
+            # AUTO_REDIRECT is enabled but the url contains noAUTO=1
+            if no_auto == 1:
+                response['auto_redirect'] = False
+
+            return JsonResponse(response)
 
 
 class LoginView(BaseAuthView):
