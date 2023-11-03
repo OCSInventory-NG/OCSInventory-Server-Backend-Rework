@@ -112,3 +112,13 @@ class CustomOIDCBackend(OIDCAuthenticationBackend):
                              " claims or from the configured mappings.")
 
         return reconciliation
+
+    def get_config_fields(self):
+        """
+        Return the list of fields to be used in the 'config' field of the
+        AuthConfig model.
+        """
+        return ['AUTHORIZATION_ENDPOINT', 'TOKEN_ENDPOINT', 'USERINFO_ENDPOINT',
+                'JWKS_ENDPOINT', 'CLIENT_ID', 'CLIENT_SECRET', 'SIGN_ALGO', 'SCOPES',
+                'VERIFY_SSL', 'PROXY', 'ALLOW_UNSECURE_JWT', 'CERTIFICATE',
+                'AUTO_REDIRECT']

@@ -67,3 +67,11 @@ class CustomLDAPBackend(LDAPBackend):
         if len(self.settings.USER_ATTR_MAP) == 0:
             self.logger.info(
                 f"LDAP config {config.id} has no mapping defined")
+
+    def get_config_fields(self):
+        """
+        Return the list of fields to be used in the 'config' field of the
+        AuthConfig model.
+        """
+        return ['SERVER_URI', 'BIND_DN', 'BIND_PASSWORD', 'BASE_DN',
+                'USER_LOGIN_FIELD', 'PROTOCOL_VERSION', 'MIRROR_GROUPS']

@@ -64,3 +64,10 @@ class CustomCASBackend(CASBackend):
 
         # no match found
         return None
+
+    def get_config_fields(self):
+        """
+        Return the list of fields to be used in the 'config' field of the
+        AuthConfig model.
+        """
+        return ['SERVER_URL', 'LOGIN_ROUTE', 'LOGOUT_ROUTE', 'VERSION', 'AUTO_REDIRECT']

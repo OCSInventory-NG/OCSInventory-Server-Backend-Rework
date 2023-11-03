@@ -14,4 +14,13 @@ class AuthMappingSerializer(serializers.ModelSerializer):
         """Define the linked model and the fields registered in the API"""
 
         model = AuthMapping
-        fields = ["id", "auth_config", "external_field", "internal_field"]
+        fields = '__all__'
+
+    def validate(self, data):
+        # TODO: validation logic here
+        # Check if the same EXTERNAL or INTERNAL FIELD is already set
+        return data
+
+    def create(self, validated_data):
+        # TODO: create logic here
+        return AuthMapping.objects.create(**validated_data)
