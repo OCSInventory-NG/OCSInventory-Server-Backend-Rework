@@ -1,4 +1,6 @@
 from rest_framework import serializers
+from django.db.models import F
+
 from .models import AuthMethod
 
 
@@ -22,10 +24,17 @@ class AuthMethodSerializer(serializers.ModelSerializer):
         Two checks are performed:
         - If auth_type=SSO, only one method can be enabled
         - If auth_type=OTHER, PRIORITY must be unique
+
+        NB: greater priority number = lower priority (1 is highest priority)
         """
-        # check if TYPE=SSO and enforce only one method enabled
-        if data.get('auth_type') == 'SSO':
-            if 'enabled' in data and data['enabled']:
+        # PUT will trigger the below but also PATCH made on 'enabled' or 'priority'
+        if data.get('enabled') or data.get('priority'):
+            # partial update: get the current auth_type
+            if self.instance:
+                data['auth_type'] = data.get('auth_type', self.instance.auth_type)
+
+            # check if TYPE=SSO and enforce only one method enabled
+            if data.get('auth_type') == 'SSO' and data.get('enabled'):
                 existing_sso = AuthMethod.objects.filter(
                     auth_type='SSO', enabled=True
                 ).exclude(pk=self.instance.pk if self.instance else None)
@@ -35,10 +44,9 @@ class AuthMethodSerializer(serializers.ModelSerializer):
                         "Please disable it before enabling a new one."
                     )
 
-        # check PRIORITY uniqueness for non-SSO methods
-        if data.get('auth_type') != 'SSO':
-            priority = data.get('priority')
-            if priority is not None:
+            # check PRIORITY uniqueness for non-SSO methods
+            if data.get('auth_type') != 'SSO' and data.get('priority') is not None:
+                priority = data.get('priority')
                 # Check if there is an existing method with the same priority
                 existing_method = AuthMethod.objects.filter(
                     priority=priority

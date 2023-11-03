@@ -2,7 +2,6 @@ import logging
 from typing import Any
 from urllib.parse import quote, urlencode
 from django.http import HttpResponseRedirect, JsonResponse
-from django.shortcuts import redirect
 from django.contrib.auth import login
 from django.urls import reverse
 from django.views import View
@@ -10,7 +9,6 @@ from rest_framework.authtoken.models import Token
 
 from auth.auth_backend.cas_backend import CustomCASBackend
 from auth.auth_backend.oidc_backend import CustomOIDCBackend
-
 from auth.auth_method.models import AuthMethod
 from auth.auth_config.models import AuthConfig
 
@@ -32,7 +30,6 @@ class BaseAuthView(View):
         # get enabled auth methods based on priority
         self.auth_methods = AuthMethod.objects.filter(
             enabled=True,
-            priority__gte=0,
             name__in=self.methods
         )
 
@@ -49,7 +46,6 @@ class BaseAuthView(View):
             self.current_auth_config = self.auth_configs[0]
         elif len(self.auth_methods) == 0:
             self.logger.debug("No SSO authentication method enabled")
-            return JsonResponse({"SSO": False})
 
     def get(self, request, *args, **kwargs):
         """
