@@ -8,7 +8,8 @@ class AuthConfig(models.Model):
     Fields :
     - Auth method
     - JSON config
-    - Priority (unique : two configs cannot have the same priority)
+    - Priority (two enabled configs for the same auth_method 
+    cannot have the same priority)
     - Enabled
     """
 

@@ -6,7 +6,6 @@ class AuthMapping(models.Model):
     AuthMapping model class definition
 
     Fields :
-    - Auth method
     - Auth config
     - external field
     - internal field
