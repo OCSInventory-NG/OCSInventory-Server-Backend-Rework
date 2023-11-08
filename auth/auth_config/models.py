@@ -19,5 +19,5 @@ class AuthConfig(models.Model):
         on_delete=models.CASCADE,
     )
     config = models.JSONField()
-    priority = models.IntegerField()
+    priority = models.IntegerField(blank=True, null=True)
     enabled = models.BooleanField(default=False)
