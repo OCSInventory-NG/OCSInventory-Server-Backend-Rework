@@ -113,7 +113,8 @@ class CustomOIDCBackend(OIDCAuthenticationBackend):
 
         return reconciliation
 
-    def get_config_fields(self):
+    @staticmethod
+    def get_config_fields():
         """
         Return the list of fields to be used in the 'config' field of the
         AuthConfig model.

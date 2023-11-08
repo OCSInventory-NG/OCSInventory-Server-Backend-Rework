@@ -68,7 +68,8 @@ class CustomLDAPBackend(LDAPBackend):
             self.logger.info(
                 f"LDAP config {config.id} has no mapping defined")
 
-    def get_config_fields(self):
+    @staticmethod
+    def get_config_fields():
         """
         Return the list of fields to be used in the 'config' field of the
         AuthConfig model.
