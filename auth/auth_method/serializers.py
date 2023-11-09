@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.db.models import F
 
 from .models import AuthMethod
+from auth.auth_config.serializers import AuthConfigSerializer
 
 
 class AuthMethodSerializer(serializers.ModelSerializer):
@@ -11,16 +12,21 @@ class AuthMethodSerializer(serializers.ModelSerializer):
     Args:
         serializers ([ModelSerializer])
     """
+    configs = AuthConfigSerializer(many=True, required=False)
 
     class Meta:
         """Define the linked model and the fields registered in the API"""
 
         model = AuthMethod
-        fields = '__all__'
+        fields = ['id', 'name', 'auth_type', 'enabled', 'priority', 'configs']
 
-    def validate(self, data):
+    def custom_validate(self, data):
         """
-        Validate the data before updating the object
+        Perform custom validation on the AuthMethod data.
+        Custom validation applies to specific fields:
+        - enabled
+        - priority
+
         Two checks are performed:
         - If auth_type=SSO, only one method can be enabled
         - If auth_type=OTHER, PRIORITY must be unique
@@ -28,13 +34,13 @@ class AuthMethodSerializer(serializers.ModelSerializer):
         NB: greater priority number = lower priority (1 is highest priority)
         """
         # PUT will trigger the below but also PATCH made on 'enabled' or 'priority'
-        if data.get('enabled') or data.get('priority'):
+        if 'enabled' in data or 'priority' in data:
             # partial update: get the current auth_type
             if self.instance:
-                data['auth_type'] = data.get('auth_type', self.instance.auth_type)
+                data['auth_type'] = data['auth_type'] if 'auth_type' in data else self.instance.auth_type
 
             # check if TYPE=SSO and enforce only one method enabled
-            if data.get('auth_type') == 'SSO' and data.get('enabled'):
+            if data['auth_type'] == 'SSO' and data['enabled'] is True:
                 existing_sso = AuthMethod.objects.filter(
                     auth_type='SSO', enabled=True
                 ).exclude(pk=self.instance.pk if self.instance else None)
@@ -45,8 +51,8 @@ class AuthMethodSerializer(serializers.ModelSerializer):
                     )
 
             # check PRIORITY uniqueness for non-SSO methods
-            if data.get('auth_type') != 'SSO' and data.get('priority') is not None:
-                priority = data.get('priority')
+            if data['auth_type'] != 'SSO' and 'priority' in data and data['priority'] is not None:
+                priority = data['priority']
                 # Check if there is an existing method with the same priority
                 existing_method = AuthMethod.objects.filter(
                     priority=priority
@@ -77,5 +83,29 @@ class AuthMethodSerializer(serializers.ModelSerializer):
                         AuthMethod.objects.filter(
                             priority__gte=priority
                         ).exclude(auth_type='SSO').update(priority=F('priority') + 1)
+            elif data['auth_type'] != 'SSO' and data['priority'] is None and self.instance is None:
+                raise serializers.ValidationError(
+                    "Priority is required for non-SSO authentication methods."
+                )
 
         return data
+
+    def create(self, validated_data):
+        """
+        Overriding the create method to handle nested AuthConfig creation.
+        """
+        # custom validation
+        validated_data = self.custom_validate(validated_data)
+        if "configs" in validated_data.keys():
+            # if authconfigs are present
+            authconfigs = validated_data.pop("configs")
+            parent = super().create(validated_data)
+
+            for authconfig in authconfigs:
+                authconfig["auth_method"] = parent
+            self.fields["configs"].create(authconfigs)
+        else:
+            parent = super().create(validated_data)
+        
+        return parent
+
