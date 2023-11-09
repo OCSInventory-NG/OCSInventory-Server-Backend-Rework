@@ -208,5 +208,14 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 
-# Custom auth backend
+# Authentication
+# Custom auth backend (specifies the backend class to use for authentication)
 AUTHENTICATION_BACKENDS = ['auth.backends.AuthBackend']
+
+# List of customised auth backends (used to dynamically import 
+# backend classes in authentication process)
+OCS_CUSTOM_AUTH_BACKENDS = {
+    'CAS': 'auth.auth_backend.cas_backend.CustomCASBackend',
+    'LDAP': 'auth.auth_backend.ldap_backend.CustomLDAPBackend',
+    'OIDC': 'auth.auth_backend.oidc_backend.CustomOIDCBackend',
+}
