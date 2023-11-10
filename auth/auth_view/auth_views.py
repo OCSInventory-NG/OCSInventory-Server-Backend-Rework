@@ -21,16 +21,14 @@ class BaseAuthView(View):
 
     logger = logging.getLogger(__name__)
 
-    # supported authentication methods
-    methods = ["OIDC", "CAS"]
-
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-
+        self.current_auth_config = None
+        self.current_auth_method = None
         # get enabled auth methods based on priority
         self.auth_methods = AuthMethod.objects.filter(
             enabled=True,
-            name__in=self.methods
+            auth_type="SSO"
         )
 
         # get enabled auth configs for the above auth methods
@@ -43,7 +41,11 @@ class BaseAuthView(View):
         # multiple cannot be enabled)
         if len(self.auth_methods) == 1:
             self.current_auth_method = self.auth_methods[0]
-            self.current_auth_config = self.auth_configs[0]
+            if len(self.auth_configs) == 1:
+                self.current_auth_config = self.auth_configs[0]
+            elif len(self.auth_configs) == 0:
+                self.logger.debug("No enabled configuration found for SSO configuration")
+
         elif len(self.auth_methods) == 0:
             self.logger.debug("No SSO authentication method enabled")
 
@@ -53,12 +55,16 @@ class BaseAuthView(View):
         url.
         Also check the config for the AUTO_REDIRECT setting.
         """
-        for supported_method in self.methods:
-            if self.current_auth_config.auth_method.name == supported_method:
-                # get redirect url
-                login_view = LoginView()
-                url_redirect = getattr(login_view,
-                                       f"{supported_method.lower()}_login")(request)
+        # if no SSO config is enabled or set
+        if not self.current_auth_config or not self.current_auth_method:
+            self.logger.debug("No enabled configuration found for SSO configuration")
+            response = {"SSO": False, "auto_redirect": False}
+            return JsonResponse(response)
+
+        # get redirect url
+        login_view = LoginView()
+        url_redirect = getattr(login_view,
+                                f"{self.current_auth_config.auth_method.name.lower()}_login")(request)
 
         no_auto = int(request.GET.get('noAUTO')) if request.GET.get('noAUTO') else 0
         response = {"SSO": True, "auto_redirect": True, "redirect_url": url_redirect}
