@@ -1,8 +1,8 @@
-from django.contrib.auth.backends import ModelBackend
 import logging
+from importlib import import_module
 
 from auth.auth_method.models import AuthMethod
-from auth.auth_backend.ldap_backend import CustomLDAPBackend
+from ocsinventory_backend import settings
 
 
 class AuthBackend:
@@ -13,22 +13,33 @@ class AuthBackend:
 
     logger = logging.getLogger(__name__)
 
-    # oidc and cas are handled earlier a custom view and do not need to be
+    # oidc and cas are handled earlier in a custom view and do not need to be
     # handled here
     METHOD_TO_BACKEND = {
-        "LOCAL": ModelBackend,
-        "LDAP": CustomLDAPBackend,
+        "LOCAL": "django.contrib.auth.backends.ModelBackend",
+        # getting the backend class from the settings
+        "LDAP": settings.OCS_CUSTOM_AUTH_BACKENDS["LDAP"],
     }
 
     def __init__(self):
-        self.model_backend = ModelBackend()
+        # dynamically import the backend classes with importlib
+        for method, backend in self.METHOD_TO_BACKEND.items():
+            try:
+                module_path, class_name = backend.rsplit(".", 1)
+                module = import_module(module_path)
+                self.METHOD_TO_BACKEND[method] = getattr(module, class_name)
+
+            except (ImportError, AttributeError) as e:
+                self.logger.error(
+                    f"Failed to import {backend} for {method} authentication method: {e}")
+
 
     def authenticate(self, request, username=None, password=None, **kwargs):
         # retrieve all enabled auth methods in order of priority
         auth_methods = AuthMethod.objects.filter(
             enabled=True,
             priority__gte=0,
-            name__in=["LOCAL", "LDAP"]
+            auth_type="OTHER"
         ).order_by("priority")
 
         for auth_method in auth_methods:
