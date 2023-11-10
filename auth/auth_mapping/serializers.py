@@ -43,13 +43,13 @@ class AuthMappingSerializer(serializers.ModelSerializer):
             auth_config = data.get('auth_config')
             if not auth_config:
                 # If 'auth_config' is not in data, try to get it from parent
-                auth_config_id = self.parent.parent.parent.initial_data['auth_config_id']
-                if auth_config_id:
-                    data['auth_config'] = AuthConfig.objects.get(pk=auth_config_id)
-                elif self.instance:
+                if self.instance:
                     data['auth_config'] = self.instance.auth_config
+                else:
+                    auth_config_id = self.parent.parent.parent.initial_data['auth_config_id']
+                    data['auth_config'] = AuthConfig.objects.get(pk=auth_config_id)
 
-            auth_config = data.get('auth_config')
+                auth_config = data['auth_config']        
             
             # check if the internal_field is unique for the auth_config
             if 'internal_field' in data:
@@ -81,3 +81,11 @@ class AuthMappingSerializer(serializers.ModelSerializer):
         # custom validation
         validated_data = self.custom_validate(validated_data)
         return AuthMapping.objects.create(**validated_data)
+    
+    def update(self, instance, validated_data):
+        """
+        Overriding the update method
+        """
+        # custom validation
+        validated_data = self.custom_validate(validated_data)
+        return super().update(instance, validated_data)

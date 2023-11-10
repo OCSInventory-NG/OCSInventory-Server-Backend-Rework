@@ -40,14 +40,21 @@ class AuthMethodSerializer(serializers.ModelSerializer):
                 data['auth_type'] = data['auth_type'] if 'auth_type' in data else self.instance.auth_type
 
             # check if TYPE=SSO and enforce only one method enabled
-            if data['auth_type'] == 'SSO' and data['enabled'] is True:
-                existing_sso = AuthMethod.objects.filter(
-                    auth_type='SSO', enabled=True
-                ).exclude(pk=self.instance.pk if self.instance else None)
-                if existing_sso.exists():
+            if data['auth_type'] == 'SSO':
+                if 'enabled' in data and data['enabled'] is True:
+                    existing_sso = AuthMethod.objects.filter(
+                        auth_type='SSO', enabled=True
+                    ).exclude(pk=self.instance.pk if self.instance else None)
+                    if existing_sso.exists():
+                        raise serializers.ValidationError(
+                            "Another SSO method is already enabled. "
+                            "Please disable it before enabling a new one."
+                        )
+                # SSO methods cannot have a priority
+                if 'priority' in data and data['priority'] is not None:
                     raise serializers.ValidationError(
-                        "Another SSO method is already enabled. "
-                        "Please disable it before enabling a new one."
+                        "Priority is not applicable for SSO authentication methods. "
+                        "Make sure the priority field is set to null."
                     )
 
             # check PRIORITY uniqueness for non-SSO methods
@@ -109,3 +116,14 @@ class AuthMethodSerializer(serializers.ModelSerializer):
         
         return parent
 
+    def update(self, instance, validated_data):
+        """
+        Overriding the update method to handle nested AuthConfig creation.
+        """
+        # custom validation
+        validated_data = self.custom_validate(validated_data)
+
+        # TODO : handle nested AuthConfig update ?
+        # for now we only update the AuthMethod and let the configs as is
+        return super().update(instance, validated_data)
+    

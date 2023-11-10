@@ -54,23 +54,25 @@ class AuthConfigSerializer(serializers.ModelSerializer):
             auth_method = data.get('auth_method')
             if not auth_method:
                 # if 'auth_method' is not in data, try to get it from parent
-                auth_method_id = self.parent.parent.initial_data['auth_method_id']
-                if auth_method_id:
-                    data['auth_method'] = AuthMethod.objects.get(pk=auth_method_id)
-                elif self.instance:
+                if self.instance:
                     data['auth_method'] = self.instance.auth_method
+                else:
+                    auth_method_id = self.parent.parent.initial_data['auth_method_id']
+                    data['auth_method'] = AuthMethod.objects.get(pk=auth_method_id)
 
+                auth_method = data['auth_method']
 
             if auth_method and 'config' in data:
                 self.config_validate(data)
 
             # check auth_method type
             if auth_method.auth_type == 'SSO':
-                # check if another SSO method is enabled
+                # check if another SSO config is enabled
                 if 'enabled' in data and data['enabled'] is True:
                     existing_sso = AuthConfig.objects.filter(
                         auth_method__auth_type='SSO', 
                         enabled=True,
+                        auth_method=auth_method
                     ).exclude(pk=self.instance.pk if self.instance else None)
                     if existing_sso.exists():
                         raise serializers.ValidationError(
@@ -127,8 +129,8 @@ class AuthConfigSerializer(serializers.ModelSerializer):
                             auth_method__auth_type='SSO'
                             ).update(priority=F('priority') + 1)
                     
-            elif (auth_method.auth_type != 'SSO' and data['priority'] is None 
-                  and self.instance is None):
+            elif (auth_method.auth_type != 'SSO' and self.instance is None 
+                  and data['priority'] is None):
                 raise serializers.ValidationError(
                     "Priority is required for non-SSO authentication methods."
                 )
@@ -187,3 +189,14 @@ class AuthConfigSerializer(serializers.ModelSerializer):
             parent = super().create(validated_data)
         
         return parent
+
+    def update(self, instance, validated_data):
+        """
+        Overriding the update method to handle nested AuthMapping creation.
+        """
+        # custom validation
+        validated_data = self.custom_validate(validated_data)
+
+        # TODO : handle nested update
+        # for now we update the config and let the mappings as is
+        return super().update(instance, validated_data)
