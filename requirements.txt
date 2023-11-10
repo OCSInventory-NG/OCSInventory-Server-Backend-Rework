@@ -3,3 +3,8 @@ djangorestframework>=3.14.0
 django-cors-headers>=4.1.0
 django-filter>=23.1
 django-extensions>=3.2
+
+# Authentication
+mozilla-django-oidc>=3.0.0
+django-auth-ldap>=4.3.0
+django-cas-ng>=4.3.0
