@@ -31,7 +31,8 @@ class AuthBackend:
 
             except (ImportError, AttributeError) as e:
                 self.logger.error(
-                    f"Failed to import {backend} for {method} authentication method: {e}")
+                    f"Failed to import {backend} for {method} authentication "
+                    f"method: {e}")
 
 
     def authenticate(self, request, username=None, password=None, **kwargs):

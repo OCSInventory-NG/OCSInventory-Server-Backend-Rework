@@ -87,12 +87,14 @@ class AuthConfigSerializer(serializers.ModelSerializer):
                         "Make sure the priority field is set to null."
                     )
 
-            if auth_method.auth_type != 'SSO' and 'priority' in data and data['priority'] is not None:
+            if (auth_method.auth_type != 'SSO' and 'priority' in data 
+                and data['priority'] is not None):
                 
                 # retrieve the current priority
                 current_priority = data['priority']
                 
-                # query to check for other configs with the same priority for the same auth_method
+                # query to check for other configs with the same priority for the same 
+                # auth_method
                 existing_configs = AuthConfig.objects.filter(
                     auth_method=auth_method, 
                     priority=current_priority,
