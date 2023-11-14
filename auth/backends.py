@@ -1,11 +1,13 @@
 import logging
 from importlib import import_module
+from django.contrib.auth.backends import ModelBackend
 
 from auth.auth_method.models import AuthMethod
 from ocsinventory_backend import settings
 
 
-class AuthBackend:
+
+class AuthBackend(ModelBackend):
     """
     This backend routes authentication requests to the appropriate backend
     based on enabled auth methods and priorities defined in auth_method
