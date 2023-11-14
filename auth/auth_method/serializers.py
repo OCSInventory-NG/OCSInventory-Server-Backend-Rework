@@ -90,7 +90,8 @@ class AuthMethodSerializer(serializers.ModelSerializer):
                         AuthMethod.objects.filter(
                             priority__gte=priority
                         ).exclude(auth_type='SSO').update(priority=F('priority') + 1)
-            elif data['auth_type'] != 'SSO' and data['priority'] is None and self.instance is None:
+            elif (data['auth_type'] != 'SSO' and 'priority' in data 
+                  and data['priority'] is None and self.instance is None):
                 raise serializers.ValidationError(
                     "Priority is required for non-SSO authentication methods."
                 )
