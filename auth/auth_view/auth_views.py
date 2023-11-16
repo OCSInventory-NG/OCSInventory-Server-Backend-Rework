@@ -90,9 +90,10 @@ class LoginView(BaseAuthView):
         """Redirect to CAS login page"""
         cas_login_url = (self.current_auth_config.config['SERVER_URL'] +
                          self.current_auth_config.config['LOGIN_ROUTE'])
-        service_url = request.build_absolute_uri(reverse('callback'))
 
-        redirect_url = cas_login_url + '?service=' + service_url
+        # we are not passing the service url bc redirection needs to happen on the 
+        # frontend
+        redirect_url = cas_login_url + '?service='
 
         return redirect_url
 
@@ -101,9 +102,11 @@ class LoginView(BaseAuthView):
         params = {
             "response_type": "code",
             "client_id": self.current_auth_config.config['CLIENT_ID'],
-            "redirect_uri": request.build_absolute_uri(reverse('callback')),
             "state": None,
             "scope": self.current_auth_config.config['SCOPES'],
+            # we are not passing the service url bc redirection needs to happen on the
+            # frontend
+            "redirect_uri": '',
         }
         query = urlencode(params, quote_via=quote)
 
