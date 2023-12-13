@@ -19,3 +19,9 @@ class DefaultModelPermissions(permissions.DjangoObjectPermissions):
         "PATCH": ["%(app_label)s.change_%(model_name)s"],
         "DELETE": ["%(app_label)s.delete_%(model_name)s"],
     }
+
+    def has_permission(self, request, view):
+        # allow OPTIONS requests if user is authenticated
+        if request._request.method == 'OPTIONS' and request.user.is_authenticated:
+            return True
+        return super().has_permission(request, view)
