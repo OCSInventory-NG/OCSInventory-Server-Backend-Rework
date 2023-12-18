@@ -16,6 +16,7 @@ Including another URLconf
 
 from accountinfo.routers import AccountinfoRouter
 from asset.base.routers import BaseRouter
+from asset.collection.views import CollectionView
 from asset.log.routers import LogRouter
 from asset.inventory.routers import InventoryRouter
 from config.routers import ConfigRouter
@@ -127,4 +128,5 @@ urlpatterns = [
     path(r'', include(defaultRouter.urls)),
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
     path("api-auth/token", obtain_auth_token, name="api_token_auth"),
+    path('asset/collection/', CollectionView.as_view(), name='asset_collection')
 ]
