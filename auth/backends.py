@@ -23,18 +23,21 @@ class AuthBackend(ModelBackend):
         "LDAP": settings.OCS_CUSTOM_AUTH_BACKENDS["LDAP"],
     }
 
-    def __init__(self):
-        # dynamically import the backend classes with importlib
-        for method, backend in self.METHOD_TO_BACKEND.items():
-            try:
-                module_path, class_name = backend.rsplit(".", 1)
-                module = import_module(module_path)
-                self.METHOD_TO_BACKEND[method] = getattr(module, class_name)
+    # store imported classes
+    IMPORTED_BACKENDS = {}
 
-            except (ImportError, AttributeError) as e:
-                self.logger.error(
-                    f"Failed to import {backend} for {method} authentication "
-                    f"method: {e}")
+    def __init__(self):
+        for method, backend_path in self.METHOD_TO_BACKEND.items():
+            if method not in self.IMPORTED_BACKENDS:
+                try:
+                    module_path, class_name = backend_path.rsplit(".", 1)
+                    module = import_module(module_path)
+                    self.IMPORTED_BACKENDS[method] = getattr(module, class_name)
+                except (ImportError, AttributeError) as e:
+                    self.logger.error(
+                        f"Failed to import {backend_path} for {method} authentication "
+                        f"method: {e}"
+                    )
 
 
     def authenticate(self, request, username=None, password=None, **kwargs):
@@ -47,7 +50,7 @@ class AuthBackend(ModelBackend):
 
         for auth_method in auth_methods:
             # get the backend class for the auth method
-            BackendClass = self.METHOD_TO_BACKEND.get(auth_method.name)
+            BackendClass = self.IMPORTED_BACKENDS.get(auth_method.name)
 
             # try authenticating with the backend
             backend = BackendClass()
