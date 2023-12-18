@@ -1,4 +1,4 @@
-from asset.inventory.views import InventoryViewSet
+from asset.inventory.views import InventorySectionViewSet, InventoryFieldViewSet
 
 
 class InventoryRouter:
@@ -18,5 +18,5 @@ class InventoryRouter:
         Returns:
             [DefaultRouter]: Updated router with app's dedicated routes
         """
-        defaultRouter.register(r"asset/inventory", InventoryViewSet)
+        defaultRouter.register(r"asset/inventory", InventorySectionViewSet)
         return defaultRouter

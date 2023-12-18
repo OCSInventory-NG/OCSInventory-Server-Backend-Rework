@@ -1,10 +1,11 @@
-from asset.inventory.models import Inventory
-from asset.inventory.serializers import InventorySerializer
-from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
+from ocsinventory_backend.ocs_framework import viewsets
+from asset.inventory.models import InventorySection, InventoryField
+from asset.inventory.serializers import InventorySectionSerializer, InventoryFieldSerializer
 
-# Create your views here.
-class InventoryViewSet(viewsets.OCSViewSet):
+
+
+class InventorySectionViewSet(viewsets.OCSViewSet):
     """
     This class will define the view behavior
 
@@ -15,8 +16,25 @@ class InventoryViewSet(viewsets.OCSViewSet):
     # Need to have permissions to consult
     permission_classes = [DefaultModelPermissions]
 
-    queryset = Inventory.objects.all()
-    serializer_class = InventorySerializer
-    model = Inventory
+    queryset = InventorySection.objects.all()
+    serializer_class = InventorySectionSerializer
+    model = InventorySection
 
-    filterset_fields = ['id', 'assetId', 'sectionId', 'sectionName' ]
+    filterset_fields = ['id', 'base', 'template_section']
+
+class InventoryFieldViewSet(viewsets.OCSViewSet):
+    """
+    This class will define the view behavior
+
+    Args:
+        viewsets ([OCSVIewSet])
+    """
+
+    # Need to have permissions to consult
+    permission_classes = [DefaultModelPermissions]
+
+    queryset = InventoryField.objects.all()
+    serializer_class = InventoryFieldSerializer
+    model = InventoryField
+
+    filterset_fields = ['id', 'inventory_section', 'template_field', 'value']

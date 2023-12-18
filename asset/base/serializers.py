@@ -1,11 +1,13 @@
 from asset.base.models import Base
 from inventory.template.models import Template
+from asset.inventory.serializers import InventorySectionSerializer
+
 from rest_framework import serializers
 
 
 class BaseSerializer(serializers.ModelSerializer):
     """
-    This serialize class provide the API representation
+    Serializer class for Base
 
     Args:
         serializers ([ModelSerializer])
@@ -15,6 +17,8 @@ class BaseSerializer(serializers.ModelSerializer):
     OS_WIN = "windows"
     OS_LIN = "linux"
     OS_MAC = "mac"
+
+    inventory_sections = InventorySectionSerializer(many=True)
 
     class Meta:
         """Define the linked model and the fields registered in the API"""
@@ -33,35 +37,9 @@ class BaseSerializer(serializers.ModelSerializer):
             "domain",
             "template",
             "last_update",
+            "inventory_sections",
         ]
         extra_kwargs = {"last_update": {"read_only": True}}
+
         http_method_names = ["get", "post", "patch", "delete"]
 
-    def create(self, validated_data):
-        """
-        Override existing create method to set the template link
-
-        Args:
-            validated_data : POST request
-
-        Returns:
-            [Base] object
-        """
-        assetBase = super().create(validated_data)
-
-        osname = validated_data["osname"].lower()
-
-        # Determine OS for template management
-        try:
-            if self.OS_WIN in osname.lower():
-                assetBase.template = Template.objects.filter(os="WIN")[0]
-            elif self.OS_LIN in osname.lower():
-                assetBase.template = Template.objects.filter(os="LIN")[0]
-            elif self.OS_MAC in osname.lower():
-                assetBase.template = Template.objects.filter(os="MAC")[0]
-
-            assetBase.save()
-        except IndexError:
-            print("An error happenned")
-
-        return assetBase
