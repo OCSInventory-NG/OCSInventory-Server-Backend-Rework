@@ -1,7 +1,6 @@
-from asset.inventory.views import InventorySectionViewSet, InventoryFieldViewSet
-
-
-class InventoryRouter:
+from asset.inventory_field.views import InventoryFieldViewSet
+    
+class InventoryFieldRouter:
     """
     Router class is intended to define the route related to an app
     defineRoutes method need to be defined and called in main urls.py
@@ -18,5 +17,6 @@ class InventoryRouter:
         Returns:
             [DefaultRouter]: Updated router with app's dedicated routes
         """
-        defaultRouter.register(r"asset/inventory", InventorySectionViewSet)
+        defaultRouter.register(r"asset/fields", InventoryFieldViewSet)
         return defaultRouter
+

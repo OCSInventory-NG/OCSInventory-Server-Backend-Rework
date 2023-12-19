@@ -3,7 +3,7 @@ from inventory.template.models import Template
 
 
 # Create your models here.
-class Base(models.Model):
+class InventoryBase(models.Model):
     """
     Asset's base model class definition
 

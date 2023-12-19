@@ -1,11 +1,10 @@
-from asset.base.models import Base
-from inventory.template.models import Template
-from asset.inventory.serializers import InventorySectionSerializer
+from asset.inventory_base.models import InventoryBase
+from asset.inventory_section.serializers import InventorySectionSerializer
 
 from rest_framework import serializers
 
 
-class BaseSerializer(serializers.ModelSerializer):
+class InventoryBaseSerializer(serializers.ModelSerializer):
     """
     Serializer class for Base
 
@@ -23,7 +22,7 @@ class BaseSerializer(serializers.ModelSerializer):
     class Meta:
         """Define the linked model and the fields registered in the API"""
 
-        model = Base
+        model = InventoryBase
         fields = [
             "id",
             "name",
