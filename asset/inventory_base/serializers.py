@@ -41,4 +41,3 @@ class InventoryBaseSerializer(serializers.ModelSerializer):
         extra_kwargs = {"last_update": {"read_only": True}}
 
         http_method_names = ["get", "post", "patch", "delete"]
-

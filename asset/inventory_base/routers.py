@@ -10,7 +10,7 @@ class InventoryBaseRouter:
     @staticmethod
     def defineRoutes(defaultRouter):
         """
-        This method will provide the routes related to the app and return the new routes
+        Define app's routes
 
         Args:
             defaultRouter ([DefaultRouter]): Default router from main urls.py

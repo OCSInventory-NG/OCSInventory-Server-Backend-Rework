@@ -3,6 +3,7 @@ from ocsinventory_backend.ocs_framework import viewsets
 from asset.inventory_field.models import InventoryField
 from asset.inventory_field.serializers import InventoryFieldSerializer
 
+
 class InventoryFieldViewSet(viewsets.OCSViewSet):
     """
     Template Field ViewSet

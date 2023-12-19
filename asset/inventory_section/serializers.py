@@ -2,7 +2,8 @@ from rest_framework import serializers
 
 from asset.inventory_field.serializers import InventoryFieldSerializer
 from asset.inventory_section.models import InventorySection
-            
+
+
 class InventorySectionSerializer(serializers.ModelSerializer):
     """
     Serializer class for InventorySection

@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from asset.inventory_field.models import InventoryField
 
+
 class InventoryFieldSerializer(serializers.ModelSerializer):
     """
     Serializer class for InventoryField

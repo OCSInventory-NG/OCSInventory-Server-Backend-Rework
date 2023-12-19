@@ -3,6 +3,7 @@ from ocsinventory_backend.ocs_framework import viewsets
 from asset.inventory_section.models import InventorySection
 from asset.inventory_section.serializers import InventorySectionSerializer
 
+
 class InventorySectionViewSet(viewsets.OCSViewSet):
     """
     Inventory Section ViewSet
