@@ -17,7 +17,7 @@ class InventoryBaseSerializer(serializers.ModelSerializer):
     OS_LIN = "linux"
     OS_MAC = "mac"
 
-    inventory_sections = InventorySectionSerializer(many=True)
+    inventory_sections = InventorySectionSerializer(many=True, required=False)
 
     class Meta:
         """Define the linked model and the fields registered in the API"""
