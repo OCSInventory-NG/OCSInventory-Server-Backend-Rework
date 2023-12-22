@@ -69,14 +69,14 @@ class CollectionView(APIView):
                 templateId = (asset_instance.template_id
                               if asset_instance.template else None)
         except ValidationError as ve:
-            errors.append(str(ve))
+            errors.append(f'Error creating asset: {ve}')
             self.LOGGER.error(f'Error creating asset: {ve}')
             return Response({'error': errors}, status=400)
         except Exception as e:
             # we return a 400 error if the asset could not be created
             self.LOGGER.error(f'Error creating asset: {e}')
             return Response({'error': f'Error creating asset: {e}'},
-                            status=400)
+                            status=500)
 
         # handle template inventory if present
         if 'template_inventory' in data:
@@ -108,10 +108,11 @@ class CollectionView(APIView):
                                 raise_exception=True):
                             section_instance = section_serializer.save()
                     except ValidationError as ve:
-                        errors.append(str(ve))
+                        errors.append("Error creating "
+                                      f"section {name}: {str(ve)}")
                         continue
                     except Exception as e:
-                        errors.append(f'Error creating section: {e}')
+                        errors.append(f'Error creating section {name}: {e}')
                         continue
 
                     for field_name, field_value in field_object.items():
@@ -138,10 +139,13 @@ class CollectionView(APIView):
                                 )
                             continue
                         except ValidationError as ve:
-                            errors.append(str(ve))
+                            errors.append('Error creating '
+                                          f'field {name} '
+                                          f'- {field_value}: {str(ve)}')
                             continue
                         except Exception as e:
-                            errors.append(f'Error creating field: {e}')
+                            errors.append('Error creating '
+                                          f'field {name} - {field_value}: {e}')
                             continue
 
         # check if there were any errors
@@ -150,7 +154,7 @@ class CollectionView(APIView):
                               'for device %s - %s: %s', data['uuid'],
                               data['name'], errors)
 
-            return Response({'errors': errors}, status=400)
+            return Response({'errors': errors}, status=200)
         else:
             self.LOGGER.info(
                             'Inventory created successfully for device %s - %s'
@@ -245,7 +249,8 @@ class CollectionView(APIView):
                         if section_serializer.is_valid(raise_exception=True):
                             section_instance = section_serializer.save()
                     except ValidationError as ve:
-                        errors.append(str(ve))
+                        errors.append('Error creating '
+                                      f'section {name}: {str(ve)}')
                         continue
                     except Exception as e:
                         errors.append(f'Error creating section {name}: {e}')
@@ -264,7 +269,8 @@ class CollectionView(APIView):
                             continue
                         except Exception as e:
                             errors.append(
-                                f'Error retrieving field {field_name}: {e}'
+                                f'Error retrieving field {field_name} '
+                                f'in section {name}: {e}'
                                 )
                             continue
 
@@ -279,23 +285,27 @@ class CollectionView(APIView):
                                     raise_exception=True):
                                 field_serializer.save()
                         except ValidationError as ve:
-                            errors.append(str(ve))
+                            errors.append(f'Error creating field {name} '
+                                          f'- {field_name} : {str(ve)}')
                             continue
                         except Exception as e:
                             errors.append(f'Error creating '
-                                          f'field {field_name}: {e}')
+                                          f'field {name} - {field_name}: {e}')
                             continue
 
         if errors:
             self.LOGGER.error('Update succeeded but errors were encountered '
                               'while updating device %s - %s: %s',
                               data['uuid'], data['name'], errors)
-            return Response({'errors': errors}, status=400)
+            return Response({'Update succeeded but errors were encountered '
+                             'while updating device %s - %s: %s',
+                             data['uuid'], data['name'], errors},
+                            status=200)
         else:
             self.LOGGER.info(
-                            'Inventory updated successfully for device %s - %s'
-                            ' sending response back to client', data['uuid'],
-                            data['name'])
+                'Inventory updated successfully for device %s - %s'
+                ' sending response back to client', data['uuid'],
+                data['name'])
 
         return Response({'message': 'Inventory updated successfully'},
                         status=200)
@@ -381,14 +391,15 @@ class CollectionView(APIView):
                                 ):
                             section_instance = section_serializer.save()
                     except ValidationError as ve:
-                        errors.append(str(ve))
+                        errors.append(f'Error creating section {name} '
+                                      f': {str(ve)}')
                         continue
                     except Exception as e:
                         errors.append(
                             f'Error creating section {name}: {e}'
                             )
                         continue
-                    
+
                     # loop through each field object in fields array
                     for field_name, field_value in field_object.items():
                         try:
@@ -403,7 +414,8 @@ class CollectionView(APIView):
                             continue
                         except Exception as e:
                             errors.append(
-                                f'Error retrieving field {field_name}: {e}'
+                                f'Error retrieving field {field_name} '
+                                f'in section {name}: {e}'
                                 )
                             continue
 
@@ -419,11 +431,13 @@ class CollectionView(APIView):
                                     ):
                                 field_serializer.save()
                         except ValidationError as ve:
-                            errors.append(str(ve))
+                            errors.append(f'Error creating field {name} '
+                                          f'- {field_name} : {str(ve)}')
                             continue
                         except Exception as e:
                             errors.append(
-                                f'Error creating field {field_name}: {e}'
+                                f'Error creating field {name} '
+                                f'- {field_name}: {e}'
                                 )
                             continue
 
@@ -431,7 +445,7 @@ class CollectionView(APIView):
             self.LOGGER.error('Partial update succeeded but errors were '
                               'encountered while updating device %s - %s: %s',
                               data['uuid'], data['name'], errors)
-            return Response({'errors': errors}, status=400)
+            return Response({'errors': errors}, status=200)
         else:
             self.LOGGER.info(
                             'Inventory updated successfully for device %s - %s'
