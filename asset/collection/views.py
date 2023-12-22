@@ -154,7 +154,10 @@ class CollectionView(APIView):
                               'for device %s - %s: %s', data['uuid'],
                               data['name'], errors)
 
-            return Response({'errors': errors}, status=200)
+            return Response({'Inventory created but errors were encountered '
+                             'while creating device %s - %s: %s',
+                             data['uuid'], data['name'], errors},
+                            status=201)
         else:
             self.LOGGER.info(
                             'Inventory created successfully for device %s - %s'
