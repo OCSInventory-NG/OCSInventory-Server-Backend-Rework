@@ -16,9 +16,10 @@ class LogSerializer(serializers.ModelSerializer):
         model = Log
         fields = [
             "id",
-            "assetID",
+            "asset",
             "timestamp",
+            "scope",
             "comment",
         ]
         extra_kwargs = {"timestamp": {"read_only": True}}
-        http_method_names = ["get", "post", "patch", "delete"]
+        http_method_names = ["get", "post"]
