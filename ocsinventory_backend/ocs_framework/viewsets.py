@@ -40,10 +40,12 @@ class OCSViewSet(viewsets.ModelViewSet):
             )
             serializer.is_valid(raise_exception=True)
             self.perform_create(serializer)
-        except (APIException, FieldError, ObjectDoesNotExist):
+        except Exception as e:
             # serializer.errors may return more details
             return Response(
-                {"failed": request.data}, status=status.HTTP_400_BAD_REQUEST
+                {"failed": request.data, 
+                 "error" : str(e)},
+                  status=status.HTTP_400_BAD_REQUEST
             )
 
         return Response({"success": "200"}, status=status.HTTP_200_OK)

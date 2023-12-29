@@ -34,6 +34,11 @@ from ipdiscover.network.routers import NetworkRouter
 from deployment.package.routers import PackageRouter
 from deployment.action.routers import ActionRouter
 from deployment.result.routers import ResultRouter
+from auth.auth_config.routers import AuthConfigRouter
+from auth.auth_method.routers import AuthMethodRouter
+from auth.auth_mapping.routers import AuthMappingRouter
+from auth.auth_view.auth_views import LoginView, CallbackView, BaseAuthView
+
 
 # Import dedicated routers and provide different endpoint
 from permission.routers import PermissionRouter
@@ -127,11 +132,27 @@ actionRouter = actionRouter.defineRoutes(defaultRouter)
 resultRouter = ResultRouter()
 resultRouter = resultRouter.defineRoutes(defaultRouter)
 
+# Add authConfig declaration
+authConfigRouter = AuthConfigRouter()
+authConfigRouter = authConfigRouter.defineRoutes(defaultRouter)
+
+# Add authMethod declaration
+authMethodRouter = AuthMethodRouter()
+authMethodRouter = authMethodRouter.defineRoutes(defaultRouter)
+
+# Add authMapping declaration
+authMappingRouter = AuthMappingRouter()
+authMappingRouter = authMappingRouter.defineRoutes(defaultRouter)
+
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     path(r'', include(defaultRouter.urls)),
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
     path("api-auth/token", obtain_auth_token, name="api_token_auth"),
-    path('asset/collection/', CollectionView.as_view(), name='asset_collection')
+    path('asset/collection/', CollectionView.as_view(), name='asset_collection'),
+
+    # Authentication
+    path("login/", BaseAuthView.as_view(), name="login"),
+    path('callback/', CallbackView.as_view(), name='callback'),
 ]
