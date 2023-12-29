@@ -15,9 +15,11 @@ Including another URLconf
 """
 
 from accountinfo.routers import AccountinfoRouter
-from asset.base.routers import BaseRouter
+from asset.inventory_base.routers import InventoryBaseRouter
+from asset.inventory_section.routers import InventorySectionRouter
+from asset.inventory_field.routers import InventoryFieldRouter
+from asset.collection.views import CollectionView
 from asset.log.routers import LogRouter
-from asset.inventory.routers import InventoryRouter
 from config.routers import ConfigRouter
 
 # Base import to get API Working
@@ -32,6 +34,11 @@ from ipdiscover.network.routers import NetworkRouter
 from deployment.package.routers import PackageRouter
 from deployment.action.routers import ActionRouter
 from deployment.result.routers import ResultRouter
+from auth.auth_config.routers import AuthConfigRouter
+from auth.auth_method.routers import AuthMethodRouter
+from auth.auth_mapping.routers import AuthMappingRouter
+from auth.auth_view.auth_views import LoginView, CallbackView, BaseAuthView
+
 
 # Import dedicated routers and provide different endpoint
 from permission.routers import PermissionRouter
@@ -93,17 +100,21 @@ netrouter = netrouter.defineRoutes(defaultRouter)
 netrouter = NetgroupRouter()
 netrouter = netrouter.defineRoutes(defaultRouter)
 
-# Add baseRouter declaration
-baseRouter = BaseRouter()
-baseRouter = baseRouter.defineRoutes(defaultRouter)
-
 # Add logRouter declaration
 logRouter = LogRouter()
 logRouter = logRouter.defineRoutes(defaultRouter)
 
-# Add inventoryRouter declaration
-inventoryRouter = InventoryRouter()
-inventoryRouter = inventoryRouter.defineRoutes(defaultRouter)
+# Add inventoryBaseRouter declaration
+inventoryBaseRouter = InventoryBaseRouter()
+inventoryBaseRouter = inventoryBaseRouter.defineRoutes(defaultRouter)
+
+# Add inventorySectionRouter declaration
+inventorySectionRouter = InventorySectionRouter()
+inventorySectionRouter = inventorySectionRouter.defineRoutes(defaultRouter)
+
+# Add inventoryFieldRouter declaration
+inventoryFieldRouter = InventoryFieldRouter()
+inventoryFieldRouter = inventoryFieldRouter.defineRoutes(defaultRouter)
 
 # Add accountinfo declaration
 accountinfoRouter = AccountinfoRouter()
@@ -121,10 +132,27 @@ actionRouter = actionRouter.defineRoutes(defaultRouter)
 resultRouter = ResultRouter()
 resultRouter = resultRouter.defineRoutes(defaultRouter)
 
+# Add authConfig declaration
+authConfigRouter = AuthConfigRouter()
+authConfigRouter = authConfigRouter.defineRoutes(defaultRouter)
+
+# Add authMethod declaration
+authMethodRouter = AuthMethodRouter()
+authMethodRouter = authMethodRouter.defineRoutes(defaultRouter)
+
+# Add authMapping declaration
+authMappingRouter = AuthMappingRouter()
+authMappingRouter = authMappingRouter.defineRoutes(defaultRouter)
+
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     path(r'', include(defaultRouter.urls)),
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
     path("api-auth/token", obtain_auth_token, name="api_token_auth"),
+    path('asset/collection/', CollectionView.as_view(), name='asset_collection'),
+
+    # Authentication
+    path("login/", BaseAuthView.as_view(), name="login"),
+    path('callback/', CallbackView.as_view(), name='callback'),
 ]

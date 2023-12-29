@@ -54,14 +54,19 @@ INSTALLED_APPS = [
     "ipdiscover.network.apps.NetworkConfig",
     "ipdiscover.netgroup.apps.NetgroupConfig",
     "accountinfo.apps.AccountinfoConfig",
-    "asset.base.apps.BaseConfig",
     "asset.log.apps.LogConfig",
     "automation.scheduler.apps.SchedulerConfig",
     "automation.history.apps.HistoryConfig",
-    "asset.inventory.apps.InventoryConfig",
+    "asset.inventory_base.apps.InventoryBaseConfig",
+    "asset.inventory_section.apps.InventorySectionConfig",
+    "asset.inventory_field.apps.InventoryFieldConfig",
     "deployment.package.apps.PackageConfig",
     "deployment.action.apps.ActionConfig",
-    "deployment.result.apps.ResultConfig"
+    "deployment.result.apps.ResultConfig",
+    "auth.auth_method.apps.AuthMethodConfig",
+    "auth.auth_config.apps.AuthConfigConfig",
+    "auth.auth_mapping.apps.AuthMappingConfig",
+    "django_cas_ng",
 ]
 
 MIDDLEWARE = [
@@ -73,6 +78,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django_cas_ng.middleware.CASMiddleware",
 ]
 
 ROOT_URLCONF = "ocsinventory_backend.urls"
@@ -202,3 +208,15 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = "/static/"
+
+# Authentication
+# Custom auth backend (specifies the backend class to use for authentication)
+AUTHENTICATION_BACKENDS = ['auth.backends.AuthBackend']
+
+# List of customised auth backends (used to dynamically import 
+# backend classes in authentication process)
+OCS_CUSTOM_AUTH_BACKENDS = {
+    'CAS': 'auth.auth_backend.cas_backend.CustomCASBackend',
+    'LDAP': 'auth.auth_backend.ldap_backend.CustomLDAPBackend',
+    'OIDC': 'auth.auth_backend.oidc_backend.CustomOIDCBackend',
+}
