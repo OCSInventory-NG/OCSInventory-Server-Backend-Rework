@@ -1,7 +1,7 @@
 from rest_framework import permissions
 
 
-class DefaultModelPermissions(permissions.DjangoObjectPermissions):
+class DefaultModelPermissions(permissions.DjangoModelPermissions):
     """
     This class define the default required permissions access objects
     i.e. : to list / add / edit / delete
