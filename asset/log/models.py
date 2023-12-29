@@ -1,5 +1,5 @@
 from django.db import models
-from asset.base.models import Base
+from asset.inventory_base.models import InventoryBase
 
 # Create your models here.
 class Log(models.Model):
@@ -21,7 +21,7 @@ class Log(models.Model):
     )
     
     asset = models.ForeignKey(
-        Base, 
+        InventoryBase, 
         on_delete=models.CASCADE, 
         null=True
     )
