@@ -15,9 +15,11 @@ Including another URLconf
 """
 
 from accountinfo.routers import AccountinfoRouter
-from asset.base.routers import BaseRouter
+from asset.inventory_base.routers import InventoryBaseRouter
+from asset.inventory_section.routers import InventorySectionRouter
+from asset.inventory_field.routers import InventoryFieldRouter
+from asset.collection.views import CollectionView
 from asset.log.routers import LogRouter
-from asset.inventory.routers import InventoryRouter
 from config.routers import ConfigRouter
 
 # Base import to get API Working
@@ -98,17 +100,21 @@ netrouter = netrouter.defineRoutes(defaultRouter)
 netrouter = NetgroupRouter()
 netrouter = netrouter.defineRoutes(defaultRouter)
 
-# Add baseRouter declaration
-baseRouter = BaseRouter()
-baseRouter = baseRouter.defineRoutes(defaultRouter)
-
 # Add logRouter declaration
 logRouter = LogRouter()
 logRouter = logRouter.defineRoutes(defaultRouter)
 
-# Add inventoryRouter declaration
-inventoryRouter = InventoryRouter()
-inventoryRouter = inventoryRouter.defineRoutes(defaultRouter)
+# Add inventoryBaseRouter declaration
+inventoryBaseRouter = InventoryBaseRouter()
+inventoryBaseRouter = inventoryBaseRouter.defineRoutes(defaultRouter)
+
+# Add inventorySectionRouter declaration
+inventorySectionRouter = InventorySectionRouter()
+inventorySectionRouter = inventorySectionRouter.defineRoutes(defaultRouter)
+
+# Add inventoryFieldRouter declaration
+inventoryFieldRouter = InventoryFieldRouter()
+inventoryFieldRouter = inventoryFieldRouter.defineRoutes(defaultRouter)
 
 # Add accountinfo declaration
 accountinfoRouter = AccountinfoRouter()
@@ -144,6 +150,7 @@ urlpatterns = [
     path(r'', include(defaultRouter.urls)),
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
     path("api-auth/token", obtain_auth_token, name="api_token_auth"),
+    path('asset/collection/', CollectionView.as_view(), name='asset_collection'),
 
     # Authentication
     path("login/", BaseAuthView.as_view(), name="login"),

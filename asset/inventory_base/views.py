@@ -1,10 +1,10 @@
-from asset.base.models import Base
-from asset.base.serializers import BaseSerializer
+from asset.inventory_base.models import InventoryBase
+from asset.inventory_base.serializers import InventoryBaseSerializer
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
 
 
-class BaseViewSet(viewsets.OCSViewSet):
+class InventoryBaseViewSet(viewsets.OCSViewSet):
     """
     This class will define the view behavior
 
@@ -15,6 +15,6 @@ class BaseViewSet(viewsets.OCSViewSet):
     # Need to have permissions to consult
     permission_classes = [DefaultModelPermissions]
 
-    queryset = Base.objects.all()
-    serializer_class = BaseSerializer
-    model = Base
+    queryset = InventoryBase.objects.all()
+    serializer_class = InventoryBaseSerializer
+    model = InventoryBase

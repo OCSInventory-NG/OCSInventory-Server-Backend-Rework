@@ -1,7 +1,7 @@
-from asset.base.views import BaseViewSet
+from asset.inventory_section.views import InventorySectionViewSet
 
 
-class BaseRouter:
+class InventorySectionRouter:
     """
     Router class is intended to define the route related to an app
     defineRoutes method need to be defined and called in main urls.py
@@ -10,7 +10,7 @@ class BaseRouter:
     @staticmethod
     def defineRoutes(defaultRouter):
         """
-        This method will provide the routes related to the app and return the new routes
+        Define app's routes
 
         Args:
             defaultRouter ([DefaultRouter]): Default router from main urls.py
@@ -18,5 +18,5 @@ class BaseRouter:
         Returns:
             [DefaultRouter]: Updated router with app's dedicated routes
         """
-        defaultRouter.register(r"asset/bases", BaseViewSet)
+        defaultRouter.register(r"asset/sections", InventorySectionViewSet)
         return defaultRouter

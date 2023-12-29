@@ -1,6 +1,6 @@
 from django.db import models
 from deployment.package.models import Package
-from asset.base.models import Base
+from asset.inventory_base.models import InventoryBase
 
 
 class Result(models.Model):
@@ -20,7 +20,7 @@ class Result(models.Model):
         Package, related_name="result", on_delete=models.CASCADE, null=True
     )
     asset = models.ForeignKey(
-        Base, related_name="asset", on_delete=models.CASCADE, null=True
+        InventoryBase, related_name="asset", on_delete=models.CASCADE, null=True
     )
     name = models.CharField(max_length=128)
     status = models.IntegerField()
