@@ -1,10 +1,8 @@
-from rest_framework.response import Response
+from asset.inventory_base.models import InventoryBase
 from django.db.models import Q
 from django.core import serializers
 from django.http import HttpResponse
 import logging
-
-from asset.inventory_base.models import InventoryBase
 from rest_framework.views import APIView
 
 
@@ -33,7 +31,7 @@ class SearchView(APIView):
             Response object
         """
 
-        self.LOGGER.info('Start search construction query')
+        self.LOGGER.info("Start search construction query")
 
         # storing errors
         errors = []
