@@ -34,7 +34,7 @@ class SearchView(APIView):
         self.LOGGER.info("Start search construction query")
 
         # storing errors
-        errors = []
+        #errors = []
 
         data = request.data
 
