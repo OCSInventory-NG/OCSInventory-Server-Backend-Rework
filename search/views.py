@@ -52,7 +52,7 @@ class SearchView(APIView):
                 # Construction de la condition Q
                 condition_q = Q(**{f"{field}__{operator}": value})
 
-                # Si le filtre précédent était lié par "OR", utilisez OR, 
+                # Si le filtre précédent était lié par "OR", utilisez OR,
                 # sinon utilisez AND
                 if condition["link"] == "OR":
                     and_filter |= condition_q
