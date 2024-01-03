@@ -1,6 +1,7 @@
 from rest_framework.response import Response
-from rest_framework.exceptions import ValidationError
-from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
+from django.core import serializers
+from django.http import HttpResponse
 import logging
 
 from asset.inventory_base.models import InventoryBase
@@ -34,6 +35,29 @@ class SearchView(APIView):
 
         self.LOGGER.info('Start search construction query')
 
-        return Response(
-            {'message': 'Test search'},
-            status=201)
+        # storing errors
+        errors = []
+
+        data = request.data
+
+        #try:
+        # initialize empty arguments
+        kwargs = {}
+
+        for params in data:
+            for param in params:
+                kwargs = {
+                    '{0}__{1}'.format(param['field'], param['operator']): param['value']
+                }
+
+        q_objects = Q()
+        for key, value in kwargs.items():
+            q_objects.add(Q(**{key: value}), Q.AND)
+        
+        query_set = InventoryBase.objects.filter(q_objects)
+        qs_json = serializers.serialize('json', query_set)
+        
+        #except:
+        #    errors.append('Error append in search construction')
+
+        return HttpResponse(qs_json, content_type='application/json')
