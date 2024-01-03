@@ -38,6 +38,7 @@ from auth.auth_config.routers import AuthConfigRouter
 from auth.auth_method.routers import AuthMethodRouter
 from auth.auth_mapping.routers import AuthMappingRouter
 from auth.auth_view.auth_views import LoginView, CallbackView, BaseAuthView
+from search.views import SearchView
 
 
 # Import dedicated routers and provide different endpoint
@@ -151,6 +152,7 @@ urlpatterns = [
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
     path("api-auth/token", obtain_auth_token, name="api_token_auth"),
     path('asset/collection/', CollectionView.as_view(), name='asset_collection'),
+    path('search/', SearchView.as_view(), name='search'),
 
     # Authentication
     path("login/", BaseAuthView.as_view(), name="login"),
