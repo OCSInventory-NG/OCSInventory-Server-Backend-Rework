@@ -1,8 +1,9 @@
-from asset.inventory_base.models import InventoryBase
-from django.db.models import Q
-from django.core import serializers
-from django.http import HttpResponse
 import logging
+
+from asset.inventory_base.models import InventoryBase
+from django.core import serializers
+from django.db.models import Q
+from django.http import HttpResponse
 from rest_framework.views import APIView
 
 
@@ -34,28 +35,28 @@ class SearchView(APIView):
         self.LOGGER.info("Start search construction query")
 
         # storing errors
-        #errors = []
+        # errors = []
 
         data = request.data
 
-        #try:
+        # try:
         # initialize empty arguments
         kwargs = {}
 
         for params in data:
             for param in params:
                 kwargs = {
-                    '{0}__{1}'.format(param['field'], param['operator']): param['value']
+                    "{0}__{1}".format(param["field"], param["operator"]): param["value"]
                 }
 
         q_objects = Q()
         for key, value in kwargs.items():
             q_objects.add(Q(**{key: value}), Q.AND)
-        
+
         query_set = InventoryBase.objects.filter(q_objects)
-        qs_json = serializers.serialize('json', query_set)
-        
-        #except:
+        qs_json = serializers.serialize("json", query_set)
+
+        # except:
         #    errors.append('Error append in search construction')
 
-        return HttpResponse(qs_json, content_type='application/json')
+        return HttpResponse(qs_json, content_type="application/json")
