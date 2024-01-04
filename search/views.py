@@ -51,12 +51,16 @@ class SearchView(APIView):
                 field = condition["field"]
                 operator = condition["operator"]
                 value = condition["value"]
+                obj = condition["object"]
 
                 if masterindex > 0 and index == 0:
                     links[masterindex] = condition["link"]
 
                 # Construction of the Q condition
-                condition_q = Q(**{f"{field}__{operator}": value})
+                if obj == "InventoryBase":
+                    condition_q = Q(**{f"{field}__{operator}": value})
+                else:
+                    condition_q = Q(**{f"{obj}__{field}__{operator}": value})
 
                 # If the previous filter was linked by "OR", use OR,
                 # otherwise use AND
