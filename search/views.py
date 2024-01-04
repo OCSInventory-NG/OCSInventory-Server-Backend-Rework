@@ -36,36 +36,49 @@ class SearchView(APIView):
 
         data = request.data
 
-        # Initialisation de la liste des filtres Q
+        # Initializing the Q filter list
         filters = []
+        links = {}
+        masterindex = 0
 
-        # Itération sur la structure JSON
+        # Iterating over JSON structure
         for and_conditions in data:
             and_filter = Q()
+            index = 0
 
-            # Itération sur les conditions "ET"
+            # Iteration on “AND” conditions
             for condition in and_conditions:
                 field = condition["field"]
                 operator = condition["operator"]
                 value = condition["value"]
 
-                # Construction de la condition Q
+                if masterindex > 0 and index == 0:
+                    links[masterindex] = condition["link"]
+
+                # Construction of the Q condition
                 condition_q = Q(**{f"{field}__{operator}": value})
 
-                # Si le filtre précédent était lié par "OR", utilisez OR,
-                # sinon utilisez AND
+                # If the previous filter was linked by "OR", use OR,
+                # otherwise use AND
                 if condition["link"] == "OR":
                     and_filter |= condition_q
                 else:
                     and_filter &= condition_q
+                
+                index = index + 1
 
-            # Ajout du filtre "ET" à la liste des filtres
+            # Adding the "AND" filter to the filter list
             filters.append(and_filter)
+            masterindex = masterindex + 1
 
-        # Construction du filtre final en utilisant ET entre les filtres "OR"
+        # Construction of the final filter using AND between "OR" filters
         q_object = filters[0]
+        linkindex = 1
         for q_filter in filters[1:]:
-            q_object &= q_filter
+            if links[linkindex] == "OR":
+                q_object |= q_filter
+            else:
+                q_object &= q_filter
 
         query_set = InventoryBase.objects.filter(q_object)
         qs_json = serializers.serialize("json", query_set)
