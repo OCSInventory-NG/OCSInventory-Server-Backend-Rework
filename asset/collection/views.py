@@ -154,9 +154,9 @@ class CollectionView(APIView):
                               'for device %s - %s: %s', data['uuid'],
                               data['name'], errors)
 
-            return Response({'Inventory created but errors were encountered '
-                             'while creating device %s - %s: %s',
-                             data['uuid'], data['name'], errors},
+            return Response({f'Inventory created but errors were encountered '
+                             f'while creating device {data["uuid"]} - '
+                             f'{data["name"]}: {str(errors)}'},
                             status=201)
         else:
             self.LOGGER.info(
@@ -301,8 +301,8 @@ class CollectionView(APIView):
                               'while updating device %s - %s: %s',
                               data['uuid'], data['name'], errors)
             return Response({'Update succeeded but errors were encountered '
-                             'while updating device %s - %s: %s',
-                             data['uuid'], data['name'], errors},
+                             f'while updating device {data["uuid"]} - '
+                             f'{data["name"]}: {str(errors)}'},
                             status=200)
         else:
             self.LOGGER.info(
@@ -448,7 +448,10 @@ class CollectionView(APIView):
             self.LOGGER.error('Partial update succeeded but errors were '
                               'encountered while updating device %s - %s: %s',
                               data['uuid'], data['name'], errors)
-            return Response({'errors': errors}, status=200)
+            return Response({'Partial update succeeded but errors were '
+                             f'encountered while updating device '
+                             f'{data["uuid"]} - {data["name"]}: {str(errors)}'},
+                            status=200)
         else:
             self.LOGGER.info(
                             'Inventory updated successfully for device %s - %s'
