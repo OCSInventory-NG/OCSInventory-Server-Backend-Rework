@@ -64,7 +64,7 @@ class SearchView(APIView):
                     and_filter |= condition_q
                 else:
                     and_filter &= condition_q
-                
+
                 index = index + 1
 
             # Adding the "AND" filter to the filter list
