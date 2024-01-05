@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     "asset.log.apps.LogConfig",
     "automation.scheduler.apps.SchedulerConfig",
     "automation.history.apps.HistoryConfig",
+    "automation.rule.apps.RuleConfig",
     "asset.inventory_base.apps.InventoryBaseConfig",
     "asset.inventory_section.apps.InventorySectionConfig",
     "asset.inventory_field.apps.InventoryFieldConfig",
