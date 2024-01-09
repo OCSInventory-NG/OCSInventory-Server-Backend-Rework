@@ -66,36 +66,51 @@ class SearchView(APIView):
                     if operator == "iexact":
                         matching_objects = AccountinfoData.objects.filter(
                             accountdata__contains={f"{field}": value},
-                            object_slug="inventory_base.inventorybase"
+                            object_slug="inventory_base.inventorybase",
                         ).values_list("object_id")
                         if matching_objects:
                             condition_q = Q(id__in=matching_objects)
                         else:
-                            id_to_exclude = InventoryBase.objects.all().values_list("id")
+                            id_to_exclude = InventoryBase.objects.all().values_list(
+                                "id"
+                            )
                             condition_q = ~Q(id__in=id_to_exclude)
                     else:
                         matching_objects = AccountinfoData.objects.filter(
                             accountdata__has_key=f"{field}",
-                            object_slug="inventory_base.inventorybase"
+                            object_slug="inventory_base.inventorybase",
                         )
                         if matching_objects:
                             result = []
                             for matching_object in matching_objects:
-                                for key,data in matching_object.accountdata.items():
+                                for key, data in matching_object.accountdata.items():
                                     if int(key) == int(field):
-                                        if operator == "icontains" and value.lower() in data.lower():
+                                        if (
+                                            operator == "icontains"
+                                            and value.lower() in data.lower()
+                                        ):
                                             result.append(matching_object.object_id)
-                                        elif operator == "istartswith" and data.lower().startswith(value.lower()):
+                                        elif (
+                                            operator == "istartswith"
+                                            and data.lower().startswith(value.lower())
+                                        ):
                                             result.append(matching_object.object_id)
-                                        elif operator == "iendswith" and data.lower().endswith(value.lower()):
+                                        elif (
+                                            operator == "iendswith"
+                                            and data.lower().endswith(value.lower())
+                                        ):
                                             result.append(matching_object.object_id)
                             if len(result) > 0:
                                 condition_q = Q(id__in=result)
                             else:
-                                id_to_exclude = InventoryBase.objects.all().values_list("id")
+                                id_to_exclude = InventoryBase.objects.all().values_list(
+                                    "id"
+                                )
                                 condition_q = ~Q(id__in=id_to_exclude)
                         else:
-                            id_to_exclude = InventoryBase.objects.all().values_list("id")
+                            id_to_exclude = InventoryBase.objects.all().values_list(
+                                "id"
+                            )
                             condition_q = ~Q(id__in=id_to_exclude)
                 else:
                     condition_q = Q(**{f"{obj}__{field}__{operator}": value})
