@@ -102,7 +102,7 @@ class SearchView(APIView):
 
                 # If the previous filter was linked by "OR", use OR,
                 # otherwise use AND
-                if skip == False:
+                if skip is False:
                     if condition["link"] == "OR":
                         and_filter |= condition_q
                     else:
