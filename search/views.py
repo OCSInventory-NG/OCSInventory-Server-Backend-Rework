@@ -1,5 +1,6 @@
 import logging
 
+from accountinfo.models import AccountinfoData
 from asset.inventory_base.models import InventoryBase
 from django.core import serializers
 from django.db.models import Q
@@ -52,6 +53,7 @@ class SearchView(APIView):
                 operator = condition["operator"]
                 value = condition["value"]
                 obj = condition["object"]
+                skip = False
 
                 if masterindex > 0 and index == 0:
                     links[masterindex] = condition["link"]
@@ -59,32 +61,74 @@ class SearchView(APIView):
                 # Construction of the Q condition
                 if obj == "InventoryBase":
                     condition_q = Q(**{f"{field}__{operator}": value})
+                # Special process if accountinfo
+                elif obj == "AccountinfoConfig":
+                    if operator == "iexact":
+                        matching_objects = AccountinfoData.objects.filter(
+                            accountdata__contains={f"{field}": value},
+                            object_slug="inventory_base.inventorybase"
+                        ).values_list("object_id")
+                        if matching_objects:
+                            condition_q = Q(id__in=matching_objects)
+                        else:
+                            id_to_exclude = InventoryBase.objects.all().values_list("id")
+                            condition_q = ~Q(id__in=id_to_exclude)
+                    else:
+                        matching_objects = AccountinfoData.objects.filter(
+                            accountdata__has_key=f"{field}",
+                            object_slug="inventory_base.inventorybase"
+                        )
+                        if matching_objects:
+                            result = []
+                            for matching_object in matching_objects:
+                                for key,data in matching_object.accountdata.items():
+                                    if int(key) == int(field):
+                                        if operator == "icontains" and value.lower() in data.lower():
+                                            result.append(matching_object.object_id)
+                                        elif operator == "istartswith" and data.lower().startswith(value.lower()):
+                                            result.append(matching_object.object_id)
+                                        elif operator == "iendswith" and data.lower().endswith(value.lower()):
+                                            result.append(matching_object.object_id)
+                            if len(result) > 0:
+                                condition_q = Q(id__in=result)
+                            else:
+                                id_to_exclude = InventoryBase.objects.all().values_list("id")
+                                condition_q = ~Q(id__in=id_to_exclude)
+                        else:
+                            id_to_exclude = InventoryBase.objects.all().values_list("id")
+                            condition_q = ~Q(id__in=id_to_exclude)
                 else:
                     condition_q = Q(**{f"{obj}__{field}__{operator}": value})
 
                 # If the previous filter was linked by "OR", use OR,
                 # otherwise use AND
-                if condition["link"] == "OR":
-                    and_filter |= condition_q
-                else:
-                    and_filter &= condition_q
+                if skip == False:
+                    if condition["link"] == "OR":
+                        and_filter |= condition_q
+                    else:
+                        and_filter &= condition_q
 
                 index = index + 1
 
             # Adding the "AND" filter to the filter list
-            filters.append(and_filter)
+            if len(and_filter) > 0:
+                filters.append(and_filter)
             masterindex = masterindex + 1
 
         # Construction of the final filter using AND between "OR" filters
-        q_object = filters[0]
-        linkindex = 1
-        for q_filter in filters[1:]:
-            if links[linkindex] == "OR":
-                q_object |= q_filter
-            else:
-                q_object &= q_filter
+        if len(filters) > 0:
+            q_object = filters[0]
+            linkindex = 1
+            for q_filter in filters[1:]:
+                if links[linkindex] == "OR":
+                    q_object |= q_filter
+                else:
+                    q_object &= q_filter
 
-        query_set = InventoryBase.objects.filter(q_object)
+            query_set = InventoryBase.objects.filter(q_object)
+        else:
+            query_set = []
+
         qs_json = serializers.serialize("json", query_set)
 
         return HttpResponse(qs_json, content_type="application/json")
