@@ -1,16 +1,14 @@
-from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 from django.dispatch import receiver
 from automation.rule.logic import Logic
+from django.contrib.auth.signals import user_logged_in
 
-
-
-@receiver(post_save, sender=User)
-def user_login_handler(sender, instance, created, **kwargs):
+# user logged in signal
+@receiver(user_logged_in, sender=User)
+def user_login_handler(sender, user, request, **kwargs):
     """
     Signal handler for user login.
     """
-    if not getattr(instance, 'processed', False):
-        logic = Logic('user_login', instance)
-        instance = logic.process_rules()
-
+    if not getattr(user, 'processed', False):
+        logic = Logic('user_login', user)
+        user = logic.process_rules()

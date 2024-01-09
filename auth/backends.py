@@ -1,6 +1,7 @@
 import logging
 from importlib import import_module
 from django.contrib.auth.backends import ModelBackend
+from django.contrib.auth.signals import user_logged_in
 
 from auth.auth_method.models import AuthMethod
 from ocsinventory_backend import settings
@@ -59,6 +60,7 @@ class AuthBackend(ModelBackend):
             user = backend.authenticate(request, username=username, password=password,
                                         **kwargs)
             if user:
+                user_logged_in.send(sender=user.__class__, request=request, user=user)
                 return user
 
         return None

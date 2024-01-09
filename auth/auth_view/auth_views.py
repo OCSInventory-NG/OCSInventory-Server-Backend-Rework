@@ -6,6 +6,7 @@ from django.contrib.auth import login
 from django.urls import reverse
 from django.views import View
 from rest_framework.authtoken.models import Token
+from django.contrib.auth.signals import user_logged_in
 
 from auth.auth_backend.cas_backend import CustomCASBackend
 from auth.auth_backend.oidc_backend import CustomOIDCBackend
@@ -143,6 +144,8 @@ class CallbackView(BaseAuthView):
             login(request, user)
             # Generate a token for the user
             token, created = Token.objects.get_or_create(user=user)
+            # sending the user_logged_in signal manually
+            user_logged_in.send(sender=user.__class__, request=request, user=user)
             # Include the token in the response
             return JsonResponse({'token_authentication': token.key})
 
@@ -158,6 +161,8 @@ class CallbackView(BaseAuthView):
             login(request, user)
             # Generate a token for the user
             token, created = Token.objects.get_or_create(user=user)
+            # sending the user_logged_in signal manually
+            user_logged_in.send(sender=user.__class__, request=request, user=user)
             # Include the token in the response
             return JsonResponse({'token_authentication': token.key})
 

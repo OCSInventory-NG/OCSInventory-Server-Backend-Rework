@@ -1,4 +1,3 @@
-from accountinfo.models import AccountinfoData
 from automation.rule.models import Rule
 from json_logic import jsonLogic
 from django.db.models.fields import CharField, IntegerField
@@ -36,7 +35,7 @@ class Logic:
         for rule in rules:
             try:
                 result = jsonLogic(rule.logic, self.instance.__dict__)
-                
+
                 if result:
                     self.execute_actions(rule)
             except Exception as e:
@@ -88,8 +87,8 @@ class Logic:
             value = self.convert_value(instance, action.field, action.value)
             field = instance._meta.get_field(action.field)
             if isinstance(field, ManyToManyField):
-                # Use set() for ManyToManyFields
-                getattr(instance, action.field).add(value.id)
+                # use add() for ManyToManyFields on instance
+                getattr(instance, action.field).add(value)
             else:
                 setattr(instance, action.field, value)
         # setting processed to True to avoid infinite loop where .save() triggers the post_save signal
