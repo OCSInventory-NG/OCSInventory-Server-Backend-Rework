@@ -1,4 +1,4 @@
-from automation.rule.views import RuleViewSet, ActionViewSet
+from automation.rule.views import RuleViewSet, ActionViewSet, TriggerViewSet
 
 
 class RuleRouter:
@@ -19,5 +19,6 @@ class RuleRouter:
             [DefaultRouter]: Updated router with app's dedicated routes
         """
         defaultRouter.register(r"automation/rule", RuleViewSet)
-        defaultRouter.register(r"automation/rule/action", ActionViewSet)
+        defaultRouter.register(r"automation/action", ActionViewSet)
+        defaultRouter.register(r"automation/triggers", TriggerViewSet, basename="triggers")
         return defaultRouter
