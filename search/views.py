@@ -63,10 +63,7 @@ class SearchView(APIView):
                     condition_q = Q(**{f"{field}__{operator}": value})
                 # Special process if accountinfo
                 elif obj == "AccountinfoConfig":
-                    if (
-                        operator == "iexact"
-                        and condition["fieldtype"] != "checkbox"
-                    ):
+                    if operator == "iexact" and condition["fieldtype"] != "checkbox":
                         if condition["fieldtype"] == "select":
                             matching_objects = AccountinfoData.objects.filter(
                                 **{f"accountdata__{field}__value__contains": value},
