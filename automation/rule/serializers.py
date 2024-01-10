@@ -15,7 +15,7 @@ class ActionSerializer(serializers.ModelSerializer):
         """Define the linked model and the fields registered in the API"""
 
         model = Action
-        fields = ["id", "action", "field", "value", "content_type", "object_id", "object_slug"]
+        fields = ["id", "description", "action", "field", "value", "content_type", "object_id", "object_slug"]
 
     def create(self, validated_data):
         """Override create to allow nested creation of fields"""
@@ -43,7 +43,7 @@ class RuleSerializer(serializers.ModelSerializer):
         """Define the linked model and the fields registered in the API"""
 
         model = Rule
-        fields = ["id", "trigger", "enabled", "logic", "actions"]
+        fields = ["id", "description", "trigger", "enabled", "logic", "actions"]
 
     def create(self, validated_data):
         """Override create to allow nested creation of fields"""
