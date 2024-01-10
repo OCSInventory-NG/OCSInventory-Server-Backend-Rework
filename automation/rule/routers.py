@@ -1,4 +1,4 @@
-from automation.rule.views import RuleViewSet, ActionViewSet, TriggerViewSet
+from automation.rule.views import ActionViewSet, RuleViewSet, TriggerViewSet
 
 
 class RuleRouter:
@@ -20,5 +20,7 @@ class RuleRouter:
         """
         defaultRouter.register(r"automation/rule", RuleViewSet)
         defaultRouter.register(r"automation/action", ActionViewSet)
-        defaultRouter.register(r"automation/triggers", TriggerViewSet, basename="triggers")
+        defaultRouter.register(
+            r"automation/triggers", TriggerViewSet, basename="triggers"
+        )
         return defaultRouter

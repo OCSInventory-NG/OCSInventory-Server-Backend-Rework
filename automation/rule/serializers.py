@@ -1,6 +1,6 @@
-from automation.rule.models import Rule, Action
-from rest_framework import serializers
+from automation.rule.models import Action, Rule
 from django.contrib.contenttypes.models import ContentType
+from rest_framework import serializers
 
 
 class ActionSerializer(serializers.ModelSerializer):
@@ -15,7 +15,16 @@ class ActionSerializer(serializers.ModelSerializer):
         """Define the linked model and the fields registered in the API"""
 
         model = Action
-        fields = ["id", "description", "action", "field", "value", "content_type", "object_id", "object_slug"]
+        fields = [
+            "id",
+            "description",
+            "action",
+            "field",
+            "value",
+            "content_type",
+            "object_id",
+            "object_slug",
+        ]
 
     def create(self, validated_data):
         """Override create to allow nested creation of fields"""

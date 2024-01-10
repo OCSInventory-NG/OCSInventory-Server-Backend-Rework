@@ -1,10 +1,10 @@
+from automation.rule.models import Action, Rule
+from automation.rule.serializers import ActionSerializer, RuleSerializer
+from django.apps import apps
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
-from automation.rule.models import Rule, Action
-from automation.rule.serializers import RuleSerializer, ActionSerializer
 from rest_framework import status
 from rest_framework.response import Response
-from django.apps import apps
 
 
 class RuleViewSet(viewsets.OCSViewSet):
@@ -18,7 +18,7 @@ class RuleViewSet(viewsets.OCSViewSet):
     serializer_class = RuleSerializer
     model = Rule
 
-    filterset_fields = ['id', 'trigger', 'actions']
+    filterset_fields = ["id", "trigger", "actions"]
 
 
 class ActionViewSet(viewsets.OCSViewSet):
@@ -41,32 +41,32 @@ class TriggerViewSet(viewsets.OCSViewSet):
     permission_classes = []
     queryset = Rule.TRIGGER_CHOICES
 
-    allowed_methods = ['GET']
+    allowed_methods = ["GET"]
 
     def list(self):
-        """List all the triggers and the related models
-        """
+        """List all the triggers and the related models"""
         trigger_data = []
         for trigger, _ in Rule.TRIGGER_CHOICES:
             model_name = self.get_model_name_for_trigger(trigger)
             targets = self.get_trigger_targets(trigger, model_name)
-            trigger_data.append({
-                'trigger': trigger,
-                'model_name': model_name,
-                'action_targets': targets,
-            })
+            trigger_data.append(
+                {
+                    "trigger": trigger,
+                    "model_name": model_name,
+                    "action_targets": targets,
+                }
+            )
 
         return Response(trigger_data, status=status.HTTP_200_OK)
 
     def get_model_name_for_trigger(self, trigger):
-        """Return the model name and the app name for the given trigger
-        """
+        """Return the model name and the app name for the given trigger"""
         model_mapping = {
-            'inventory_received': 'inventory_base.InventoryBase',
-            'user_login': 'auth.User',
-            'netdevice_received': 'netdevice.Netdevice',
+            "inventory_received": "inventory_base.InventoryBase",
+            "user_login": "auth.User",
+            "netdevice_received": "netdevice.Netdevice",
         }
-        model_path = model_mapping.get(trigger, 'default.Model')
+        model_path = model_mapping.get(trigger, "default.Model")
         model = apps.get_model(model_path)
         app_name = model._meta.app_label
 
@@ -91,8 +91,7 @@ class TriggerViewSet(viewsets.OCSViewSet):
                     targets[trigger] = targets.get(trigger, []) + [model_name]
 
         # manually add accountinfo config
-        targets[trigger] = targets.get(
-            trigger, []) + ['accountinfo.AccountinfoConfig']
+        targets[trigger] = targets.get(trigger, []) + ["accountinfo.AccountinfoConfig"]
         # also adding the model itself
         targets[trigger] = targets.get(trigger, []) + [str(model)]
 

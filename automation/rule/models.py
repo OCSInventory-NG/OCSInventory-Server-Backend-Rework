@@ -1,13 +1,13 @@
-from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.db import models
 
 
 class Rule(models.Model):
     TRIGGER_CHOICES = [
-        ('inventory_received', 'Inventory Received'),
-        ('user_login', 'User Login'),
-        ('netdevice_received', 'Netdevice Received'),
+        ("inventory_received", "Inventory Received"),
+        ("user_login", "User Login"),
+        ("netdevice_received", "Netdevice Received"),
     ]
 
     trigger = models.CharField(max_length=50, choices=TRIGGER_CHOICES)
@@ -18,15 +18,16 @@ class Rule(models.Model):
 
 class Action(models.Model):
     ACTION_CHOICES = [
-        ('set', 'Set'),
+        ("set", "Set"),
     ]
 
-    rule = models.ForeignKey(Rule, related_name='actions', on_delete=models.CASCADE)
+    rule = models.ForeignKey(Rule, related_name="actions", on_delete=models.CASCADE)
     action = models.CharField(max_length=50, choices=ACTION_CHOICES)
     description = models.CharField(max_length=255, null=True, blank=True)
     # Define a GenericForeignKey to handle actions on different models
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE,
-                                     null=True, blank=True)
+    content_type = models.ForeignKey(
+        ContentType, on_delete=models.CASCADE, null=True, blank=True
+    )
     object_id = models.PositiveIntegerField(null=True, blank=True)
     content_object = GenericForeignKey("content_type", "object_id")
     object_slug = models.CharField(null=True, max_length=100)

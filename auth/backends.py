@@ -1,11 +1,10 @@
 import logging
 from importlib import import_module
-from django.contrib.auth.backends import ModelBackend
-from django.contrib.auth.signals import user_logged_in
 
 from auth.auth_method.models import AuthMethod
+from django.contrib.auth.backends import ModelBackend
+from django.contrib.auth.signals import user_logged_in
 from ocsinventory_backend import settings
-
 
 
 class AuthBackend(ModelBackend):
@@ -40,13 +39,10 @@ class AuthBackend(ModelBackend):
                         f"method: {e}"
                     )
 
-
     def authenticate(self, request, username=None, password=None, **kwargs):
         # retrieve all enabled auth methods in order of priority
         auth_methods = AuthMethod.objects.filter(
-            enabled=True,
-            priority__gte=0,
-            auth_type="OTHER"
+            enabled=True, priority__gte=0, auth_type="OTHER"
         ).order_by("priority")
 
         for auth_method in auth_methods:
@@ -56,9 +52,11 @@ class AuthBackend(ModelBackend):
             # try authenticating with the backend
             backend = BackendClass()
             self.logger.debug(
-                f"Attempting authentication with {auth_method.name} backend")
-            user = backend.authenticate(request, username=username, password=password,
-                                        **kwargs)
+                f"Attempting authentication with {auth_method.name} backend"
+            )
+            user = backend.authenticate(
+                request, username=username, password=password, **kwargs
+            )
             if user:
                 user_logged_in.send(sender=user.__class__, request=request, user=user)
                 return user

@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_filters",
-    'django_extensions',
+    "django_extensions",
     "corsheaders",
     "rest_framework",
     "rest_framework.authtoken",
@@ -106,8 +106,8 @@ LOGGING = {
     "disable_existing_loggers": False,
     "formatters": {
         "verbose": {
-            "format": '{levelname} - {asctime} - {module} {process:d} : {message}',
-            "style": '{',
+            "format": "{levelname} - {asctime} - {module} {process:d} : {message}",
+            "style": "{",
         },
         "simple": {
             "format": "{levelname} - {asctime} - {module} : {message}",
@@ -138,7 +138,6 @@ LOGGING = {
         },
     },
 }
-
 
 
 WSGI_APPLICATION = "ocsinventory_backend.wsgi.application"
@@ -212,12 +211,12 @@ STATIC_URL = "/static/"
 
 # Authentication
 # Custom auth backend (specifies the backend class to use for authentication)
-AUTHENTICATION_BACKENDS = ['auth.backends.AuthBackend']
+AUTHENTICATION_BACKENDS = ["auth.backends.AuthBackend"]
 
-# List of customised auth backends (used to dynamically import 
+# List of customised auth backends (used to dynamically import
 # backend classes in authentication process)
 OCS_CUSTOM_AUTH_BACKENDS = {
-    'CAS': 'auth.auth_backend.cas_backend.CustomCASBackend',
-    'LDAP': 'auth.auth_backend.ldap_backend.CustomLDAPBackend',
-    'OIDC': 'auth.auth_backend.oidc_backend.CustomOIDCBackend',
+    "CAS": "auth.auth_backend.cas_backend.CustomCASBackend",
+    "LDAP": "auth.auth_backend.ldap_backend.CustomLDAPBackend",
+    "OIDC": "auth.auth_backend.oidc_backend.CustomOIDCBackend",
 }
