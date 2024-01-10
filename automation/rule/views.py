@@ -6,6 +6,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from django.apps import apps
 
+
 class RuleViewSet(viewsets.OCSViewSet):
     """
     Rule viewset
@@ -74,8 +75,9 @@ class TriggerViewSet(viewsets.OCSViewSet):
         return model_name
 
     def get_trigger_targets(self, trigger, model):
-        """Return the models on which an action can be executed for the given trigger
-        i.e. the models related to the main model (ForeignKey, ManyToManyField)
+        """Return the models on which an action can be executed for the given
+        trigger, i.e. the models related to the main model (ForeignKey,
+        ManyToManyField)
         """
         targets = {}
         model_obj = apps.get_model(model)
@@ -83,11 +85,14 @@ class TriggerViewSet(viewsets.OCSViewSet):
             if field.is_relation:
                 # ignore ManyToOne relations
                 if not field.many_to_one:
-                    model_name = f"{field.related_model._meta.app_label}.{field.related_model.__name__}"
+                    app_name = field.related_model._meta.app_label
+                    model_name = field.related_model.__name__
+                    model_name = f"{app_name}.{model_name}"
                     targets[trigger] = targets.get(trigger, []) + [model_name]
-                
+
         # manually add accountinfo config
-        targets[trigger] = targets.get(trigger, []) + ['accountinfo.AccountinfoConfig']
+        targets[trigger] = targets.get(
+            trigger, []) + ['accountinfo.AccountinfoConfig']
         # also adding the model itself
         targets[trigger] = targets.get(trigger, []) + [str(model)]
 

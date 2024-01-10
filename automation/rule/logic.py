@@ -68,20 +68,29 @@ class Logic:
                 if model.__name__ == 'AccountinfoConfig':
                     # get accountinfo data matching the instance id
                     # if accountinfo data does not exist, create it
-                    already_exists = AccountinfoData.objects.filter(object_id=self.instance.id, content_type=ContentType.objects.get_for_model(self.instance))
+                    already_exists = AccountinfoData.objects.filter(
+                        object_id=self.instance.id,
+                        content_type=ContentType.objects.get_for_model(
+                            self.instance))
                     if not already_exists.exists():
                         model_name = self.instance.__class__.__name__.lower()
                         app_name = self.instance._meta.app_label.lower()
                         slug = f"{app_name}.{model_name}"
-                        related_instance = AccountinfoData.objects.create(object_id=self.instance.id, content_type=ContentType.objects.get_for_model(self.instance), 
-                                                                          object_slug=slug,
-                                                                          accountdata={})
+                        related_instance = AccountinfoData.objects.create(
+                            object_id=self.instance.id,
+                            content_type=ContentType.objects.get_for_model(
+                                self.instance
+                                ),
+                            object_slug=slug,
+                            accountdata={})
                     else:
                         related_instance = already_exists.first()
 
                 self.update_field(related_instance, action)
             except model.DoesNotExist:
-                self.LOGGER.error(f"Related instance not found: {model.__name__} with ID {action.object_id}")
+                self.LOGGER.error(
+                    f"Related instance not found: {model.__name__} with "
+                    f"ID {action.object_id}")
             except Exception as e:
                 self.LOGGER.error(f"Error updating related instance: {e}")
         else:
@@ -102,14 +111,16 @@ class Logic:
                 field, key = action.field.split(':', 1)
                 self.update_json_field(instance, field, key, action.value)
             else:
-                value = self.convert_value(instance, action.field, action.value)
+                value = self.convert_value(instance, action.field,
+                                           action.value)
                 field = instance._meta.get_field(action.field)
                 if isinstance(field, ManyToManyField):
-                    # use add() for ManyToManyFields on instance (group, permissions, etc.)
+                    # use add() for ManyToManyFields (group, permissions, etc.)
                     getattr(instance, action.field).add(value)
                 else:
                     setattr(instance, action.field, value)
-            # setting processed to True to avoid infinite loop where .save() triggers the post_save signal
+            # set processed to True to avoid infinite loop where .save()
+            # triggers the post_save signal
             instance.processed = True
             instance.save()
         except Exception as e:
@@ -131,10 +142,13 @@ class Logic:
                     related_instance = related_model.objects.get(id=value)
                     return related_instance
                 except ObjectDoesNotExist:
-                    Logic.LOGGER.error(f"Related instance not found: {related_model.__name__} with ID {value}")
+                    Logic.LOGGER.error(
+                        f"Related instance not found: {related_model.__name__}"
+                        f" with ID {value}")
                     return None
                 except ValueError:
-                    Logic.LOGGER.error(f"Invalid value for related instance: {value}")
+                    Logic.LOGGER.error("Invalid value for related "
+                                       f"instance: {value}")
                     return None
             elif issubclass(field_type, ManyToManyField):
                 related_model = field.related_model
@@ -142,11 +156,14 @@ class Logic:
                     related_instances = related_model.objects.get(id=value)
                     return related_instances
                 except ObjectDoesNotExist:
-                    Logic.LOGGER.error(f"Related instance not found: {related_model.__name__} with ID {value}")
+                    Logic.LOGGER.error(
+                        f"Related instance not found: {related_model.__name__}"
+                        f" with ID {value}")
 
                     return None
                 except ValueError:
-                    Logic.LOGGER.error(f"Invalid value for related instance: {value}")
+                    Logic.LOGGER.error(
+                        f"Invalid value for related instance: {value}")
                     return None
 
             else:
@@ -158,8 +175,8 @@ class Logic:
     @staticmethod
     def update_json_field(instance, field, key, value):
         """Update the JSON field of the given instance
-        Warning: this is experimental and attempts to update the data in nested JSON structures
-        e.g. updating accountinfo data
+        Warning: this is experimental and attempts to update the data in
+        nested JSON structures (e.g. updating accountinfo data)
         """
         try:
             json_data = getattr(instance, field, {}).copy()
