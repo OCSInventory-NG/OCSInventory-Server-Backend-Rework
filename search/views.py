@@ -63,11 +63,20 @@ class SearchView(APIView):
                     condition_q = Q(**{f"{field}__{operator}": value})
                 # Special process if accountinfo
                 elif obj == "AccountinfoConfig":
-                    if operator == "iexact":
-                        matching_objects = AccountinfoData.objects.filter(
-                            accountdata__contains={f"{field}": value},
-                            object_slug="inventory_base.inventorybase",
-                        ).values_list("object_id")
+                    if (
+                        operator == "iexact"
+                        and condition["fieldtype"] != "checkbox"
+                    ):
+                        if condition["fieldtype"] == "select":
+                            matching_objects = AccountinfoData.objects.filter(
+                                **{f"accountdata__{field}__value__contains": value},
+                                object_slug="inventory_base.inventorybase",
+                            ).values_list("object_id")
+                        else:
+                            matching_objects = AccountinfoData.objects.filter(
+                                accountdata__contains={f"{field}": value},
+                                object_slug="inventory_base.inventorybase",
+                            ).values_list("object_id")
                         if matching_objects:
                             condition_q = Q(id__in=matching_objects)
                         else:
@@ -87,17 +96,26 @@ class SearchView(APIView):
                                     if int(key) == int(field):
                                         if (
                                             operator == "icontains"
+                                            and data is not None
                                             and value.lower() in data.lower()
                                         ):
                                             result.append(matching_object.object_id)
                                         elif (
                                             operator == "istartswith"
+                                            and data is not None
                                             and data.lower().startswith(value.lower())
                                         ):
                                             result.append(matching_object.object_id)
                                         elif (
                                             operator == "iendswith"
+                                            and data is not None
                                             and data.lower().endswith(value.lower())
+                                        ):
+                                            result.append(matching_object.object_id)
+                                        elif (
+                                            operator == "iexact"
+                                            and condition["fieldtype"] == "checkbox"
+                                            and int(value) in data
                                         ):
                                             result.append(matching_object.object_id)
                             if len(result) > 0:
