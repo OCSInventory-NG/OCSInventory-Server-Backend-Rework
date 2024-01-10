@@ -62,7 +62,7 @@ class AccountinfoData(models.Model):
     - accountdata : JSON representation of the account infos
     """
 
-    accountdata = models.JSONField()
+    accountdata = models.JSONField(blank=True, null=True)
 
     object_slug = models.CharField(null=True, max_length=100)
     content_type = models.ForeignKey(ContentType, on_delete=models.PROTECT)
