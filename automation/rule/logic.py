@@ -7,7 +7,7 @@ from django.core.exceptions import FieldDoesNotExist, ObjectDoesNotExist
 from django.db.models.fields import CharField, IntegerField
 from django.db.models.fields.json import JSONField
 from django.db.models.fields.related import ForeignKey, ManyToManyField
-from json_logic import jsonLogic
+from automation.rule.jsonlogic import jsonLogic
 
 
 class Logic:
