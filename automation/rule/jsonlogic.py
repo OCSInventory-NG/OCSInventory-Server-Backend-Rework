@@ -30,11 +30,13 @@
 ################################################################################
 
 from __future__ import unicode_literals
-from functools import reduce
+
 import logging
 import re
+from functools import reduce
 
 logger = logging.getLogger(__name__)
+
 
 def soft_equals(a, b):
     """Implements the '==' operator, which does type JS-style coercion."""
@@ -43,6 +45,7 @@ def soft_equals(a, b):
     if isinstance(a, bool) or isinstance(b, bool):
         return bool(a) is bool(b)
     return a == b
+
 
 def less(a, b):
     """Implements the '<' operator with JS-style type coercion."""
@@ -55,9 +58,11 @@ def less(a, b):
             return False
     return a < b
 
+
 def less_or_equal(a, b):
     """Implements the '<=' operator with JS-style type coercion."""
     return less(a, b) or soft_equals(a, b)
+
 
 def regex_match(string, pattern):
     """Checks if the string matches the regex pattern."""
@@ -67,10 +72,11 @@ def regex_match(string, pattern):
         logger.error("Invalid regex pattern: %s", pattern)
         return False
 
+
 def get_var(data, var_name, not_found=None):
     """Gets variable value from data dictionary."""
     try:
-        for key in str(var_name).split('.'):
+        for key in str(var_name).split("."):
             try:
                 data = data[key]
             except TypeError:
@@ -79,6 +85,7 @@ def get_var(data, var_name, not_found=None):
         return not_found
     else:
         return data
+
 
 operations = {
     "==": soft_equals,
@@ -95,6 +102,7 @@ operations = {
     "regex": regex_match,
 }
 
+
 def jsonLogic(tests, data=None):
     """Executes the json-logic with given data."""
     if tests is None or not isinstance(tests, dict):
@@ -110,7 +118,7 @@ def jsonLogic(tests, data=None):
 
     values = [jsonLogic(val, data) for val in values]
 
-    if operator == 'var':
+    if operator == "var":
         return get_var(data, *values)
 
     if operator not in operations:

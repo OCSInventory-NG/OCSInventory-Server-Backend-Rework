@@ -1,13 +1,13 @@
 import logging
 
 from accountinfo.models import AccountinfoData
+from automation.rule.jsonlogic import jsonLogic
 from automation.rule.models import Rule
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import FieldDoesNotExist, ObjectDoesNotExist
 from django.db.models.fields import CharField, IntegerField
 from django.db.models.fields.json import JSONField
 from django.db.models.fields.related import ForeignKey, ManyToManyField
-from automation.rule.jsonlogic import jsonLogic
 
 
 class Logic:
