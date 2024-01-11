@@ -63,7 +63,10 @@ class SearchView(APIView):
                         condition_q = Q(**{f"{field}__{operator}": value})
                     # Special process if accountinfo
                     elif obj == "AccountinfoConfig":
-                        if operator == "iexact" and condition["fieldtype"] != "checkbox":
+                        if (
+                            operator == "iexact"
+                            and condition["fieldtype"] != "checkbox"
+                        ):
                             if condition["fieldtype"] == "select":
                                 matching_objects = AccountinfoData.objects.filter(
                                     **{f"accountdata__{field}__value__contains": value},
@@ -89,7 +92,10 @@ class SearchView(APIView):
                             if matching_objects:
                                 result = []
                                 for matching_object in matching_objects:
-                                    for key, data in matching_object.accountdata.items():
+                                    for (
+                                        key,
+                                        data,
+                                    ) in matching_object.accountdata.items():
                                         if int(key) == int(field):
                                             if (
                                                 operator == "icontains"
@@ -100,7 +106,9 @@ class SearchView(APIView):
                                             elif (
                                                 operator == "istartswith"
                                                 and data is not None
-                                                and data.lower().startswith(value.lower())
+                                                and data.lower().startswith(
+                                                    value.lower()
+                                                )
                                             ):
                                                 result.append(matching_object.object_id)
                                             elif (
@@ -118,8 +126,8 @@ class SearchView(APIView):
                                 if len(result) > 0:
                                     condition_q = Q(id__in=result)
                                 else:
-                                    id_to_exclude = InventoryBase.objects.all().values_list(
-                                        "id"
+                                    id_to_exclude = (
+                                        InventoryBase.objects.all().values_list("id")
                                     )
                                     condition_q = ~Q(id__in=id_to_exclude)
                             else:
@@ -165,8 +173,5 @@ class SearchView(APIView):
             return HttpResponse(qs_json, content_type="application/json")
         except Exception as e:
             # we return a 500 an error occured
-            self.LOGGER.error(f'Error search processing: {e}')
-            return Response(
-                {'error': f'Error search processing: {e}'},
-                status=500
-            )
+            self.LOGGER.error(f"Error search processing: {e}")
+            return Response({"error": f"Error search processing: {e}"}, status=500)
