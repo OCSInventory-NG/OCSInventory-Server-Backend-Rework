@@ -6,7 +6,8 @@ import django.db.models.deletion
 
 def add_auth_methods(apps, schema_editor):
     """
-    This function is used to create AuthMethod, AuthConfig and AuthMapping initial data.
+    This function is used to create AuthMethod, AuthConfig and
+     AuthMapping initial data.
     """
     AuthMethod = apps.get_model('auth_method', 'AuthMethod')
     AuthConfig = apps.get_model('auth_config', 'AuthConfig')
@@ -176,10 +177,13 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='AuthMapping',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True,
+                                           serialize=False, verbose_name='ID')),
                 ('external_field', models.CharField(max_length=255)),
                 ('internal_field', models.CharField(max_length=255)),
-                ('auth_config', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='mappings', to='auth_config.authconfig')),
+                ('auth_config', models.ForeignKey(
+                    null=True, on_delete=django.db.models.deletion.CASCADE,
+                    related_name='mappings', to='auth_config.authconfig')),
             ],
         ),
         migrations.RunPython(add_auth_methods)
