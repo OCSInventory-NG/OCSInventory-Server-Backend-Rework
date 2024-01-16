@@ -20,7 +20,7 @@ class Result(models.Model):
         Package, related_name="result", on_delete=models.CASCADE, null=True
     )
     asset = models.ForeignKey(
-        InventoryBase, related_name="asset", on_delete=models.CASCADE, null=True
+        InventoryBase, related_name="results", on_delete=models.CASCADE, null=True
     )
     name = models.CharField(max_length=128)
     status = models.IntegerField()

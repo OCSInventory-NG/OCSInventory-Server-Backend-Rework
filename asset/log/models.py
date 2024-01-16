@@ -21,7 +21,8 @@ class Log(models.Model):
     )
     
     asset = models.ForeignKey(
-        InventoryBase, 
+        InventoryBase,
+        related_name="logs",
         on_delete=models.CASCADE, 
         null=True
     )
