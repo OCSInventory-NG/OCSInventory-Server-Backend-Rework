@@ -1,6 +1,6 @@
-from django.db import models
-from deployment.package.models import Package
 from asset.inventory_base.models import InventoryBase
+from deployment.package.models import Package
+from django.db import models
 
 
 class Result(models.Model):
