@@ -1,4 +1,7 @@
+from automation.rule.logic import Logic
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from ipdiscover.network.models import Network
 
 # Create your models here.
@@ -23,3 +26,11 @@ class Netdevice(models.Model):
         Network, related_name="netdevices", on_delete=models.CASCADE
     )
     last_seen = models.DateTimeField(auto_now=True)
+
+
+@receiver(post_save, sender=Netdevice)
+def netdevice_received_handler(sender, instance, created, **kwargs):
+    print("netdevice_received_handler")
+    if not getattr(instance, "processed", False):
+        logic = Logic("netdevice_received", instance)
+        instance = logic.process_rules()

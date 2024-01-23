@@ -1,15 +1,15 @@
-from rest_framework.response import Response
-from rest_framework.exceptions import ValidationError
-from django.core.exceptions import ObjectDoesNotExist
 import logging
 
 from asset.inventory_base.models import InventoryBase
 from asset.inventory_base.serializers import InventoryBaseSerializer
+from asset.inventory_field.serializers import InventoryFieldSerializer
 from asset.inventory_section.models import InventorySection
 from asset.inventory_section.serializers import InventorySectionSerializer
-from asset.inventory_field.serializers import InventoryFieldSerializer
-from inventory.section.models import Section
+from django.core.exceptions import ObjectDoesNotExist
 from inventory.field.models import Field
+from inventory.section.models import Section
+from rest_framework.exceptions import ValidationError
+from rest_framework.response import Response
 from rest_framework.views import APIView
 
 
@@ -58,43 +58,42 @@ class CollectionView(APIView):
         # storing errors
         errors = []
 
-        self.LOGGER.info('Creating inventory for device %s - %s',
-                         data['uuid'], data['name'])
+        self.LOGGER.info(
+            "Creating inventory for device %s - %s", data["uuid"], data["name"]
+        )
 
         # create Base asset using BaseSerializer
         try:
             asset_serializer = InventoryBaseSerializer(data=data)
             if asset_serializer.is_valid(raise_exception=True):
                 asset_instance = asset_serializer.save()
-                templateId = (asset_instance.template_id
-                              if asset_instance.template else None)
+                templateId = (
+                    asset_instance.template_id if asset_instance.template else None
+                )
         except ValidationError as ve:
-            errors.append(f'Error creating asset: {ve}')
-            self.LOGGER.error(f'Error creating asset: {ve}')
-            return Response({'error': errors}, status=400)
+            errors.append(f"Error creating asset: {ve}")
+            self.LOGGER.error(f"Error creating asset: {ve}")
+            return Response({"error": errors}, status=400)
         except Exception as e:
             # we return a 400 error if the asset could not be created
-            self.LOGGER.error(f'Error creating asset: {e}')
-            return Response({'error': f'Error creating asset: {e}'},
-                            status=500)
+            self.LOGGER.error(f"Error creating asset: {e}")
+            return Response({"error": f"Error creating asset: {e}"}, status=500)
 
         # handle template inventory if present
-        if 'template_inventory' in data:
-            sectionsArray = data.pop('template_inventory')
+        if "template_inventory" in data:
+            sectionsArray = data.pop("template_inventory")
 
             # loop through sections array
             for name, fields in sectionsArray.items():
                 # retrieve section ID
                 try:
-                    section_query = Section.objects.get(name=name,
-                                                        template=templateId
-                                                        )
+                    section_query = Section.objects.get(name=name, template=templateId)
                     sectionId = section_query.id
                 except ObjectDoesNotExist:
-                    errors.append(f'No matching section found for {name}')
+                    errors.append(f"No matching section found for {name}")
                     continue
                 except Exception as e:
-                    errors.append(f'Error retrieving section {name}: {e}')
+                    errors.append(f"Error retrieving section {name}: {e}")
                     continue
 
                 # loop through each field object in fields array
@@ -102,72 +101,81 @@ class CollectionView(APIView):
                     try:
                         # create InventorySection
                         section_serializer = InventorySectionSerializer(
-                            data={'base': asset_instance.id,
-                                  'template_section': sectionId})
-                        if section_serializer.is_valid(
-                                raise_exception=True):
+                            data={
+                                "base": asset_instance.id,
+                                "template_section": sectionId,
+                            }
+                        )
+                        if section_serializer.is_valid(raise_exception=True):
                             section_instance = section_serializer.save()
                     except ValidationError as ve:
-                        errors.append("Error creating "
-                                      f"section {name}: {str(ve)}")
+                        errors.append("Error creating " f"section {name}: {str(ve)}")
                         continue
                     except Exception as e:
-                        errors.append(f'Error creating section {name}: {e}')
+                        errors.append(f"Error creating section {name}: {e}")
                         continue
 
                     for field_name, field_value in field_object.items():
                         try:
                             # retrieve field ID
                             field_query = Field.objects.get(
-                                                    name=field_name,
-                                                    section=sectionId
-                                                    )
+                                name=field_name, section=sectionId
+                            )
                             fieldId = field_query.id
 
                             # create InventoryField
                             field_serializer = InventoryFieldSerializer(
-                                data={'inventory_section':
-                                      section_instance.id,
-                                      'template_field': fieldId,
-                                      'value': field_value})
-                            if field_serializer.is_valid(
-                                    raise_exception=True):
+                                data={
+                                    "inventory_section": section_instance.id,
+                                    "template_field": fieldId,
+                                    "value": field_value,
+                                }
+                            )
+                            if field_serializer.is_valid(raise_exception=True):
                                 field_serializer.save()
                         except ObjectDoesNotExist:
-                            errors.append(
-                                f'No matching field found for {field_name}'
-                                )
+                            errors.append(f"No matching field found for {field_name}")
                             continue
                         except ValidationError as ve:
-                            errors.append('Error creating '
-                                          f'field {name} '
-                                          f'- {field_value}: {str(ve)}')
+                            errors.append(
+                                "Error creating "
+                                f"field {name} "
+                                f"- {field_value}: {str(ve)}"
+                            )
                             continue
                         except Exception as e:
-                            errors.append('Error creating '
-                                          f'field {name} - {field_value}: {e}')
+                            errors.append(
+                                "Error creating " f"field {name} - {field_value}: {e}"
+                            )
                             continue
 
         # check if there were any errors
         if errors:
-            self.LOGGER.error('Encountered errors while creating inventory '
-                              'for device %s - %s: %s', data['uuid'],
-                              data['name'], errors)
+            self.LOGGER.error(
+                "Encountered errors while creating inventory " "for device %s - %s: %s",
+                data["uuid"],
+                data["name"],
+                errors,
+            )
 
-            return Response({'Inventory created but errors were encountered '
-                             'while creating device %s - %s: %s',
-                             data['uuid'], data['name'], errors},
-                            status=201)
+            return Response(
+                {
+                    f"Inventory created but errors were encountered "
+                    f'while creating device {data["uuid"]} - '
+                    f'{data["name"]}: {str(errors)}'
+                },
+                status=201,
+            )
         else:
             self.LOGGER.info(
-                            'Inventory created successfully for device %s - %s'
-                            ' sending response back to client', data['uuid'],
-                            data['name'])
+                "Inventory created successfully for device %s - %s"
+                " sending response back to client",
+                data["uuid"],
+                data["name"],
+            )
 
         # successful creation response
-        return Response(
-            {'message': 'Inventory created successfully'},
-            status=201)
+        return Response({"message": "Inventory created successfully"}, status=201)
 
     def put(self, request):
         """
@@ -191,19 +199,19 @@ class CollectionView(APIView):
         # storing errors
         errors = []
 
-        self.LOGGER.info('Updating inventory for device %s - %s',
-                         data['uuid'], data['name'])
+        self.LOGGER.info(
+            "Updating inventory for device %s - %s", data["uuid"], data["name"]
+        )
 
         try:
             # retrieve asset from UUID
-            asset_query = InventoryBase.objects.get(uuid=data['uuid'])
+            asset_query = InventoryBase.objects.get(uuid=data["uuid"])
         except ObjectDoesNotExist:
-            self.LOGGER.error('Asset not found')
-            return Response({'error': 'Asset not found'}, status=404)
+            self.LOGGER.error("Asset not found")
+            return Response({"error": "Asset not found"}, status=404)
         except Exception as e:
-            self.LOGGER.error(f'Error retrieving asset: {e}')
-            return Response({'error': f'Error retrieving asset: {e}'},
-                            status=500)
+            self.LOGGER.error(f"Error retrieving asset: {e}")
+            return Response({"error": f"Error retrieving asset: {e}"}, status=500)
 
         try:
             # update asset
@@ -211,35 +219,32 @@ class CollectionView(APIView):
             if asset_serializer.is_valid(raise_exception=True):
                 asset_instance = asset_serializer.save()
         except ValidationError as ve:
-            self.LOGGER.error(f'Error updating asset: {ve}')
-            return Response({'error': str(ve)}, status=400)
+            self.LOGGER.error(f"Error updating asset: {ve}")
+            return Response({"error": str(ve)}, status=400)
         except Exception as e:
-            self.LOGGER.error(f'Error updating asset: {e}')
-            return Response({'error': f'Error updating asset: {e}'},
-                            status=500)
+            self.LOGGER.error(f"Error updating asset: {e}")
+            return Response({"error": f"Error updating asset: {e}"}, status=500)
 
-        if 'template_inventory' in data:
-            sectionsArray = data.pop('template_inventory')
+        if "template_inventory" in data:
+            sectionsArray = data.pop("template_inventory")
 
             try:
                 # delete existing sections
-                InventorySection.objects.filter(
-                                                base=asset_instance.id
-                                                ).delete()
+                InventorySection.objects.filter(base=asset_instance.id).delete()
             except Exception as e:
-                errors.append(f'Error deleting existing sections: {e}')
+                errors.append(f"Error deleting existing sections: {e}")
 
             for name, fields in sectionsArray.items():
                 try:
                     # retrieve section ID
                     section_query = Section.objects.get(
-                                    name=name,
-                                    template=asset_instance.template_id)
+                        name=name, template=asset_instance.template_id
+                    )
                 except ObjectDoesNotExist:
-                    errors.append(f'Section {name} not found')
+                    errors.append(f"Section {name} not found")
                     continue
                 except Exception as e:
-                    errors.append(f'Error retrieving section {name}: {e}')
+                    errors.append(f"Error retrieving section {name}: {e}")
                     continue
 
                 # loop through each field object in fields array
@@ -247,71 +252,86 @@ class CollectionView(APIView):
                     try:
                         # create InventorySection
                         section_serializer = InventorySectionSerializer(
-                            data={'base': asset_instance.id,
-                                  'template_section': section_query.id})
+                            data={
+                                "base": asset_instance.id,
+                                "template_section": section_query.id,
+                            }
+                        )
                         if section_serializer.is_valid(raise_exception=True):
                             section_instance = section_serializer.save()
                     except ValidationError as ve:
-                        errors.append('Error creating '
-                                      f'section {name}: {str(ve)}')
+                        errors.append("Error creating " f"section {name}: {str(ve)}")
                         continue
                     except Exception as e:
-                        errors.append(f'Error creating section {name}: {e}')
+                        errors.append(f"Error creating section {name}: {e}")
                         continue
 
                     for field_name, field_value in field_object.items():
                         try:
                             # retrieve field ID
                             field_query = Field.objects.get(
-                                                name=field_name,
-                                                section=section_query.id)
+                                name=field_name, section=section_query.id
+                            )
                         except ObjectDoesNotExist:
                             errors.append(
-                                f'Field {field_name} '
-                                f'not found in section {name}')
+                                f"Field {field_name} " f"not found in section {name}"
+                            )
                             continue
                         except Exception as e:
                             errors.append(
-                                f'Error retrieving field {field_name} '
-                                f'in section {name}: {e}'
-                                )
+                                f"Error retrieving field {field_name} "
+                                f"in section {name}: {e}"
+                            )
                             continue
 
                         try:
                             # create InventoryField
                             field_serializer = InventoryFieldSerializer(
-                                data={'inventory_section':
-                                      section_instance.id,
-                                      'template_field': field_query.id,
-                                      'value': field_value})
-                            if field_serializer.is_valid(
-                                    raise_exception=True):
+                                data={
+                                    "inventory_section": section_instance.id,
+                                    "template_field": field_query.id,
+                                    "value": field_value,
+                                }
+                            )
+                            if field_serializer.is_valid(raise_exception=True):
                                 field_serializer.save()
                         except ValidationError as ve:
-                            errors.append(f'Error creating field {name} '
-                                          f'- {field_name} : {str(ve)}')
+                            errors.append(
+                                f"Error creating field {name} "
+                                f"- {field_name} : {str(ve)}"
+                            )
                             continue
                         except Exception as e:
-                            errors.append(f'Error creating '
-                                          f'field {name} - {field_name}: {e}')
+                            errors.append(
+                                f"Error creating " f"field {name} - {field_name}: {e}"
+                            )
                             continue
 
         if errors:
-            self.LOGGER.error('Update succeeded but errors were encountered '
-                              'while updating device %s - %s: %s',
-                              data['uuid'], data['name'], errors)
-            return Response({'Update succeeded but errors were encountered '
-                             'while updating device %s - %s: %s',
-                             data['uuid'], data['name'], errors},
-                            status=200)
+            self.LOGGER.error(
+                "Update succeeded but errors were encountered "
+                "while updating device %s - %s: %s",
+                data["uuid"],
+                data["name"],
+                errors,
+            )
+            return Response(
+                {
+                    "Update succeeded but errors were encountered "
+                    f'while updating device {data["uuid"]} - '
+                    f'{data["name"]}: {str(errors)}'
+                },
+                status=200,
+            )
         else:
             self.LOGGER.info(
-                'Inventory updated successfully for device %s - %s'
-                ' sending response back to client', data['uuid'],
-                data['name'])
+                "Inventory updated successfully for device %s - %s"
+                " sending response back to client",
+                data["uuid"],
+                data["name"],
+            )
 
-        return Response({'message': 'Inventory updated successfully'},
-                        status=200)
+        return Response({"message": "Inventory updated successfully"}, status=200)
 
     def patch(self, request, *args, **kwargs):
         """
@@ -328,19 +348,19 @@ class CollectionView(APIView):
         # storing errors
         errors = []
 
-        self.LOGGER.info('Updating inventory for device %s - %s',
-                         data['uuid'], data['name'])
+        self.LOGGER.info(
+            "Updating inventory for device %s - %s", data["uuid"], data["name"]
+        )
 
         try:
             # retrieve asset from UUID
-            asset_query = InventoryBase.objects.get(uuid=data['uuid'])
+            asset_query = InventoryBase.objects.get(uuid=data["uuid"])
         except ObjectDoesNotExist:
-            self.LOGGER.error('Asset not found')
-            return Response({'error': 'Asset not found'}, status=404)
+            self.LOGGER.error("Asset not found")
+            return Response({"error": "Asset not found"}, status=404)
         except Exception as e:
-            self.LOGGER.error(f'Error retrieving asset: {e}')
-            return Response({'error': f'Error retrieving asset: {e}'},
-                            status=500)
+            self.LOGGER.error(f"Error retrieving asset: {e}")
+            return Response({"error": f"Error retrieving asset: {e}"}, status=500)
 
         try:
             # update asset
@@ -348,59 +368,54 @@ class CollectionView(APIView):
             if asset_serializer.is_valid(raise_exception=True):
                 asset_instance = asset_serializer.save()
         except ValidationError as ve:
-            self.LOGGER.error(f'Error updating asset: {ve}')
-            return Response({'error': str(ve)}, status=400)
+            self.LOGGER.error(f"Error updating asset: {ve}")
+            return Response({"error": str(ve)}, status=400)
         except Exception as e:
-            self.LOGGER.error(f'Error updating asset: {e}')
-            return Response({'error': f'Error updating asset: {e}'},
-                            status=500)
+            self.LOGGER.error(f"Error updating asset: {e}")
+            return Response({"error": f"Error updating asset: {e}"}, status=500)
 
-        if 'template_inventory' in data:
-            sectionsArray = data.pop('template_inventory')
+        if "template_inventory" in data:
+            sectionsArray = data.pop("template_inventory")
 
             for name, fields in sectionsArray.items():
                 try:
                     # retrieve section ID
                     section_query = Section.objects.get(
-                        name=name,
-                        template=asset_instance.template_id
-                        )
+                        name=name, template=asset_instance.template_id
+                    )
                 except ObjectDoesNotExist:
-                    errors.append(f'Section {name} not found')
+                    errors.append(f"Section {name} not found")
                     continue
                 except Exception as e:
-                    errors.append(f'Error retrieving section {name}: {e}')
+                    errors.append(f"Error retrieving section {name}: {e}")
                     continue
 
                 try:
                     # delete existing sections
                     InventorySection.objects.filter(
-                        base=asset_instance.id,
-                        template_section=section_query.id
-                        ).delete()
+                        base=asset_instance.id, template_section=section_query.id
+                    ).delete()
                 except Exception as e:
-                    errors.append(f'Error deleting existing sections '
-                                  f'for {name}: {e}')
+                    errors.append(
+                        f"Error deleting existing sections " f"for {name}: {e}"
+                    )
 
                 for field_object in fields:
                     try:
                         # create InventorySection
                         section_serializer = InventorySectionSerializer(
-                            data={'base': asset_instance.id,
-                                  'template_section': section_query.id}
-                                )
-                        if section_serializer.is_valid(
-                                raise_exception=True
-                                ):
+                            data={
+                                "base": asset_instance.id,
+                                "template_section": section_query.id,
+                            }
+                        )
+                        if section_serializer.is_valid(raise_exception=True):
                             section_instance = section_serializer.save()
                     except ValidationError as ve:
-                        errors.append(f'Error creating section {name} '
-                                      f': {str(ve)}')
+                        errors.append(f"Error creating section {name} " f": {str(ve)}")
                         continue
                     except Exception as e:
-                        errors.append(
-                            f'Error creating section {name}: {e}'
-                            )
+                        errors.append(f"Error creating section {name}: {e}")
                         continue
 
                     # loop through each field object in fields array
@@ -408,53 +423,66 @@ class CollectionView(APIView):
                         try:
                             # retrieve field ID
                             field_query = Field.objects.get(
-                                    name=field_name,
-                                    section=section_query.id
-                                    )
+                                name=field_name, section=section_query.id
+                            )
                         except ObjectDoesNotExist:
-                            errors.append(f'Field {field_name} not found '
-                                          f'in section {name}')
+                            errors.append(
+                                f"Field {field_name} not found " f"in section {name}"
+                            )
                             continue
                         except Exception as e:
                             errors.append(
-                                f'Error retrieving field {field_name} '
-                                f'in section {name}: {e}'
-                                )
+                                f"Error retrieving field {field_name} "
+                                f"in section {name}: {e}"
+                            )
                             continue
 
                         try:
                             field_serializer = InventoryFieldSerializer(
-                                data={'inventory_section':
-                                      section_instance.id,
-                                      'template_field': field_query.id,
-                                      'value': field_value}
-                                    )
-                            if field_serializer.is_valid(
-                                    raise_exception=True
-                                    ):
+                                data={
+                                    "inventory_section": section_instance.id,
+                                    "template_field": field_query.id,
+                                    "value": field_value,
+                                }
+                            )
+                            if field_serializer.is_valid(raise_exception=True):
                                 field_serializer.save()
                         except ValidationError as ve:
-                            errors.append(f'Error creating field {name} '
-                                          f'- {field_name} : {str(ve)}')
+                            errors.append(
+                                f"Error creating field {name} "
+                                f"- {field_name} : {str(ve)}"
+                            )
                             continue
                         except Exception as e:
                             errors.append(
-                                f'Error creating field {name} '
-                                f'- {field_name}: {e}'
-                                )
+                                f"Error creating field {name} " f"- {field_name}: {e}"
+                            )
                             continue
 
         if errors:
-            self.LOGGER.error('Partial update succeeded but errors were '
-                              'encountered while updating device %s - %s: %s',
-                              data['uuid'], data['name'], errors)
-            return Response({'errors': errors}, status=200)
+            self.LOGGER.error(
+                "Partial update succeeded but errors were "
+                "encountered while updating device %s - %s: %s",
+                data["uuid"],
+                data["name"],
+                errors,
+            )
+            return Response(
+                {
+                    "Partial update succeeded but errors were "
+                    f"encountered while updating device "
+                    f'{data["uuid"]} - {data["name"]}: {str(errors)}'
+                },
+                status=200,
+            )
         else:
             self.LOGGER.info(
-                            'Inventory updated successfully for device %s - %s'
-                            ' sending response back to client', data['uuid'],
-                            data['name'])
+                "Inventory updated successfully for device %s - %s"
+                " sending response back to client",
+                data["uuid"],
+                data["name"],
+            )
 
         return Response(
-            {'message': 'Asset and inventory updated successfully'
-             }, status=200)
+            {"message": "Asset and inventory updated successfully"}, status=200
+        )

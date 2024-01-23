@@ -25,6 +25,7 @@ from auth.auth_mapping.routers import AuthMappingRouter
 from auth.auth_method.routers import AuthMethodRouter
 from auth.auth_view.auth_views import BaseAuthView, CallbackView
 from automation.history.routers import HistoryRouter
+from automation.rule.routers import RuleRouter
 from automation.scheduler.routers import SchedulerRouter
 from config.routers import ConfigRouter
 from deployment.action.routers import ActionRouter
@@ -58,6 +59,11 @@ schedulerRouter = schedulerRouter.defineRoutes(defaultRouter)
 # Automation History
 historyRouter = HistoryRouter()
 historyRouter = historyRouter.defineRoutes(defaultRouter)
+
+# Automation Rule
+ruleRouter = RuleRouter()
+ruleRouter = ruleRouter.defineRoutes(defaultRouter)
+
 
 # Add permissionsRouter declaration
 permissionRouter = PermissionRouter()
@@ -151,6 +157,7 @@ urlpatterns = [
     path("api-auth/token", obtain_auth_token, name="api_token_auth"),
     path("asset/collection/", CollectionView.as_view(), name="asset_collection"),
     path("search/", SearchView.as_view(), name="search"),
+
     # Authentication
     path("login/", BaseAuthView.as_view(), name="login"),
     path("callback/", CallbackView.as_view(), name="callback"),
