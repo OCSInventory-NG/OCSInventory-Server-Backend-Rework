@@ -15,12 +15,22 @@ Including another URLconf
 """
 
 from accountinfo.routers import AccountinfoRouter
-from asset.inventory_base.routers import InventoryBaseRouter
-from asset.inventory_section.routers import InventorySectionRouter
-from asset.inventory_field.routers import InventoryFieldRouter
 from asset.collection.views import CollectionView
+from asset.inventory_base.routers import InventoryBaseRouter
+from asset.inventory_field.routers import InventoryFieldRouter
+from asset.inventory_section.routers import InventorySectionRouter
 from asset.log.routers import LogRouter
+from auth.auth_config.routers import AuthConfigRouter
+from auth.auth_mapping.routers import AuthMappingRouter
+from auth.auth_method.routers import AuthMethodRouter
+from auth.auth_view.auth_views import BaseAuthView, CallbackView
+from automation.history.routers import HistoryRouter
+from automation.rule.routers import RuleRouter
+from automation.scheduler.routers import SchedulerRouter
 from config.routers import ConfigRouter
+from deployment.action.routers import ActionRouter
+from deployment.package.routers import PackageRouter
+from deployment.result.routers import ResultRouter
 
 # Base import to get API Working
 from django.urls import include, path
@@ -31,23 +41,12 @@ from inventory.template.routers import TemplateRouter
 from ipdiscover.netdevice.routers import NetdeviceRouter
 from ipdiscover.netgroup.routers import NetgroupRouter
 from ipdiscover.network.routers import NetworkRouter
-from deployment.package.routers import PackageRouter
-from deployment.action.routers import ActionRouter
-from deployment.result.routers import ResultRouter
-from auth.auth_config.routers import AuthConfigRouter
-from auth.auth_method.routers import AuthMethodRouter
-from auth.auth_mapping.routers import AuthMappingRouter
-from auth.auth_view.auth_views import LoginView, CallbackView, BaseAuthView
-
 
 # Import dedicated routers and provide different endpoint
 from permission.routers import PermissionRouter
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.routers import DefaultRouter
 from user.routers import UserRouter
-
-from automation.scheduler.routers import SchedulerRouter
-from automation.history.routers import HistoryRouter
 
 # Routers provide a way of automatically determining the URL conf.
 defaultRouter = DefaultRouter()
@@ -59,6 +58,11 @@ schedulerRouter = schedulerRouter.defineRoutes(defaultRouter)
 # Automation History
 historyRouter = HistoryRouter()
 historyRouter = historyRouter.defineRoutes(defaultRouter)
+
+# Automation Rule
+ruleRouter = RuleRouter()
+ruleRouter = ruleRouter.defineRoutes(defaultRouter)
+
 
 # Add permissionsRouter declaration
 permissionRouter = PermissionRouter()
@@ -147,12 +151,11 @@ authMappingRouter = authMappingRouter.defineRoutes(defaultRouter)
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
-    path(r'', include(defaultRouter.urls)),
+    path(r"", include(defaultRouter.urls)),
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
     path("api-auth/token", obtain_auth_token, name="api_token_auth"),
-    path('asset/collection/', CollectionView.as_view(), name='asset_collection'),
-
+    path("asset/collection/", CollectionView.as_view(), name="asset_collection"),
     # Authentication
     path("login/", BaseAuthView.as_view(), name="login"),
-    path('callback/', CallbackView.as_view(), name='callback'),
+    path("callback/", CallbackView.as_view(), name="callback"),
 ]
