@@ -46,6 +46,7 @@ from ipdiscover.network.routers import NetworkRouter
 from permission.routers import PermissionRouter
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.routers import DefaultRouter
+from search.views import SearchView
 from user.routers import UserRouter
 
 # Routers provide a way of automatically determining the URL conf.
@@ -155,6 +156,8 @@ urlpatterns = [
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
     path("api-auth/token", obtain_auth_token, name="api_token_auth"),
     path("asset/collection/", CollectionView.as_view(), name="asset_collection"),
+    path("search/", SearchView.as_view(), name="search"),
+
     # Authentication
     path("login/", BaseAuthView.as_view(), name="login"),
     path("callback/", CallbackView.as_view(), name="callback"),
