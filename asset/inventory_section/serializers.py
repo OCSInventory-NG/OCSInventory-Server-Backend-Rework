@@ -1,7 +1,6 @@
-from rest_framework import serializers
-
 from asset.inventory_field.serializers import InventoryFieldSerializer
 from asset.inventory_section.models import InventorySection
+from rest_framework import serializers
 
 
 class InventorySectionSerializer(serializers.ModelSerializer):
@@ -24,4 +23,3 @@ class InventorySectionSerializer(serializers.ModelSerializer):
             "template_section",
             "fields",
         ]
-

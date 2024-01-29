@@ -1,5 +1,5 @@
-from rest_framework import serializers
 from asset.inventory_field.models import InventoryField
+from rest_framework import serializers
 
 
 class InventoryFieldSerializer(serializers.ModelSerializer):
@@ -14,10 +14,4 @@ class InventoryFieldSerializer(serializers.ModelSerializer):
         """Define the linked model and the fields registered in the API"""
 
         model = InventoryField
-        fields = [
-            "id",
-            "inventory_section",
-            "template_field",
-            "value"
-        ]
-
+        fields = ["id", "inventory_section", "template_field", "value"]

@@ -1,5 +1,4 @@
 from asset.inventory_base.models import InventoryBase
-
 from rest_framework import serializers
 
 

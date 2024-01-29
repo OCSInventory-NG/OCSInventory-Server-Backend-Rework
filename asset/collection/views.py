@@ -2,8 +2,8 @@ import logging
 
 from asset.inventory_base.models import InventoryBase
 from asset.inventory_base.serializers import InventoryBaseSerializer
-from asset.inventory_section.models import InventorySection
 from asset.inventory_field.models import InventoryField
+from asset.inventory_section.models import InventorySection
 from django.core.exceptions import ObjectDoesNotExist
 from inventory.field.models import Field
 from inventory.section.models import Section
@@ -53,7 +53,9 @@ class CollectionView(APIView):
         """
         data = request.data
         errors = []
-        self.LOGGER.info("Creating inventory for device %s - %s", data["uuid"], data["name"])
+        self.LOGGER.info(
+            "Creating inventory for device %s - %s", data["uuid"], data["name"]
+        )
 
         try:
             asset_serializer = InventoryBaseSerializer(data=data)
@@ -73,9 +75,12 @@ class CollectionView(APIView):
         # pre-fetch all Sections and Fields for this template
         section_objs = Section.objects.filter(template=templateId)
         field_objs = Field.objects.filter(section__in=section_objs)
-        section_field_map = {section.name:
-                             {field.name: field for field in field_objs.filter(
-                                 section=section)} for section in section_objs}
+        section_field_map = {
+            section.name: {
+                field.name: field for field in field_objs.filter(section=section)
+            }
+            for section in section_objs
+        }
 
         # handle template inventory if present
         if "template_inventory" in data:
@@ -92,22 +97,27 @@ class CollectionView(APIView):
 
                 field_map = section_field_map.get(section_name, {})
                 for item in items:
-                    section_instance = InventorySection(base=asset_instance,
-                                                        template_section=section_obj)
+                    section_instance = InventorySection(
+                        base=asset_instance, template_section=section_obj
+                    )
                     sections_to_create.append(section_instance)
 
                     for field_name, field_value in item.items():
                         field_obj = field_map.get(field_name)
                         if not field_obj:
-                            errors.append(f"No matching field found for {field_name}"
-                                          f" in section {section_name}")
+                            errors.append(
+                                f"No matching field found for {field_name}"
+                                f" in section {section_name}"
+                            )
                             continue
 
-                        fields_to_create.append(InventoryField(
-                            inventory_section=section_instance,
-                            template_field=field_obj,
-                            value=field_value
-                        ))
+                        fields_to_create.append(
+                            InventoryField(
+                                inventory_section=section_instance,
+                                template_field=field_obj,
+                                value=field_value,
+                            )
+                        )
 
             # bulk create sections and fields
             InventorySection.objects.bulk_create(sections_to_create)
@@ -160,8 +170,9 @@ class CollectionView(APIView):
         data = request.data
         errors = []
 
-        self.LOGGER.info("Updating inventory for device %s - %s", data["uuid"],
-                         data["name"])
+        self.LOGGER.info(
+            "Updating inventory for device %s - %s", data["uuid"], data["name"]
+        )
 
         try:
             # retrieve asset from UUID
@@ -187,9 +198,12 @@ class CollectionView(APIView):
 
         section_objs = Section.objects.filter(template=asset_instance.template_id)
         field_objs = Field.objects.filter(section__in=section_objs)
-        section_field_map = {section.name:
-                             {field.name: field for field in field_objs.filter(
-                                 section=section)} for section in section_objs}
+        section_field_map = {
+            section.name: {
+                field.name: field for field in field_objs.filter(section=section)
+            }
+            for section in section_objs
+        }
 
         # handle template inventory if present
         if "template_inventory" in data:
@@ -209,22 +223,27 @@ class CollectionView(APIView):
 
                 field_map = section_field_map.get(section_name, {})
                 for item in items:
-                    section_instance = InventorySection(base=asset_instance,
-                                                        template_section=section_obj)
+                    section_instance = InventorySection(
+                        base=asset_instance, template_section=section_obj
+                    )
                     sections_to_create.append(section_instance)
 
                     for field_name, field_value in item.items():
                         field_obj = field_map.get(field_name)
                         if not field_obj:
-                            errors.append(f"No matching field found for {field_name}"
-                                          f" in section {section_name}")
+                            errors.append(
+                                f"No matching field found for {field_name}"
+                                f" in section {section_name}"
+                            )
                             continue
 
-                        fields_to_create.append(InventoryField(
-                            inventory_section=section_instance,
-                            template_field=field_obj,
-                            value=field_value
-                        ))
+                        fields_to_create.append(
+                            InventoryField(
+                                inventory_section=section_instance,
+                                template_field=field_obj,
+                                value=field_value,
+                            )
+                        )
 
             # bulk create sections and fields
             InventorySection.objects.bulk_create(sections_to_create)
@@ -268,7 +287,9 @@ class CollectionView(APIView):
         data = request.data
         errors = []
 
-        self.LOGGER.info("Updating inventory for device %s - %s", data["uuid"], data["name"])
+        self.LOGGER.info(
+            "Updating inventory for device %s - %s", data["uuid"], data["name"]
+        )
 
         try:
             # retrieve asset from UUID
@@ -295,7 +316,12 @@ class CollectionView(APIView):
         # pre-fetch Sections and Fields
         section_objs = Section.objects.filter(template=asset_instance.template_id)
         field_objs = Field.objects.filter(section__in=section_objs)
-        section_field_map = {section.name: {field.name: field for field in field_objs.filter(section=section)} for section in section_objs}
+        section_field_map = {
+            section.name: {
+                field.name: field for field in field_objs.filter(section=section)
+            }
+            for section in section_objs
+        }
 
         if "template_inventory" in data:
             sections_array = data.pop("template_inventory")
@@ -310,26 +336,30 @@ class CollectionView(APIView):
                     continue
 
                 # delete existing sections for this template section
-                InventorySection.objects.filter(base=asset_instance,
-                                                template_section=section_query).delete()
+                InventorySection.objects.filter(
+                    base=asset_instance, template_section=section_query
+                ).delete()
 
                 field_map = section_field_map.get(section_name, {})
                 for item in items:
-                    section_instance = InventorySection(base=asset_instance,
-                                                        template_section=section_query)
+                    section_instance = InventorySection(
+                        base=asset_instance, template_section=section_query
+                    )
                     new_sections.append(section_instance)
 
                     for field_name, field_value in item.items():
                         field_obj = field_map.get(field_name)
                         if not field_obj:
-                            errors.append(f"Field {field_name} not found"
-                                          f" in section {section_name}")
+                            errors.append(
+                                f"Field {field_name} not found"
+                                f" in section {section_name}"
+                            )
                             continue
 
                         new_field = InventoryField(
                             inventory_section=section_instance,
                             template_field=field_obj,
-                            value=field_value
+                            value=field_value,
                         )
                         new_fields.append(new_field)
 
