@@ -31,6 +31,7 @@ from config.routers import ConfigRouter
 from deployment.action.routers import ActionRouter
 from deployment.package.routers import PackageRouter
 from deployment.result.routers import ResultRouter
+from search.routers import SearchRouter
 
 # Base import to get API Working
 from django.urls import include, path
@@ -148,6 +149,10 @@ authMethodRouter = authMethodRouter.defineRoutes(defaultRouter)
 # Add authMapping declaration
 authMappingRouter = AuthMappingRouter()
 authMappingRouter = authMappingRouter.defineRoutes(defaultRouter)
+
+# Add search declaration
+searchRouter = SearchRouter()
+searchRouter = searchRouter.defineRoutes(defaultRouter)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.

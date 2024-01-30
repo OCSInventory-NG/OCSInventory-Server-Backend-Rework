@@ -7,6 +7,12 @@ from django.db.models import Q
 from django.http import HttpResponse
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from ocsinventory_backend.ocs_framework import viewsets
+from permission.permissions import DefaultModelPermissions
+
+from search.models import Search
+from search.serializers import SearchSerializer
+from rest_framework import status
 
 
 class SearchView(APIView):
@@ -175,3 +181,39 @@ class SearchView(APIView):
             # we return a 500 an error occured
             self.LOGGER.error(f"Error search processing: {e}")
             return Response({"error": f"Error search processing: {e}"}, status=500)
+
+
+class SearchViewSet(viewsets.OCSViewSet):
+    """
+    This class will define the view behavior
+
+    Args:
+        viewsets ([OCSVIewSet])
+    """
+
+    permission_classes = [DefaultModelPermissions]
+
+    queryset = Search.objects.all()
+    serializer_class = SearchSerializer
+    model = Search
+
+    filterset_fields = ["id", "last_updated", "visibility", "description", "allow_group_modification"]
+
+    def update(self, request, *args, **kwargs):
+        search = self.get_object()
+        user = request.user
+
+        # check if user is the creator
+        if search.user == user:
+            return super().update(request, *args, **kwargs)
+
+        # for group private searches, check if group modification is allowed
+        if search.visibility == "private_group" and not search.allow_group_modification:
+            if not search.groups.filter(id=user.groups.all()).exists():
+                return Response({"detail": "You do not have permission to modify this search."}, status=status.HTTP_403_FORBIDDEN)
+
+        # for public searches, check if user is the creator
+        if search.visibility == "public" and search.user != user:
+            return Response({"detail": "You do not have permission to modify this search."}, status=status.HTTP_403_FORBIDDEN)
+
+        return super().update(request, *args, **kwargs)
