@@ -43,7 +43,7 @@ class TriggerViewSet(viewsets.OCSViewSet):
 
     allowed_methods = ["GET"]
 
-    def list(self):
+    def list(self, request, *args, **kwargs):
         """List all the triggers and the related models"""
         trigger_data = []
         for trigger, _ in Rule.TRIGGER_CHOICES:
