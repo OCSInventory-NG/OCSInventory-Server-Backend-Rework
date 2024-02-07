@@ -197,7 +197,11 @@ class SearchViewSet(viewsets.OCSViewSet):
     serializer_class = SearchSerializer
     model = Search
 
-    filterset_fields = ["id", "last_updated", "visibility", "description", "allow_group_modification"]
+    filterset_fields = ["id",
+                        "last_updated",
+                        "visibility",
+                        "description",
+                        "allow_group_modification"]
 
     def update(self, request, *args, **kwargs):
         search = self.get_object()
@@ -209,11 +213,35 @@ class SearchViewSet(viewsets.OCSViewSet):
 
         # for group private searches, check if group modification is allowed
         if search.visibility == "private_group" and not search.allow_group_modification:
-            if not search.groups.filter(id=user.groups.all()).exists():
-                return Response({"detail": "You do not have permission to modify this search."}, status=status.HTTP_403_FORBIDDEN)
+            return Response(
+                {"detail": "You do not have permission to modify this search."},
+                status=status.HTTP_403_FORBIDDEN)
+        elif (search.visibility == "private_group" and search.allow_group_modification
+              and not search.groups.filter(id__in=user.groups.all())):
+            return Response(
+                {"detail": "You do not have permission to modify this search."},
+                status=status.HTTP_403_FORBIDDEN)
 
         # for public searches, check if user is the creator
         if search.visibility == "public" and search.user != user:
-            return Response({"detail": "You do not have permission to modify this search."}, status=status.HTTP_403_FORBIDDEN)
+            return Response(
+                {"detail": "You do not have permission to modify this search."},
+                status=status.HTTP_403_FORBIDDEN)
 
         return super().update(request, *args, **kwargs)
+
+    def list(self, request, *args, **kwargs):
+        user = request.user
+        queryset = self.get_queryset()
+        queryset = queryset.filter(Q(visibility="public") | Q(user=user) |
+                                   Q(groups__in=user.groups.all()))
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def destroy(self, request, *args, **kwargs):
+        search = self.get_object()
+        user = request.user
+        if search.user == user:
+            return super().destroy(request, *args, **kwargs)
+        return Response({"detail": "You do not have permission to delete this search."},
+                        status=status.HTTP_403_FORBIDDEN)
