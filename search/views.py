@@ -200,7 +200,10 @@ class SearchViewSet(viewsets.OCSViewSet):
     filterset_fields = ["id",
                         "last_updated",
                         "visibility",
+                        "name",
                         "description",
+                        "user",
+                        "groups",
                         "allow_group_modification"]
 
     def update(self, request, *args, **kwargs):

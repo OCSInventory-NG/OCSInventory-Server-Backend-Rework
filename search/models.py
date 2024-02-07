@@ -12,8 +12,11 @@ class Search(models.Model):
     - Search
     - Last updated
     - Visibility
+    - Name
     - Description
     - Allow modification by group members
+    - User
+    - Groups
     """
 
     visibility_choices = [
@@ -27,6 +30,7 @@ class Search(models.Model):
     visibility = models.CharField(
         max_length=20, choices=visibility_choices, default="private_personal"
     )
+    name = models.CharField(max_length=50, unique=True)
     description = models.TextField()
     allow_group_modification = models.BooleanField(default=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)

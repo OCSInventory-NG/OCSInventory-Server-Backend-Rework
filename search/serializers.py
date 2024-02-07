@@ -14,7 +14,8 @@ class SearchSerializer(serializers.ModelSerializer):
         """Define the linked model and the fields registered in the API"""
 
         model = Search
-        fields = ["id", "search", "last_updated", "visibility", "description", "allow_group_modification", "user", "groups"]
+        fields = ["id", "search", "last_updated", "visibility", "name", "description",
+                  "allow_group_modification", "user", "groups"]
         extra_kwargs = {
             "last_updated": {"read_only": True}
         }
