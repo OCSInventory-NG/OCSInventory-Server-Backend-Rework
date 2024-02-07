@@ -31,7 +31,6 @@ from config.routers import ConfigRouter
 from deployment.action.routers import ActionRouter
 from deployment.package.routers import PackageRouter
 from deployment.result.routers import ResultRouter
-from search.routers import SearchRouter
 
 # Base import to get API Working
 from django.urls import include, path
@@ -47,6 +46,7 @@ from ipdiscover.network.routers import NetworkRouter
 from permission.routers import PermissionRouter
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.routers import DefaultRouter
+from search.routers import SearchRouter
 from search.views import SearchView
 from user.routers import UserRouter
 
@@ -162,7 +162,6 @@ urlpatterns = [
     path("api-auth/token", obtain_auth_token, name="api_token_auth"),
     path("asset/collection/", CollectionView.as_view(), name="asset_collection"),
     path("search/", SearchView.as_view(), name="search"),
-
     # Authentication
     path("login/", BaseAuthView.as_view(), name="login"),
     path("callback/", CallbackView.as_view(), name="callback"),

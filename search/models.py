@@ -1,7 +1,6 @@
+from django.contrib.auth.models import Group, User
 from django.db import models
-
 from django.db.models.fields.json import JSONField
-from django.contrib.auth.models import User, Group
 
 
 class Search(models.Model):
