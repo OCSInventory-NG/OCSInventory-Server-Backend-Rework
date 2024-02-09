@@ -138,9 +138,19 @@ class SearchView(APIView):
                     # Foreign key process
                     else:
                         if obj == "inventory_sections":
-                            condition_q = Q(**{f"{obj}__template_section__exact": condition["section"]})
-                            condition_q &= Q(**{f"{obj}__fields__id__exact": condition["field"]})
-                            condition_q &= Q(**{f"{obj}__fields__value__{operator}": value})
+                            condition_q = Q(
+                                **{
+                                    f"{obj}__template_section__exact": condition[
+                                        "section"
+                                    ]
+                                }
+                            )
+                            condition_q &= Q(
+                                **{f"{obj}__fields__id__exact": condition["field"]}
+                            )
+                            condition_q &= Q(
+                                **{f"{obj}__fields__value__{operator}": value}
+                            )
                         else:
                             condition_q = Q(**{f"{obj}__{field}__{operator}": value})
 
