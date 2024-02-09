@@ -137,7 +137,12 @@ class SearchView(APIView):
                                 condition_q = ~Q(id__in=id_to_exclude)
                     # Foreign key process
                     else:
-                        condition_q = Q(**{f"{obj}__{field}__{operator}": value})
+                        if obj == "inventory_sections":
+                            condition_q = Q(**{f"{obj}__template_section__exact": condition["section"]})
+                            condition_q &= Q(**{f"{obj}__fields__id__exact": condition["field"]})
+                            condition_q &= Q(**{f"{obj}__fields__value__{operator}": value})
+                        else:
+                            condition_q = Q(**{f"{obj}__{field}__{operator}": value})
 
                     # If the previous filter was linked by "OR", use OR,
                     # otherwise use AND
