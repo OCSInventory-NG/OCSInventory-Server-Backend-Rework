@@ -5,8 +5,13 @@ from asset.inventory_base.models import InventoryBase
 from django.core import serializers
 from django.db.models import Q
 from django.http import HttpResponse
+from ocsinventory_backend.ocs_framework import viewsets
+from permission.permissions import DefaultModelPermissions
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from search.models import Search
+from search.serializers import SearchSerializer
 
 
 class SearchView(APIView):
@@ -190,3 +195,81 @@ class SearchView(APIView):
             # we return a 500 an error occured
             self.LOGGER.error(f"Error search processing: {e}")
             return Response({"error": f"Error search processing: {e}"}, status=500)
+
+
+class SearchViewSet(viewsets.OCSViewSet):
+    """
+    This class will define the view behavior
+
+    Args:
+        viewsets ([OCSVIewSet])
+    """
+
+    permission_classes = [DefaultModelPermissions]
+
+    queryset = Search.objects.all()
+    serializer_class = SearchSerializer
+    model = Search
+
+    filterset_fields = [
+        "id",
+        "last_updated",
+        "visibility",
+        "name",
+        "description",
+        "user",
+        "groups",
+        "allow_group_modification",
+    ]
+
+    def update(self, request, *args, **kwargs):
+        search = self.get_object()
+        user = request.user
+
+        # check if user is the creator
+        if search.user == user:
+            return super().update(request, *args, **kwargs)
+
+        # for group private searches, check if group modification is allowed
+        if search.visibility == "private_group" and not search.allow_group_modification:
+            return Response(
+                {"detail": "You do not have permission to modify this search."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        elif (
+            search.visibility == "private_group"
+            and search.allow_group_modification
+            and not search.groups.filter(id__in=user.groups.all())
+        ):
+            return Response(
+                {"detail": "You do not have permission to modify this search."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        # for public searches, check if user is the creator
+        if search.visibility == "public" and search.user != user:
+            return Response(
+                {"detail": "You do not have permission to modify this search."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        return super().update(request, *args, **kwargs)
+
+    def list(self, request, *args, **kwargs):
+        user = request.user
+        queryset = self.get_queryset()
+        queryset = queryset.filter(
+            Q(visibility="public") | Q(user=user) | Q(groups__in=user.groups.all())
+        )
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def destroy(self, request, *args, **kwargs):
+        search = self.get_object()
+        user = request.user
+        if search.user == user:
+            return super().destroy(request, *args, **kwargs)
+        return Response(
+            {"detail": "You do not have permission to delete this search."},
+            status=status.HTTP_403_FORBIDDEN,
+        )

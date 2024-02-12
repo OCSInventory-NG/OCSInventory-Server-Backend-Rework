@@ -1,0 +1,36 @@
+from django.contrib.auth.models import Group, User
+from django.db import models
+from django.db.models.fields.json import JSONField
+
+
+class Search(models.Model):
+    """
+    Search model class definition
+
+    The model will contain the following info
+    - Search
+    - Last updated
+    - Visibility
+    - Name
+    - Description
+    - Allow modification by group members
+    - User
+    - Groups
+    """
+
+    visibility_choices = [
+        ("public", "Public"),
+        ("private_personal", "Private (Personal)"),
+        ("private_group", "Private (Group)"),
+    ]
+
+    search = JSONField()
+    last_updated = models.DateTimeField(auto_now=True)
+    visibility = models.CharField(
+        max_length=20, choices=visibility_choices, default="private_personal"
+    )
+    name = models.CharField(max_length=50, unique=True)
+    description = models.TextField()
+    allow_group_modification = models.BooleanField(default=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    groups = models.ManyToManyField(Group, blank=True)
