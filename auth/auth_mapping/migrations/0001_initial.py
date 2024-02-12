@@ -23,7 +23,7 @@ def add_auth_methods(apps, schema_editor):
         {
             "name": "LDAP",
             "auth_type": "OTHER",
-            "enabled": True,
+            "enabled": False,
             "priority": 2,
             "configs": [
                 {
@@ -90,7 +90,7 @@ def add_auth_methods(apps, schema_editor):
         {
             "name": "CAS",
             "auth_type": "SSO",
-            "enabled": True,
+            "enabled": False,
             "priority": None,
             "configs": [
                 {
