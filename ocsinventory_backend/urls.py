@@ -48,6 +48,7 @@ from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.routers import DefaultRouter
 from search.routers import SearchRouter
 from search.views import SearchView
+from asset.asset_group.routers import AssetGroupRouter
 from user.routers import UserRouter
 
 # Routers provide a way of automatically determining the URL conf.
@@ -153,6 +154,10 @@ authMappingRouter = authMappingRouter.defineRoutes(defaultRouter)
 # Add search declaration
 searchRouter = SearchRouter()
 searchRouter = searchRouter.defineRoutes(defaultRouter)
+
+# Add AssetGroup declaration
+assetGroupRouter = AssetGroupRouter()
+assetGroupRouter = assetGroupRouter.defineRoutes(defaultRouter)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.

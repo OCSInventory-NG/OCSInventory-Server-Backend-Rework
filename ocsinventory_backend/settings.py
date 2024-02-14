@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     "asset.inventory_base.apps.InventoryBaseConfig",
     "asset.inventory_section.apps.InventorySectionConfig",
     "asset.inventory_field.apps.InventoryFieldConfig",
+    "asset.asset_group.apps.AssetGroupConfig",
     "deployment.package.apps.PackageConfig",
     "deployment.action.apps.ActionConfig",
     "deployment.result.apps.ResultConfig",
