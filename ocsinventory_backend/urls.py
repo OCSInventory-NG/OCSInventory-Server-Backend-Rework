@@ -15,6 +15,7 @@ Including another URLconf
 """
 
 from accountinfo.routers import AccountinfoRouter
+from asset.asset_group.routers import AssetGroupRouter
 from asset.collection.views import CollectionView
 from asset.inventory_base.routers import InventoryBaseRouter
 from asset.inventory_field.routers import InventoryFieldRouter
@@ -48,7 +49,6 @@ from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.routers import DefaultRouter
 from search.routers import SearchRouter
 from search.views import SearchView
-from asset.asset_group.routers import AssetGroupRouter
 from user.routers import UserRouter
 
 # Routers provide a way of automatically determining the URL conf.

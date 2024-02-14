@@ -1,7 +1,6 @@
+from asset.inventory_base.models import InventoryBase
 from django.db import models
 from django.db.models.fields.json import JSONField
-
-from asset.inventory_base.models import InventoryBase
 
 
 class AssetGroup(models.Model):

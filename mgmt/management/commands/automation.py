@@ -1,9 +1,10 @@
-from django.core.management.base import BaseCommand
-from automation.scheduler.models import Scheduler
-from automation.history.models import History
-from django.utils import module_loading
 from datetime import datetime, timedelta
+
 import pytz
+from automation.history.models import History
+from automation.scheduler.models import Scheduler
+from django.core.management.base import BaseCommand
+from django.utils import module_loading
 
 
 class Command(BaseCommand):
@@ -13,7 +14,7 @@ class Command(BaseCommand):
         BaseCommand ([type]): base class for management commands
     """
 
-    help = 'Test command'
+    help = "Test command"
     library = "automation.tasks."
     utc = pytz.UTC
 
@@ -22,11 +23,7 @@ class Command(BaseCommand):
 
         def updateHistory(task, comment, status):
             """Update history with task and comment"""
-            h = History(
-                scheduler=task,
-                comment=comment,
-                status=status
-            )
+            h = History(scheduler=task, comment=comment, status=status)
             h.save()
 
         tasks = Scheduler.objects.all()
@@ -35,11 +32,11 @@ class Command(BaseCommand):
             name = task.name
             completeName = self.library + name
             # Configure delta time by recurence
-            if(task.recurence == 'hourly'):
+            if task.recurence == "hourly":
                 delta = timedelta(hours=1)
-            elif(task.recurence == 'daily'):
+            elif task.recurence == "daily":
                 delta = timedelta(days=1)
-            elif(task.recurence == 'weekly'):
+            elif task.recurence == "weekly":
                 delta = timedelta(weeks=1)
             else:
                 delta = timedelta(days=30)
@@ -47,7 +44,10 @@ class Command(BaseCommand):
             now = datetime.now().replace(tzinfo=self.utc)
 
             # Check if task need to be start
-            if(task.last_execution is None or task.last_execution.replace(tzinfo=self.utc) + delta < now):
+            if (
+                task.last_execution is None
+                or task.last_execution.replace(tzinfo=self.utc) + delta < now
+            ):
                 # Save history
                 updateHistory(task, "Starting task " + name, 0)
 

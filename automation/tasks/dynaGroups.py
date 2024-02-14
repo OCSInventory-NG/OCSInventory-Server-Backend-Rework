@@ -1,5 +1,5 @@
-from automation.tasks.abstractTask import AbstractTask
 from asset.asset_group.models import AssetGroup
+from automation.tasks.abstractTask import AbstractTask
 from search.views import SearchView
 
 
@@ -36,7 +36,7 @@ class DynaGroups(AbstractTask):
         """
         search_view = SearchView()
         assets = search_view.process_search(search)
-        assets = assets.values_list('id', flat=True)
+        assets = assets.values_list("id", flat=True)
         return assets
 
     def update_assets_list(group, assets):

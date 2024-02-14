@@ -33,7 +33,7 @@ class SearchView(APIView):
         filters = []
         links = {}
         masterindex = 0
-        
+
         # Iterating over JSON structure
         for and_conditions in data:
             and_filter = Q()
@@ -55,10 +55,7 @@ class SearchView(APIView):
                     condition_q = Q(**{f"{field}__{operator}": value})
                 # Special process if accountinfo
                 elif obj == "AccountinfoConfig":
-                    if (
-                        operator == "iexact"
-                        and condition["fieldtype"] != "checkbox"
-                    ):
+                    if operator == "iexact" and condition["fieldtype"] != "checkbox":
                         if condition["fieldtype"] == "select":
                             matching_objects = AccountinfoData.objects.filter(
                                 **{f"accountdata__{field}__value__contains": value},
@@ -98,9 +95,7 @@ class SearchView(APIView):
                                         elif (
                                             operator == "istartswith"
                                             and data is not None
-                                            and data.lower().startswith(
-                                                value.lower()
-                                            )
+                                            and data.lower().startswith(value.lower())
                                         ):
                                             result.append(matching_object.object_id)
                                         elif (
@@ -118,8 +113,8 @@ class SearchView(APIView):
                             if len(result) > 0:
                                 condition_q = Q(id__in=result)
                             else:
-                                id_to_exclude = (
-                                    InventoryBase.objects.all().values_list("id")
+                                id_to_exclude = InventoryBase.objects.all().values_list(
+                                    "id"
                                 )
                                 condition_q = ~Q(id__in=id_to_exclude)
                         else:
@@ -131,18 +126,12 @@ class SearchView(APIView):
                 else:
                     if obj == "inventory_sections":
                         condition_q = Q(
-                            **{
-                                f"{obj}__template_section__exact": condition[
-                                    "section"
-                                ]
-                            }
+                            **{f"{obj}__template_section__exact": condition["section"]}
                         )
                         condition_q &= Q(
                             **{f"{obj}__fields__id__exact": condition["field"]}
                         )
-                        condition_q &= Q(
-                            **{f"{obj}__fields__value__{operator}": value}
-                        )
+                        condition_q &= Q(**{f"{obj}__fields__value__{operator}": value})
                     else:
                         condition_q = Q(**{f"{obj}__{field}__{operator}": value})
 
@@ -191,7 +180,7 @@ class SearchView(APIView):
         data = request.data
 
         try:
-            qs_json = serializers.serialize("json",  self.process_search(data))
+            qs_json = serializers.serialize("json", self.process_search(data))
 
             return HttpResponse(qs_json, content_type="application/json")
         except Exception as e:
