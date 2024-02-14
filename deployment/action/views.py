@@ -1,4 +1,4 @@
-from deployment.action.models import Action
+from deployment.action.models import DeploymentAction
 from deployment.action.serializers import ActionSerializer
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
@@ -15,8 +15,8 @@ class ActionViewSet(viewsets.OCSViewSet):
     # Need to have permissions to consult
     permission_classes = [DefaultModelPermissions]
 
-    queryset = Action.objects.all()
+    queryset = DeploymentAction.objects.all()
     serializer_class = ActionSerializer
-    model = Action
+    model = DeploymentAction
     filterset_fields = ['id', 'package', 'name', 'priority', 'date_created',
                         'action_type', 'command']
