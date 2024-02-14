@@ -5,6 +5,7 @@ from django.utils import module_loading
 from datetime import datetime, timedelta
 import pytz
 
+
 class Command(BaseCommand):
     """Name of the file equals command, e.g. 'demo'
 
@@ -14,26 +15,25 @@ class Command(BaseCommand):
 
     help = 'Test command'
     library = "automation.tasks."
-    utc=pytz.UTC
+    utc = pytz.UTC
 
     def handle(self, *args, **options):
         """Execute all Tasks"""
-    
-        def updateHistory(task, comment):
+
+        def updateHistory(task, comment, status):
             """Update history with task and comment"""
             h = History(
-                task=task, 
-                comment=comment
+                scheduler=task,
+                comment=comment,
+                status=status
             )
             h.save()
 
         tasks = Scheduler.objects.all()
         for task in tasks:
-            #Set up task name
+            # Set up task name
             name = task.name
-            upperName = task.name.capitalize()
-            completeName = self.library + name + "." + upperName
-
+            completeName = self.library + name
             # Configure delta time by recurence
             if(task.recurence == 'hourly'):
                 delta = timedelta(hours=1)
@@ -47,20 +47,18 @@ class Command(BaseCommand):
             now = datetime.now().replace(tzinfo=self.utc)
 
             # Check if task need to be start
-            if(task.last_exec is None or task.last_exec.replace(tzinfo=self.utc) + delta < now):
+            if(task.last_execution is None or task.last_execution.replace(tzinfo=self.utc) + delta < now):
                 # Save history
-                updateHistory(task, "Start")
+                updateHistory(task, "Starting task " + name, 0)
 
                 # Import module task
                 taskClass = module_loading.import_string(completeName)
                 # Execute task command
-                taskClass.execute()
-
+                taskClass.execute(taskClass)
                 # Update execution date
-                task.last_exec = datetime.now(tz=self.utc)
+                task.last_execution = datetime.now(tz=self.utc)
                 # Save new date
                 task.save()
 
                 # Save finish history
-                updateHistory(task, "End")
-            
+                updateHistory(task, "Task " + name + " finished", 1)
