@@ -17,6 +17,7 @@ class ActionSerializer(serializers.ModelSerializer):
         model = Action
         fields = [
             "id",
+            "rule",
             "description",
             "action",
             "field",
