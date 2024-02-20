@@ -7,7 +7,6 @@ from django.db.models import Q
 from django.http import HttpResponse
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
-from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from search.models import Search

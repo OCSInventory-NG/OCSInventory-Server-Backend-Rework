@@ -1,7 +1,7 @@
+from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets
 from rest_framework.response import Response
-from django.db.models import Q
 
 
 class OCSViewSet(viewsets.ModelViewSet):
@@ -42,9 +42,8 @@ class OCSViewSet(viewsets.ModelViewSet):
         except Exception as e:
             # serializer.errors may return more details
             return Response(
-                {"failed": request.data, 
-                 "error" : str(e)},
-                  status=status.HTTP_400_BAD_REQUEST
+                {"failed": request.data, "error": str(e)},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         return Response({"success": "200"}, status=status.HTTP_200_OK)

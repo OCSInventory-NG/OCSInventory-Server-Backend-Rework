@@ -1,4 +1,3 @@
-from django.contrib.auth.models import Group, User
 from django.db import models
 from django.db.models.fields.json import JSONField
 from ocsinventory_backend.ocs_framework.models import RestrictVisibility
@@ -16,6 +15,7 @@ class Search(RestrictVisibility):
     - Name
     - Description
     """
+
     search = JSONField()
     last_updated = models.DateTimeField(auto_now=True)
     name = models.CharField(max_length=50)

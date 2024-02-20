@@ -1,8 +1,6 @@
 from asset.inventory_base.models import InventoryBase
 from django.db import models
 from django.db.models.fields.json import JSONField
-
-from asset.inventory_base.models import InventoryBase
 from ocsinventory_backend.ocs_framework.models import RestrictVisibility
 
 
@@ -21,6 +19,7 @@ class AssetGroup(RestrictVisibility):
         static group
     - Last Updated : the last time the group was updated
     """
+
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=255, blank=True, null=True)
     is_dynamic = models.BooleanField(default=False)

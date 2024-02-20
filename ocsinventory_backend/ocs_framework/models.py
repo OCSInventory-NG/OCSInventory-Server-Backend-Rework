@@ -1,11 +1,12 @@
-from django.db import models
 from django.contrib.auth.models import Group, User
+from django.db import models
 
 
 class RestrictVisibility(models.Model):
     """
     Abstract class to implement visibility restriction on child models
     """
+
     class Meta:
         abstract = True
 
