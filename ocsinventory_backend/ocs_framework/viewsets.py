@@ -1,8 +1,7 @@
-from django.core.exceptions import FieldError, ObjectDoesNotExist
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets
-from rest_framework.exceptions import APIException
 from rest_framework.response import Response
+from django.db.models import Q
 
 
 class OCSViewSet(viewsets.ModelViewSet):
@@ -92,3 +91,74 @@ class OCSViewSet(viewsets.ModelViewSet):
         return self.put(request, *args, **kwargs)
 
 
+class RestrictVisibilityViewSet(OCSViewSet):
+    """
+    Viewset to restrict visibility and modification of objects
+
+    Args:
+        OCSViewSet ([ModelViewSet])
+    """
+
+    def update(self, request, *args, **kwargs):
+        """
+        User needs to either be the creator or part of the group
+        (if allow_group_modification is enabled) to modify a
+        visibility restricted object
+        """
+        search = self.get_object()
+        user = request.user
+
+        # check if user is the creator
+        if search.user == user:
+            return super().update(request, *args, **kwargs)
+
+        # for group private searches, check if group modification is allowed
+        if search.visibility == "private_group" and not search.allow_group_modification:
+            return Response(
+                {"detail": "You do not have permission to modify this item."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        elif (
+            search.visibility == "private_group"
+            and search.allow_group_modification
+            and not search.groups.filter(id__in=user.groups.all())
+        ):
+            return Response(
+                {"detail": "You do not have permission to modify this item."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        # for public searches, check if user is the creator
+        if search.visibility == "public" and search.user != user:
+            return Response(
+                {"detail": "You do not have permission to modify this item."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        return super().update(request, *args, **kwargs)
+
+    def list(self, request, *args, **kwargs):
+        """
+        Return the list of objects that the user can see (public,
+        private_personal, private_group)
+        """
+        user = request.user
+        queryset = self.get_queryset()
+        queryset = queryset.filter(
+            Q(visibility="public") | Q(user=user) | Q(groups__in=user.groups.all())
+        ).distinct()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        User needs to be the creator to delete a visibility restricted object
+        """
+        search = self.get_object()
+        user = request.user
+        if search.user == user:
+            return super().destroy(request, *args, **kwargs)
+        return Response(
+            {"detail": "You do not have permission to delete this item."},
+            status=status.HTTP_403_FORBIDDEN,
+        )

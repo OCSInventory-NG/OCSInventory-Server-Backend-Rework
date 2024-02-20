@@ -189,9 +189,12 @@ class SearchView(APIView):
             return Response({"error": f"Error search processing: {e}"}, status=500)
 
 
-class SearchViewSet(viewsets.OCSViewSet):
+class SearchViewSet(viewsets.RestrictVisibilityViewSet):
     """
     This class will define the view behavior
+
+    Inherits from RestrictVisibilityViewSet to restrict the visibility of the
+    Search objects based on user and group membership
 
     Args:
         viewsets ([OCSVIewSet])
@@ -206,62 +209,6 @@ class SearchViewSet(viewsets.OCSViewSet):
     filterset_fields = [
         "id",
         "last_updated",
-        "visibility",
         "name",
         "description",
-        "user",
-        "groups",
-        "allow_group_modification",
     ]
-
-    def update(self, request, *args, **kwargs):
-        search = self.get_object()
-        user = request.user
-
-        # check if user is the creator
-        if search.user == user:
-            return super().update(request, *args, **kwargs)
-
-        # for group private searches, check if group modification is allowed
-        if search.visibility == "private_group" and not search.allow_group_modification:
-            return Response(
-                {"detail": "You do not have permission to modify this search."},
-                status=status.HTTP_403_FORBIDDEN,
-            )
-        elif (
-            search.visibility == "private_group"
-            and search.allow_group_modification
-            and not search.groups.filter(id__in=user.groups.all())
-        ):
-            return Response(
-                {"detail": "You do not have permission to modify this search."},
-                status=status.HTTP_403_FORBIDDEN,
-            )
-
-        # for public searches, check if user is the creator
-        if search.visibility == "public" and search.user != user:
-            return Response(
-                {"detail": "You do not have permission to modify this search."},
-                status=status.HTTP_403_FORBIDDEN,
-            )
-
-        return super().update(request, *args, **kwargs)
-
-    def list(self, request, *args, **kwargs):
-        user = request.user
-        queryset = self.get_queryset()
-        queryset = queryset.filter(
-            Q(visibility="public") | Q(user=user) | Q(groups__in=user.groups.all())
-        )
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-
-    def destroy(self, request, *args, **kwargs):
-        search = self.get_object()
-        user = request.user
-        if search.user == user:
-            return super().destroy(request, *args, **kwargs)
-        return Response(
-            {"detail": "You do not have permission to delete this search."},
-            status=status.HTTP_403_FORBIDDEN,
-        )

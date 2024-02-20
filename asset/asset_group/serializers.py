@@ -15,4 +15,5 @@ class AssetGroupSerializer(serializers.ModelSerializer):
         """Define the linked model and the fields registered in the API"""
 
         model = AssetGroup
-        fields = ["id", "name", "description", "is_dynamic", "search", "assets"]
+        fields = "__all__"
+        extra_kwargs = {"last_updated": {"read_only": True}}

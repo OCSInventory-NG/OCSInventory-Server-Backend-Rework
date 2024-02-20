@@ -5,9 +5,12 @@ from .models import AssetGroup
 from .serializers import AssetGroupSerializer
 
 
-class AssetGroupViewSet(viewsets.OCSViewSet):
+class AssetGroupViewSet(viewsets.RestrictVisibilityViewSet):
     """
     AssetGroup ViewSet
+
+    Inherits from RestrictVisibilityViewSet to restrict the visibility of the
+    Search objects based on user and group membership
     """
 
     permission_classes = [DefaultModelPermissions]
@@ -16,4 +19,4 @@ class AssetGroupViewSet(viewsets.OCSViewSet):
     serializer_class = AssetGroupSerializer
     model = AssetGroup
 
-    filterset_fields = ["name", "description", "is_dynamic", "assets"]
+    filterset_fields = ["name", "description", "is_dynamic", "assets", "last_updated"]
