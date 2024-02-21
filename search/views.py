@@ -260,7 +260,7 @@ class SearchViewSet(viewsets.OCSViewSet):
         queryset = self.get_queryset()
         queryset = queryset.filter(
             Q(visibility="public") | Q(user=user) | Q(groups__in=user.groups.all())
-        )
+        ).distinct()
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
