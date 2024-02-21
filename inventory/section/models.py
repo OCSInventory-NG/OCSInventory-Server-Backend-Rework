@@ -20,6 +20,7 @@ class Section(models.Model):
         ("BASH", "Bash command"),
         ("PW", "Powershell command"),
         ("CMD", "Cmd command"),
+        ("OID", "SNMP OID"),
     )
 
     RETRIVAL_OUTPUT = (
