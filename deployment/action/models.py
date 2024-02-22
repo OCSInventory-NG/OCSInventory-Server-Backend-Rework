@@ -1,5 +1,5 @@
-from django.db import models
 from deployment.package.models import Package
+from django.db import models
 
 
 class DeploymentAction(models.Model):
@@ -17,7 +17,8 @@ class DeploymentAction(models.Model):
     """
 
     package = models.ForeignKey(
-        Package, related_name="actions_list", on_delete=models.CASCADE, null=True)
+        Package, related_name="actions_list", on_delete=models.CASCADE, null=True
+    )
     name = models.CharField(max_length=128)
     priority = models.IntegerField()
     date_created = models.DateTimeField(auto_now_add=True)
