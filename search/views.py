@@ -128,7 +128,11 @@ class SearchView(APIView):
                             **{f"{obj}__template_section__exact": condition["section"]}
                         )
                         condition_q &= Q(
-                            **{f"{obj}__fields__template_field__exact": condition["field"]}
+                            **{
+                                f"{obj}__fields__template_field__exact": condition[
+                                    "field"
+                                ]
+                            }
                         )
                         condition_q &= Q(**{f"{obj}__fields__value__{operator}": value})
                     else:
@@ -159,7 +163,7 @@ class SearchView(APIView):
                 else:
                     q_object &= q_filter
 
-            query_set = InventoryBase.objects.filter(q_object).distinct('pk')
+            query_set = InventoryBase.objects.filter(q_object).distinct("pk")
         else:
             query_set = []
 
