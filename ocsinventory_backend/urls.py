@@ -15,6 +15,7 @@ Including another URLconf
 """
 
 from accountinfo.routers import AccountinfoRouter
+from asset.asset_group.routers import AssetGroupRouter
 from asset.collection.views import CollectionView
 from asset.inventory_base.routers import InventoryBaseRouter
 from asset.inventory_field.routers import InventoryFieldRouter
@@ -153,6 +154,10 @@ authMappingRouter = authMappingRouter.defineRoutes(defaultRouter)
 # Add search declaration
 searchRouter = SearchRouter()
 searchRouter = searchRouter.defineRoutes(defaultRouter)
+
+# Add AssetGroup declaration
+assetGroupRouter = AssetGroupRouter()
+assetGroupRouter = assetGroupRouter.defineRoutes(defaultRouter)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.

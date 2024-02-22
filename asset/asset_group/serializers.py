@@ -1,10 +1,11 @@
 from rest_framework import serializers
-from search.models import Search
+
+from .models import AssetGroup
 
 
-class SearchSerializer(serializers.ModelSerializer):
+class AssetGroupSerializer(serializers.ModelSerializer):
     """
-    This serialize class provide the API representation
+    Serializer class for AssetGroup
 
     Args:
         serializers ([ModelSerializer])
@@ -13,6 +14,6 @@ class SearchSerializer(serializers.ModelSerializer):
     class Meta:
         """Define the linked model and the fields registered in the API"""
 
-        model = Search
+        model = AssetGroup
         fields = "__all__"
         extra_kwargs = {"last_updated": {"read_only": True}}
