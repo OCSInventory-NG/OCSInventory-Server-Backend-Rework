@@ -1,6 +1,4 @@
 from asset.inventory_base.models import InventoryBase
-from asset.inventory_section.serializers import InventorySectionSerializer
-
 from rest_framework import serializers
 
 
@@ -16,8 +14,6 @@ class InventoryBaseSerializer(serializers.ModelSerializer):
     OS_WIN = "windows"
     OS_LIN = "linux"
     OS_MAC = "mac"
-
-    inventory_sections = InventorySectionSerializer(many=True, required=False)
 
     class Meta:
         """Define the linked model and the fields registered in the API"""
@@ -36,9 +32,7 @@ class InventoryBaseSerializer(serializers.ModelSerializer):
             "domain",
             "template",
             "last_update",
-            "inventory_sections",
         ]
-        extra_kwargs = {"last_update": {"read_only": True},
-                        "inventory_sections": {"read_only": True}}
+        extra_kwargs = {"last_update": {"read_only": True}}
 
         http_method_names = ["get", "post", "patch", "delete"]

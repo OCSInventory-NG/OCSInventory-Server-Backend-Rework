@@ -1,0 +1,28 @@
+from asset.inventory_base.models import InventoryBase
+from django.db import models
+from django.db.models.fields.json import JSONField
+from ocsinventory_backend.ocs_framework.models import RestrictVisibility
+
+
+class AssetGroup(RestrictVisibility):
+    """
+    Asset Group model class definition
+
+    Extends the RestrictVisibility model to handle visibility restriction
+
+    The model will contain the following info:
+    - Name
+    - Description
+    - Is Dynamic : True/False
+    - Search : stores the search used to regenerate the assets if dynamic
+    - Assets : either cached assets for a dynamic group or static assets for a
+        static group
+    - Last Updated : the last time the group was updated
+    """
+
+    name = models.CharField(max_length=50)
+    description = models.CharField(max_length=255, blank=True, null=True)
+    is_dynamic = models.BooleanField(default=False)
+    search = JSONField(blank=True, null=True)
+    assets = models.ManyToManyField(InventoryBase, blank=True)
+    last_updated = models.DateTimeField(auto_now=True)

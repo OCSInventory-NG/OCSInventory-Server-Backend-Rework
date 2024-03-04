@@ -39,6 +39,11 @@ class MyAccountViewSet(viewsets.OCSViewSet):
         user = User.objects.filter(username=self.request.user).first()
         raw_permissions = user.get_all_permissions()
         refined_permissions = []
+        refined_groups = []
+
+        # Get the user groups
+        for group in request.user.groups.all():
+            refined_groups.append(group.id)
 
         # Remove the first part of the permission "object.permname"
         for permission in raw_permissions:
@@ -53,6 +58,7 @@ class MyAccountViewSet(viewsets.OCSViewSet):
             "last_name": getattr(user, "last_name", ""),
             "is_staff": getattr(user, "is_staff", False),
             "is_superuser": getattr(user, "is_superuser", False),
+            "groups": refined_groups,
             "full_permissions": refined_permissions,
         }
         return Response(reponse)

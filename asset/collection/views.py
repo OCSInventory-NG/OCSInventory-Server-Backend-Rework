@@ -2,9 +2,8 @@ import logging
 
 from asset.inventory_base.models import InventoryBase
 from asset.inventory_base.serializers import InventoryBaseSerializer
-from asset.inventory_field.serializers import InventoryFieldSerializer
+from asset.inventory_field.models import InventoryField
 from asset.inventory_section.models import InventorySection
-from asset.inventory_section.serializers import InventorySectionSerializer
 from django.core.exceptions import ObjectDoesNotExist
 from inventory.field.models import Field
 from inventory.section.models import Section
@@ -52,17 +51,12 @@ class CollectionView(APIView):
         returns:
             Response object
         """
-
         data = request.data
-
-        # storing errors
         errors = []
-
         self.LOGGER.info(
             "Creating inventory for device %s - %s", data["uuid"], data["name"]
         )
 
-        # create Base asset using BaseSerializer
         try:
             asset_serializer = InventoryBaseSerializer(data=data)
             if asset_serializer.is_valid(raise_exception=True):
@@ -75,81 +69,60 @@ class CollectionView(APIView):
             self.LOGGER.error(f"Error creating asset: {ve}")
             return Response({"error": errors}, status=400)
         except Exception as e:
-            # we return a 400 error if the asset could not be created
             self.LOGGER.error(f"Error creating asset: {e}")
             return Response({"error": f"Error creating asset: {e}"}, status=500)
 
+        # pre-fetch all Sections and Fields for this template
+        section_objs = Section.objects.filter(template=templateId)
+        field_objs = Field.objects.filter(section__in=section_objs)
+        section_field_map = {
+            section.name: {
+                field.name: field for field in field_objs.filter(section=section)
+            }
+            for section in section_objs
+        }
+
         # handle template inventory if present
         if "template_inventory" in data:
-            sectionsArray = data.pop("template_inventory")
+            sections_array = data.pop("template_inventory")
 
-            # loop through sections array
-            for name, fields in sectionsArray.items():
-                # retrieve section ID
-                try:
-                    section_query = Section.objects.get(name=name, template=templateId)
-                    sectionId = section_query.id
-                except ObjectDoesNotExist:
-                    errors.append(f"No matching section found for {name}")
-                    continue
-                except Exception as e:
-                    errors.append(f"Error retrieving section {name}: {e}")
+            sections_to_create = []
+            fields_to_create = []
+
+            for section_name, items in sections_array.items():
+                section_obj = section_objs.filter(name=section_name).first()
+                if not section_obj:
+                    errors.append(f"No matching section found for {section_name}")
                     continue
 
-                # loop through each field object in fields array
-                for field_object in fields:
-                    try:
-                        # create InventorySection
-                        section_serializer = InventorySectionSerializer(
-                            data={
-                                "base": asset_instance.id,
-                                "template_section": sectionId,
-                            }
+                field_map = section_field_map.get(section_name, {})
+                for item in items:
+                    section_instance = InventorySection(
+                        base=asset_instance, template_section=section_obj
+                    )
+                    sections_to_create.append(section_instance)
+
+                    for field_name, field_value in item.items():
+                        field_obj = field_map.get(field_name)
+                        if not field_obj:
+                            errors.append(
+                                f"No matching field found for {field_name}"
+                                f" in section {section_name}"
+                            )
+                            continue
+
+                        fields_to_create.append(
+                            InventoryField(
+                                inventory_section=section_instance,
+                                template_field=field_obj,
+                                value=field_value,
+                            )
                         )
-                        if section_serializer.is_valid(raise_exception=True):
-                            section_instance = section_serializer.save()
-                    except ValidationError as ve:
-                        errors.append("Error creating " f"section {name}: {str(ve)}")
-                        continue
-                    except Exception as e:
-                        errors.append(f"Error creating section {name}: {e}")
-                        continue
 
-                    for field_name, field_value in field_object.items():
-                        try:
-                            # retrieve field ID
-                            field_query = Field.objects.get(
-                                name=field_name, section=sectionId
-                            )
-                            fieldId = field_query.id
+            # bulk create sections and fields
+            InventorySection.objects.bulk_create(sections_to_create)
+            InventoryField.objects.bulk_create(fields_to_create)
 
-                            # create InventoryField
-                            field_serializer = InventoryFieldSerializer(
-                                data={
-                                    "inventory_section": section_instance.id,
-                                    "template_field": fieldId,
-                                    "value": field_value,
-                                }
-                            )
-                            if field_serializer.is_valid(raise_exception=True):
-                                field_serializer.save()
-                        except ObjectDoesNotExist:
-                            errors.append(f"No matching field found for {field_name}")
-                            continue
-                        except ValidationError as ve:
-                            errors.append(
-                                "Error creating "
-                                f"field {name} "
-                                f"- {field_value}: {str(ve)}"
-                            )
-                            continue
-                        except Exception as e:
-                            errors.append(
-                                "Error creating " f"field {name} - {field_value}: {e}"
-                            )
-                            continue
-
-        # check if there were any errors
         if errors:
             self.LOGGER.error(
                 "Encountered errors while creating inventory " "for device %s - %s: %s",
@@ -195,8 +168,6 @@ class CollectionView(APIView):
             Response object
         """
         data = request.data
-
-        # storing errors
         errors = []
 
         self.LOGGER.info(
@@ -225,88 +196,58 @@ class CollectionView(APIView):
             self.LOGGER.error(f"Error updating asset: {e}")
             return Response({"error": f"Error updating asset: {e}"}, status=500)
 
+        section_objs = Section.objects.filter(template=asset_instance.template_id)
+        field_objs = Field.objects.filter(section__in=section_objs)
+        section_field_map = {
+            section.name: {
+                field.name: field for field in field_objs.filter(section=section)
+            }
+            for section in section_objs
+        }
+
+        # handle template inventory if present
         if "template_inventory" in data:
-            sectionsArray = data.pop("template_inventory")
+            sections_array = data.pop("template_inventory")
 
-            try:
-                # delete existing sections
-                InventorySection.objects.filter(base=asset_instance.id).delete()
-            except Exception as e:
-                errors.append(f"Error deleting existing sections: {e}")
+            # delete existing sections and fields
+            InventorySection.objects.filter(base=asset_instance).delete()
 
-            for name, fields in sectionsArray.items():
-                try:
-                    # retrieve section ID
-                    section_query = Section.objects.get(
-                        name=name, template=asset_instance.template_id
+            sections_to_create = []
+            fields_to_create = []
+
+            for section_name, items in sections_array.items():
+                section_obj = section_objs.filter(name=section_name).first()
+                if not section_obj:
+                    errors.append(f"No matching section found for {section_name}")
+                    continue
+
+                field_map = section_field_map.get(section_name, {})
+                for item in items:
+                    section_instance = InventorySection(
+                        base=asset_instance, template_section=section_obj
                     )
-                except ObjectDoesNotExist:
-                    errors.append(f"Section {name} not found")
-                    continue
-                except Exception as e:
-                    errors.append(f"Error retrieving section {name}: {e}")
-                    continue
+                    sections_to_create.append(section_instance)
 
-                # loop through each field object in fields array
-                for field_object in fields:
-                    try:
-                        # create InventorySection
-                        section_serializer = InventorySectionSerializer(
-                            data={
-                                "base": asset_instance.id,
-                                "template_section": section_query.id,
-                            }
+                    for field_name, field_value in item.items():
+                        field_obj = field_map.get(field_name)
+                        if not field_obj:
+                            errors.append(
+                                f"No matching field found for {field_name}"
+                                f" in section {section_name}"
+                            )
+                            continue
+
+                        fields_to_create.append(
+                            InventoryField(
+                                inventory_section=section_instance,
+                                template_field=field_obj,
+                                value=field_value,
+                            )
                         )
-                        if section_serializer.is_valid(raise_exception=True):
-                            section_instance = section_serializer.save()
-                    except ValidationError as ve:
-                        errors.append("Error creating " f"section {name}: {str(ve)}")
-                        continue
-                    except Exception as e:
-                        errors.append(f"Error creating section {name}: {e}")
-                        continue
 
-                    for field_name, field_value in field_object.items():
-                        try:
-                            # retrieve field ID
-                            field_query = Field.objects.get(
-                                name=field_name, section=section_query.id
-                            )
-                        except ObjectDoesNotExist:
-                            errors.append(
-                                f"Field {field_name} " f"not found in section {name}"
-                            )
-                            continue
-                        except Exception as e:
-                            errors.append(
-                                f"Error retrieving field {field_name} "
-                                f"in section {name}: {e}"
-                            )
-                            continue
-
-                        try:
-                            # create InventoryField
-                            field_serializer = InventoryFieldSerializer(
-                                data={
-                                    "inventory_section": section_instance.id,
-                                    "template_field": field_query.id,
-                                    "value": field_value,
-                                }
-                            )
-                            if field_serializer.is_valid(raise_exception=True):
-                                field_serializer.save()
-                        except ValidationError as ve:
-                            errors.append(
-                                f"Error creating field {name} "
-                                f"- {field_name} : {str(ve)}"
-                            )
-                            continue
-                        except Exception as e:
-                            errors.append(
-                                f"Error creating " f"field {name} - {field_name}: {e}"
-                            )
-                            continue
-
+            # bulk create sections and fields
+            InventorySection.objects.bulk_create(sections_to_create)
+            InventoryField.objects.bulk_create(fields_to_create)
         if errors:
             self.LOGGER.error(
                 "Update succeeded but errors were encountered "
@@ -344,8 +285,6 @@ class CollectionView(APIView):
         template_section will be created for the same asset.
         """
         data = request.data
-
-        # storing errors
         errors = []
 
         self.LOGGER.info(
@@ -374,90 +313,59 @@ class CollectionView(APIView):
             self.LOGGER.error(f"Error updating asset: {e}")
             return Response({"error": f"Error updating asset: {e}"}, status=500)
 
+        # pre-fetch Sections and Fields
+        section_objs = Section.objects.filter(template=asset_instance.template_id)
+        field_objs = Field.objects.filter(section__in=section_objs)
+        section_field_map = {
+            section.name: {
+                field.name: field for field in field_objs.filter(section=section)
+            }
+            for section in section_objs
+        }
+
         if "template_inventory" in data:
-            sectionsArray = data.pop("template_inventory")
+            sections_array = data.pop("template_inventory")
 
-            for name, fields in sectionsArray.items():
-                try:
-                    # retrieve section ID
-                    section_query = Section.objects.get(
-                        name=name, template=asset_instance.template_id
-                    )
-                except ObjectDoesNotExist:
-                    errors.append(f"Section {name} not found")
-                    continue
-                except Exception as e:
-                    errors.append(f"Error retrieving section {name}: {e}")
+            new_sections = []
+            new_fields = []
+
+            for section_name, items in sections_array.items():
+                section_query = section_objs.filter(name=section_name).first()
+                if not section_query:
+                    errors.append(f"Section {section_name} not found in template")
                     continue
 
-                try:
-                    # delete existing sections
-                    InventorySection.objects.filter(
-                        base=asset_instance.id, template_section=section_query.id
-                    ).delete()
-                except Exception as e:
-                    errors.append(
-                        f"Error deleting existing sections " f"for {name}: {e}"
-                    )
+                # delete existing sections for this template section
+                InventorySection.objects.filter(
+                    base=asset_instance, template_section=section_query
+                ).delete()
 
-                for field_object in fields:
-                    try:
-                        # create InventorySection
-                        section_serializer = InventorySectionSerializer(
-                            data={
-                                "base": asset_instance.id,
-                                "template_section": section_query.id,
-                            }
+                field_map = section_field_map.get(section_name, {})
+                for item in items:
+                    section_instance = InventorySection(
+                        base=asset_instance, template_section=section_query
+                    )
+                    new_sections.append(section_instance)
+
+                    for field_name, field_value in item.items():
+                        field_obj = field_map.get(field_name)
+                        if not field_obj:
+                            errors.append(
+                                f"Field {field_name} not found"
+                                f" in section {section_name}"
+                            )
+                            continue
+
+                        new_field = InventoryField(
+                            inventory_section=section_instance,
+                            template_field=field_obj,
+                            value=field_value,
                         )
-                        if section_serializer.is_valid(raise_exception=True):
-                            section_instance = section_serializer.save()
-                    except ValidationError as ve:
-                        errors.append(f"Error creating section {name} " f": {str(ve)}")
-                        continue
-                    except Exception as e:
-                        errors.append(f"Error creating section {name}: {e}")
-                        continue
+                        new_fields.append(new_field)
 
-                    # loop through each field object in fields array
-                    for field_name, field_value in field_object.items():
-                        try:
-                            # retrieve field ID
-                            field_query = Field.objects.get(
-                                name=field_name, section=section_query.id
-                            )
-                        except ObjectDoesNotExist:
-                            errors.append(
-                                f"Field {field_name} not found " f"in section {name}"
-                            )
-                            continue
-                        except Exception as e:
-                            errors.append(
-                                f"Error retrieving field {field_name} "
-                                f"in section {name}: {e}"
-                            )
-                            continue
-
-                        try:
-                            field_serializer = InventoryFieldSerializer(
-                                data={
-                                    "inventory_section": section_instance.id,
-                                    "template_field": field_query.id,
-                                    "value": field_value,
-                                }
-                            )
-                            if field_serializer.is_valid(raise_exception=True):
-                                field_serializer.save()
-                        except ValidationError as ve:
-                            errors.append(
-                                f"Error creating field {name} "
-                                f"- {field_name} : {str(ve)}"
-                            )
-                            continue
-                        except Exception as e:
-                            errors.append(
-                                f"Error creating field {name} " f"- {field_name}: {e}"
-                            )
-                            continue
+            # bulk create sections and fields
+            InventorySection.objects.bulk_create(new_sections)
+            InventoryField.objects.bulk_create(new_fields)
 
         if errors:
             self.LOGGER.error(

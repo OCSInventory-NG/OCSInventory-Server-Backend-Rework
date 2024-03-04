@@ -15,6 +15,7 @@ Including another URLconf
 """
 
 from accountinfo.routers import AccountinfoRouter
+from asset.asset_group.routers import AssetGroupRouter
 from asset.collection.views import CollectionView
 from asset.inventory_base.routers import InventoryBaseRouter
 from asset.inventory_field.routers import InventoryFieldRouter
@@ -46,6 +47,7 @@ from ipdiscover.network.routers import NetworkRouter
 from permission.routers import PermissionRouter
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.routers import DefaultRouter
+from search.routers import SearchRouter
 from search.views import SearchView
 from user.routers import UserRouter
 
@@ -149,6 +151,14 @@ authMethodRouter = authMethodRouter.defineRoutes(defaultRouter)
 authMappingRouter = AuthMappingRouter()
 authMappingRouter = authMappingRouter.defineRoutes(defaultRouter)
 
+# Add search declaration
+searchRouter = SearchRouter()
+searchRouter = searchRouter.defineRoutes(defaultRouter)
+
+# Add AssetGroup declaration
+assetGroupRouter = AssetGroupRouter()
+assetGroupRouter = assetGroupRouter.defineRoutes(defaultRouter)
+
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
@@ -157,7 +167,6 @@ urlpatterns = [
     path("api-auth/token", obtain_auth_token, name="api_token_auth"),
     path("asset/collection/", CollectionView.as_view(), name="asset_collection"),
     path("search/", SearchView.as_view(), name="search"),
-
     # Authentication
     path("login/", BaseAuthView.as_view(), name="login"),
     path("callback/", CallbackView.as_view(), name="callback"),
