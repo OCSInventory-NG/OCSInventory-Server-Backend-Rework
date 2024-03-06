@@ -180,6 +180,27 @@ def create_base_config(apps, schema_editor):
                         "unit": ""
                     },
                     {
+                        "name": "download_timeout",
+                        "description": "Set the maximum time a package can be downloaded",
+                        "value": 1,
+                        "type": "number input",
+                        "unit": "days"
+                    },
+                    {
+                        "name": "execution_timeout",
+                        "description": "Set the maximum time a package can be executed",
+                        "value": 1,
+                        "type": "number input",
+                        "unit": "days"
+                    },
+                    {
+                        "name": "max_retry",
+                        "description": "Set the maximum times a package can be retried",
+                        "value": 3,
+                        "type": "number input",
+                        "unit": ""
+                    },
+                    {
                         "name": "server",
                         "description": "Server URL",
                         "value": "http://my-domain/ocsinventory",
