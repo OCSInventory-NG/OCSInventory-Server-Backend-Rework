@@ -17,9 +17,9 @@ class Template(models.Model):
         ("WIN", "Windows"),
         ("LIN", "Linux"),
         ("MAC", "Mac"),
-        ('NET', 'Snmp'),
+        ('SNMP', 'Snmp'),
     )
 
     name = models.CharField(max_length=50)
-    os = models.CharField(max_length=3, choices=OS_CHOICES, default="WIN")
+    os = models.CharField(max_length=4, choices=OS_CHOICES, default="WIN")
     last_update = models.DateTimeField(auto_now=True)

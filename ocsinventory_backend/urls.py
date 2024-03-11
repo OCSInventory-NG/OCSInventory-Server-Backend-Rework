@@ -42,6 +42,7 @@ from inventory.template.routers import TemplateRouter
 from ipdiscover.netdevice.routers import NetdeviceRouter
 from ipdiscover.netgroup.routers import NetgroupRouter
 from ipdiscover.network.routers import NetworkRouter
+from snmp.scanner.routers import SnmpScannerRouter
 
 # Import dedicated routers and provide different endpoint
 from permission.routers import PermissionRouter
@@ -106,6 +107,10 @@ netrouter = netrouter.defineRoutes(defaultRouter)
 # Add Netdevicce declaration
 netrouter = NetgroupRouter()
 netrouter = netrouter.defineRoutes(defaultRouter)
+
+# Add SnmpScanner declaration
+snmpScannerRouter = SnmpScannerRouter()
+snmpScannerRouter = snmpScannerRouter.defineRoutes(defaultRouter)
 
 # Add logRouter declaration
 logRouter = LogRouter()
