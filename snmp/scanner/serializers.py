@@ -14,5 +14,8 @@ class SnmpScannerSerializer(serializers.ModelSerializer):
         """Define the linked model and the fields registered in the API"""
 
         model = SnmpScanner
-        fields = ["name", "ip", "subnets"]
+        fields = ["identifier", "ip", "subnets", "notes", "last_updated", "total_scanned", "total_found", "last_scan_date"]
+        extra_kwargs = {
+                        "last_updated": {"read_only": True}
+                        }
 
