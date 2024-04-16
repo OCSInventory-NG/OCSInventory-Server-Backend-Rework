@@ -130,7 +130,7 @@ LOGGING = {
     "loggers": {
         "django": {
             "handlers": ["file"],
-            "level": "INFO",
+            "level": "DEBUG",
             "propagate": True,
         },
         # ipdiscover command logger
