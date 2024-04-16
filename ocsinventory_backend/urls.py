@@ -35,6 +35,8 @@ from deployment.result.routers import ResultRouter
 
 # Base import to get API Working
 from django.urls import include, path
+from django.conf.urls.static import static
+from ocsinventory_backend import settings
 from group.routers import GroupRouter
 from inventory.field.routers import FieldRouter
 from inventory.section.routers import SectionRouter
@@ -171,3 +173,4 @@ urlpatterns = [
     path("login/", BaseAuthView.as_view(), name="login"),
     path("callback/", CallbackView.as_view(), name="callback"),
 ]
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
