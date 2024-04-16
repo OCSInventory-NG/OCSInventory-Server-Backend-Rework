@@ -32,11 +32,10 @@ from config.routers import ConfigRouter
 from deployment.action.routers import ActionRouter
 from deployment.package.routers import PackageRouter
 from deployment.result.routers import ResultRouter
+from django.conf.urls.static import static
 
 # Base import to get API Working
 from django.urls import include, path
-from django.conf.urls.static import static
-from ocsinventory_backend import settings
 from group.routers import GroupRouter
 from inventory.field.routers import FieldRouter
 from inventory.section.routers import SectionRouter
@@ -44,6 +43,7 @@ from inventory.template.routers import TemplateRouter
 from ipdiscover.netdevice.routers import NetdeviceRouter
 from ipdiscover.netgroup.routers import NetgroupRouter
 from ipdiscover.network.routers import NetworkRouter
+from ocsinventory_backend import settings
 
 # Import dedicated routers and provide different endpoint
 from permission.routers import PermissionRouter

@@ -1,10 +1,11 @@
 from deployment.package.models import Package
 from django.db import models
 
+
 class DeploymentAction(models.Model):
     def upload_to(instance, filename):
         return f"files/{instance.package.id}/{filename}"
-    
+
     """
     Action model class definition
 
