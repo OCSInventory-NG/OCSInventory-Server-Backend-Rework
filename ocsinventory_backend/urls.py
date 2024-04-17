@@ -15,6 +15,7 @@ Including another URLconf
 """
 
 from accountinfo.routers import AccountinfoRouter
+from asset.agent_config.routers import AgentConfigRouter
 from asset.asset_group.routers import AssetGroupRouter
 from asset.collection.views import CollectionView
 from asset.inventory_base.routers import InventoryBaseRouter
@@ -66,6 +67,10 @@ historyRouter = historyRouter.defineRoutes(defaultRouter)
 ruleRouter = RuleRouter()
 ruleRouter = ruleRouter.defineRoutes(defaultRouter)
 
+
+# Add agentConfigRouter declaration
+agentConfigRouter = AgentConfigRouter()
+agentConfigRouter = agentConfigRouter.defineRoutes(defaultRouter)
 
 # Add permissionsRouter declaration
 permissionRouter = PermissionRouter()
