@@ -27,5 +27,5 @@ class ActionSerializer(serializers.ModelSerializer):
         ]
         extra_kwargs = {
             "file": {"required": False},
-            "original_file_name": {"required": False}
+            "original_file_name": {"required": False},
         }
