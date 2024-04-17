@@ -18,5 +18,7 @@ class AgentConfigRouter:
         Returns:
             [DefaultRouter]: Updated router with app's dedicated routes
         """
-        defaultRouter.register(r"asset/configs", AgentConfigViewSet, basename="asset_agent_config")
+        defaultRouter.register(
+            r"asset/configs", AgentConfigViewSet, basename="asset_agent_config"
+        )
         return defaultRouter
