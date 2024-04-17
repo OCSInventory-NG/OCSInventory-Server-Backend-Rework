@@ -17,6 +17,7 @@ class DeploymentAction(models.Model):
     - Type of action
     - Command
     - File
+    - Original file name
     """
 
     package = models.ForeignKey(
