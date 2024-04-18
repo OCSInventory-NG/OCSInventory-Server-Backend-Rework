@@ -1,6 +1,6 @@
+from asset.asset_group.models import AssetGroup
 from asset.inventory_base.models import InventoryBase
 from deployment.package.models import Package
-from asset.asset_group.models import AssetGroup
 from django.db import models
 
 
@@ -23,9 +23,9 @@ class Result(models.Model):
     asset = models.ForeignKey(
         InventoryBase, related_name="results", on_delete=models.CASCADE, null=True
     )
-    group = models.ForeignKey(AssetGroup, related_name="results",
-                              on_delete=models.CASCADE,
-                              null=True)
+    group = models.ForeignKey(
+        AssetGroup, related_name="results", on_delete=models.CASCADE, null=True
+    )
     name = models.CharField(max_length=128)
     status = models.IntegerField()
     comment = models.TextField(null=True)
