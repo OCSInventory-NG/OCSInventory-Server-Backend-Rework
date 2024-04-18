@@ -25,7 +25,7 @@ def create_base_config(apps, schema_editor):
                     },
                     {
                         "name": "inventory_datafilter",
-                        "description": "Configure engine to update inventory using the CHECKSUM agent value",
+                        "description": "Update inventory using the CHECKSUM agent value",
                         "value": 0,
                         "type": "switch",
                         "unit": ""
@@ -195,7 +195,7 @@ def create_base_config(apps, schema_editor):
                     },
                     {
                         "name": "max_retry",
-                        "description": "Configure the max retry number for a package to retry",
+                        "description": "Max retry number for a package to retry",
                         "value": 3,
                         "type": "number input",
                         "unit": ""
