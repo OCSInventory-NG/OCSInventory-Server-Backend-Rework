@@ -17,18 +17,18 @@ def create_base_config(apps, schema_editor):
                         "unit": ""
                     },
                     {
-                        "name": "server",
-                        "description": "Server URL",
-                        "value": "http://my-domain/ocsinventory",
-                        "type": "text input",
-                        "unit": ""
-                    },
-                    {
                         "name": "frequency",
                         "description": "Frequency of inventory in hours",
                         "value": 24,
                         "type": "number input",
                         "unit": "hours"
+                    },
+                    {
+                        "name": "inventory_datafilter",
+                        "description": "Configure engine to update inventory using the CHECKSUM agent value",
+                        "value": 0,
+                        "type": "switch",
+                        "unit": ""
                     }
                 ]
         },
@@ -180,13 +180,6 @@ def create_base_config(apps, schema_editor):
                         "unit": ""
                     },
                     {
-                        "name": "server",
-                        "description": "Server URL",
-                        "value": "http://my-domain/ocsinventory",
-                        "type": "text input",
-                        "unit": ""
-                    },
-                    {
                         "name": "period_latency",
                         "description": "Period of latency between packages in seconds",
                         "value": 60,
@@ -199,6 +192,20 @@ def create_base_config(apps, schema_editor):
                         "value": 0,
                         "type": "switch",
                         "unit": ""
+                    },
+                    {
+                        "name": "max_retry",
+                        "description": "Configure the max retry number for a package to retry",
+                        "value": 3,
+                        "type": "number input",
+                        "unit": ""
+                    },
+                    {
+                        "name": "execution_timeout",
+                        "description": "Timeout of command execution in seconds",
+                        "value": 300,
+                        "type": "number input",
+                        "unit": "seconds"
                     }
                 ]
         }
