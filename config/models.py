@@ -10,5 +10,8 @@ class Config(models.Model):
         models ([type]): [description]
     """
 
+    class Meta:
+        ordering = ['name']
+
     name = models.CharField(max_length=100, primary_key=True)
     value = models.JSONField()
