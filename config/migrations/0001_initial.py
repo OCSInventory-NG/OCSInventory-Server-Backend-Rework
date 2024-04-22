@@ -207,7 +207,7 @@ def create_base_config(apps, schema_editor):
                     "value": 240,
                     "type": "number input",
                     "unit": "seconds",
-			    },
+                },
             ],
         },
     ]
