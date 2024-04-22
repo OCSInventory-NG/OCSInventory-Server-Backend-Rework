@@ -201,6 +201,13 @@ def create_base_config(apps, schema_editor):
                     "type": "number input",
                     "unit": "seconds",
                 },
+                {
+                    "name": "deployment_timeout",
+                    "description": "Timeout of deployment in seconds",
+                    "value": 240,
+                    "type": "number input",
+                    "unit": "seconds",
+			    },
             ],
         },
     ]
