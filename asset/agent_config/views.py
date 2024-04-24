@@ -8,7 +8,7 @@ from rest_framework.response import Response
 class AgentConfigViewSet(viewsets.OCSViewSet):
     """
     Allow read of agent config
-    This view is reachable at the /asset/agent-config/ endpoint.
+    This view is reachable at the /asset/configs/ endpoint.
 
     GET:
     List agent configuration
