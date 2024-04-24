@@ -164,3 +164,16 @@ class RestrictVisibilityViewSet(OCSViewSet):
         ).distinct()
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+    
+    def destroy(self, request, *args, **kwargs):
+        """
+        User needs to be the creator to delete a visibility restricted object
+        """
+        search = self.get_object()
+        user = request.user
+        if search.user == user:
+            return super().destroy(request, *args, **kwargs)
+        return Response(
+            {"detail": "You do not have permission to delete this item."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
