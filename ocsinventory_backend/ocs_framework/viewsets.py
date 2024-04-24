@@ -88,7 +88,23 @@ class OCSViewSet(viewsets.ModelViewSet):
         """
         kwargs["partial"] = True
         return self.put(request, *args, **kwargs)
+    
+    def destroy(self, request, *args, **kwargs):
+        """
+        Allow multiple deletion by providing a list of ids
+        """
+        try:
+            ids = [int(pk) for pk in kwargs.get("pk").split(',')]
+            for id in ids:
+                instance = self.model.objects.get(id=id)
+                self.perform_destroy(instance)
+        except Exception as e:
+            return Response(
+                {"failed": ids, "error": str(e)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
+        return Response({"success": "200"}, status=status.HTTP_200_OK)
 
 class RestrictVisibilityViewSet(OCSViewSet):
     """
@@ -148,16 +164,3 @@ class RestrictVisibilityViewSet(OCSViewSet):
         ).distinct()
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
-
-    def destroy(self, request, *args, **kwargs):
-        """
-        User needs to be the creator to delete a visibility restricted object
-        """
-        search = self.get_object()
-        user = request.user
-        if search.user == user:
-            return super().destroy(request, *args, **kwargs)
-        return Response(
-            {"detail": "You do not have permission to delete this item."},
-            status=status.HTTP_403_FORBIDDEN,
-        )
