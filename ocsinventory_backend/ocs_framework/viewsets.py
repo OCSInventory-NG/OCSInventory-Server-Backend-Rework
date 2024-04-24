@@ -164,7 +164,7 @@ class RestrictVisibilityViewSet(OCSViewSet):
         ).distinct()
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
-    
+
     def destroy(self, request, *args, **kwargs):
         """
         User needs to be the creator to delete a visibility restricted object
