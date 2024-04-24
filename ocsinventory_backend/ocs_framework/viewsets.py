@@ -88,13 +88,13 @@ class OCSViewSet(viewsets.ModelViewSet):
         """
         kwargs["partial"] = True
         return self.put(request, *args, **kwargs)
-    
+
     def destroy(self, request, *args, **kwargs):
         """
         Allow multiple deletion by providing a list of ids
         """
         try:
-            ids = [int(pk) for pk in kwargs.get("pk").split(',')]
+            ids = [int(pk) for pk in kwargs.get("pk").split(",")]
             for id in ids:
                 instance = self.model.objects.get(id=id)
                 self.perform_destroy(instance)
@@ -105,6 +105,7 @@ class OCSViewSet(viewsets.ModelViewSet):
             )
 
         return Response({"success": "200"}, status=status.HTTP_200_OK)
+
 
 class RestrictVisibilityViewSet(OCSViewSet):
     """
