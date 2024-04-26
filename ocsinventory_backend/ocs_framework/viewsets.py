@@ -34,11 +34,16 @@ class OCSViewSet(viewsets.ModelViewSet):
         # 'many' allows multi creation but any error
         # will fail the whole transaction
         try:
-            serializer = self.get_serializer(
-                data=request.data, many=isinstance(request.data, list)
-            )
-            serializer.is_valid(raise_exception=True)
-            self.perform_create(serializer)
+            if request.query_params.get("delete"):
+                for id in request.data["ids"]:
+                    instance = self.model.objects.get(id=id)
+                    self.perform_destroy(instance)
+            else:
+                serializer = self.get_serializer(
+                    data=request.data, many=isinstance(request.data, list)
+                )
+                serializer.is_valid(raise_exception=True)
+                self.perform_create(serializer)
         except Exception as e:
             # serializer.errors may return more details
             return Response(
