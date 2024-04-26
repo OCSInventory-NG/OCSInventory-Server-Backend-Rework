@@ -34,7 +34,7 @@ class OCSViewSet(viewsets.ModelViewSet):
         # 'many' allows multi creation but any error
         # will fail the whole transaction
         try:
-            if(request.query_params.get("delete")):
+            if request.query_params.get("delete"):
                 for id in request.data["ids"]:
                     instance = self.model.objects.get(id=id)
                     self.perform_destroy(instance)
@@ -93,6 +93,7 @@ class OCSViewSet(viewsets.ModelViewSet):
         """
         kwargs["partial"] = True
         return self.put(request, *args, **kwargs)
+
 
 class RestrictVisibilityViewSet(OCSViewSet):
     """
