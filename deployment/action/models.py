@@ -3,6 +3,9 @@ from django.db import models
 
 
 class DeploymentAction(models.Model):
+    def upload_to(instance, filename):
+        return f"files/{instance.package.id}/{filename}"
+
     """
     Action model class definition
 
@@ -14,6 +17,7 @@ class DeploymentAction(models.Model):
     - Type of action
     - Command
     - File
+    - Original file name
     """
 
     package = models.ForeignKey(
@@ -24,4 +28,5 @@ class DeploymentAction(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     action_type = models.CharField(max_length=128)
     command = models.CharField(max_length=200)
-    file = models.FileField(upload_to="files/", null=True, blank=True)
+    file = models.FileField(upload_to=upload_to, null=True, blank=True)
+    original_file_name = models.CharField(max_length=128, null=True)

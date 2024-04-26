@@ -33,6 +33,7 @@ from config.routers import ConfigRouter
 from deployment.action.routers import ActionRouter
 from deployment.package.routers import PackageRouter
 from deployment.result.routers import ResultRouter
+from django.conf.urls.static import static
 
 # Base import to get API Working
 from django.urls import include, path
@@ -43,6 +44,7 @@ from inventory.template.routers import TemplateRouter
 from ipdiscover.netdevice.routers import NetdeviceRouter
 from ipdiscover.netgroup.routers import NetgroupRouter
 from ipdiscover.network.routers import NetworkRouter
+from ocsinventory_backend import settings
 
 # Import dedicated routers and provide different endpoint
 from permission.routers import PermissionRouter
@@ -176,3 +178,4 @@ urlpatterns = [
     path("login/", BaseAuthView.as_view(), name="login"),
     path("callback/", CallbackView.as_view(), name="callback"),
 ]
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

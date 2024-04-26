@@ -211,6 +211,11 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 
+# Media files
+
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_URL = "/media/"
+
 # Authentication
 # Custom auth backend (specifies the backend class to use for authentication)
 AUTHENTICATION_BACKENDS = ["auth.backends.AuthBackend"]
