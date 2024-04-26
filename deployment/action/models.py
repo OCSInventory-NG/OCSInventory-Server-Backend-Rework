@@ -29,4 +29,4 @@ class DeploymentAction(models.Model):
     action_type = models.CharField(max_length=128)
     command = models.CharField(max_length=200)
     file = models.FileField(upload_to=upload_to, null=True, blank=True)
-    original_file_name = models.CharField(max_length=128)
+    original_file_name = models.CharField(max_length=128, null=True)
