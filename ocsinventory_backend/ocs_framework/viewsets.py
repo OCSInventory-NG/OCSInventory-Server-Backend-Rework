@@ -34,11 +34,16 @@ class OCSViewSet(viewsets.ModelViewSet):
         # 'many' allows multi creation but any error
         # will fail the whole transaction
         try:
-            serializer = self.get_serializer(
-                data=request.data, many=isinstance(request.data, list)
-            )
-            serializer.is_valid(raise_exception=True)
-            self.perform_create(serializer)
+            if(request.query_params.get("delete")):
+                for id in request.data["ids"]:
+                    instance = self.model.objects.get(id=id)
+                    self.perform_destroy(instance)
+            else:
+                serializer = self.get_serializer(
+                    data=request.data, many=isinstance(request.data, list)
+                )
+                serializer.is_valid(raise_exception=True)
+                self.perform_create(serializer)
         except Exception as e:
             # serializer.errors may return more details
             return Response(
@@ -88,23 +93,6 @@ class OCSViewSet(viewsets.ModelViewSet):
         """
         kwargs["partial"] = True
         return self.put(request, *args, **kwargs)
-    
-    def destroy(self, request, *args, **kwargs):
-        """
-        Allow multiple deletion by providing a list of ids
-        """
-        try:
-            ids = [int(pk) for pk in kwargs.get("pk").split(',')]
-            for id in ids:
-                instance = self.model.objects.get(id=id)
-                self.perform_destroy(instance)
-        except Exception as e:
-            return Response(
-                {"failed": ids, "error": str(e)},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        return Response({"success": "200"}, status=status.HTTP_200_OK)
 
 class RestrictVisibilityViewSet(OCSViewSet):
     """
