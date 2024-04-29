@@ -68,6 +68,7 @@ class NetworkSerializer(serializers.ModelSerializer):
                                 != "default description" else instance.description)
         instance.netid = validated_data.get('netid', instance.netid)
         instance.mask = validated_data.get('mask', instance.mask)
+        instance.group = validated_data.get('group', instance.group)
         instance.save()
 
         # get all existing netdevices in database for this network
