@@ -25,6 +25,11 @@ class LegacyView(APIView):
     POST:
     Create asset and inventory (if provided) using InventoryBaseSerializer,
     InventorySectionSerializer, and InventoryFieldSerializer
+
+    PATCH:
+    Perform partial update of asset and inventory (if provided) using
+    InventoryBaseSerializer, InventorySectionSerializer, and
+    InventoryFieldSerializer
     """
 
     permission_classes = []
@@ -146,3 +151,122 @@ class LegacyView(APIView):
         return Response({"message": "Inventory legacy created successfully"}, status=201)
     
     
+    def patch(self, request, *args, **kwargs):
+        """
+        Perform partial update of asset and inventory.
+        In this specific case, we update the Base asset and update only the
+        provided sections and fields (partial overwrite)
+
+        NB : if multiple items are received within a section, these items will
+        be added as sections objects, meaning multiple sections with the same
+        template_section will be created for the same asset.
+        """
+        data = request.data
+        errors = []
+
+        self.LOGGER.info(
+            "Updating legacy for device %s - %s", data["uuid"], data["name"]
+        )
+
+        try:
+            # retrieve asset from UUID
+            asset_query = InventoryBase.objects.get(uuid=data["uuid"])
+        except ObjectDoesNotExist:
+            self.LOGGER.error("Asset's legacy not found")
+            return Response({"error": "Asset's legacy not found"}, status=404)
+        except Exception as e:
+            self.LOGGER.error(f"Error retrieving asset's legacy: {e}")
+            return Response({"error": f"Error retrieving asset's legacy: {e}"}, status=500)
+
+        try:
+            # update asset
+            asset_serializer = InventoryBaseSerializer(asset_query, data=data)
+            if asset_serializer.is_valid(raise_exception=True):
+                asset_instance = asset_serializer.save()
+        except ValidationError as ve:
+            self.LOGGER.error(f"Error updating asset's legacy: {ve}")
+            return Response({"error": str(ve)}, status=400)
+        except Exception as e:
+            self.LOGGER.error(f"Error updating asset's legacy: {e}")
+            return Response({"error": f"Error updating asset's legacy: {e}"}, status=500)
+
+        # pre-fetch Sections and Fields
+        section_objs = Section.objects.filter(template=asset_instance.template_id)
+        field_objs = Field.objects.filter(section__in=section_objs)
+        section_field_map = {
+            section.name: {
+                field.name: field for field in field_objs.filter(section=section)
+            }
+            for section in section_objs
+        }
+
+        if "template_inventory" in data:
+            sections_array = data.pop("template_inventory")
+
+            new_fields = []
+
+            for section_name, items in sections_array.items():
+                section_query = section_objs.filter(name=section_name).first()
+                if not section_query:
+                    errors.append(f"Section's legacy {section_name} not found in template")
+                    continue
+
+                # delete existing sections for this template section
+                InventorySection.objects.filter(
+                    base=asset_instance, template_section=section_query
+                ).delete()
+
+                field_map = section_field_map.get(section_name, {})
+                for item in items:
+                    section_instance = InventorySection(
+                        base=asset_instance, template_section=section_query
+                    )
+                    section_instance.save()
+
+                    for field_name, field_value in item.items():
+                        field_obj = field_map.get(field_name)
+                        if not field_obj:
+                            errors.append(
+                                f"Field's legacy {field_name} not found"
+                                f" in section {section_name}"
+                            )
+                            continue
+
+                        new_field = InventoryField(
+                            inventory_section=section_instance,
+                            template_field=field_obj,
+                            value=field_value,
+                        )
+                        new_fields.append(new_field)
+
+            # bulk create fields
+            InventoryField.objects.bulk_create(new_fields)
+
+        if errors:
+            self.LOGGER.error(
+                "Partial update succeeded but errors were "
+                "encountered while updating legacy device %s - %s: %s",
+                data["uuid"],
+                data["name"],
+                errors,
+            )
+            return Response(
+                {
+                    "Partial update succeeded but errors were "
+                    f"encountered while updating legacy device "
+                    f'{data["uuid"]} - {data["name"]}: {str(errors)}'
+                },
+                status=200,
+            )
+        else:
+            self.LOGGER.info(
+                "Inventory updated successfully for legacy device %s - %s"
+                " sending response back to client",
+                data["uuid"],
+                data["name"],
+            )
+
+        return Response(
+            {"message": "Asset's legacy and inventory updated successfully"}, status=200
+        )
+
