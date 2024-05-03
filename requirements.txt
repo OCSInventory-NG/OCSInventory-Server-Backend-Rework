@@ -11,3 +11,6 @@ django-cas-ng>=4.3.0
 
 # Database
 psycopg2>=2.9.9
+
+# Handling XML
+xmltodict>=0.13.0
