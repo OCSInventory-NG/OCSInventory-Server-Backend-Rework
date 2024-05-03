@@ -1,0 +1,668 @@
+{
+    "name": "Legacy",
+    "os": "LIN",
+    "sections": [
+        {
+            "name": "ACCOUNTINFO",
+            "retrival_method": "BASH",
+            "retrival_output": "REGX",
+            "target": "null",
+            "fields": [
+                {
+                    "name": "KEY NAME",
+                    "retrival_value": "KEYNAME",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Key value",
+                    "retrival_value": "KEYVALUE",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                }
+            ],
+            "options": {
+                "need_format": false
+            }
+        },
+        {
+            "name": "BATTERIES",
+            "retrival_method": "BASH",
+            "retrival_output": "REGX",
+            "target": "null",
+            "fields": [
+                {
+                    "name": "DESIGN CAPACITY",
+                    "retrival_value": "DESIGNCAPACITY",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "DESIGN VOLTAGE",
+                    "retrival_value": "DESIGNVOLTAGE",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "LOCATION",
+                    "retrival_value": "LOCATION",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "MANUFACTURER",
+                    "retrival_value": "MANUFACTURER",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "MAX ERROR",
+                    "retrival_value": "MAXERROR",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "NAME",
+                    "retrival_value": "NAME",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "OEM SPECIFIC",
+                    "retrival_value": "OEMSPECIFIC",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "SBDS VERSION",
+                    "retrival_value": "SBDSVERSION",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                }
+            ],
+            "options": {
+                "need_format": false
+            }
+        },
+        {
+            "name": "BIOS",
+            "retrival_method": "BASH",
+            "retrival_output": "REGX",
+            "target": "null",
+            "fields": [
+                {
+                    "name": "Asset tag",
+                    "retrival_value": "ASSETTAG",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Bios date",
+                    "retrival_value": "BDATE",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Bios manufacturer",
+                    "retrival_value": "BMANUFACTURER",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Bios version",
+                    "retrival_value": "BVERSION",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Motherboard manufacturer",
+                    "retrival_value": "MMANUFACTURER",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Motherboard model",
+                    "retrival_value": "MMODEL",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Motherboard serial number",
+                    "retrival_value": "MSN",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "System manufacturer",
+                    "retrival_value": "SMANUFACTURER",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "System model",
+                    "retrival_value": "SMODEL",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "System serial number",
+                    "retrival_value": "SSN",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Type",
+                    "retrival_value": "TYPE",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                }
+            ],
+            "options": {
+                "need_format": false
+            }
+        },
+        {
+            "name": "DOWNLOAD",
+            "retrival_method": "BASH",
+            "retrival_output": "REGX",
+            "target": "null",
+            "fields": [
+                {
+                    "name": "History",
+                    "retrival_value": "HISTORY",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                }
+            ],
+            "options": {
+                "need_format": false
+            }
+        },
+        {
+            "name": "HARDWARE",
+            "retrival_method": "BASH",
+            "retrival_output": "REGX",
+            "target": "null",
+            "fields": [
+                {
+                    "name": "Checksum",
+                    "retrival_value": "CHECKSUM",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Date Last Logged User",
+                    "retrival_value": "DATELASTLOGGEDUSER",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Default Gateway",
+                    "retrival_value": "DEFAULTGATEWAY",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Description",
+                    "retrival_value": "DESCRIPTION",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "DNS",
+                    "retrival_value": "DNS",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Install Date",
+                    "retrival_value": "INSTALLDATE",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "IP Address",
+                    "retrival_value": "IPADDR",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Last Logged User",
+                    "retrival_value": "LASTLOGGEDUSER",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Memory",
+                    "retrival_value": "MEMORY",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Device Name",
+                    "retrival_value": "NAME",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "OS Comments",
+                    "retrival_value": "OSCOMMENTS",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "OS Name",
+                    "retrival_value": "OSNAME",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "OS Version",
+                    "retrival_value": "OSVERSION",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Processor Number",
+                    "retrival_value": "PROCESSORN",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Processor Speed",
+                    "retrival_value": "PROCESSORS",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Processor Type",
+                    "retrival_value": "PROCESSORT",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Swap",
+                    "retrival_value": "SWAP",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "User ID",
+                    "retrival_value": "USERID",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "UUID",
+                    "retrival_value": "UUID",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "VM System",
+                    "retrival_value": "VMSYSTEM",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Workgroup",
+                    "retrival_value": "WORKGROUP",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                }
+            ],
+            "options": {
+                "need_format": false
+            }
+        },
+        {
+            "name": "NETWORKS",
+            "retrival_method": "BASH",
+            "retrival_output": "REGX",
+            "target": "null",
+            "fields": [
+                {
+                    "name": "BSSID",
+                    "retrival_value": "BSSID",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Description",
+                    "retrival_value": "DESCRIPTION",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Driver",
+                    "retrival_value": "DRIVER",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Duplex",
+                    "retrival_value": "DUPLEX",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "IP Address",
+                    "retrival_value": "IPADDRESS",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "IP Gateway",
+                    "retrival_value": "IPGATEWAY",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "IP Mask",
+                    "retrival_value": "IPMASK",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "IP Subnet",
+                    "retrival_value": "IPSUBNET",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "MAC Address",
+                    "retrival_value": "MACADDR",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Mode",
+                    "retrival_value": "MODE",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "MTU",
+                    "retrival_value": "MTU",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "PCI Slot",
+                    "retrival_value": "PCISLOT",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Speed",
+                    "retrival_value": "SPEED",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "SSID",
+                    "retrival_value": "SSID",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Status",
+                    "retrival_value": "STATUS",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Type",
+                    "retrival_value": "TYPE",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                }
+            ],
+            "options": {
+                "need_format": false
+            }
+        },
+        {
+            "name": "CONTROLLERS",
+            "retrival_method": "BASH",
+            "retrival_output": "REGX",
+            "target": "null",
+            "fields": [
+                {
+                    "name": "Driver",
+                    "retrival_value": "DRIVER",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Manufacturer",
+                    "retrival_value": "MANUFACTURER",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Name",
+                    "retrival_value": "NAME",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "PCI ID",
+                    "retrival_value": "PCIID",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "PCI Slot",
+                    "retrival_value": "PCISLOT",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Type",
+                    "retrival_value": "TYPE",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                }
+            ],
+            "options": {
+                "need_format": false
+            }
+        }
+    ]
+}
