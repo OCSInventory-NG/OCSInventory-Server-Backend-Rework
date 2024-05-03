@@ -12,6 +12,10 @@ from inventory.section.models import Section
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from inventory.template.models import Template
+from legacy.collection.parsers import LegacyXMLParser
+import xmltodict
+import json
 
 
 
@@ -19,15 +23,15 @@ from rest_framework.views import APIView
 class LegacyView(APIView):
     
     """
-    Allows creation and update of assets (base and inventory if provided).
+    Allows creation and update of assets's legacy (base and inventory if provided).
     This view is reachable at the /asset/collection/ endpoint.
 
     POST:
-    Create asset and inventory (if provided) using InventoryBaseSerializer,
+    Create asset and inventory legacy(if provided) using InventoryBaseSerializer,
     InventorySectionSerializer, and InventoryFieldSerializer
 
     PATCH:
-    Perform partial update of asset and inventory (if provided) using
+    Perform partial update of asset legacy and inventory legacy(if provided) using
     InventoryBaseSerializer, InventorySectionSerializer, and
     InventoryFieldSerializer
     """
@@ -36,11 +40,11 @@ class LegacyView(APIView):
 
     LOGGER = logging.getLogger(__name__)
     
-    
+    parser_classes = [LegacyXMLParser]
     
     def post(self, request, *args, **kwargs):
         """
-        Perform creation of asset and inventory. If inventory
+        Perform creation of asset and inventory legacy. If inventory
         (template_inventory) is provided, we retrieve the related template
         sections and fields and create the corresponding InventorySection and
         InventoryField objects.
@@ -153,7 +157,7 @@ class LegacyView(APIView):
     
     def patch(self, request, *args, **kwargs):
         """
-        Perform partial update of asset and inventory.
+        Perform partial update of asset legacy and inventory legacy.
         In this specific case, we update the Base asset and update only the
         provided sections and fields (partial overwrite)
 
