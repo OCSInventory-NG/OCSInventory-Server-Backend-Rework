@@ -225,6 +225,199 @@
             }
         },
         {
+            "name": "CONTROLLERS",
+            "retrival_method": "BASH",
+            "retrival_output": "REGX",
+            "target": "null",
+            "fields": [
+                {
+                    "name": "Driver",
+                    "retrival_value": "DRIVER",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Manufacturer",
+                    "retrival_value": "MANUFACTURER",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Name",
+                    "retrival_value": "NAME",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "PCI ID",
+                    "retrival_value": "PCIID",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "PCI Slot",
+                    "retrival_value": "PCISLOT",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Type",
+                    "retrival_value": "TYPE",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                }
+            ],
+            "options": {
+                "need_format": false
+            }
+        },
+        {
+            "name": "CPUS",
+            "retrival_method": "BASH",
+            "retrival_output": "REGX",
+            "target": "null",
+            "fields": [
+                {
+                    "name": "Cores",
+                    "retrival_value": "CORES",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "CPU Architecture",
+                    "retrival_value": "CPUARCH",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Data Width",
+                    "retrival_value": "DATA_WIDTH",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "L2 Cache Size",
+                    "retrival_value": "L2CACHESIZE",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Logical CPUs",
+                    "retrival_value": "LOGICAL_CPUS",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Manufacturer",
+                    "retrival_value": "MANUFACTURER",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Number of Sockets",
+                    "retrival_value": "NBSOCKET",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Serial Number",
+                    "retrival_value": "SERIALNUMBER",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Socket",
+                    "retrival_value": "SOCKET",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Speed",
+                    "retrival_value": "SPEED",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Threads",
+                    "retrival_value": "THREADS",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Type",
+                    "retrival_value": "TYPE",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Voltage",
+                    "retrival_value": "VOLTAGE",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                }
+            ],
+            "options": {
+                "need_format": false
+            }
+        },
+        {
             "name": "DOWNLOAD",
             "retrival_method": "BASH",
             "retrival_output": "REGX",
@@ -233,6 +426,80 @@
                 {
                     "name": "History",
                     "retrival_value": "HISTORY",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                }
+            ],
+            "options": {
+                "need_format": false
+            }
+        },
+        {
+            "name": "DRIVES",
+            "retrival_method": "BASH",
+            "retrival_output": "REGX",
+            "target": "null",
+            "fields": [
+                {
+                    "name": "label",
+                    "retrival_value": "LABEL",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Filesystem",
+                    "retrival_value": "FILESYSTEM",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Free Space",
+                    "retrival_value": "FREE",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Serial Number",
+                    "retrival_value": "SERIAL",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Total Space",
+                    "retrival_value": "TOTAL",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Type",
+                    "retrival_value": "TYPE",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Volume",
+                    "retrival_value": "VOLUMN",
                     "override_target": false,
                     "new_target": null,
                     "retrival_method": null,
@@ -445,6 +712,230 @@
             }
         },
         {
+            "name": "INPUTS",
+            "retrival_method": "BASH",
+            "retrival_output": "REGX",
+            "target": "null",
+            "fields": [
+                {
+                    "name": "Caption",
+                    "retrival_value": "CAPTION",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Description",
+                    "retrival_value": "DESCRIPTION",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Type",
+                    "retrival_value": "TYPE",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                }
+            ],
+            "options": {
+                "need_format": false
+            }
+        },
+        {
+            "name": "LOCAL_GROUPS",
+            "retrival_method": "BASH",
+            "retrival_output": "REGX",
+            "target": "null",
+            "fields": [
+                {
+                    "name": "ID GROUP",
+                    "retrival_value": "ID_GROUP",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Member",
+                    "retrival_value": "MEMBER",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Name",
+                    "retrival_value": "NAME",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                }
+            ],
+            "options": {
+                "need_format": false
+            }
+        },
+        {
+            "name": "LOCAL_USERS",
+            "retrival_method": "BASH",
+            "retrival_output": "REGX",
+            "target": "null",
+            "fields": [
+                {
+                    "name": "Group ID",
+                    "retrival_value": "GID",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Home Directory",
+                    "retrival_value": "HOME",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "User ID",
+                    "retrival_value": "ID_USER",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Login",
+                    "retrival_value": "LOGIN",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Name",
+                    "retrival_value": "NAME",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Shell",
+                    "retrival_value": "SHELL",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                }
+            ],
+            "options": {
+                "need_format": false
+            }
+        },
+        {
+            "name": "MEMORIES",
+            "retrival_method": "BASH",
+            "retrival_output": "REGX",
+            "target": "null",
+            "fields": [
+                {
+                    "name": "Capacity",
+                    "retrival_value": "CAPACITY",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Caption",
+                    "retrival_value": "CAPTION",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Number of Slots",
+                    "retrival_value": "NUMSLOTS",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Description",
+                    "retrival_value": "DESCRIPTION",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Manufacturer",
+                    "retrival_value": "MANUFACTURER",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Serial Number",
+                    "retrival_value": "SERIALNUMBER",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Speed",
+                    "retrival_value": "SPEED",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Type",
+                    "retrival_value": "TYPE",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                }
+            ],
+            "options": {
+                "need_format": false
+            }
+        },
+        {
             "name": "NETWORKS",
             "retrival_method": "BASH",
             "retrival_output": "REGX",
@@ -600,14 +1091,211 @@
             }
         },
         {
-            "name": "CONTROLLERS",
+            "name": "PORTS",
             "retrival_method": "BASH",
             "retrival_output": "REGX",
             "target": "null",
             "fields": [
                 {
-                    "name": "Driver",
-                    "retrival_value": "DRIVER",
+                    "name": "Caption",
+                    "retrival_value": "CAPTION",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Description",
+                    "retrival_value": "DESCRIPTION",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Name",
+                    "retrival_value": "NAME",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Type",
+                    "retrival_value": "TYPE",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                }
+            ],
+            "options": {
+                "need_format": false
+            }
+        },
+        {
+            "name": "REPOSITORY",
+            "retrival_method": "BASH",
+            "retrival_output": "REGX",
+            "target": "null",
+            "fields": [
+                {
+                    "name": "Base URL",
+                    "retrival_value": "BASEURL",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Name",
+                    "retrival_value": "NAME",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                }
+            ],
+            "options": {
+                "need_format": false
+            }
+        },
+        {
+            "name": "SLOTS",
+            "retrival_method": "BASH",
+            "retrival_output": "REGX",
+            "target": "null",
+            "fields": [
+                {
+                    "name": "Description",
+                    "retrival_value": "DESCRIPTION",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Name",
+                    "retrival_value": "NAME",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Status",
+                    "retrival_value": "STATUS",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                }
+            ],
+            "options": {
+                "need_format": false
+            }
+        },
+        {
+            "name": "SOFTWARES",
+            "retrival_method": "BASH",
+            "retrival_output": "REGX",
+            "target": "null",
+            "fields": [
+                {
+                    "name": "Architecture",
+                    "retrival_value": "ARCHITECTURE",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "File Size",
+                    "retrival_value": "FILESIZE",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "From",
+                    "retrival_value": "FROM",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Install Date",
+                    "retrival_value": "INSTALLDATE",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Name",
+                    "retrival_value": "NAME",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Publisher",
+                    "retrival_value": "PUBLISHER",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Version",
+                    "retrival_value": "VERSION",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Comments",
+                    "retrival_value": "COMMENTS",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                }
+            ],
+            "options": {
+                "need_format": false
+            }
+        },
+        {
+            "name": "SOUNDS",
+            "retrival_method": "BASH",
+            "retrival_output": "REGX",
+            "target": "null",
+            "fields": [
+                {
+                    "name": "Description",
+                    "retrival_value": "DESCRIPTION",
                     "override_target": false,
                     "new_target": null,
                     "retrival_method": null,
@@ -631,10 +1319,21 @@
                     "retrival_method": null,
                     "retrival_output": null,
                     "options": null
-                },
+                }
+            ],
+            "options": {
+                "need_format": false
+            }
+        },
+        {
+            "name": "STORAGES",
+            "retrival_method": "BASH",
+            "retrival_output": "REGX",
+            "target": "null",
+            "fields": [
                 {
-                    "name": "PCI ID",
-                    "retrival_value": "PCIID",
+                    "name": "Disk Size",
+                    "retrival_value": "DISKSIZE",
                     "override_target": false,
                     "new_target": null,
                     "retrival_method": null,
@@ -642,8 +1341,8 @@
                     "options": null
                 },
                 {
-                    "name": "PCI Slot",
-                    "retrival_value": "PCISLOT",
+                    "name": "Name",
+                    "retrival_value": "NAME",
                     "override_target": false,
                     "new_target": null,
                     "retrival_method": null,
@@ -653,6 +1352,185 @@
                 {
                     "name": "Type",
                     "retrival_value": "TYPE",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Description",
+                    "retrival_value": "DESCRIPTION",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Manufacturer",
+                    "retrival_value": "MANUFACTURER",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Model",
+                    "retrival_value": "MODEL",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Serial Number",
+                    "retrival_value": "SERIALNUMBER",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Firmware",
+                    "retrival_value": "FIRMWARE",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                }
+            ],
+            "options": {
+                "need_format": false
+            }
+        },
+        {
+            "name": "TEAMVIEWER",
+            "retrival_method": "BASH",
+            "retrival_output": "REGX",
+            "target": "null",
+            "fields": [
+                {
+                    "name": "TeamViewer ID",
+                    "retrival_value": "TWID",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Version",
+                    "retrival_value": "VERSION",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                }
+            ],
+            "options": {
+                "need_format": false
+            }
+        },
+        {
+            "name": "USERS",
+            "retrival_method": "BASH",
+            "retrival_output": "REGX",
+            "target": "null",
+            "fields": [
+                {
+                    "name": "Login",
+                    "retrival_value": "LOGIN",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                }
+            ],
+            "options": {
+                "need_format": false
+            }
+        },
+        {
+            "name": "VIDEOS",
+            "retrival_method": "BASH",
+            "retrival_output": "REGX",
+            "target": "null",
+            "fields": [
+                {
+                    "name": "Chipset",
+                    "retrival_value": "CHIPSET",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Memory",
+                    "retrival_value": "MEMORY",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Name",
+                    "retrival_value": "NAME",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                }
+            ],
+            "options": {
+                "need_format": false
+            }
+        },
+        {
+            "name": "VIRTUALMACHINES",
+            "retrival_method": "BASH",
+            "retrival_output": "REGX",
+            "target": "null",
+            "fields": [
+                {
+                    "name": "Name",
+                    "retrival_value": "NAME",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Status",
+                    "retrival_value": "STATUS",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "Subsystem",
+                    "retrival_value": "SUBSYSTEM",
+                    "override_target": false,
+                    "new_target": null,
+                    "retrival_method": null,
+                    "retrival_output": null,
+                    "options": null
+                },
+                {
+                    "name": "VMID",
+                    "retrival_value": "VMID",
                     "override_target": false,
                     "new_target": null,
                     "retrival_method": null,
