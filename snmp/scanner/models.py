@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models.fields.json import JSONField
+from snmp.snmp_config.models import SnmpConfig
 
 
 class SnmpScanner(models.Model):
@@ -20,3 +21,4 @@ class SnmpScanner(models.Model):
     total_scanned = models.IntegerField(default=0, null=True)
     total_found = models.IntegerField(default=0, null=True)
     last_scan_date = models.DateTimeField(null=True)
+    configs = models.ManyToManyField(SnmpConfig)
