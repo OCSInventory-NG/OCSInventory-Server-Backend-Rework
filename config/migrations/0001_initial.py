@@ -23,9 +23,9 @@ def create_base_config(apps, schema_editor):
                     "unit": "hours",
                 },
                 {
-                    "name": "inventory_datafilter",
-                    "description": "Update inventory using the CHECKSUM agent value",
-                    "value": 0,
+                    "name": "inventory_checksum",
+                    "description": "Enable differential update of inventory",
+                    "value": 1,
                     "type": "switch",
                     "unit": "",
                 },
@@ -47,13 +47,6 @@ def create_base_config(apps, schema_editor):
                     "value": 24,
                     "type": "number input",
                     "unit": "hours",
-                },
-                {
-                    "name": "inventory_checksum",
-                    "description": "Enable differential update of inventory",
-                    "value": 1,
-                    "type": "switch",
-                    "unit": "",
                 },
                 {
                     "name": "duplicate_reconciliation",
