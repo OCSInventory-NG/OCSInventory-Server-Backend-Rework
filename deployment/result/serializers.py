@@ -1,5 +1,5 @@
-from rest_framework import serializers
 from deployment.result.models import Result
+from rest_framework import serializers
 
 
 class ResultSerializer(serializers.ModelSerializer):
@@ -14,5 +14,14 @@ class ResultSerializer(serializers.ModelSerializer):
         """Define the linked model and the fields registered in the API"""
 
         model = Result
-        fields = ["id", "package", "asset", "name", "status", "comment", "date_created"]
+        fields = [
+            "id",
+            "package",
+            "asset",
+            "group",
+            "name",
+            "status",
+            "comment",
+            "date_created",
+        ]
         extra_kwargs = {"package": {"required": False}}
