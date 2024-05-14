@@ -11,7 +11,7 @@ def create_base_config(apps, schema_editor):
                 {
                     "name": "debug",
                     "description": "Enable debug mode",
-                    "value": 0,
+                    "value": False,
                     "type": "switch",
                     "unit": "",
                 },
@@ -25,7 +25,7 @@ def create_base_config(apps, schema_editor):
                 {
                     "name": "inventory_checksum",
                     "description": "Enable differential update of inventory",
-                    "value": 1,
+                    "value": True,
                     "type": "switch",
                     "unit": "",
                 },
@@ -162,7 +162,7 @@ def create_base_config(apps, schema_editor):
                 {
                     "name": "enabled",
                     "description": "Enable deployment",
-                    "value": 0,
+                    "value": False,
                     "type": "switch",
                     "unit": "",
                 },
@@ -176,7 +176,7 @@ def create_base_config(apps, schema_editor):
                 {
                     "name": "auto_retry",
                     "description": "Enable auto retry if deployment failed",
-                    "value": 0,
+                    "value": False,
                     "type": "switch",
                     "unit": "",
                 },
