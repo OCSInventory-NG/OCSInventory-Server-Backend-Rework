@@ -264,7 +264,7 @@ class LegacyView(APIView):
                         section_obj = section_objs.filter(name=section_name).first()
                         if not section_obj:
                             errors.append(
-                                f"No matching section's legacy found for {section_name}"
+                                f"No matching section's found for {section_name}"
                             )
                             continue
 
