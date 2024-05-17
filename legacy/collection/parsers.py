@@ -30,33 +30,39 @@ class LegacyXMLParser(BaseParser):
             except KeyError:
                 template_data["query"] = "-1"
             try:
-                template_data["name"] = data["REQUEST"]["CONTENT"]["HARDWARE"]["NAME"]
+                template_data["name"] = data["REQUEST"]["CONTENT"]["HARDWARE"][
+                    "NAME"
+                ]
             except KeyError:
                 template_data["name"] = "-1"
             try:
-                template_data["description"] = data["REQUEST"]["CONTENT"]["HARDWARE"][
-                    "DESCRIPTION"
-                ]
+                template_data["description"] = data["REQUEST"]["CONTENT"][
+                    "HARDWARE"
+                ]["DESCRIPTION"]
             except KeyError:
                 template_data["description"] = "-1"
             try:
-                template_data["serial"] = data["REQUEST"]["CONTENT"]["BIOS"]["SSN"]
+                template_data["serial"] = data["REQUEST"]["CONTENT"]["BIOS"][
+                    "SSN"
+                ]
             except KeyError:
                 template_data["serial"] = "-1"
             try:
-                template_data["osname"] = data["REQUEST"]["CONTENT"]["HARDWARE"][
-                    "OSNAME"
-                ]
+                template_data["osname"] = data["REQUEST"]["CONTENT"][
+                    "HARDWARE"
+                ]["OSNAME"]
             except KeyError:
                 template_data["osname"] = "-1"
             try:
-                template_data["osversion"] = data["REQUEST"]["CONTENT"]["HARDWARE"][
-                    "OSVERSION"
-                ]
+                template_data["osversion"] = data["REQUEST"]["CONTENT"][
+                    "HARDWARE"
+                ]["OSVERSION"]
             except KeyError:
                 template_data["osversion"] = "-1"
             try:
-                template_data["uuid"] = data["REQUEST"]["CONTENT"]["HARDWARE"]["UUID"]
+                template_data["uuid"] = data["REQUEST"]["CONTENT"]["HARDWARE"][
+                    "UUID"
+                ]
             except KeyError:
                 try:
                     for network in data["REQUEST"]["CONTENT"]["NETWORKS"]:
@@ -70,9 +76,12 @@ class LegacyXMLParser(BaseParser):
                 except KeyError:
                     template_data["uuid"] = "-1"
 
-            # If the ipaddr contain multiple ip addresses, split them and add the first one to the dictionary
+            # If the ipaddr contain multiple ip addresses,
+            # split them and add the first one to the dictionary
             try:
-                ipaddr = data["REQUEST"]["CONTENT"]["HARDWARE"]["IPADDR"].split("/")[0]
+                ipaddr = data["REQUEST"]["CONTENT"]["HARDWARE"]["IPADDR"].split(
+                    "/"
+                )[0]
             except KeyError:
                 ipaddr = "-1"
             template_data["srcip"] = ipaddr
@@ -87,22 +96,29 @@ class LegacyXMLParser(BaseParser):
                 template_data["srcmac"] = "-1"
 
             try:
-                template_data["domain"] = data["REQUEST"]["CONTENT"]["HARDWARE"]["DNS"]
+                template_data["domain"] = data["REQUEST"]["CONTENT"][
+                    "HARDWARE"
+                ]["DNS"]
             except KeyError:
                 template_data["domain"] = "-1"
 
             try:
                 # retrieve template id where template's name is legacy
-                template_data["template"] = Template.objects.get(name="Legacy").id
+                template_data["template"] = Template.objects.get(
+                    name="Legacy"
+                ).id
             except KeyError:
                 template_data["template"] = "-1"
             except ObjectDoesNotExist:
                 self.LOGGER.error("Template legacy not found")
-                return Response({"error": "Template legacy  not found"}, status=404)
+                return Response(
+                    {"error": "Template legacy  not found"}, status=404
+                )
             except Exception as e:
                 self.LOGGER.error(f"Error retrieving template legacy: {e}")
                 return Response(
-                    {"error": f"Error retrieving template legacy: {e}"}, status=500
+                    {"error": f"Error retrieving template legacy: {e}"},
+                    status=500,
                 )
 
             # Transforming the section to a list if it is a dictionary
