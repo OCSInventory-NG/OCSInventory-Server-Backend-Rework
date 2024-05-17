@@ -257,10 +257,7 @@ class LegacyView(APIView):
 
                     fields_to_create = []
 
-                    for (
-                        section_name,
-                        items,
-                    ) in sections_array.items():
+                    for section_name, items in sections_array.items():
                         section_obj = section_objs.filter(name=section_name).first()
                         if not section_obj:
                             errors.append(
