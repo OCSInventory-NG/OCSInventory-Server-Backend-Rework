@@ -1,18 +1,44 @@
 import logging
 
-from asset.inventory_base.models import InventoryBase
-from asset.inventory_base.serializers import InventoryBaseSerializer
-from asset.inventory_field.models import InventoryField
-from asset.inventory_section.models import InventorySection
-from django.core.exceptions import ObjectDoesNotExist
-from inventory.field.models import Field
-from inventory.section.models import Section
-from rest_framework.exceptions import ValidationError
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from inventory.template.models import Template
-from legacy.collection.parsers import LegacyXMLParser
-from legacy.collection.renderers import LegacyXMLRenderer
+from asset.inventory_base.models import (
+    InventoryBase,
+)
+from asset.inventory_base.serializers import (
+    InventoryBaseSerializer,
+)
+from asset.inventory_field.models import (
+    InventoryField,
+)
+from asset.inventory_section.models import (
+    InventorySection,
+)
+from django.core.exceptions import (
+    ObjectDoesNotExist,
+)
+from inventory.field.models import (
+    Field,
+)
+from inventory.section.models import (
+    Section,
+)
+from rest_framework.exceptions import (
+    ValidationError,
+)
+from rest_framework.response import (
+    Response,
+)
+from rest_framework.views import (
+    APIView,
+)
+from inventory.template.models import (
+    Template,
+)
+from legacy.collection.parsers import (
+    LegacyXMLParser,
+)
+from legacy.collection.renderers import (
+    LegacyXMLRenderer,
+)
 
 
 class LegacyView(APIView):
@@ -21,7 +47,8 @@ class LegacyView(APIView):
     This view is reachable at the /asset/collection/ endpoint.
 
     POST:
-    Create asset and inventory legacy(if provided) and also perform partial update of asset legacy and inventory legacy(if provided) using
+    Create asset and inventory legacy(if provided)
+    also perform partial update of asset legacy and inventory legacy(if provided) using
     InventoryBaseSerializer, InventorySectionSerializer, and
     InventoryFieldSerializer
     """
@@ -33,7 +60,12 @@ class LegacyView(APIView):
     parser_classes = [LegacyXMLParser]
     renderer_classes = [LegacyXMLRenderer]
 
-    def post(self, request, *args, **kwargs):
+    def post(
+        self,
+        request,
+        *args,
+        **kwargs,
+    ):
         """
         Perform creation or partial update of asset and inventory legacy. If inventory
         (template_inventory) is provided, we retrieve the related template
@@ -52,25 +84,34 @@ class LegacyView(APIView):
         errors = []
         try:
             self.LOGGER.info(
-                "Creating legacy for device %s - %s", data["uuid"], data["name"]
+                "Creating legacy for device %s - %s",
+                data["uuid"],
+                data["name"],
             )
         except KeyError:
             pass
         try:
             if data["query"] == "PROLOG":
-                return Response({"RESPONSE": "SEND"}, status=200)
+                return Response(
+                    {"RESPONSE": "SEND"},
+                    status=200,
+                )
             if InventoryBase.objects.filter(uuid=data["uuid"]):
                 self.LOGGER.info("updating...")
                 try:
                     asset_serializer = InventoryBaseSerializer(
-                        InventoryBase.objects.get(uuid=data["uuid"]), data=data
+                        InventoryBase.objects.get(uuid=data["uuid"]),
+                        data=data,
                     )
                     if asset_serializer.is_valid(raise_exception=True):
                         asset_instance = asset_serializer.save()
                 except ValidationError as ve:
                     errors.append(f"Error updating asset's legacy: {ve}")
                     self.LOGGER.error(f"Error updating asset's legacy: {ve}")
-                    return Response({"error": errors}, status=400)
+                    return Response(
+                        {"error": errors},
+                        status=400,
+                    )
                 except Exception as e:
                     self.LOGGER.error(f"Error updating asset's legacy: {e}")
                     return Response(
@@ -96,10 +137,11 @@ class LegacyView(APIView):
 
                     new_fields = []
 
-                    for section_name, items in sections_array.items():
-                        section_query = section_objs.filter(
-                            name=section_name
-                        ).first()
+                    for (
+                        section_name,
+                        items,
+                    ) in sections_array.items():
+                        section_query = section_objs.filter(name=section_name).first()
                         if not section_query:
                             errors.append(
                                 f"Section's legacy {section_name} not found in template"
@@ -108,10 +150,14 @@ class LegacyView(APIView):
 
                         # delete existing sections for this template section
                         InventorySection.objects.filter(
-                            base=asset_instance, template_section=section_query
+                            base=asset_instance,
+                            template_section=section_query,
                         ).delete()
 
-                        field_map = section_field_map.get(section_name, {})
+                        field_map = section_field_map.get(
+                            section_name,
+                            {},
+                        )
                         for item in items:
                             section_instance = InventorySection(
                                 base=asset_instance,
@@ -119,7 +165,10 @@ class LegacyView(APIView):
                             )
                             section_instance.save()
 
-                            for field_name, field_value in item.items():
+                            for (
+                                field_name,
+                                field_value,
+                            ) in item.items():
                                 field_obj = field_map.get(field_name)
                                 if not field_obj:
                                     errors.append(
@@ -163,9 +212,7 @@ class LegacyView(APIView):
                     )
 
                 return Response(
-                    {
-                        "message": "Asset's legacy and inventory updated successfully"
-                    },
+                    {"message": "Asset's legacy and inventory updated successfully"},
                     status=200,
                 )
             else:
@@ -182,7 +229,10 @@ class LegacyView(APIView):
                 except ValidationError as ve:
                     errors.append(f"Error creating asset's legacy: {ve}")
                     self.LOGGER.error(f"Error creating asset's legacy: {ve}")
-                    return Response({"error": errors}, status=400)
+                    return Response(
+                        {"error": errors},
+                        status=400,
+                    )
                 except Exception as e:
                     self.LOGGER.error(f"Error creating asset's legacy: {e}")
                     return Response(
@@ -207,17 +257,21 @@ class LegacyView(APIView):
 
                     fields_to_create = []
 
-                    for section_name, items in sections_array.items():
-                        section_obj = section_objs.filter(
-                            name=section_name
-                        ).first()
+                    for (
+                        section_name,
+                        items,
+                    ) in sections_array.items():
+                        section_obj = section_objs.filter(name=section_name).first()
                         if not section_obj:
                             errors.append(
                                 f"No matching section's legacy found for {section_name}"
                             )
                             continue
 
-                        field_map = section_field_map.get(section_name, {})
+                        field_map = section_field_map.get(
+                            section_name,
+                            {},
+                        )
                         for item in items:
                             section_instance = InventorySection(
                                 base=asset_instance,
@@ -225,7 +279,10 @@ class LegacyView(APIView):
                             )
                             section_instance.save()
 
-                            for field_name, field_value in item.items():
+                            for (
+                                field_name,
+                                field_value,
+                            ) in item.items():
                                 field_obj = field_map.get(field_name)
                                 if not field_obj:
                                     errors.append(
@@ -276,9 +333,7 @@ class LegacyView(APIView):
                     status=201,
                 )
         except KeyError:
-            self.LOGGER.error(
-                "Can't get important data from the current inventory."
-            )
+            self.LOGGER.error("Can't get important data from the current inventory.")
             return Response(
                 "Can't get important data from the current inventory.",
                 status=400,
