@@ -1,7 +1,8 @@
-from io import StringIO
 from django.utils.xmlutils import SimplerXMLGenerator
+from io import StringIO
 from rest_framework_xml.renderers import XMLRenderer
 import zlib
+
 
 class LegacyXMLRenderer(XMLRenderer):
     root_tag_name = "REPLY"
@@ -20,4 +21,7 @@ class LegacyXMLRenderer(XMLRenderer):
 
         xml.endElement(self.root_tag_name)
         xml.endDocument()
+
         return zlib.compress(stream.getvalue().encode())
+        # Remove the compression if you are debugging
+        # return stream.getvalue()
