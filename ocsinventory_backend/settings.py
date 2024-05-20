@@ -150,11 +150,12 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.TokenAuthentication",
     ],
-    # Allow Django to parse JSON or XML
+    # Use to permit the server to retreive data in JSON or XML.
     "DEFAULT_PARSER_CLASSES": [
+        "rest_framework.parsers.JSONParser",
         "rest_framework_xml.parsers.XMLParser",
     ],
-    # Allow Django to renderer JSON or XML
+    # Use to permit the server to give a response in JSON or XML.
     "DEFAULT_RENDERER_CLASSES": [
         "rest_framework.renderers.JSONRenderer",
         "rest_framework_xml.renderers.XMLRenderer",
