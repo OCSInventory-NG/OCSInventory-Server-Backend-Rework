@@ -1,6 +1,7 @@
 from django.utils.xmlutils import SimplerXMLGenerator
 from io import StringIO
 from rest_framework_xml.renderers import XMLRenderer
+import xml.dom.minidom
 import zlib
 
 
@@ -13,15 +14,19 @@ class LegacyXMLRenderer(XMLRenderer):
 
         stream = StringIO()
 
-        xml = SimplerXMLGenerator(stream, self.charset)
-        xml.startDocument()
-        xml.startElement(self.root_tag_name, {})
+        xmlGenerator = SimplerXMLGenerator(stream, self.charset)
+        xmlGenerator.startDocument()
+        xmlGenerator.startElement(self.root_tag_name, {})
 
-        self._to_xml(xml, data)
+        self._to_xml(xmlGenerator, data)
 
-        xml.endElement(self.root_tag_name)
-        xml.endDocument()
+        xmlGenerator.endElement(self.root_tag_name)
+        xmlGenerator.endDocument()
 
-        return zlib.compress(stream.getvalue().encode())
+        raw_xml = stream.getvalue()
+        dom = xml.dom.minidom.parseString(raw_xml)
+        pretty_xml = dom.toprettyxml(indent="   ")
+
+        return zlib.compress(pretty_xml.encode("utf-8"))
         # Remove the compression if you are debugging
-        # return stream.getvalue()
+        # return pretty_xml
