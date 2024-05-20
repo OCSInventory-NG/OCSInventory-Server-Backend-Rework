@@ -93,7 +93,7 @@ class LegacyView(APIView):
         try:
             if data["query"] == "PROLOG":
                 return Response(
-                    {"RESPONSE": "SEND"},
+                    {"RESPONSE": "SEND", "PROLOG_FREQ": 24, "INVENTORY_ON_STARTUP": 1},
                     status=200,
                 )
             if InventoryBase.objects.filter(uuid=data["uuid"]):
@@ -141,8 +141,7 @@ class LegacyView(APIView):
                         section_name,
                         items,
                     ) in sections_array.items():
-                        section_query = section_objs.filter(
-                            name=section_name).first()
+                        section_query = section_objs.filter(name=section_name).first()
                         if not section_query:
                             errors.append(
                                 f"Section's legacy {section_name} not found in template"
@@ -259,8 +258,7 @@ class LegacyView(APIView):
                     fields_to_create = []
 
                     for section_name, items in sections_array.items():
-                        section_obj = section_objs.filter(
-                            name=section_name).first()
+                        section_obj = section_objs.filter(name=section_name).first()
                         if not section_obj:
                             errors.append(
                                 f"No matching section's found for {section_name}"
@@ -332,8 +330,7 @@ class LegacyView(APIView):
                     status=201,
                 )
         except KeyError:
-            self.LOGGER.error(
-                "Can't get important data from the current inventory.")
+            self.LOGGER.error("Can't get important data from the current inventory.")
             return Response(
                 "Can't get important data from the current inventory.",
                 status=400,
