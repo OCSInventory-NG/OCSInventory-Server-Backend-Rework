@@ -93,7 +93,7 @@ class LegacyXMLParser(XMLParser):
 
             # Transforming the section to a list if it is a dictionary
             template_inventory = {}
-            for key, value in data["REQUEST"]["CONTENT"].items():
+            for key, value in request_data.items():
                 if isinstance(value, dict):
                     template_inventory[key] = [value]
                 else:
