@@ -4,11 +4,11 @@ import zlib
 
 from django.core.exceptions import ObjectDoesNotExist
 from inventory.template.models import Template
-from rest_framework.parsers import BaseParser
+from rest_framework_xml.parsers import XMLParser
 from rest_framework.response import Response
 
 
-class LegacyXMLParser(BaseParser):
+class LegacyXMLParser(XMLParser):
     media_type = "application/*"
     LOGGER = logging.getLogger(__name__)
 
