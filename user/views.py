@@ -48,7 +48,10 @@ class MyAccountViewSet(viewsets.OCSViewSet):
         # Remove the first part of the permission "object.permname"
         for permission in raw_permissions:
             splitted_permission = permission.split(".")
-            refined_permissions.append(splitted_permission[1])
+            refined_permissions.append(
+                splitted_permission[0] + "_" + splitted_permission[1]
+            )
+            refined_permissions.sort()
 
         reponse = {
             "id": getattr(user, "id", ""),
