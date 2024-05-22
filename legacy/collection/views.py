@@ -12,9 +12,6 @@ from asset.inventory_field.models import (
 from asset.inventory_section.models import (
     InventorySection,
 )
-from django.core.exceptions import (
-    ObjectDoesNotExist,
-)
 from inventory.field.models import (
     Field,
 )
@@ -29,9 +26,6 @@ from rest_framework.response import (
 )
 from rest_framework.views import (
     APIView,
-)
-from inventory.template.models import (
-    Template,
 )
 from legacy.collection.parsers import (
     LegacyXMLParser,
@@ -93,7 +87,11 @@ class LegacyView(APIView):
         try:
             if data["query"] == "PROLOG":
                 return Response(
-                    {"RESPONSE": "SEND", "PROLOG_FREQ": 24, "INVENTORY_ON_STARTUP": 1},
+                    {
+                        "RESPONSE": "SEND",
+                        "PROLOG_FREQ": 24,
+                        "INVENTORY_ON_STARTUP": 1,
+                    },
                     status=200,
                 )
             if InventoryBase.objects.filter(uuid=data["uuid"]):
@@ -283,8 +281,10 @@ class LegacyView(APIView):
                                 field_obj = field_map.get(field_name)
                                 if not field_obj:
                                     errors.append(
-                                        f"No matching field's legacy found for {field_name}"
-                                        f" in section {section_name}"
+                                        f"""
+                                        No matching field's legacy found for
+                                        {field_name} in section {section_name}
+                                        """
                                     )
                                     continue
 

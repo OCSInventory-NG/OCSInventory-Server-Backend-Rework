@@ -22,7 +22,10 @@ class LegacyXMLParser(XMLParser):
         return data or default
 
     def get_first_up_network_mac(self, networks):
-        """Helper function to get the MAC address of the first network with status 'Up'."""
+        """
+        Helper function to get the MAC address of the first network with
+        status 'Up'.
+        """
         for network in networks:
             if network.get("STATUS") == "Up":
                 return network.get("MACADDR", "-1")
@@ -67,7 +70,9 @@ class LegacyXMLParser(XMLParser):
                 )
                 if macaddr != "-1":
                     template_data["uuid"] = (
-                        f"{self.get_nested(request_data, ['HARDWARE', 'NAME'])}_{macaddr}"
+                        f"""
+                        {self.get_nested(request_data, ['HARDWARE', 'NAME'])}_{macaddr}
+                        """
                     )
 
             template_data["srcip"] = self.get_nested(
@@ -88,7 +93,8 @@ class LegacyXMLParser(XMLParser):
             except Exception as e:
                 self.LOGGER.error(f"Error retrieving template legacy: {e}")
                 return Response(
-                    {"error": f"Error retrieving template legacy: {e}"}, status=500
+                    {"error": f"Error retrieving template legacy: {e}"},
+                    status=500,
                 )
 
             # Transforming the section to a list if it is a dictionary
