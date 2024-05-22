@@ -1,11 +1,11 @@
 import logging
-import xmltodict
 import zlib
 
+import xmltodict
 from django.core.exceptions import ObjectDoesNotExist
 from inventory.template.models import Template
-from rest_framework_xml.parsers import XMLParser
 from rest_framework.response import Response
+from rest_framework_xml.parsers import XMLParser
 
 
 class LegacyXMLParser(XMLParser):

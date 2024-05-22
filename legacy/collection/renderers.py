@@ -1,8 +1,9 @@
-from django.utils.xmlutils import SimplerXMLGenerator
-from io import StringIO
-from rest_framework_xml.renderers import XMLRenderer
 import xml.dom.minidom
 import zlib
+from io import StringIO
+
+from django.utils.xmlutils import SimplerXMLGenerator
+from rest_framework_xml.renderers import XMLRenderer
 
 
 class LegacyXMLRenderer(XMLRenderer):
