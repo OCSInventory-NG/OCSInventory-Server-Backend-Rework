@@ -12,7 +12,7 @@ class LegacyXMLParser(XMLParser):
     media_type = "application/*"
     LOGGER = logging.getLogger(__name__)
 
-    def get_nested(self, data, keys, default="-1"):
+    def get_nested(self, data, keys, default="Empty"):
         """Helper function to get a nested value from a dictionary."""
         for key in keys:
             try:
@@ -28,8 +28,8 @@ class LegacyXMLParser(XMLParser):
         """
         for network in networks:
             if network.get("STATUS") == "Up":
-                return network.get("MACADDR", "-1")
-        return "-1"
+                return network.get("MACADDR", "Empty")
+        return "Empty"
 
     def parse(self, stream, media_type=None, parser_context=None):
         """
@@ -49,7 +49,7 @@ class LegacyXMLParser(XMLParser):
         request_data = data.get("REQUEST", {}).get("CONTENT", {})
 
         # Set the query
-        template_data["query"] = data.get("REQUEST", {}).get("QUERY", "-1")
+        template_data["query"] = data.get("REQUEST", {}).get("QUERY", "Empty")
 
         if template_data["query"] != "PROLOG":
             template_data["name"] = self.get_nested(request_data, ["HARDWARE", "NAME"])
@@ -63,17 +63,7 @@ class LegacyXMLParser(XMLParser):
             template_data["osversion"] = self.get_nested(
                 request_data, ["HARDWARE", "OSVERSION"]
             )
-            template_data["uuid"] = self.get_nested(request_data, ["HARDWARE", "UUID"])
-            if template_data["uuid"] == "-1":
-                macaddr = self.get_first_up_network_mac(
-                    request_data.get("NETWORKS", [])
-                )
-                if macaddr != "-1":
-                    template_data["uuid"] = (
-                        f"""
-                        {self.get_nested(request_data, ['HARDWARE', 'NAME'])}_{macaddr}
-                        """
-                    )
+            template_data["uuid"] = data.get("REQUEST", {}).get("DEVICEID", "Empty")
 
             template_data["srcip"] = self.get_nested(
                 request_data, ["HARDWARE", "IPADDR"]
@@ -88,12 +78,12 @@ class LegacyXMLParser(XMLParser):
             try:
                 template_data["template"] = Template.objects.get(name="Legacy").id
             except ObjectDoesNotExist:
-                self.LOGGER.error("Template legacy not found")
-                return Response({"error": "Template legacy not found"}, status=404)
+                self.LOGGER.error("Legacy template not found")
+                return Response({"error": "Legacy template not found"}, status=404)
             except Exception as e:
-                self.LOGGER.error(f"Error retrieving template legacy: {e}")
+                self.LOGGER.error(f"Error while retrieving legacy template: {e}")
                 return Response(
-                    {"error": f"Error retrieving template legacy: {e}"},
+                    {"error": f"Error while retrieving legacy template: {e}"},
                     status=500,
                 )
 
