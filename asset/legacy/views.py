@@ -4,10 +4,10 @@ from asset.inventory_base.models import InventoryBase
 from asset.inventory_base.serializers import InventoryBaseSerializer
 from asset.inventory_field.models import InventoryField
 from asset.inventory_section.models import InventorySection
-from inventory.field.models import Field
-from inventory.section.models import Section
 from asset.legacy.parsers import LegacyXMLParser
 from asset.legacy.renderers import LegacyXMLRenderer
+from inventory.field.models import Field
+from inventory.section.models import Section
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
