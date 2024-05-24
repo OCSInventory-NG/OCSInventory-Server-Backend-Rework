@@ -1,6 +1,6 @@
 {
   "name": "Legacy",
-  "os": "LIN",
+  "os": "LEG",
   "sections": [
     {
       "name": "ACCOUNTINFO",
