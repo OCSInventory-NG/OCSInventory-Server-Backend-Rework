@@ -18,6 +18,7 @@ from accountinfo.routers import AccountinfoRouter
 from asset.agent_config.routers import AgentConfigRouter
 from asset.asset_group.routers import AssetGroupRouter
 from asset.collection.views import CollectionView
+from asset.legacy.views import LegacyView
 from asset.inventory_base.routers import InventoryBaseRouter
 from asset.inventory_field.routers import InventoryFieldRouter
 from asset.inventory_section.routers import InventorySectionRouter
@@ -44,7 +45,6 @@ from inventory.template.routers import TemplateRouter
 from ipdiscover.netdevice.routers import NetdeviceRouter
 from ipdiscover.netgroup.routers import NetgroupRouter
 from ipdiscover.network.routers import NetworkRouter
-from legacy.collection.views import LegacyView
 from ocsinventory_backend import settings
 
 # Import dedicated routers and provide different endpoint
@@ -174,7 +174,7 @@ urlpatterns = [
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
     path("api-auth/token", obtain_auth_token, name="api_token_auth"),
     path("asset/collection/", CollectionView.as_view(), name="asset_collection"),
-    path("legacy/collection/", LegacyView.as_view(), name="legacy_collection"),
+    path("asset/legacy/", LegacyView.as_view(), name="legacy_collection"),
     path("search/", SearchView.as_view(), name="search"),
     # Authentication
     path("login/", BaseAuthView.as_view(), name="login"),
