@@ -14,9 +14,10 @@ class Template(models.Model):
     """
 
     OS_CHOICES = (
-        ("WIN", "Windows"),
+        ("LEG", "Legacy"),
         ("LIN", "Linux"),
         ("MAC", "Mac"),
+        ("WIN", "Windows"),
     )
 
     name = models.CharField(max_length=50)
