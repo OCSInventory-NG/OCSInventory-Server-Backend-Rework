@@ -148,7 +148,7 @@ class LegacyView(APIView):
                                 field_obj = field_map.get(field_name)
                                 if not field_obj:
                                     errors.append(
-                                        f"The field {field_name} not found"
+                                        f"The field {field_name} not found "
                                         f"in section {section_name}"
                                     )
                                     continue
@@ -165,7 +165,7 @@ class LegacyView(APIView):
 
                 if errors:
                     self.LOGGER.error(
-                        "Partial update succeeded but errors were"
+                        "Partial update succeeded but errors were "
                         "encountered while updating device %s - %s: %s",
                         data["uuid"],
                         data["name"],
@@ -173,15 +173,15 @@ class LegacyView(APIView):
                     )
                     return Response(
                         {
-                            "Partial update succeeded but errors were"
-                            "encountered while updating device"
+                            "Partial update succeeded but errors were "
+                            "encountered while updating device "
                             f'{data["uuid"]} - {data["name"]}: {str(errors)}'
                         },
                         status=200,
                     )
                 else:
                     self.LOGGER.info(
-                        "Inventory updated successfully for device %s - %s"
+                        "Inventory updated successfully for device %s - %s "
                         "sending response back to client",
                         data["uuid"],
                         data["name"],
@@ -259,7 +259,7 @@ class LegacyView(APIView):
                                 field_obj = field_map.get(field_name)
                                 if not field_obj:
                                     errors.append(
-                                        "No matching field's legacy found for"
+                                        "No matching field's legacy found for "
                                         f"{field_name} in section {section_name}"
                                     )
                                     continue
@@ -277,7 +277,7 @@ class LegacyView(APIView):
 
                 if errors:
                     self.LOGGER.error(
-                        "Encountered errors while creating legacy inventory"
+                        "Encountered errors while creating legacy inventory "
                         "for device %s - %s: %s",
                         data["uuid"],
                         data["name"],
@@ -286,7 +286,7 @@ class LegacyView(APIView):
 
                     return Response(
                         {
-                            "Inventory created but errors were encountered"
+                            "Inventory created but errors were encountered "
                             f'while creating legacy device {data["uuid"]} - '
                             f'{data["name"]}: {str(errors)}'
                         },
@@ -294,7 +294,7 @@ class LegacyView(APIView):
                     )
                 else:
                     self.LOGGER.info(
-                        "Inventory created successfully for legacy device %s - %s"
+                        "Inventory created successfully for legacy device %s - %s "
                         "sending response back to client",
                         data["uuid"],
                         data["name"],
