@@ -76,7 +76,7 @@ class LegacyXMLParser(XMLParser):
             template_data["domain"] = self.get_nested(request_data, ["HARDWARE", "DNS"])
 
             try:
-                template_data["template"] = Template.objects.get(name="Legacy").id
+                template_data["template"] = Template.objects.get(os="LEG").id
             except ObjectDoesNotExist:
                 self.LOGGER.error("Legacy template not found")
                 return Response({"error": "Legacy template not found"}, status=404)
