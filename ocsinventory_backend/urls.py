@@ -18,10 +18,10 @@ from accountinfo.routers import AccountinfoRouter
 from asset.agent_config.routers import AgentConfigRouter
 from asset.asset_group.routers import AssetGroupRouter
 from asset.collection.views import CollectionView
-from asset.legacy.views import LegacyView
 from asset.inventory_base.routers import InventoryBaseRouter
 from asset.inventory_field.routers import InventoryFieldRouter
 from asset.inventory_section.routers import InventorySectionRouter
+from asset.legacy.views import LegacyView
 from asset.log.routers import LogRouter
 from auth.auth_config.routers import AuthConfigRouter
 from auth.auth_mapping.routers import AuthMappingRouter
