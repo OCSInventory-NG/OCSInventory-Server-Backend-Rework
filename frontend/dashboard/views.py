@@ -1,7 +1,7 @@
-from ocsinventory_backend.ocs_framework import viewsets
-from permission.permissions import DefaultModelPermissions
 from frontend.dashboard.models import Dashboard
 from frontend.dashboard.serializers import DashboardSerializer
+from ocsinventory_backend.ocs_framework import viewsets
+from permission.permissions import DefaultModelPermissions
 
 
 class DashboardViewSet(viewsets.OCSViewSet):
