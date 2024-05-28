@@ -33,11 +33,11 @@ from config.routers import ConfigRouter
 from deployment.action.routers import ActionRouter
 from deployment.package.routers import PackageRouter
 from deployment.result.routers import ResultRouter
-from frontend.dashboard.routers import DashboardRouter
 from django.conf.urls.static import static
 
 # Base import to get API Working
 from django.urls import include, path
+from frontend.dashboard.routers import DashboardRouter
 from group.routers import GroupRouter
 from inventory.field.routers import FieldRouter
 from inventory.section.routers import SectionRouter
