@@ -33,6 +33,7 @@ from config.routers import ConfigRouter
 from deployment.action.routers import ActionRouter
 from deployment.package.routers import PackageRouter
 from deployment.result.routers import ResultRouter
+from frontend.dashboard.routers import DashboardRouter
 from django.conf.urls.static import static
 
 # Base import to get API Working
@@ -165,6 +166,10 @@ searchRouter = searchRouter.defineRoutes(defaultRouter)
 # Add AssetGroup declaration
 assetGroupRouter = AssetGroupRouter()
 assetGroupRouter = assetGroupRouter.defineRoutes(defaultRouter)
+
+# Add Dashboard declaration
+dashboardRouter = DashboardRouter()
+dashboardRouter = dashboardRouter.defineRoutes(defaultRouter)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
