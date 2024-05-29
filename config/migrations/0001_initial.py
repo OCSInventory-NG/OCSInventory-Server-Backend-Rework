@@ -7,204 +7,194 @@ def create_base_config(apps, schema_editor):
     configs = [
         {
             "name": "agent",
-            "value":
-                [
-                    {
-                        "name": "debug",
-                        "description": "Enable debug mode",
-                        "value": 0,
-                        "type": "switch",
-                        "unit": ""
-                    },
-                    {
-                        "name": "server",
-                        "description": "Server URL",
-                        "value": "http://my-domain/ocsinventory",
-                        "type": "text input",
-                        "unit": ""
-                    },
-                    {
-                        "name": "frequency",
-                        "description": "Frequency of inventory in hours",
-                        "value": 24,
-                        "type": "number input",
-                        "unit": "hours"
-                    }
-                ]
+            "value": [
+                {
+                    "name": "debug",
+                    "description": "Enable debug mode",
+                    "value": 0,
+                    "type": "switch",
+                    "unit": "",
+                },
+                {
+                    "name": "server",
+                    "description": "Server URL",
+                    "value": "http://my-domain/ocsinventory",
+                    "type": "text input",
+                    "unit": "",
+                },
+                {
+                    "name": "frequency",
+                    "description": "Frequency of inventory in hours",
+                    "value": 24,
+                    "type": "number input",
+                    "unit": "hours",
+                },
+            ],
         },
         {
             "name": "server",
-            "value":
-                [
-                    {
-                        "name": "debug",
-                        "description": "Enable debug mode",
-                        "value": 0,
-                        "type": "switch",
-                        "unit": ""
-                    },
-                    {
-                        "name": "frequency",
-                        "description": "Frequency of inventory in hours",
-                        "value": 24,
-                        "type": "number input",
-                        "unit": "hours"
-                    },
-                    {
-                        "name": "inventory_checksum",
-                        "description": "Enable differential update of inventory",
-                        "value": 1,
-                        "type": "switch",
-                        "unit": ""
-                    },
-                    {
-                        "name": "duplicate_reconciliation",
-                        "description": "Field used to reconcile duplicate computers",
-                        "value": "",
-                        "type": "select",
-                        "unit": "",
-                        "options": ["name", "uuid", "srcmac"]
-                    }
-                ]
+            "value": [
+                {
+                    "name": "debug",
+                    "description": "Enable debug mode",
+                    "value": 0,
+                    "type": "switch",
+                    "unit": "",
+                },
+                {
+                    "name": "frequency",
+                    "description": "Frequency of inventory in hours",
+                    "value": 24,
+                    "type": "number input",
+                    "unit": "hours",
+                },
+                {
+                    "name": "inventory_checksum",
+                    "description": "Enable differential update of inventory",
+                    "value": 1,
+                    "type": "switch",
+                    "unit": "",
+                },
+                {
+                    "name": "duplicate_reconciliation",
+                    "description": "Field used to reconcile duplicate computers",
+                    "value": "",
+                    "type": "select",
+                    "unit": "",
+                    "options": ["name", "uuid", "srcmac"],
+                },
+            ],
         },
         {
             "name": "networkscan",
-            "value":
+            "value": [
                 [
-                    [
-                        {
-                            "name": "ipdiscover",
-                            "description": "Enable ipdiscover",
-                            "value": 0,
-                            "type": "switch",
-                            "unit": ""
-                        },
-                        {
-                            "name": "scantype",
-                            "description": "Type of scan",
-                            "value": "nmap",
-                            "type": "select",
-                            "unit": "",
-                            "options": ["nmap", "ping"]
-                        },
-                        {
-                            "name": "bandwidth",
-                            "description": "Bandwidth of the ARP scan",
-                            "value": 1000,
-                            "type": "number input",
-                            "unit": "kb/s"
-                        }
-                    ],
-                    [
-                        {
-                            "name": "snmp",
-                            "description": "Enable snmp",
-                            "value": 0,
-                            "type": "switch",
-                            "unit": ""
-                        },
-                        {
-                            "name": "snmp_configs",
-                            "description": "List of snmp configs",
-                            "value": "",
-                            "type": "text input",
-                            "unit": ""
-                        }
-                    ]
-                ]
-
+                    {
+                        "name": "ipdiscover",
+                        "description": "Enable ipdiscover",
+                        "value": 0,
+                        "type": "switch",
+                        "unit": "",
+                    },
+                    {
+                        "name": "scantype",
+                        "description": "Type of scan",
+                        "value": "nmap",
+                        "type": "select",
+                        "unit": "",
+                        "options": ["nmap", "ping"],
+                    },
+                    {
+                        "name": "bandwidth",
+                        "description": "Bandwidth of the ARP scan",
+                        "value": 1000,
+                        "type": "number input",
+                        "unit": "kb/s",
+                    },
+                ],
+            ],
+        },
+        {
+            "name": "snmp",
+            "value": [
+                {
+                    "name": "snmp",
+                    "description": "Enable snmp",
+                    "value": 0,
+                    "type": "switch",
+                    "unit": "",
+                }
+            ],
         },
         {
             "name": "blacklist",
-            "value":
+            "value": [
                 [
-                    [
-                        {
-                            "name": "macaddresses",
-                            "description": "Enable macaddresses blacklist",
-                            "value": 0,
-                            "type": "switch",
-                            "unit": ""
-                        },
-                        {
-                            "name": "macaddresses_list",
-                            "description": "List of macaddresses to blacklist",
-                            "value": "",
-                            "type": "text input",
-                            "unit": ""
-                        }
-                    ],
-                    [
-                        {
-                            "name": "ipaddresses",
-                            "description": "Enable ipaddresses blacklist",
-                            "value": 0,
-                            "type": "switch",
-                            "unit": ""
-                        },
-                        {
-                            "name": "ipaddresses_list",
-                            "description": "List of ipaddresses to blacklist",
-                            "value": "",
-                            "type": "text input",
-                            "unit": ""
-                        }
-                    ],
-                    [
-                        {
-                            "name": "serialnumbers",
-                            "description": "Enabble serialnumbers blacklist",
-                            "value": 0,
-                            "type": "switch",
-                            "unit": ""
-                        },
-                        {
-                            "name": "serialnumbers_list",
-                            "description": "List of serialnumbers to blacklist",
-                            "value": "",
-                            "type": "text input",
-                            "unit": ""
-                        }
-                    ]
-                ]
+                    {
+                        "name": "macaddresses",
+                        "description": "Enable macaddresses blacklist",
+                        "value": 0,
+                        "type": "switch",
+                        "unit": "",
+                    },
+                    {
+                        "name": "macaddresses_list",
+                        "description": "List of macaddresses to blacklist",
+                        "value": "",
+                        "type": "text input",
+                        "unit": "",
+                    },
+                ],
+                [
+                    {
+                        "name": "ipaddresses",
+                        "description": "Enable ipaddresses blacklist",
+                        "value": 0,
+                        "type": "switch",
+                        "unit": "",
+                    },
+                    {
+                        "name": "ipaddresses_list",
+                        "description": "List of ipaddresses to blacklist",
+                        "value": "",
+                        "type": "text input",
+                        "unit": "",
+                    },
+                ],
+                [
+                    {
+                        "name": "serialnumbers",
+                        "description": "Enabble serialnumbers blacklist",
+                        "value": 0,
+                        "type": "switch",
+                        "unit": "",
+                    },
+                    {
+                        "name": "serialnumbers_list",
+                        "description": "List of serialnumbers to blacklist",
+                        "value": "",
+                        "type": "text input",
+                        "unit": "",
+                    },
+                ],
+            ],
         },
         {
             "name": "deployment",
-            "value":
-                [
-                    {
-                        "name": "enabled",
-                        "description": "Enable deployment",
-                        "value": 0,
-                        "type": "switch",
-                        "unit": ""
-                    },
-                    {
-                        "name": "server",
-                        "description": "Server URL",
-                        "value": "http://my-domain/ocsinventory",
-                        "type": "text input",
-                        "unit": ""
-                    },
-                    {
-                        "name": "period_latency",
-                        "description": "Period of latency between packages in seconds",
-                        "value": 60,
-                        "type": "number input",
-                        "unit": "seconds"
-                    },
-                    {
-                        "name": "auto_retry",
-                        "description": "Enable auto retry if deployment failed",
-                        "value": 0,
-                        "type": "switch",
-                        "unit": ""
-                    }
-                ]
-        }
+            "value": [
+                {
+                    "name": "enabled",
+                    "description": "Enable deployment",
+                    "value": 0,
+                    "type": "switch",
+                    "unit": "",
+                },
+                {
+                    "name": "server",
+                    "description": "Server URL",
+                    "value": "http://my-domain/ocsinventory",
+                    "type": "text input",
+                    "unit": "",
+                },
+                {
+                    "name": "period_latency",
+                    "description": "Period of latency between packages in seconds",
+                    "value": 60,
+                    "type": "number input",
+                    "unit": "seconds",
+                },
+                {
+                    "name": "auto_retry",
+                    "description": "Enable auto retry if deployment failed",
+                    "value": 0,
+                    "type": "switch",
+                    "unit": "",
+                },
+            ],
+        },
     ]
 
-    Config = apps.get_model('config', 'Config')
+    Config = apps.get_model("config", "Config")
 
     for config in configs:
         try:
@@ -217,16 +207,18 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Config',
+            name="Config",
             fields=[
-                ('name', models.CharField(max_length=100, primary_key=True, serialize=False)),
-                ('value', models.JSONField()),
+                (
+                    "name",
+                    models.CharField(max_length=100, primary_key=True, serialize=False),
+                ),
+                ("value", models.JSONField()),
             ],
         ),
-        migrations.RunPython(create_base_config)
+        migrations.RunPython(create_base_config),
     ]
