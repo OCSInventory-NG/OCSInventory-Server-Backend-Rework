@@ -1,6 +1,5 @@
-from django.contrib.auth.models import User
-from ocsinventory_backend.ocs_framework.models import RestrictVisibility
 from django.db import models
+from ocsinventory_backend.ocs_framework.models import RestrictVisibility
 
 # Create your models here.
 
