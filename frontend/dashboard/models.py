@@ -9,5 +9,5 @@ class Dashboard(RestrictVisibility):
     This is the dashboard model.
     """
 
-    name = models.CharField(max_length=100, blank=False, null=False)
-    layout = models.JSONField(blank=False, null=False)
+    name = models.CharField(max_length=100)
+    layout = models.JSONField()

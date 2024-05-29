@@ -13,4 +13,11 @@ class DashboardSerializer(serializers.ModelSerializer):
         """
 
         model = Dashboard
-        fields = []
+        fields = [
+            "visibility",
+            "user",
+            "groups",
+            "allow_group_modification",
+            "name",
+            "layout",
+        ]
