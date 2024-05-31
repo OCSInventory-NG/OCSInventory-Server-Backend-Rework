@@ -13,6 +13,7 @@ class SnmpScanner(models.Model):
     - subnets: list of subnets to scan
 
     """
+
     identifier = models.CharField(max_length=100, primary_key=True)
     ip = models.GenericIPAddressField()
     subnets = JSONField(default=list)
@@ -21,4 +22,4 @@ class SnmpScanner(models.Model):
     total_scanned = models.IntegerField(default=0, null=True)
     total_found = models.IntegerField(default=0, null=True)
     last_scan_date = models.DateTimeField(null=True)
-    configs = models.ManyToManyField(SnmpConfig)
+    configs = models.ManyToManyField(SnmpConfig, blank=True)
