@@ -11,6 +11,13 @@ class SnmpScanner(models.Model):
     - name: name of the scanner
     - ip : IP address of the scanner
     - subnets: list of subnets to scan
+    - notes : additional notes
+    - last_updated : last updated date
+    - total_scanned : total devices scanned
+    - total_found : total devices found
+    - last_scan_date : date of the last scan
+    - configs : list of SNMP configurations
+
 
     """
 
