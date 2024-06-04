@@ -150,7 +150,8 @@ class ActionViewSet(viewsets.OCSViewSet):
                 actionSerializer.save()
 
         except ValidationError as ve:
-            # If there is a validation error, add it to the errors list and log the error
+            # If there is a validation error, add it to the errors list and log the
+            # error
             errors.append(f"Error creating action: {ve}")
             self.LOGGER.error(f"Error creating action: {ve}")
             # Return a 400 Bad Request response with the error message
