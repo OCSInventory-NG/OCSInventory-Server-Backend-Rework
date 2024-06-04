@@ -1,7 +1,7 @@
+from rest_framework import serializers
 from snmp.scanner.models import SnmpScanner
 from snmp.snmp_config.models import SnmpConfig
 from snmp.snmp_config.serializers import SnmpConfigSerializer
-from rest_framework import serializers
 
 
 class SnmpScannerSerializer(serializers.ModelSerializer):
@@ -12,8 +12,9 @@ class SnmpScannerSerializer(serializers.ModelSerializer):
         serializers ([ModelSerializer])
     """
 
-    configs = serializers.PrimaryKeyRelatedField(queryset=SnmpConfig.objects.all(),
-                                                 many=True)
+    configs = serializers.PrimaryKeyRelatedField(
+        queryset=SnmpConfig.objects.all(), many=True
+    )
 
     class Meta:
         """Define the linked model and the fields registered in the API"""
@@ -37,6 +38,7 @@ class SnmpScannerSerializer(serializers.ModelSerializer):
         Custom method to use SnmpConfigSerializer for representing configs
         """
         representation = super().to_representation(instance)
-        representation['configs'] = SnmpConfigSerializer(instance.configs.all(),
-                                                        many=True).data
+        representation["configs"] = SnmpConfigSerializer(
+            instance.configs.all(), many=True
+        ).data
         return representation

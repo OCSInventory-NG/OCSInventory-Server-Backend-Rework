@@ -1,7 +1,7 @@
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
-from snmp.snmp_config.serializers import SnmpConfigSerializer
 from snmp.snmp_config.models import SnmpConfig
+from snmp.snmp_config.serializers import SnmpConfigSerializer
 
 
 class SnmpConfigViewSet(viewsets.OCSViewSet):
