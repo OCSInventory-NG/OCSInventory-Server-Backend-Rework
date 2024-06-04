@@ -1,17 +1,17 @@
 import logging
-import zipfile
-import tarfile
 import os
-
+import tarfile
+import zipfile
 from io import BytesIO
-from django.core.files.base import ContentFile
+
 from deployment.action.models import DeploymentAction
 from deployment.action.serializers import ActionSerializer
 from deployment.package.models import Package
 from deployment.package.serializers import PackageSerializer
+from django.core.files.base import ContentFile
 from ocsinventory_backend.ocs_framework import viewsets
-from rest_framework.exceptions import ValidationError
 from permission.permissions import DefaultModelPermissions
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
 

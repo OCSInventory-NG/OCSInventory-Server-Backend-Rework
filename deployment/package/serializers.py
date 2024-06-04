@@ -1,7 +1,7 @@
-from rest_framework import serializers
-from deployment.package.models import Package
 from deployment.action.serializers import ActionSerializer
+from deployment.package.models import Package
 from deployment.result.serializers import ResultSerializer
+from rest_framework import serializers
 
 
 class PackageSerializer(serializers.ModelSerializer):
