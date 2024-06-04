@@ -19,8 +19,15 @@ class PackageSerializer(serializers.ModelSerializer):
         """Define the linked model and the fields registered in the API"""
 
         model = Package
-        fields = ["id", "name", "description", "date_created",
-                  "target_os", "actions_list", "result"]
+        fields = [
+            "id",
+            "name",
+            "description",
+            "date_created",
+            "target_os",
+            "actions_list",
+            "result",
+        ]
 
     def create(self, validated_data):
         """Override create to allow nested creation of fields"""
