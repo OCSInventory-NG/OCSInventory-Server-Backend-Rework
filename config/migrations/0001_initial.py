@@ -11,15 +11,8 @@ def create_base_config(apps, schema_editor):
                 {
                     "name": "debug",
                     "description": "Enable debug mode",
-                    "value": 0,
+                    "value": False,
                     "type": "switch",
-                    "unit": "",
-                },
-                {
-                    "name": "server",
-                    "description": "Server URL",
-                    "value": "http://my-domain/ocsinventory",
-                    "type": "text input",
                     "unit": "",
                 },
                 {
@@ -28,6 +21,13 @@ def create_base_config(apps, schema_editor):
                     "value": 24,
                     "type": "number input",
                     "unit": "hours",
+                },
+                {
+                    "name": "inventory_checksum",
+                    "description": "Enable differential update of inventory",
+                    "value": True,
+                    "type": "switch",
+                    "unit": "",
                 },
             ],
         },
@@ -47,13 +47,6 @@ def create_base_config(apps, schema_editor):
                     "value": 24,
                     "type": "number input",
                     "unit": "hours",
-                },
-                {
-                    "name": "inventory_checksum",
-                    "description": "Enable differential update of inventory",
-                    "value": 1,
-                    "type": "switch",
-                    "unit": "",
                 },
                 {
                     "name": "duplicate_reconciliation",
@@ -92,18 +85,22 @@ def create_base_config(apps, schema_editor):
                         "unit": "kb/s",
                     },
                 ],
-            ],
-        },
-        {
-            "name": "snmp",
-            "value": [
-                {
-                    "name": "snmp",
-                    "description": "Enable snmp",
-                    "value": 0,
-                    "type": "switch",
-                    "unit": "",
-                }
+                [
+                    {
+                        "name": "snmp",
+                        "description": "Enable snmp",
+                        "value": 0,
+                        "type": "switch",
+                        "unit": "",
+                    },
+                    {
+                        "name": "snmp_configs",
+                        "description": "List of snmp configs",
+                        "value": "",
+                        "type": "text input",
+                        "unit": "",
+                    },
+                ],
             ],
         },
         {
@@ -165,15 +162,8 @@ def create_base_config(apps, schema_editor):
                 {
                     "name": "enabled",
                     "description": "Enable deployment",
-                    "value": 0,
+                    "value": False,
                     "type": "switch",
-                    "unit": "",
-                },
-                {
-                    "name": "server",
-                    "description": "Server URL",
-                    "value": "http://my-domain/ocsinventory",
-                    "type": "text input",
                     "unit": "",
                 },
                 {
@@ -186,9 +176,30 @@ def create_base_config(apps, schema_editor):
                 {
                     "name": "auto_retry",
                     "description": "Enable auto retry if deployment failed",
-                    "value": 0,
+                    "value": False,
                     "type": "switch",
                     "unit": "",
+                },
+                {
+                    "name": "max_retry",
+                    "description": "Max retry number for a package to retry",
+                    "value": 3,
+                    "type": "number input",
+                    "unit": "",
+                },
+                {
+                    "name": "execution_timeout",
+                    "description": "Timeout of command execution in seconds",
+                    "value": 300,
+                    "type": "number input",
+                    "unit": "seconds",
+                },
+                {
+                    "name": "deployment_timeout",
+                    "description": "Timeout of deployment in seconds",
+                    "value": 240,
+                    "type": "number input",
+                    "unit": "seconds",
                 },
             ],
         },
