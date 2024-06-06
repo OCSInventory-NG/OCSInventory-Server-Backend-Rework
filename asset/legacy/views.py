@@ -60,8 +60,8 @@ class LegacyView(APIView):
                 data["uuid"],
                 data["name"],
             )
-        except KeyError:
-            pass
+        except Exception as e:
+            self.LOGGER.error(f"error: {e}")
         try:
             if data["query"] == "PROLOG":
                 return Response(

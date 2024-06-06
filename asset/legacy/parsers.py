@@ -26,9 +26,12 @@ class LegacyXMLParser(XMLParser):
         Helper function to get the MAC address of the first network with
         status 'Up'.
         """
-        for network in networks:
-            if network.get("STATUS") == "Up":
-                return network.get("MACADDR", "Empty")
+        if networks.get("STATUS") == "Up":
+            return networks.get("MACADDR", "Empty")
+        else:
+            for network in networks:
+                if network.get("STATUS") == "Up":
+                    return network.get("MACADDR", "Empty")
         return "Empty"
 
     def parse(self, stream, media_type=None, parser_context=None):
