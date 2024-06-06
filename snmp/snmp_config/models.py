@@ -46,13 +46,16 @@ class SnmpConfig(models.Model):
     name = models.CharField(max_length=128, null=False)
     version = models.CharField(max_length=3, choices=SNMP_VERSIONS, null=False)
     user = models.CharField(max_length=128, blank=True, null=True)
-    auth_level = models.CharField(max_length=128, choices=AUTH_LEVELS,
-                                  blank=True, null=True)
+    auth_level = models.CharField(
+        max_length=128, choices=AUTH_LEVELS, blank=True, null=True
+    )
     password = models.CharField(max_length=128, blank=True, null=True)
-    auth_protocol = models.CharField(max_length=4, choices=AUTH_PROTOCOLS,
-                                     blank=True, null=True)
-    priv_protocol = models.CharField(max_length=4, choices=PRIV_PROTOCOLS,
-                                     blank=True, null=True)
+    auth_protocol = models.CharField(
+        max_length=4, choices=AUTH_PROTOCOLS, blank=True, null=True
+    )
+    priv_protocol = models.CharField(
+        max_length=4, choices=PRIV_PROTOCOLS, blank=True, null=True
+    )
     priv_password = models.CharField(max_length=128, blank=True, null=True)
     retries = models.IntegerField(default=3)
     timeout = models.IntegerField(default=3)
