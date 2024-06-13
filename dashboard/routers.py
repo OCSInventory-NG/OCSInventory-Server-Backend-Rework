@@ -1,4 +1,4 @@
-from frontend.dashboard.views import DashboardViewSet
+from dashboard.views import DashboardViewSet
 
 
 class DashboardRouter:
@@ -14,5 +14,5 @@ class DashboardRouter:
         and return the new routes.
         """
 
-        defaultRouter.register(r"frontend/dashboard", DashboardViewSet)
+        defaultRouter.register(r"dashboard", DashboardViewSet)
         return defaultRouter

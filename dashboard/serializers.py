@@ -1,4 +1,4 @@
-from frontend.dashboard.models import Dashboard
+from dashboard.models import Dashboard
 from rest_framework import serializers
 
 

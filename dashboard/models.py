@@ -1,8 +1,6 @@
 from django.db import models
 from ocsinventory_backend.ocs_framework.models import RestrictVisibility
 
-# Create your models here.
-
 
 class Dashboard(RestrictVisibility):
     """
