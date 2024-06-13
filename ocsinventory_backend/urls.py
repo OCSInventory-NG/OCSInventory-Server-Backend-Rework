@@ -30,6 +30,7 @@ from automation.history.routers import HistoryRouter
 from automation.rule.routers import RuleRouter
 from automation.scheduler.routers import SchedulerRouter
 from config.routers import ConfigRouter
+from dashboard.routers import DashboardRouter
 from deployment.action.routers import ActionRouter
 from deployment.package.routers import PackageRouter
 from deployment.result.routers import ResultRouter
@@ -37,7 +38,6 @@ from django.conf.urls.static import static
 
 # Base import to get API Working
 from django.urls import include, path
-from dashboard.routers import DashboardRouter
 from group.routers import GroupRouter
 from inventory.field.routers import FieldRouter
 from inventory.section.routers import SectionRouter
