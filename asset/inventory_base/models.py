@@ -22,7 +22,7 @@ class InventoryBase(models.Model):
     - Template
     - Domain
     """
- 
+
     name = models.CharField(max_length=50, null=False)
     description = models.CharField(max_length=255)
     serial = models.CharField(max_length=255)

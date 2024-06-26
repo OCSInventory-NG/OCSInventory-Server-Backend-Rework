@@ -1,7 +1,7 @@
+from asset.inventory_base.models import InventoryBase
 from django.db import models
 from django.db.models.fields.json import JSONField
 from snmp.snmp_config.models import SnmpConfig
-from asset.inventory_base.models import InventoryBase
 
 
 class SnmpScanner(models.Model):
