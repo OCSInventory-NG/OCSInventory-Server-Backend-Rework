@@ -148,7 +148,9 @@ class CollectionView(APIView):
             )
 
         # successful creation response
-        return Response({"message": "Inventory created successfully"}, status=201)
+        return Response({"message": "Inventory created successfully",
+                         "id": asset_instance.id},
+                        status=201)
 
     def put(self, request):
         """
@@ -272,7 +274,9 @@ class CollectionView(APIView):
                 data["name"],
             )
 
-        return Response({"message": "Inventory updated successfully"}, status=200)
+        return Response({"message": "Inventory updated successfully",
+                         "id": asset_instance.id},
+                        status=200)
 
     def patch(self, request, *args, **kwargs):
         """
@@ -392,5 +396,7 @@ class CollectionView(APIView):
             )
 
         return Response(
-            {"message": "Asset and inventory updated successfully"}, status=200
+            {"message": "Asset and inventory updated successfully",
+             "id": asset_instance.id},
+            status=200
         )

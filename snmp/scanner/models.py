@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models.fields.json import JSONField
 from snmp.snmp_config.models import SnmpConfig
+from asset.inventory_base.models import InventoryBase
 
 
 class SnmpScanner(models.Model):
@@ -17,8 +18,7 @@ class SnmpScanner(models.Model):
     - total_found : total devices found
     - last_scan_date : date of the last scan
     - configs : list of SNMP configurations
-
-
+    - assets : list of assets within OCS
     """
 
     identifier = models.CharField(max_length=100, primary_key=True)
@@ -30,3 +30,4 @@ class SnmpScanner(models.Model):
     total_found = models.IntegerField(default=0, null=True)
     last_scan_date = models.DateTimeField(null=True)
     configs = models.ManyToManyField(SnmpConfig, blank=True)
+    assets = models.ManyToManyField(InventoryBase, blank=True)

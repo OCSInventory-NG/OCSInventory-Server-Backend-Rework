@@ -30,6 +30,7 @@ class SnmpScannerSerializer(serializers.ModelSerializer):
             "total_found",
             "last_scan_date",
             "configs",
+            "assets"
         ]
         extra_kwargs = {"last_updated": {"read_only": True}}
 
