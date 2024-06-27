@@ -6,9 +6,6 @@ from django.dispatch import receiver
 
 
 class DeploymentAction(models.Model):
-    def upload_to(instance, filename):
-        return f"files/{instance.package.id}/{filename}"
-
     """
     Action model class definition
 
@@ -22,6 +19,9 @@ class DeploymentAction(models.Model):
     - File
     - Original file name
     """
+
+    def upload_to(self, filename):
+        return f"files/{self.package.id}/{filename}"
 
     package = models.ForeignKey(
         Package, related_name="actions_list", on_delete=models.CASCADE, null=True
