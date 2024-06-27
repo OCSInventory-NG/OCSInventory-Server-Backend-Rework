@@ -1,5 +1,6 @@
 django>=4.2.2
 djangorestframework>=3.14.0
+djangorestframework-xml>=2.0.0
 django-cors-headers>=4.1.0
 django-filter>=23.1
 django-extensions>=3.2
@@ -11,3 +12,6 @@ django-cas-ng>=4.3.0
 
 # Database
 psycopg2>=2.9.9
+
+# Handling XML
+xmltodict>=0.13.0
