@@ -18,7 +18,7 @@ def create_base_config(apps, schema_editor):
                 {
                     "name": "frequency",
                     "description": "Frequency of inventory in hours",
-                    "value": 24,
+                    "value": 4,
                     "type": "number input",
                     "unit": "hours",
                 },
