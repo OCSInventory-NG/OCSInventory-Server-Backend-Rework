@@ -126,6 +126,12 @@ LOGGING = {
             "class": "logging.StreamHandler",
             "formatter": "simple",
         },
+        "asset_collection": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": f"{BASE_DIR}/logs/asset_collection.log",
+            "formatter": "simple",
+        },
     },
     "loggers": {
         "django": {
@@ -137,6 +143,11 @@ LOGGING = {
         "ipdiscover": {
             "handlers": ["console"],
             "level": "INFO",
+        },
+        # inventory collection logger
+        "asset.collection.views": {
+            "handlers": ["asset_collection"],
+            "level": "DEBUG",
         },
     },
 }
