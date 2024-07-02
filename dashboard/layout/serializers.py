@@ -1,8 +1,8 @@
-from dashboard.models import Dashboard
+from dashboard.layout.models import DashboardLayout
 from rest_framework import serializers
 
 
-class DashboardSerializer(serializers.ModelSerializer):
+class DashboardLayoutSerializer(serializers.ModelSerializer):
     """
     This serialize class provide the API representation.
     """
@@ -12,7 +12,7 @@ class DashboardSerializer(serializers.ModelSerializer):
         Define the linked model and the fields registered in the API.
         """
 
-        model = Dashboard
+        model = DashboardLayout
         fields = [
             "visibility",
             "user",

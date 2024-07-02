@@ -68,7 +68,8 @@ INSTALLED_APPS = [
     "auth.auth_method.apps.AuthMethodConfig",
     "auth.auth_config.apps.AuthConfigConfig",
     "auth.auth_mapping.apps.AuthMappingConfig",
-    "dashboard.apps.DashboardConfig",
+    "dashboard.layout.apps.DashboardLayoutConfig",
+    "dashboard.chart.apps.DashboardChartConfig",
     "search.apps.SearchConfig",
     "django_cas_ng",
 ]

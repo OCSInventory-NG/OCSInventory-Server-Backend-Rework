@@ -1,10 +1,10 @@
-from dashboard.models import Dashboard
-from dashboard.serializers import DashboardSerializer
+from dashboard.layout.models import DashboardLayout
+from dashboard.layout.serializers import DashboardLayoutSerializer
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
 
 
-class DashboardViewSet(viewsets.OCSViewSet):
+class DashboardLayoutViewSet(viewsets.OCSViewSet):
     """
     this class will permit the frontend server to manage configuration
     for the dashboard.
@@ -14,6 +14,6 @@ class DashboardViewSet(viewsets.OCSViewSet):
 
     permission_classes = [DefaultModelPermissions]
 
-    queryset = Dashboard.objects.all()
-    serializer_class = DashboardSerializer
-    model = Dashboard
+    queryset = DashboardLayout.objects.all()
+    serializer_class = DashboardLayoutSerializer
+    model = DashboardLayout

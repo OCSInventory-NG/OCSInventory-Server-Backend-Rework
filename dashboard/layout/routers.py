@@ -1,7 +1,7 @@
-from dashboard.views import DashboardViewSet
+from dashboard.layout.views import DashboardLayoutViewSet
 
 
-class DashboardRouter:
+class DashboardLayoutRouter:
     """
     Router class is intended to define the route related to an app
     defineRoutes method need to be defined and called in main urls.py
@@ -14,5 +14,5 @@ class DashboardRouter:
         and return the new routes.
         """
 
-        defaultRouter.register(r"dashboard", DashboardViewSet)
+        defaultRouter.register(r"dashboard/layout", DashboardLayoutViewSet)
         return defaultRouter
