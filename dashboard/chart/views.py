@@ -1,7 +1,5 @@
 from datetime import datetime, timedelta
 from asset.inventory_base.models import InventoryBase
-from dashboard.chart.models import DashboardChart
-from dashboard.chart.serializers import DashboardChartSerializer
 from ipdiscover.netdevice.models import Netdevice
 from ipdiscover.network.models import Network
 from ocsinventory_backend.ocs_framework import viewsets
@@ -16,13 +14,25 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
     This class allows the frontend to request data for the dashboard charts
     """
 
-    filter_backends = []
     permission_classes = [DefaultModelPermissions]
+    allowed_methods = ['get']
     queryset = InventoryBase.objects.all()
-    serializer_class = DashboardChartSerializer
-    model = DashboardChart
+    serializer_class = None
 
-    # TODO : pre define response formats for each type of chart ?
+    def list(self, request):
+        """
+        Return the list of available charts.
+        """
+        data = [
+            {"name": "total", "description": "Total devices per OS family"},
+            {"name": "contacted", "description": "Contacted devices today per OS family"},
+            {"name": "oscount", "description": "Unique OS names and their count"},
+            {"name": "lastcontacted", "description": "Devices per last contacted date (7 days)"},
+            {"name": "netdevices", "description": "Devices per network"},
+            {"name": "networks", "description": "Unique network names and their count"},
+        ]
+
+        return Response(data, status=status.HTTP_200_OK)
 
     @action(detail=False, methods=['get'], url_path='total')
     def get_total(self, request):
@@ -32,7 +42,7 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
         # could remove the template is null if we want to count
         # all the InventoryBase objects whether they are linked
         # to a template or not
-        data = InventoryBase.objects.filter(template__isnull=False)
+        data = self.queryset.filter(template__isnull=False)
         total = data.count()
 
         windows, linux, macos, snmp = self.os_repartition(data)
@@ -53,7 +63,7 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
         """
         # timeframe for contacted is today
         since = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-        contacted = InventoryBase.objects.filter(last_update__gte=since)
+        contacted = self.queryset.filter(last_update__gte=since)
         total = contacted.count()
 
         # process is basically the same as get_total method
@@ -72,14 +82,11 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
         """
         Return unique OS names and their associated count
         """
-        data = InventoryBase.objects.all()
+        data = self.queryset
 
         os_counters = {}
         for device in data:
-            if device.osname in os_counters:
-                os_counters[device.osname] += 1
-            else:
-                os_counters[device.osname] = 1
+            os_counters[device.osname] = os_counters.get(device.osname, 0) + 1
 
         os_data = {
             "options": {
@@ -96,14 +103,12 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
         """
         # timeframe for contacted is seven days from the current date
         since = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=7)
-        contacted = InventoryBase.objects.filter(last_update__gte=since)
+        contacted = self.queryset.filter(last_update__gte=since)
 
         last_contacted_counters = {}
         for device in contacted:
-            if device.last_update in last_contacted_counters:
-                last_contacted_counters[device.last_update.strftime('%Y-%m-%d')] += 1
-            else:
-                last_contacted_counters[device.last_update.strftime('%Y-%m-%d')] = 1
+            date_str = device.last_update.strftime('%Y-%m-%d')
+            last_contacted_counters[date_str] = last_contacted_counters.get(date_str, 0) + 1
 
         last_contacted_data = {
             "options": {
@@ -133,10 +138,7 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
 
         netdevices_counters = {}
         for device in data:
-            if device.network.name in netdevices_counters:
-                netdevices_counters[device.network.name] += 1
-            else:
-                netdevices_counters[device.network.name] = 1
+            netdevices_counters[device.network.name] = netdevices_counters.get(device.network.name, 0) + 1
 
         network_data = {
             "options": {
@@ -156,7 +158,7 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
             ]
         }
         return Response(network_data, status=status.HTTP_200_OK)
-    
+
     @action(detail=False, methods=['get'], url_path='networks')
     def get_networks(self, request):
         """
@@ -167,10 +169,7 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
 
         network_counters = {}
         for network in networks:
-            if network.name in network_counters:
-                network_counters[network.name] += 1
-            else:
-                network_counters[network.name] = 1
+            network_counters[network.name] = network_counters.get(network.name, 0) + 1
 
         network_data = {
             "total": networks.count(),

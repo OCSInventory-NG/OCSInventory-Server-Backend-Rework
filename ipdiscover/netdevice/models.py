@@ -30,7 +30,6 @@ class Netdevice(models.Model):
 
 @receiver(post_save, sender=Netdevice)
 def netdevice_received_handler(sender, instance, created, **kwargs):
-    print("netdevice_received_handler")
     if not getattr(instance, "processed", False):
         logic = Logic("netdevice_received", instance)
         instance = logic.process_rules()
