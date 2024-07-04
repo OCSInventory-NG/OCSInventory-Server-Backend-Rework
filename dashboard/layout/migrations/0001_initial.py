@@ -6,11 +6,12 @@ import django.db.models.deletion
 
 
 def create_default_layout(apps, schema_editor):
-    DashboardLayout = apps.get_model('dashboard.layout', 'DashboardLayout')
+    DashboardLayout = apps.get_model('layout', 'DashboardLayout')
     default_layout = DashboardLayout(
         visibility='public',
         allow_group_modification=False,
         name='Default Layout',
+        user_id=1,
         layout=[
             {
                 "x": 0,
@@ -68,6 +69,11 @@ def create_default_layout(apps, schema_editor):
 class Migration(migrations.Migration):
 
     initial = True
+
+    # this migration will fail if the default user is not created yet
+    dependencies = [
+        ('user', '0001_initial'),
+    ]
 
     operations = [
         migrations.CreateModel(
