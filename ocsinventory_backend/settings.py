@@ -140,6 +140,11 @@ LOGGING = {
             "handlers": ["console"],
             "level": "INFO",
         },
+        # common logger for all viewsets
+        "OCSViewSet": {
+            "handlers": ["file"],
+            "level": "INFO",
+        },
     },
 }
 

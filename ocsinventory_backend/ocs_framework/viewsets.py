@@ -1,3 +1,4 @@
+import logging
 from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets
@@ -20,6 +21,8 @@ class OCSViewSet(viewsets.ModelViewSet):
 
     # This is the default reconciliation id for objets, can overrided
     reconciliation_field = "id"
+
+    logger = logging.getLogger("OCSViewSet")
 
     def create(self, request, *args, **kwargs):
         """
