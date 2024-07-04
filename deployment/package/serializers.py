@@ -1,7 +1,7 @@
-from rest_framework import serializers
-from deployment.package.models import Package
 from deployment.action.serializers import ActionSerializer
+from deployment.package.models import Package
 from deployment.result.serializers import ResultSerializer
+from rest_framework import serializers
 
 
 class PackageSerializer(serializers.ModelSerializer):
@@ -19,8 +19,15 @@ class PackageSerializer(serializers.ModelSerializer):
         """Define the linked model and the fields registered in the API"""
 
         model = Package
-        fields = ["id", "name", "description", "date_created",
-                  "target_os", "actions_list", "result"]
+        fields = [
+            "id",
+            "name",
+            "description",
+            "date_created",
+            "target_os",
+            "actions_list",
+            "result",
+        ]
 
     def create(self, validated_data):
         """Override create to allow nested creation of fields"""
