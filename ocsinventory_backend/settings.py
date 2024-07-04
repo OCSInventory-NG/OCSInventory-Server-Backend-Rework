@@ -144,6 +144,9 @@ LOGGING = {
 
 WSGI_APPLICATION = "ocsinventory_backend.wsgi.application"
 
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
 # Rest Framework
 REST_FRAMEWORK = {
     # Add default auth using Token Auth
