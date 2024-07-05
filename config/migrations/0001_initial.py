@@ -37,7 +37,7 @@ def create_base_config(apps, schema_editor):
                 {
                     "name": "debug",
                     "description": "Enable debug mode",
-                    "value": 0,
+                    "value": False,
                     "type": "switch",
                     "unit": "",
                 },
@@ -59,13 +59,13 @@ def create_base_config(apps, schema_editor):
             ],
         },
         {
-            "name": "networkscan",
+            "name": "ipdiscover",
             "value": [
                 [
                     {
                         "name": "ipdiscover",
                         "description": "Enable ipdiscover",
-                        "value": 0,
+                        "value": False,
                         "type": "switch",
                         "unit": "",
                     },
@@ -85,22 +85,18 @@ def create_base_config(apps, schema_editor):
                         "unit": "kb/s",
                     },
                 ],
-                [
-                    {
-                        "name": "snmp",
-                        "description": "Enable snmp",
-                        "value": 0,
-                        "type": "switch",
-                        "unit": "",
-                    },
-                    {
-                        "name": "snmp_configs",
-                        "description": "List of snmp configs",
-                        "value": "",
-                        "type": "text input",
-                        "unit": "",
-                    },
-                ],
+            ],
+        },
+        {
+            "name": "snmp",
+            "value": [
+                {
+                    "name": "snmp",
+                    "description": "Enable snmp",
+                    "value": False,
+                    "type": "switch",
+                    "unit": "",
+                }
             ],
         },
         {
@@ -110,7 +106,7 @@ def create_base_config(apps, schema_editor):
                     {
                         "name": "macaddresses",
                         "description": "Enable macaddresses blacklist",
-                        "value": 0,
+                        "value": False,
                         "type": "switch",
                         "unit": "",
                     },
@@ -126,7 +122,7 @@ def create_base_config(apps, schema_editor):
                     {
                         "name": "ipaddresses",
                         "description": "Enable ipaddresses blacklist",
-                        "value": 0,
+                        "value": False,
                         "type": "switch",
                         "unit": "",
                     },
@@ -142,7 +138,7 @@ def create_base_config(apps, schema_editor):
                     {
                         "name": "serialnumbers",
                         "description": "Enabble serialnumbers blacklist",
-                        "value": 0,
+                        "value": False,
                         "type": "switch",
                         "unit": "",
                     },
