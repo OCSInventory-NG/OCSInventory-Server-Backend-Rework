@@ -20,6 +20,8 @@ class Section(models.Model):
         ("BASH", "Bash command"),
         ("PW", "Powershell command"),
         ("CMD", "Cmd command"),
+        ("SNMP_WALK", "Walk the SNMP tree starting from a specific OID"),
+        ("SNMP_GET", "Get a specific OID"),
     )
 
     RETRIVAL_OUTPUT = (
@@ -32,7 +34,7 @@ class Section(models.Model):
 
     name = models.CharField(max_length=50)
     retrival_method = models.CharField(
-        max_length=4, choices=RETRIVAL_CHOICES, default="FILE"
+        max_length=10, choices=RETRIVAL_CHOICES, default="FILE"
     )
     retrival_output = models.CharField(
         max_length=4, choices=RETRIVAL_OUTPUT, default="JSON"

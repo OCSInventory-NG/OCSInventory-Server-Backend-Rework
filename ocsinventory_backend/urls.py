@@ -53,6 +53,8 @@ from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.routers import DefaultRouter
 from search.routers import SearchRouter
 from search.views import SearchView
+from snmp.scanner.routers import SnmpScannerRouter
+from snmp.snmp_config.routers import SnmpConfigRouter
 from user.routers import UserRouter
 
 # Routers provide a way of automatically determining the URL conf.
@@ -114,6 +116,14 @@ netrouter = netrouter.defineRoutes(defaultRouter)
 # Add Netdevicce declaration
 netrouter = NetgroupRouter()
 netrouter = netrouter.defineRoutes(defaultRouter)
+
+# Add SnmpScanner declaration
+snmpScannerRouter = SnmpScannerRouter()
+snmpScannerRouter = snmpScannerRouter.defineRoutes(defaultRouter)
+
+# Add SnmpConfig declaration
+snmpConfigRouter = SnmpConfigRouter()
+snmpConfigRouter = snmpConfigRouter.defineRoutes(defaultRouter)
 
 # Add logRouter declaration
 logRouter = LogRouter()

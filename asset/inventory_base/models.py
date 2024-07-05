@@ -27,11 +27,11 @@ class InventoryBase(models.Model):
     description = models.CharField(max_length=255)
     serial = models.CharField(max_length=255)
     osname = models.CharField(max_length=255, null=False)
-    osversion = models.CharField(max_length=255, null=False)
+    osversion = models.CharField(max_length=255, blank=True)
     uuid = models.CharField(max_length=255, null=False, unique=True)
     srcip = models.CharField(max_length=255)
-    srcmac = models.CharField(max_length=255)
-    domain = models.CharField(max_length=255)
+    srcmac = models.CharField(max_length=255, blank=True)
+    domain = models.CharField(max_length=255, blank=True)
     template = models.ForeignKey(
         Template, on_delete=models.CASCADE, blank=True, null=True
     )

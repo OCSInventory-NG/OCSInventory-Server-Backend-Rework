@@ -53,6 +53,8 @@ INSTALLED_APPS = [
     "ipdiscover.netdevice.apps.NetdeviceConfig",
     "ipdiscover.network.apps.NetworkConfig",
     "ipdiscover.netgroup.apps.NetgroupConfig",
+    "snmp.scanner.apps.SnmpScannerConfig",
+    "snmp.snmp_config.apps.SnmpConfigConfig",
     "accountinfo.apps.AccountinfoConfig",
     "asset.log.apps.LogConfig",
     "automation.scheduler.apps.SchedulerConfig",
