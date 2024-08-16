@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,10 +23,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "p#_sy0hz&z!n_1-fzz$xbg2_jhw8!vqhn0txu-5w*x%6d-3z-="
+SECRET_KEY = os.getenv('SECRET_KEY')
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.getenv('DEBUG')
 
 ALLOWED_HOSTS = ["*"]
 
@@ -144,9 +148,6 @@ LOGGING = {
 
 WSGI_APPLICATION = "ocsinventory_backend.wsgi.application"
 
-STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
-
 # Rest Framework
 REST_FRAMEWORK = {
     # Add default auth using Token Auth
@@ -179,12 +180,15 @@ CORS_ALLOW_ALL_ORIGINS = True
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('POSTGRES_DB_NAME'),
+        'USER': os.getenv('POSTGRES_DB_USER'),
+        'PASSWORD': os.getenv('POSTGRES_DB_PASSWORD'),
+        'HOST': os.getenv('POSTGRES_DB_HOST'),
+        'PORT': os.getenv('POSTGRES_DB_PORT'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -234,6 +238,7 @@ CSRF_COOKIE_SECURE = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 # Media files
 

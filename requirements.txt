@@ -15,3 +15,6 @@ psycopg2-binary>=2.9.9
 
 # Handling XML
 xmltodict>=0.13.0
+
+# environment variables
+python-dotenv>=1.0.1
