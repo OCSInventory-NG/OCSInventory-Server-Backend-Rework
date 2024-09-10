@@ -26,65 +26,151 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
         Return the list of available charts.
         """
         data = [
-            {"name": "total", "description": "Total devices per OS family"},
-            {"name": "contacted", "description": "Contacted devices today per OS family"},
-            {"name": "oscount", "description": "Unique OS names and their count"},
-            {"name": "lastcontacted", "description": "Devices per last contacted date (7 days)"},
-            {"name": "netdevices", "description": "Devices per network"},
-            {"name": "networks", "description": "Unique network names and their count"},
+            {"category": "asset", "name": "total_ALL", "description": "Total devices count", "charttype": "Counter"},
+            {"category": "asset", "name": "total_WIN", "description": "Total Windows devices count", "charttype": "Counter"},
+            {"category": "asset", "name": "total_LIN", "description": "Total Linux devices count", "charttype": "Counter"},
+            {"category": "asset", "name": "total_MAC", "description": "Total MacOS devices count", "charttype": "Counter"},
+            {"category": "asset", "name": "total_LEG", "description": "Total Legacy devices count", "charttype": "Counter"},
+            {"category": "asset", "name": "total_SNMP", "description": "Total SNMP devices count", "charttype": "Counter"},
+            {"category": "asset", "name": "oscount", "description": "Unique OS names and their count", "charttype": "DonutChart"},
+            {"category": "asset", "name": "lastcontacted", "description": "Devices per last contacted date (7 days)", "charttype": "LineChart"},
+            {"category": "network", "name": "nb_netdevices", "description": "Total netdevices count", "charttype": "Counter"},
+            {"category": "network", "name": "nb_networks", "description": "Total networks count", "charttype": "Counter"},
+            {"category": "network", "name": "networks", "description": "Unique network names and their devices count", "charttype": "BarChart"},
         ]
 
         return Response(data, status=status.HTTP_200_OK)
 
-    @action(detail=False, methods=['get'], url_path='total')
-    def get_total(self, request):
-        """
-        Return the total count of devices per OS family
-        """
+    @action(detail=False, methods=['get'], url_path='total_ALL')
+    def return_total_all(self, request):
         try:
-            # could remove the template is null if we want to count
-            # all the InventoryBase objects whether they are linked
-            # to a template or not
-            data = self.queryset.filter(template__isnull=False)
-            total = data.count()
-
-            windows, linux, macos, snmp = self.os_repartition(data)
-            total_data = {
-                "total": total,
-                "windows": windows,
-                "linux": linux,
-                "macos": macos,
-                "snmp": snmp
-            }
-
+            total_data = self.get_total("ALL")
             return Response(total_data, status=status.HTTP_200_OK)
         except Exception as e:
             msg = f"Error in total count: {e}"
             self.logger.error(msg)
             return Response({"error": msg}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    @action(detail=False, methods=['get'], url_path='contacted')
-    def get_contacted(self, request):
-        """
-        Return the count of contacted devices today
-        """
+    @action(detail=False, methods=['get'], url_path='total_WIN')
+    def return_total_win(self, request):
         try:
+            total_data = self.get_total("WIN")
+            return Response(total_data, status=status.HTTP_200_OK)
+        except Exception as e:
+            msg = f"Error in total count: {e}"
+            self.logger.error(msg)
+            return Response({"error": msg}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=False, methods=['get'], url_path='total_LIN')
+    def return_total_lin(self, request):
+        try:
+            total_data = self.get_total("LIN")
+            return Response(total_data, status=status.HTTP_200_OK)
+        except Exception as e:
+            msg = f"Error in total count: {e}"
+            self.logger.error(msg)
+            return Response({"error": msg}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=False, methods=['get'], url_path='total_MAC')
+    def return_total_mac(self, request):
+        try:
+            total_data = self.get_total("MAC")
+            return Response(total_data, status=status.HTTP_200_OK)
+        except Exception as e:
+            msg = f"Error in total count: {e}"
+            self.logger.error(msg)
+            return Response({"error": msg}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=False, methods=['get'], url_path='total_LEG')
+    def return_total_leg(self, request):
+        try:
+            total_data = self.get_total("LEG")
+            return Response(total_data, status=status.HTTP_200_OK)
+        except Exception as e:
+            msg = f"Error in total count: {e}"
+            self.logger.error(msg)
+            return Response({"error": msg}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=False, methods=['get'], url_path='total_SNMP')
+    def return_total_snmp(self, request):
+        try:
+            total_data = self.get_total("SNMP")
+            return Response(total_data, status=status.HTTP_200_OK)
+        except Exception as e:
+            msg = f"Error in total count: {e}"
+            self.logger.error(msg)
+            return Response({"error": msg}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+    @action(detail=False, methods=['get'], url_path='nb_netdevices')
+    def return_nb_netdevices(self, request):
+        try:
+            netdevices = Netdevice.objects.all()
+            netdevices_data = {
+                "total": netdevices.count()
+            }
+            return Response(netdevices_data, status=status.HTTP_200_OK)
+        except Exception as e:
+            msg = f"Error in total count: {e}"
+            self.logger.error(msg)
+            return Response({"error": msg}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    @action(detail=False, methods=['get'], url_path='nb_networks')
+    def return_nb_networks(self, request):
+        try:
+            networks = Network.objects.all()
+            network_data = {
+                "total": networks.count()
+            }
+            return Response(network_data, status=status.HTTP_200_OK)
+        except Exception as e:
+            msg = f"Error in total count: {e}"
+            self.logger.error(msg)
+            return Response({"error": msg}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def get_total(self, os_template):
+        """
+        Return the total count of devices per OS family
+        """
+
+        try:
+            # could remove the template is null if we want to count
+            # all the InventoryBase objects whether they are linked
+            # to a template or not
+            data = self.queryset.filter()
+            count = 0
+
             # timeframe for contacted is today
             since = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-            contacted = self.queryset.filter(last_update__gte=since)
-            total = contacted.count()
-            # process is basically the same as get_total method
-            windows, linux, macos, snmp = self.os_repartition(contacted)
-            contacted_data = {
-                "total": total,
-                "windows": windows,
-                "linux": linux,
-                "macos": macos,
-                "snmp": snmp,
+            contacted_data = self.queryset.filter(last_update__gte=since)
+            contacted = 0
+
+            if "ALL" == os_template:
+                count = data.count()
+                contacted = contacted_data.filter().count()
+            if "WIN" == os_template:
+                count = data.filter(template__os='WIN').count()
+                contacted = contacted_data.filter(template__os='WIN').count()
+            if "LIN" == os_template:
+                count = data.filter(template__os='LIN').count()
+                contacted = contacted_data.filter(template__os='LIN').count()
+            if "MAC" == os_template:
+                count = data.filter(template__os='MAC').count()
+                contacted = contacted_data.filter(template__os='MAC').count()
+            if "LEG" == os_template:
+                count = data.filter(template__os='LEG').count()
+                contacted = contacted_data.filter(template__os='LEG').count()
+            if "SNMP" == os_template:
+                count = data.filter(osname='SNMP').count()
+                contacted = contacted_data.filter(osname='SNMP').count()
+            
+            total_data = {
+                "total": count,
+                "contacted": contacted
             }
-            return Response(contacted_data, status=status.HTTP_200_OK)
+
+            return total_data
         except Exception as e:
-            msg = f"Error in contacted count: {e}"
+            msg = f"Error in total count: {e}"
             self.logger.error(msg)
             return Response({"error": msg}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -138,7 +224,7 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
                 },
                 "series": [
                     {
-                        "name": "Assets number",
+                        "name": "Assets",
                         "data": list(last_contacted_counters.values())
                     }
                 ]
@@ -148,7 +234,7 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
             msg = f"Error in last contacted : {e}"
             return Response({"error": msg}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    @action(detail=False, methods=['get'], url_path='netdevices')
+    @action(detail=False, methods=['get'], url_path='networks')
     def get_devices_per_network(self, request):
         """
         Return the count of devices per network
@@ -167,12 +253,13 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
                     },
                     "xaxis": {
                         "categories": list(netdevices_counters.keys()),
-                        "convertedCatToNumeric": False
+                        "convertedCatToNumeric": False,
+                        "position": 'top'
                     },
                 },
                 "series": [
                     {
-                        "name": "Devices number",
+                        "name": "Devices",
                         "data": list(netdevices_counters.values())
                     }
                 ]
@@ -180,32 +267,6 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
             return Response(network_data, status=status.HTTP_200_OK)
         except Exception as e:
             msg = f"Error in netdevices : {e}"
-            return Response({"error": msg}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-    @action(detail=False, methods=['get'], url_path='networks')
-    def get_networks(self, request):
-        """
-        Return unique network names and their associated count
-        """
-        try:
-            networks = Network.objects.all()
-            netdevices = Netdevice.objects.all()
-
-            network_counters = {}
-            for network in networks:
-                network_counters[network.name] = network_counters.get(network.name, 0) + 1
-
-            network_data = {
-                "total": networks.count(),
-                "names": list(network_counters.keys()),
-                "devices": {
-                    "total": netdevices.count(),
-                }
-            }
-
-            return Response(network_data, status=status.HTTP_200_OK)
-        except Exception as e:
-            msg = f"Error in networks : {e}"
             return Response({"error": msg}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def os_repartition(self, data):
