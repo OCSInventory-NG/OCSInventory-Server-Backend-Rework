@@ -14,6 +14,7 @@ class DashboardLayoutSerializer(serializers.ModelSerializer):
 
         model = DashboardLayout
         fields = [
+            "id",
             "visibility",
             "user",
             "groups",
