@@ -21,7 +21,9 @@ class Action(models.Model):
         ("set", "Set"),
     ]
 
-    rule = models.ForeignKey(Rule, related_name="actions", on_delete=models.CASCADE, null=True)
+    rule = models.ForeignKey(
+        Rule, related_name="actions", on_delete=models.CASCADE, null=True
+    )
     action = models.CharField(max_length=50, choices=ACTION_CHOICES)
     description = models.CharField(max_length=255, null=True, blank=True)
     # Define a GenericForeignKey to handle actions on different models
