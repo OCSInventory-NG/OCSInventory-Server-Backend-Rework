@@ -70,6 +70,8 @@ INSTALLED_APPS = [
     "auth.auth_method.apps.AuthMethodConfig",
     "auth.auth_config.apps.AuthConfigConfig",
     "auth.auth_mapping.apps.AuthMappingConfig",
+    "dashboard.layout.apps.DashboardLayoutConfig",
+    "dashboard.chart.apps.DashboardChartConfig",
     "search.apps.SearchConfig",
     "django_cas_ng",
 ]
@@ -138,6 +140,11 @@ LOGGING = {
         # ipdiscover command logger
         "ipdiscover": {
             "handlers": ["console"],
+            "level": "INFO",
+        },
+        # common logger for all viewsets
+        "OCSViewSet": {
+            "handlers": ["file"],
             "level": "INFO",
         },
     },
