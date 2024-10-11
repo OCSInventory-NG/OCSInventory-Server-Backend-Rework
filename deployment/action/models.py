@@ -28,7 +28,10 @@ class DeploymentAction(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     action_type = models.CharField(max_length=128)
     command = models.CharField(max_length=200)
-    file = models.OneToOneField(FileManager, on_delete=models.CASCADE, related_name="deployment_action", null=True, blank=True)
+    file = models.ForeignKey(
+        'filemanager.FileManager', on_delete=models.CASCADE,
+        related_name="deployment_actions", null=True, blank=True
+    )
     original_file_name = models.CharField(max_length=128, null=True)
 
 

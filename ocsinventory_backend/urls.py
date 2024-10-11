@@ -58,6 +58,7 @@ from search.views import SearchView
 from snmp.scanner.routers import SnmpScannerRouter
 from snmp.snmp_config.routers import SnmpConfigRouter
 from user.routers import UserRouter
+from filemanager.routers import FileManagerRouter
 
 # Routers provide a way of automatically determining the URL conf.
 defaultRouter = DefaultRouter()
@@ -186,6 +187,10 @@ dashboardRouter = dashboardRouter.defineRoutes(defaultRouter)
 # Add Dashboard chart declaration
 dashboardChartRouter = DashboardChartRouter()
 dashboardChartRouter = dashboardChartRouter.defineRoutes(defaultRouter)
+
+# Add FileManager declaration
+fileManagerRouter = FileManagerRouter()
+fileManagerRouter = fileManagerRouter.defineRoutes(defaultRouter)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.

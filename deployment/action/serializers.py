@@ -1,9 +1,10 @@
 from deployment.action.models import DeploymentAction
 from django.db.models import F
 from rest_framework import serializers
+from filemanager.serializers import FileUploadMixin
 
 
-class ActionSerializer(serializers.ModelSerializer):
+class ActionSerializer(FileUploadMixin, serializers.ModelSerializer):
     """
     This serializer class provides the API representation
 
@@ -72,6 +73,7 @@ class ActionSerializer(serializers.ModelSerializer):
         """
         Overriding the create method to manage action priority.
         """
+        validated_data = self.handle_file_upload(validated_data)
         validated_data["priority"] = (
             DeploymentAction.objects.filter(package=validated_data["package"]).count()
             + 1
@@ -82,5 +84,5 @@ class ActionSerializer(serializers.ModelSerializer):
         """
         Overriding the update method to manage action priority.
         """
-        validated_data = self.custom_validate(validated_data)
+        validated_data = self.handle_file_upload(validated_data)
         return super().update(instance, validated_data)
