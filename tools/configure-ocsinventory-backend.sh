@@ -8,6 +8,11 @@ echo "=                                               ="
 echo "================================================="
 echo ""
 
+if [[ ! -w "/usr/share/ocsinventory-backend/.env" ]]; then
+    echo "Your user doesn't have sufficient rights to allow the configuration of OCS Inventory Backend."
+    exit 1
+fi
+
 echo "Select the database engine:"
 echo ""
 echo "[1] PostgreSQL"
@@ -21,7 +26,7 @@ case $db_engine in
         echo "Database engine configured for PostgreSQL"
         echo "Try to install PostgreSQL python library"
         source /usr/lib/ocsinventory-backend/venv/bin/activate
-        pip3 install psycopg2-binary>=2.9.9
+        pip3 install -r /usr/share/ocsinventory-backend/requirements_psql.txt
         deactivate
         ;;
     2)
@@ -29,7 +34,7 @@ case $db_engine in
         echo "Database engine configured for MySQL or MariaDB"
         echo "Try to install MySQL/Mariadb python library"
         source /usr/lib/ocsinventory-backend/venv/bin/activate
-        pip3 install mysqlclient>=1.4.3
+        pip3 install -r /usr/share/ocsinventory-backend/requirements_mysql.txt
         deactivate
         ;;
     *)
