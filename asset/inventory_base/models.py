@@ -29,7 +29,7 @@ class InventoryBase(models.Model):
     osname = models.CharField(max_length=255, null=False)
     osversion = models.CharField(max_length=255, blank=True)
     uuid = models.CharField(max_length=255, null=False, unique=True)
-    srcip = models.CharField(max_length=255)
+    srcip = models.CharField(max_length=255, blank=True)
     srcmac = models.CharField(max_length=255, blank=True)
     domain = models.CharField(max_length=255, blank=True)
     template = models.ForeignKey(
