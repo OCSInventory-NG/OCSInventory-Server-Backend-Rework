@@ -6,8 +6,6 @@ from io import BytesIO
 
 from deployment.action.models import DeploymentAction
 from deployment.action.serializers import ActionSerializer
-from deployment.package.models import Package
-from deployment.package.serializers import PackageSerializer
 from django.core.files.base import ContentFile
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
@@ -41,71 +39,6 @@ class ActionViewSet(viewsets.OCSViewSet):
         "command",
     ]
 
-    def compress(self, file, ostype):
-        """
-        Compresses the provided file based on the specified operating system type.
-
-        Args:
-            file (django.core.files.uploadedfile.UploadedFile): The file to be
-            compressed.
-            ostype (str): The operating system type. Should be "LIN", "MAC",
-            or "WIN".
-
-        Returns:
-            django.core.files.base.ContentFile: The compressed file.
-
-        Raises:
-            ValueError: If the ostype is not "LIN", "MAC", or "WIN".
-
-        Example:
-            compressed_file = self.compress(file, "LIN")
-        """
-        # Create a buffer to hold the compressed file
-        buffer = BytesIO()
-
-        if ostype == "LIN" or ostype == "MAC":
-            # Create a new tar file in the buffer
-            with tarfile.open(fileobj=buffer, mode="w:gz") as tar_file:
-                # Read the content of the file field
-                file_content = file.read()
-
-                # Create a tarinfo object
-                tarinfo = tarfile.TarInfo(name=file.name)
-                tarinfo.size = len(file_content)
-
-                # Add the file to the tar file
-                tar_file.addfile(tarinfo, BytesIO(file_content))
-
-            # Get the value of the buffer
-            compressed_buffer_value = buffer.getvalue()
-
-            # Create a ContentFile from the buffer value
-            compressed_file = ContentFile(
-                compressed_buffer_value, name=f"{os.path.splitext(file.name)[0]}.tar.gz"
-            )
-
-        elif ostype == "WIN":
-            # Create a new zip file in the buffer
-            with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
-                # Read the content of the file field
-                file_content = file.read()
-
-                # Add the file to the zip file with the original file name
-                zip_file.writestr(file.name, file_content)
-
-            # Get the value of the buffer
-            compressed_buffer_value = buffer.getvalue()
-
-            # Create a ContentFile from the buffer value
-            compressed_file = ContentFile(
-                compressed_buffer_value, name=f"{os.path.splitext(file.name)[0]}.zip"
-            )
-
-        else:
-            raise ValueError("Invalid ostype. Expected 'linux' or 'windows'.")
-
-        return compressed_file
-
     def create(self, request, *args, **kwargs):
         """
         Creates a new DeploymentAction instance.
@@ -134,15 +67,6 @@ class ActionViewSet(viewsets.OCSViewSet):
         self.LOGGER.info("Creating action for package %s", data["package"])
 
         try:
-            # Retrieve the package instance using the provided package ID
-            package = Package.objects.get(id=data["package"])
-            # Serialize the package instance to get its data as a dictionary
-            packageData = PackageSerializer(package).data
-            # Compress the uploaded file based on the target OS specified in the package
-            # data
-            if "file" in data.keys():
-                data["file"] = self.compress(data["file"], packageData["target_os"])
-
             # Create a serializer instance with the modified data
             actionSerializer = ActionSerializer(data=data)
             # Validate the data; if invalid, raise an exception

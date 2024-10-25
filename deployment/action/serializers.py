@@ -2,6 +2,11 @@ from deployment.action.models import DeploymentAction
 from django.db.models import F
 from rest_framework import serializers
 from filemanager.serializers import FileUploadMixin
+from django.core.files.base import ContentFile
+import tarfile
+import zipfile
+from io import BytesIO
+import os
 
 
 class ActionSerializer(FileUploadMixin, serializers.ModelSerializer):
@@ -73,7 +78,6 @@ class ActionSerializer(FileUploadMixin, serializers.ModelSerializer):
         """
         Overriding the create method to manage action priority.
         """
-        validated_data = self.handle_file_upload(validated_data)
         validated_data["priority"] = (
             DeploymentAction.objects.filter(package=validated_data["package"]).count()
             + 1
@@ -84,5 +88,71 @@ class ActionSerializer(FileUploadMixin, serializers.ModelSerializer):
         """
         Overriding the update method to manage action priority.
         """
-        validated_data = self.handle_file_upload(validated_data)
+        validated_data = self.custom_validate(validated_data)
         return super().update(instance, validated_data)
+
+    def compress(self, file):
+        """
+        Overriding FileUploadMixin compress method
+        Compresses the provided file based on the specified operating system type.
+
+        Args:
+            file (django.core.files.uploadedfile.UploadedFile): The file to be
+            compressed.
+
+        Returns:
+            django.core.files.base.ContentFile: The compressed file.
+
+        Raises:
+            ValueError: If the ostype is not "LIN", "MAC", or "WIN".
+
+        Example:
+            compressed_file = self.compress(file)
+        """
+        buffer = BytesIO()
+
+        # getting os type from the package
+        ostype = self.validated_data.get("package").target_os
+
+        if ostype == "LIN" or ostype == "MAC":
+            # Create a new tar file in the buffer
+            with tarfile.open(fileobj=buffer, mode="w:gz") as tar_file:
+                # Read the content of the file field
+                file_content = file.read()
+
+                # Create a tarinfo object
+                tarinfo = tarfile.TarInfo(name=file.name)
+                tarinfo.size = len(file_content)
+
+                # Add the file to the tar file
+                tar_file.addfile(tarinfo, BytesIO(file_content))
+
+            # Get the value of the buffer
+            compressed_buffer_value = buffer.getvalue()
+
+            # Create a ContentFile from the buffer value
+            compressed_file = ContentFile(
+                compressed_buffer_value, name=f"{os.path.splitext(file.name)[0]}.tar.gz"
+            )
+
+        elif ostype == "WIN":
+            # Create a new zip file in the buffer
+            with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+                # Read the content of the file field
+                file_content = file.read()
+
+                # Add the file to the zip file with the original file name
+                zip_file.writestr(file.name, file_content)
+
+            # Get the value of the buffer
+            compressed_buffer_value = buffer.getvalue()
+
+            # Create a ContentFile from the buffer value
+            compressed_file = ContentFile(
+                compressed_buffer_value, name=f"{os.path.splitext(file.name)[0]}.zip"
+            )
+
+        else:
+            raise ValueError("Invalid ostype. Expected 'LIN', 'MAC', or 'WIN'.")
+
+        return compressed_file
