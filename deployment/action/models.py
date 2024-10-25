@@ -29,7 +29,7 @@ class DeploymentAction(models.Model):
     action_type = models.CharField(max_length=128)
     command = models.CharField(max_length=200)
     file = models.ForeignKey(
-        'filemanager.FileManager', on_delete=models.CASCADE,
+        FileManager, on_delete=models.CASCADE,
         related_name="deployment_actions", null=True, blank=True
     )
     original_file_name = models.CharField(max_length=128, null=True)
@@ -47,3 +47,12 @@ def adjust_priorities_on_delete(sender, instance, **kwargs):
 
     # decrement their priorities
     configs_higher_priority.update(priority=F("priority") - 1)
+
+
+@receiver(post_delete, sender=DeploymentAction)
+def delete_associated_file(sender, instance, **kwargs):
+    """
+    Triggered when a DeploymentAction is deleted.
+    """
+    if instance.file:
+        instance.file.delete()

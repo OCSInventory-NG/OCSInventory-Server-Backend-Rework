@@ -1,5 +1,6 @@
 from django.db import models
-import mimetypes
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 
 
 class FileManager(models.Model):
@@ -15,16 +16,17 @@ class FileManager(models.Model):
     mimetype = models.CharField(max_length=100)
     linked_model = models.CharField(max_length=100, null=True, blank=True)
 
-    def save(self, *args, **kwargs):
+    def create(self, validated_data):
         """
-        Override the save method to calculate filesize and mimetype dynamically.
+        Save the file to the file manager and return the instance.
         """
-        if self.object:
-            self.filesize = self.object.size
-            self.mimetype = mimetypes.guess_type(self.object.name)[0]
+        super().create(validated_data)
 
-        self.name = self.object.name
-        super().save(*args, **kwargs)
 
-    def __str__(self):
-        return f"{self.name} ({self.mimetype}, {self.filesize} bytes)"
+@receiver(post_delete, sender=FileManager)
+def delete_file_on_entry_delete(sender, instance, **kwargs):
+    """
+    Delete file from system when the associated FileManager instance is deleted
+    """
+    if instance.file:
+        instance.file.delete(save=False)
