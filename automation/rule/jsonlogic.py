@@ -67,7 +67,7 @@ def less_or_equal(a, b):
 def regex_match(string, pattern):
     """Checks if the string matches the regex pattern."""
     try:
-        return bool(re.match(pattern, string))
+        return bool(re.search(pattern, string))
     except re.error:
         logger.error("Invalid regex pattern: %s", pattern)
         return False
