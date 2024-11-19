@@ -38,7 +38,7 @@ from functools import reduce
 logger = logging.getLogger(__name__)
 
 
-def soft_equals(a, b, case_sensitive=True):
+def soft_equals(a, b, case_sensitive=False):
     """Implements the '==' operator with case sensitivity."""
     if isinstance(a, str) and isinstance(b, str):
         if not case_sensitive:
@@ -76,7 +76,7 @@ def regex_match(string, pattern):
         return False
 
 
-def contains(a, b, case_sensitive=True):
+def contains(a, b, case_sensitive=False):
     """Checks if the string contains the substring."""
     if not case_sensitive:
         return str(a).lower() in str(b).lower()
@@ -108,7 +108,7 @@ operations = {
     "!!": bool,
     "and": lambda *args: reduce(lambda total, arg: total and arg, args, True),
     "or": lambda *args: reduce(lambda total, arg: total or arg, args, False),
-    "in": lambda a, b, case_sensitive=True: contains(a, b, case_sensitive),
+    "in": lambda a, b, case_sensitive=False: contains(a, b, case_sensitive),
     "regex": regex_match,
 }
 
@@ -128,7 +128,7 @@ def jsonLogic(tests, data=None):
 
     values = [jsonLogic(val, data) for val in values]
 
-    case_sensitive = get_var(tests, "case_sensitive", True)
+    case_sensitive = get_var(tests, "case_sensitive", False)
     if operator == "var":
         return get_var(data, *values)
 
