@@ -13,6 +13,13 @@ if [[ ! -w "/usr/share/ocsinventory-backend/.env" ]]; then
     exit 1
 fi
 
+# remove default Nginx configuration
+if [ -f /etc/nginx/sites-enabled/default ]; then
+    echo "Removing default Nginx configuration..."
+    rm /etc/nginx/sites-enabled/default
+    echo "Default Nginx configuration removed."
+fi
+
 echo "Select the database engine:"
 echo ""
 echo "[1] PostgreSQL"
@@ -69,6 +76,24 @@ if python3 /usr/share/ocsinventory-backend/manage.py migrate > /tmp/ocsinventory
 else
     echo "Error during database migrations, please check /tmp/ocsinventory-backend-configuration.log for more information."
     deactivate
+    exit 1
+fi
+
+# restart uWSGI service
+echo "Restarting uWSGI and Nginx services..."
+systemctl restart uwsgi
+if [ $? -eq 0 ]; then
+    echo "uWSGI service restarted successfully."
+else
+    echo "Error restarting uWSGI service. Please check the service status manually."
+    exit 1
+fi
+
+systemctl restart nginx
+if [ $? -eq 0 ]; then
+    echo "Nginx service restarted successfully."
+else
+    echo "Error restarting Nginx service. Please check the service status manually."
     exit 1
 fi
 
