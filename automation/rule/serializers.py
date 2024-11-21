@@ -58,14 +58,14 @@ class RuleSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         """Override create to allow nested creation of fields"""
         if "actions" in validated_data.keys():
+            # If actions are present
             actions = validated_data.pop("actions")
+            parent = super().create(validated_data)
 
-        parent = super().create(validated_data)
-
-        # create actions
-        if actions:
             for action in actions:
                 action["rule"] = parent
             self.fields["actions"].create(actions)
+        else:
+            parent = super().create(validated_data)
 
         return parent

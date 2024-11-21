@@ -9,16 +9,9 @@ def create_base_config(apps, schema_editor):
             "name": "agent",
             "value": [
                 {
-                    "name": "debug",
-                    "description": "Enable debug mode",
-                    "value": False,
-                    "type": "switch",
-                    "unit": "",
-                },
-                {
                     "name": "frequency",
                     "description": "Frequency of inventory in hours",
-                    "value": 24,
+                    "value": 4,
                     "type": "number input",
                     "unit": "hours",
                 },
@@ -40,13 +33,6 @@ def create_base_config(apps, schema_editor):
                     "value": False,
                     "type": "switch",
                     "unit": "",
-                },
-                {
-                    "name": "frequency",
-                    "description": "Frequency of inventory in hours",
-                    "value": 24,
-                    "type": "number input",
-                    "unit": "hours",
                 },
                 {
                     "name": "duplicate_reconciliation",

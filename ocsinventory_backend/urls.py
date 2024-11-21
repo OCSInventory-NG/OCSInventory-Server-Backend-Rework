@@ -31,6 +31,8 @@ from automation.history.routers import HistoryRouter
 from automation.rule.routers import RuleRouter
 from automation.scheduler.routers import SchedulerRouter
 from config.routers import ConfigRouter
+from dashboard.layout.routers import DashboardLayoutRouter
+from dashboard.chart.routers import DashboardChartRouter
 from deployment.action.routers import ActionRouter
 from deployment.package.routers import PackageRouter
 from deployment.result.routers import ResultRouter
@@ -53,6 +55,8 @@ from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.routers import DefaultRouter
 from search.routers import SearchRouter
 from search.views import SearchView
+from snmp.scanner.routers import SnmpScannerRouter
+from snmp.snmp_config.routers import SnmpConfigRouter
 from user.routers import UserRouter
 
 # Routers provide a way of automatically determining the URL conf.
@@ -115,6 +119,14 @@ netrouter = netrouter.defineRoutes(defaultRouter)
 netrouter = NetgroupRouter()
 netrouter = netrouter.defineRoutes(defaultRouter)
 
+# Add SnmpScanner declaration
+snmpScannerRouter = SnmpScannerRouter()
+snmpScannerRouter = snmpScannerRouter.defineRoutes(defaultRouter)
+
+# Add SnmpConfig declaration
+snmpConfigRouter = SnmpConfigRouter()
+snmpConfigRouter = snmpConfigRouter.defineRoutes(defaultRouter)
+
 # Add logRouter declaration
 logRouter = LogRouter()
 logRouter = logRouter.defineRoutes(defaultRouter)
@@ -166,6 +178,14 @@ searchRouter = searchRouter.defineRoutes(defaultRouter)
 # Add AssetGroup declaration
 assetGroupRouter = AssetGroupRouter()
 assetGroupRouter = assetGroupRouter.defineRoutes(defaultRouter)
+
+# Add Dashboard layout declaration
+dashboardRouter = DashboardLayoutRouter()
+dashboardRouter = dashboardRouter.defineRoutes(defaultRouter)
+
+# Add Dashboard chart declaration
+dashboardChartRouter = DashboardChartRouter()
+dashboardChartRouter = dashboardChartRouter.defineRoutes(defaultRouter)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
