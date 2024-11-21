@@ -13,55 +13,18 @@ def create_default_layout(apps, schema_editor):
         name='Default Layout',
         user_id=1,
         layout=[
-            {
-                "x": 0,
-                "y": 0,
-                "w": 3,
-                "h": 4,
-                "i": "total",
-                "static": False
-            },
-            {
-                "x": 3,
-                "y": 0,
-                "w": 3,
-                "h": 4,
-                "i": "contacted",
-                "static": False
-            },
-            {
-                "x": 6,
-                "y": 0,
-                "w": 3,
-                "h": 4,
-                "i": "lastcontacted",
-                "static": False
-            },
-            {
-                "x": 9,
-                "y": 0,
-                "w": 3,
-                "h": 4,
-                "i": "oscount",
-                "static": False
-            },
-            {
-                "x": 0,
-                "y": 4,
-                "w": 6,
-                "h": 8,
-                "i": "networks",
-                "static": False
-            },
-            {
-                "x": 6,
-                "y": 4,
-                "w": 6,
-                "h": 8,
-                "i": "netdevices",
-                "static": False
-            }
-        ],
+            {"x":0,"y":0,"w":2,"h":4,"i":0,"minw":2,"minh":4,"name":"total_ALL","type":"Counter", "resizable": True},
+            {"x":2,"y":0,"w":2,"h":4,"i":1,"minw":2,"minh":4,"name":"total_WIN","type":"Counter", "resizable": True},
+            {"x":4,"y":0,"w":2,"h":4,"i":2,"minw":2,"minh":4,"name":"total_LIN","type":"Counter", "resizable": True},
+            {"x":6,"y":0,"w":2,"h":4,"i":3,"minw":2,"minh":4,"name":"total_MAC","type":"Counter", "resizable": True},
+            {"x":8,"y":0,"w":2,"h":4,"i":4,"minw":2,"minh":4,"name":"total_LEG","type":"Counter", "resizable": True},
+            {"x":10,"y":0,"w":2,"h":4,"i":5,"minw":2,"minh":4,"name":"total_SNMP","type":"Counter", "resizable": True},
+            {"x":0,"y":4,"w":6,"h":9,"i":6,"minw":6,"minh":9,"name":"oscount","type":"DonutChart", "resizable": False},
+            {"x":6,"y":4,"w":6,"h":9,"i":7,"minw":6,"minh":9,"name":"lastcontacted","type":"LineChart", "resizable": False},
+            {"x":0,"y":13,"w":6,"h":3,"i":8,"minw":2,"minh":3,"name":"nb_networks","type":"Counter", "resizable": True},
+            {"x":6,"y":13,"w":6,"h":3,"i":9,"minw":2,"minh":3,"name":"nb_netdevices","type":"Counter", "resizable": True},
+            {"x":3,"y":16,"w":6,"h":9,"i":10,"minw":6,"minh":9,"name":"networks","type":"BarChart", "resizable": False}
+        ]
     )
     default_layout.save()
 
