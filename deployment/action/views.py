@@ -140,7 +140,8 @@ class ActionViewSet(viewsets.OCSViewSet):
             packageData = PackageSerializer(package).data
             # Compress the uploaded file based on the target OS specified in the package
             # data
-            data["file"] = self.compress(data["file"], packageData["target_os"])
+            if "file" in data:
+                data["file"] = self.compress(data["file"], packageData["target_os"])
 
             # Create a serializer instance with the modified data
             actionSerializer = ActionSerializer(data=data)
