@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from django.core import serializers as ser
 from asset.inventory_base.models import InventoryBase
 from asset.inventory_base.serializers import InventoryBaseSerializer
 from .models import AssetGroup
