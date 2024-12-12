@@ -1,6 +1,7 @@
-from rest_framework import serializers
 from asset.inventory_base.models import InventoryBase
 from asset.inventory_base.serializers import InventoryBaseSerializer
+from rest_framework import serializers
+
 from .models import AssetGroup
 
 
@@ -11,6 +12,7 @@ class AssetGroupSerializer(serializers.ModelSerializer):
     Args:
         serializers ([ModelSerializer])
     """
+
     class Meta:
         """Define the linked model and the fields registered in the API"""
 
@@ -20,7 +22,7 @@ class AssetGroupSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         ret = super().to_representation(instance)
-        ret['asset_bases'] = InventoryBaseSerializer(
+        ret["asset_bases"] = InventoryBaseSerializer(
             InventoryBase.objects.filter(id__in=ret["assets"]), many=True
         ).data
 
