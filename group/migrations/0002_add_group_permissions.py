@@ -3,9 +3,9 @@
 from django.db import migrations
 
 
-def create_default_group_permissions(apps, schema_editor):
+def add_default_group_permissions(apps, schema_editor):
     """
-    Create default group permissions
+    Add default group permissions
     """
     Group = apps.get_model("auth", "Group")
     Permission = apps.get_model("auth", "Permission")
@@ -138,26 +138,152 @@ def create_default_group_permissions(apps, schema_editor):
     ]
 
     permissions = Permission.objects.filter(codename__in=permission_codenames)
+    permissions = [i for i in permissions]
+    Group.objects.get(name="super-admin").permissions.add(*permissions)
 
-    group = Group.objects.get(name="super-admin")
+    permission_codenames = [
+        "add_accountinfoconfig",
+        "change_accountinfoconfig",
+        "view_accountinfoconfig",
+        "add_accountinfodata",
+        "change_accountinfodata",
+        "view_accountinfodata",
+        "add_accountinfovalue",
+        "change_accountinfovalue",
+        "view_accountinfovalue",
+        "add_deploymentaction",
+        "change_deploymentaction",
+        "view_deploymentaction",
+        "add_assetgroup",
+        "change_assetgroup",
+        "view_assetgroup",
+        "add_group",
+        "change_group",
+        "view_group",
+        "add_permission",
+        "change_permission",
+        "view_permission",
+        "add_user",
+        "change_user",
+        "view_user",
+        "add_authconfig",
+        "change_authconfig",
+        "view_authconfig",
+        "add_authmapping",
+        "change_authmapping",
+        "view_authmapping",
+        "add_authmethod",
+        "change_authmethod",
+        "view_authmethod",
+        "add_config",
+        "change_config",
+        "view_config",
+        "add_field",
+        "change_field",
+        "view_field",
+        "add_inventorybase",
+        "change_inventorybase",
+        "view_inventorybase",
+        "add_inventoryfield",
+        "change_inventoryfield",
+        "view_inventoryfield",
+        "add_inventorysection",
+        "change_inventorysection",
+        "view_inventorysection",
+        "add_dashboardlayout",
+        "change_dashboardlayout",
+        "view_dashboardlayout",
+        "add_log",
+        "change_log",
+        "view_log",
+        "add_netdevice",
+        "change_netdevice",
+        "view_netdevice",
+        "add_netgroup",
+        "change_netgroup",
+        "view_netgroup",
+        "add_network",
+        "change_network",
+        "view_network",
+        "add_package",
+        "change_package",
+        "view_package",
+        "add_result",
+        "change_result",
+        "view_result",
+        "add_action",
+        "change_action",
+        "view_action",
+        "add_rule",
+        "change_rule",
+        "view_rule",
+        "add_snmpscanner",
+        "change_snmpscanner",
+        "view_snmpscanner",
+        "add_scheduler",
+        "change_scheduler",
+        "view_scheduler",
+        "add_search",
+        "change_search",
+        "view_search",
+        "add_section",
+        "change_section",
+        "view_section",
+        "add_snmpconfig",
+        "change_snmpconfig",
+        "view_snmpconfig",
+        "add_template",
+        "change_template",
+        "view_template",
+    ]
 
-    for permission in permissions:
-        group.permissions.add(permission)
+    permissions = Permission.objects.filter(codename__in=permission_codenames)
+    permissions = [i for i in permissions]
+    Group.objects.get(name="admin").permissions.add(*permissions)
 
-    group = Group.objects.get(name="admin")
+    permission_codenames = [
+        "view_accountinfoconfig",
+        "view_accountinfodata",
+        "view_accountinfovalue",
+        "view_deploymentaction",
+        "view_assetgroup",
+        "view_group",
+        "view_permission",
+        "view_user",
+        "view_authconfig",
+        "view_authmapping",
+        "view_authmethod",
+        "view_config",
+        "view_field",
+        "view_inventorybase",
+        "view_inventoryfield",
+        "view_inventorysection",
+        "view_dashboardlayout",
+        "view_log",
+        "view_netdevice",
+        "view_netgroup",
+        "view_network",
+        "view_package",
+        "view_result",
+        "view_action",
+        "view_rule",
+        "view_snmpscanner",
+        "view_scheduler",
+        "view_search",
+        "view_section",
+        "view_snmpconfig",
+        "view_template",
+    ]
 
-    for permission in permissions:
-        group.permissions.add(permission)
-
-    group = Group.objects.get(name="user")
-
-    for permission in permissions:
-        group.permissions.add(permission)
+    permissions = Permission.objects.filter(codename__in=permission_codenames)
+    permissions = [i for i in permissions]
+    Group.objects.get(name="user").permissions.add(*permissions)
 
 
 class Migration(migrations.Migration):
     dependencies = [
         ("group", "0001_initial"),
+        ("permission", "0001_initial"),
     ]
 
-    operations = [migrations.RunPython(create_default_group_permissions)]
+    operations = [migrations.RunPython(add_default_group_permissions)]
