@@ -1,7 +1,8 @@
+import json
+
 from django.apps import apps
 from django.contrib.auth.management import create_permissions
 from django.core.management.commands.migrate import Command as MigrateCommand
-import json
 
 
 class Command(MigrateCommand):
