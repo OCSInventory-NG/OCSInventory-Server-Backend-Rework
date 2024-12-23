@@ -1,8 +1,9 @@
+import json
+from pathlib import Path
+
 from django.apps import apps
 from django.contrib.auth.management import create_permissions
 from django.core.management.commands.migrate import Command as MigrateCommand
-import json
-from pathlib import Path
 
 
 class Command(MigrateCommand):
@@ -21,7 +22,9 @@ class Command(MigrateCommand):
             try:
                 with json_file.open("r") as file:
                     config = json.load(file)
-                    permissions = Permission.objects.filter(codename__in=config["permissions"])
+                    permissions = Permission.objects.filter(
+                        codename__in=config["permissions"]
+                    )
                     permissions = [i for i in permissions]
                     Group.objects.get(name=config["name"]).permissions.add(*permissions)
             except json.JSONDecodeError as e:
