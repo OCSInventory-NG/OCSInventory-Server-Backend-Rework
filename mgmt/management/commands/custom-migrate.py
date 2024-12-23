@@ -1,8 +1,13 @@
+import json
+
 from django.apps import apps
 from django.contrib.auth.management import create_permissions
 from django.core.management.commands.migrate import Command as MigrateCommand
+<<<<<<< HEAD
 import json
 from pathlib import Path
+=======
+>>>>>>> 485bb11f222b4d665d4a41324ffffb4d1d701d08
 
 
 class Command(MigrateCommand):
