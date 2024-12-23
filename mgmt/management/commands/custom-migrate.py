@@ -2,6 +2,7 @@ from django.apps import apps
 from django.contrib.auth.management import create_permissions
 from django.core.management.commands.migrate import Command as MigrateCommand
 import json
+from pathlib import Path
 
 
 class Command(MigrateCommand):
@@ -15,9 +16,13 @@ class Command(MigrateCommand):
 
         Group = apps.get_model("auth", "Group")
         Permission = apps.get_model("auth", "Permission")
-        group_permissions = json.load(open("group_permissions.json"))
 
-        for group in group_permissions:
-            permissions = Permission.objects.filter(codename__in=group["permissions"])
-            permissions = [i for i in permissions]
-            Group.objects.get(name=group["name"]).permissions.add(*permissions)
+        for json_file in Path("permission/group_permissions").glob("*.json"):
+            try:
+                with json_file.open("r") as file:
+                    config = json.load(file)
+                    permissions = Permission.objects.filter(codename__in=config["permissions"])
+                    permissions = [i for i in permissions]
+                    Group.objects.get(name=config["name"]).permissions.add(*permissions)
+            except json.JSONDecodeError as e:
+                print(f"Error decoding JSON from {json_file.name}: {e}")
