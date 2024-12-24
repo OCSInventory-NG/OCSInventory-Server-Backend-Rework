@@ -10,11 +10,6 @@ class InventoryBaseSerializer(serializers.ModelSerializer):
         serializers ([ModelSerializer])
     """
 
-    # OS name constant that will determine the template
-    OS_WIN = "windows"
-    OS_LIN = "linux"
-    OS_MAC = "mac"
-
     class Meta:
         """Define the linked model and the fields registered in the API"""
 
@@ -36,3 +31,18 @@ class InventoryBaseSerializer(serializers.ModelSerializer):
         extra_kwargs = {"last_update": {"read_only": True}}
 
         http_method_names = ["get", "post", "patch", "delete"]
+
+    def to_representation(self, instance):
+        """
+        Customize the representation to include additional fields
+        based on the 'accountinfo' URL parameter.
+        """
+        representation = super().to_representation(instance)
+        request = self.context.get("request")
+
+        if request:
+            accountinfo = request.query_params.get("accountinfo")
+            if accountinfo == "true":
+                representation["extra_info"] = "Additional data for accountinfo"
+
+        return representation
