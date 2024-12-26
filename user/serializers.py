@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import Group, User
 from rest_framework import serializers
 
 
@@ -50,8 +50,10 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(validated_data["password"])
         user.save()
 
-        if validated_data.get("groups") is not None:
+        if validated_data.get("groups"):
             user.groups.set(validated_data["groups"])
+        else:
+            user.groups.add(Group.objects.get(name="user"))
         if validated_data.get("user_permissions") is not None:
             user.user_permissions.set(validated_data["user_permissions"])
 
