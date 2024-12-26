@@ -43,6 +43,7 @@ class InventoryBaseSerializer(serializers.ModelSerializer):
         if request:
             accountinfo = request.query_params.get("accountinfo")
             if accountinfo == "true":
+                # TODO: call les données administratives
                 representation["extra_info"] = "Additional data for accountinfo"
 
         return representation
