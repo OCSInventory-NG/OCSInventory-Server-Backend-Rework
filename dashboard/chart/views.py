@@ -203,7 +203,7 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
             # could remove the template is null if we want to count
             # all the InventoryBase objects whether they are linked
             # to a template or not
-            data = self.queryset.filter()
+            data = InventoryBase.objects.all()
             count = 0
 
             # timeframe for contacted is today
@@ -213,7 +213,7 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
 
             if "ALL" == os_template:
                 count = data.count()
-                contacted = contacted_data.filter().count()
+                contacted = contacted_data.count()
             if "WIN" == os_template:
                 count = data.filter(template__os="WIN").count()
                 contacted = contacted_data.filter(template__os="WIN").count()
@@ -246,7 +246,7 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
         Return unique OS names and their associated count
         """
         try:
-            data = self.queryset.filter()
+            data = InventoryBase.objects.all()
 
             os_counters = {}
             for device in data:
