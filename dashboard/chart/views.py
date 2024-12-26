@@ -267,20 +267,21 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
     def get_last_contacted(self, request):
         """
         Return the count of devices per last contacted date
+        Ensure that the days are returned even if there are no devices contacted
         """
         try:
             # timeframe for contacted is seven days from the current date
-            since = datetime.now().replace(
-                hour=0, minute=0, second=0, microsecond=0
-            ) - timedelta(days=7)
+            today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+            since = today - timedelta(days=7)
+
             contacted = self.queryset.filter(last_update__gte=since)
 
-            last_contacted_counters = {}
+            last_contacted_counters = {
+                (today - timedelta(days=i)).strftime("%Y-%m-%d"): 0 for i in range(7)
+            }
             for device in contacted:
                 date_str = device.last_update.strftime("%Y-%m-%d")
-                last_contacted_counters[date_str] = (
-                    last_contacted_counters.get(date_str, 0) + 1
-                )
+                last_contacted_counters[date_str] += 1
 
             last_contacted_data = {
                 "options": {
