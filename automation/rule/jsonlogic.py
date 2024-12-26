@@ -38,10 +38,13 @@ from functools import reduce
 logger = logging.getLogger(__name__)
 
 
-def soft_equals(a, b):
-    """Implements the '==' operator, which does type JS-style coercion."""
-    if isinstance(a, str) or isinstance(b, str):
-        return str(a) == str(b)
+def soft_equals(a, b, case_sensitive=False):
+    """Implements the '==' operator with case sensitivity."""
+    if isinstance(a, str) and isinstance(b, str):
+        if not case_sensitive:
+            return a.lower() == b.lower()
+        return a == b
+
     if isinstance(a, bool) or isinstance(b, bool):
         return bool(a) is bool(b)
     return a == b
@@ -67,10 +70,17 @@ def less_or_equal(a, b):
 def regex_match(string, pattern):
     """Checks if the string matches the regex pattern."""
     try:
-        return bool(re.match(pattern, string))
+        return bool(re.search(pattern, string))
     except re.error:
         logger.error("Invalid regex pattern: %s", pattern)
         return False
+
+
+def contains(a, b, case_sensitive=False):
+    """Checks if the string contains the substring."""
+    if not case_sensitive:
+        return str(a).lower() in str(b).lower()
+    return str(a) in str(b)
 
 
 def get_var(data, var_name, not_found=None):
@@ -98,7 +108,7 @@ operations = {
     "!!": bool,
     "and": lambda *args: reduce(lambda total, arg: total and arg, args, True),
     "or": lambda *args: reduce(lambda total, arg: total or arg, args, False),
-    "in": lambda a, b: a in b if "__contains__" in dir(b) else False,
+    "in": lambda a, b, case_sensitive=False: contains(a, b, case_sensitive),
     "regex": regex_match,
 }
 
@@ -118,10 +128,16 @@ def jsonLogic(tests, data=None):
 
     values = [jsonLogic(val, data) for val in values]
 
+    case_sensitive = get_var(tests, "case_sensitive", False)
     if operator == "var":
         return get_var(data, *values)
 
     if operator not in operations:
         raise ValueError("Unrecognized operation %s" % operator)
 
+    # pass on case sensitivity to operations that need it
+    if operator in ["in", "==", "!="]:
+        return operations[operator](*values, case_sensitive=case_sensitive)
+
+    # other operations
     return operations[operator](*values)
