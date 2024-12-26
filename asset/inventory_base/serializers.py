@@ -1,4 +1,9 @@
 from asset.inventory_base.models import InventoryBase
+from accountinfo.models import AccountinfoConfig, AccountinfoData
+from accountinfo.serializers import (
+    AccountinfoConfigSerializer,
+    AccountinfoDataSerializer,
+)
 from rest_framework import serializers
 
 
@@ -43,7 +48,13 @@ class InventoryBaseSerializer(serializers.ModelSerializer):
         if request:
             accountinfo = request.query_params.get("accountinfo")
             if accountinfo == "true":
-                # TODO: call les données administratives
-                representation["extra_info"] = "Additional data for accountinfo"
+                config = AccountinfoConfig.objects.all()
+                data = AccountinfoData.objects.filter(object_id=representation["id"])
+
+                serialized_data = AccountinfoConfigSerializer(config, many=True).data
+                serialized_data = AccountinfoDataSerializer(data, many=True).data
+
+                accountdata_only = [item["accountdata"] for item in serialized_data]
+                representation["accountinfo"] = accountdata_only
 
         return representation
