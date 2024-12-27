@@ -283,17 +283,20 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
                 date_str = device.last_update.strftime("%Y-%m-%d")
                 last_contacted_counters[date_str] += 1
 
+            sorted_dates = sorted(last_contacted_counters.keys())
+            sorted_counters = {
+                date: last_contacted_counters[date] for date in sorted_dates
+            }
+
             last_contacted_data = {
                 "options": {
                     "chart": {"id": "last-contacted-chart"},
                     "xaxis": {
-                        "categories": list(last_contacted_counters.keys()),
+                        "categories": list(sorted_counters.keys()),
                         "convertedCatToNumeric": True,
                     },
                 },
-                "series": [
-                    {"name": "Assets", "data": list(last_contacted_counters.values())}
-                ],
+                "series": [{"name": "Assets", "data": list(sorted_counters.values())}],
             }
             return Response(last_contacted_data, status=status.HTTP_200_OK)
         except Exception as e:
