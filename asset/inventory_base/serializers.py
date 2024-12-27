@@ -43,18 +43,27 @@ class InventoryBaseSerializer(serializers.ModelSerializer):
         based on the 'accountinfo' URL parameter.
         """
         representation = super().to_representation(instance)
+
         request = self.context.get("request")
+        accountinfo = request.query_params.get("accountinfo")
+        data = AccountinfoData.objects.filter(object_id=representation["id"])
 
-        if request:
-            accountinfo = request.query_params.get("accountinfo")
-            if accountinfo == "true":
-                config = AccountinfoConfig.objects.all()
-                data = AccountinfoData.objects.filter(object_id=representation["id"])
+        if not request or accountinfo == "false" or not data:
+            return representation
 
-                serialized_config = AccountinfoConfigSerializer(config, many=True).data
-                serialized_data = AccountinfoDataSerializer(data, many=True).data
+        else:
+            config = AccountinfoConfig.objects.all()
+            serialized_config = AccountinfoConfigSerializer(config, many=True).data
+            config_mapping = {item["id"]: item["name"] for item in serialized_config}
 
-                accountdata_only = [item["accountdata"] for item in serialized_data]
-                representation["accountinfo"] = accountdata_only
+            serialized_data = AccountinfoDataSerializer(data, many=True).data
+            accountdata_only = [item["accountdata"] for item in serialized_data]
 
-        return representation
+            accountdata_with_names = {
+                config_mapping.get(int(key), key): value
+                for (key, value) in accountdata_only[0].items()
+            }
+
+            representation["accountinfo"] = accountdata_with_names
+
+            return representation
