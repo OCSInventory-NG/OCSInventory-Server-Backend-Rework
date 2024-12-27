@@ -284,7 +284,9 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
                 last_contacted_counters[date_str] += 1
 
             sorted_dates = sorted(last_contacted_counters.keys())
-            sorted_counters = {date: last_contacted_counters[date] for date in sorted_dates}
+            sorted_counters = {
+                date: last_contacted_counters[date] for date in sorted_dates
+            }
 
             last_contacted_data = {
                 "options": {
@@ -294,9 +296,7 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
                         "convertedCatToNumeric": True,
                     },
                 },
-                "series": [
-                    {"name": "Assets", "data": list(sorted_counters.values())}
-                ],
+                "series": [{"name": "Assets", "data": list(sorted_counters.values())}],
             }
             return Response(last_contacted_data, status=status.HTTP_200_OK)
         except Exception as e:
