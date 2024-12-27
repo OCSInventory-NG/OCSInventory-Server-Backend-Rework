@@ -51,7 +51,7 @@ class InventoryBaseSerializer(serializers.ModelSerializer):
                 config = AccountinfoConfig.objects.all()
                 data = AccountinfoData.objects.filter(object_id=representation["id"])
 
-                serialized_data = AccountinfoConfigSerializer(config, many=True).data
+                serialized_config = AccountinfoConfigSerializer(config, many=True).data
                 serialized_data = AccountinfoDataSerializer(data, many=True).data
 
                 accountdata_only = [item["accountdata"] for item in serialized_data]
