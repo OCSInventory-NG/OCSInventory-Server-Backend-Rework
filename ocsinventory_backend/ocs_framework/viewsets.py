@@ -1,6 +1,7 @@
 import logging
 
 from django.db.models import Q
+from ocsinventory_backend.ocs_framework.serializer import OCSViewSetSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets
 from rest_framework.response import Response
@@ -24,6 +25,12 @@ class OCSViewSet(viewsets.ModelViewSet):
     reconciliation_field = "id"
 
     logger = logging.getLogger("OCSViewSet")
+
+    def list(self, request, *args, **kwargs):
+        serializer = OCSViewSetSerializer(
+            self.queryset, many=True, context={"request": request}
+        )
+        return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
         """
