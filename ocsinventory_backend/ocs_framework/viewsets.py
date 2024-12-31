@@ -1,8 +1,8 @@
 import logging
 
 from django.db.models import Q
-from ocsinventory_backend.ocs_framework.serializer import OCSViewSetSerializer
 from django_filters.rest_framework import DjangoFilterBackend
+from ocsinventory_backend.ocs_framework.serializer import OCSViewSetSerializer
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 

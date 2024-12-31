@@ -1,5 +1,5 @@
-from rest_framework import serializers
 from ocsinventory_backend.ocs_framework.models import OCSViewSetModel
+from rest_framework import serializers
 
 
 class OCSViewSetSerializer(serializers.ModelSerializer):
