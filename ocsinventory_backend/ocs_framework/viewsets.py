@@ -1,7 +1,6 @@
 import logging
 
 from django.db.models import Q
-from ocsinventory_backend.ocs_framework.serializer import OCSViewSetSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets
 from rest_framework.response import Response
@@ -27,10 +26,34 @@ class OCSViewSet(viewsets.ModelViewSet):
     logger = logging.getLogger("OCSViewSet")
 
     def list(self, request, *args, **kwargs):
-        serializer = OCSViewSetSerializer(
-            self.queryset, many=True, context={"request": request}
-        )
-        return Response(serializer.data)
+        queryset = self.get_queryset()
+        nested_object = request.query_params.get("nested_object")
+        serializer = self.get_serializer_class()
+
+        if nested_object and nested_object.lower() == "false":
+            # Remove nested fields dynamically
+            serializer = type(
+                f"{serializer.__name__}WithoutNested",
+                (serializer,),
+                {
+                    "Meta": type(
+                        "Meta",
+                        (serializer.Meta,),
+                        {
+                            "fields": [
+                                field
+                                for field in serializer.Meta.fields
+                                if field
+                                not in getattr(serializer.Meta, "nested_fields", [])
+                            ]
+                        },
+                    )
+                },
+            )
+
+        serializer = serializer(queryset, many=True)
+
+        return Response(serializer.data, status.HTTP_200_OK)
 
     def create(self, request, *args, **kwargs):
         """

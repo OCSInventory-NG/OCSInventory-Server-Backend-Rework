@@ -2,15 +2,6 @@ from django.contrib.auth.models import Group, User
 from django.db import models
 
 
-class OCSViewSetModel(models.Model):
-    """
-    Abstract class to implement visibility restriction on child models
-    """
-
-    class Meta:
-        pass
-
-
 class RestrictVisibility(models.Model):
     """
     Abstract class to implement visibility restriction on child models
