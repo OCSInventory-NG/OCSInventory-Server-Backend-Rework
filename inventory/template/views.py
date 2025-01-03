@@ -21,7 +21,40 @@ class TemplateViewSet(viewsets.OCSViewSet):
     serializer_class = TemplateSerializer
     model = Template
 
+    def create(self, request, *args, **kwargs):
+        """
+        Handle post request, suitable for single and multi creation
+        """
+        try:
+            if request.query_params.get("delete"):
+                legacy_tempalte = Template.objects.filter(name="Legacy", os="LEG")[0]
+                serializer = TemplateSerializer(legacy_tempalte)
+                for id in request.data["ids"]:
+                    if id == serializer.data["id"]:
+                        return Response(
+                            {"detail": "Legacy template cannot be deleted"},
+                            status.HTTP_401_UNAUTHORIZED,
+                        )
+                    instance = self.model.objects.get(id=id)
+                    self.perform_destroy(instance)
+            else:
+                serializer = self.get_serializer(
+                    data=request.data, many=isinstance(request.data, list)
+                )
+                serializer.is_valid(raise_exception=True)
+                self.perform_create(serializer)
+        except Exception as e:
+            return Response(
+                {"failed": request.data, "error": str(e)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        return Response({"success": "200"}, status=status.HTTP_200_OK)
+
     def destroy(self, request, *args, **kwargs):
+        """
+        Handle delete request
+        """
         instance = self.get_object()
         legacy_tempalte = Template.objects.filter(name="Legacy", os="LEG")[0]
         serializer = TemplateSerializer(legacy_tempalte)
