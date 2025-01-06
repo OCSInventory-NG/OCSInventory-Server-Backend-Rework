@@ -1,3 +1,4 @@
+from collections import Counter
 from datetime import datetime, timedelta
 
 from asset.inventory_base.models import InventoryBase
@@ -248,13 +249,14 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
         try:
             data = InventoryBase.objects.all()
 
-            os_counters = {}
-            for device in data:
-                os_counters[device.osname] = os_counters.get(device.osname, 0) + 1
+            os_counters = Counter(device.osname for device in data)
+            top_os = os_counters.most_common(15)
+
+            labels, series = zip(*top_os) if top_os else ([], [])
 
             os_data = {
-                "options": {"labels": list(os_counters.keys())},
-                "series": list(os_counters.values()),
+                "options": {"labels": list(labels)},
+                "series": list(series),
             }
             return Response(os_data, status=status.HTTP_200_OK)
         except Exception as e:
