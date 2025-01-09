@@ -46,15 +46,16 @@ class InventoryBaseSerializer(serializers.ModelSerializer):
 
         request = self.context.get("request")
         accountinfo = request.query_params.get("accountinfo")
-        data = AccountinfoData.objects.filter(object_id=representation["id"])
 
-        if not request or accountinfo == "false" or not data:
-            return representation
-
-        else:
+        if accountinfo and accountinfo.lower() == "true":
             config = AccountinfoConfig.objects.all()
             serialized_config = AccountinfoConfigSerializer(config, many=True).data
             config_mapping = {item["id"]: item["name"] for item in serialized_config}
+
+            data = AccountinfoData.objects.filter(object_id=representation["id"])
+
+            if not data:
+                return representation
 
             serialized_data = AccountinfoDataSerializer(data, many=True).data
             accountdata_only = [item["accountdata"] for item in serialized_data]
@@ -66,4 +67,4 @@ class InventoryBaseSerializer(serializers.ModelSerializer):
 
             representation["accountinfo"] = accountdata_with_names
 
-            return representation
+        return representation
