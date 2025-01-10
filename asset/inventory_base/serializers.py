@@ -1,4 +1,3 @@
-
 from accountinfo.models import AccountinfoConfig, AccountinfoData, AccountinfoValue
 from accountinfo.serializers import (
     AccountinfoConfigSerializer,
