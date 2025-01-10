@@ -1,12 +1,12 @@
-from accountinfo.models import AccountinfoConfig, AccountinfoValue, AccountinfoData
+
+from accountinfo.models import AccountinfoConfig, AccountinfoData, AccountinfoValue
 from accountinfo.serializers import (
     AccountinfoConfigSerializer,
-    AccountinfoValueSerializer,
     AccountinfoDataSerializer,
+    AccountinfoValueSerializer,
 )
 from asset.inventory_base.models import InventoryBase
 from rest_framework import serializers
-import json
 
 
 class InventoryBaseSerializer(serializers.ModelSerializer):
