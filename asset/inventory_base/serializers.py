@@ -1,10 +1,12 @@
-from accountinfo.models import AccountinfoConfig, AccountinfoData
+from accountinfo.models import AccountinfoConfig, AccountinfoValue, AccountinfoData
 from accountinfo.serializers import (
     AccountinfoConfigSerializer,
+    AccountinfoValueSerializer,
     AccountinfoDataSerializer,
 )
 from asset.inventory_base.models import InventoryBase
 from rest_framework import serializers
+import json
 
 
 class InventoryBaseSerializer(serializers.ModelSerializer):
@@ -52,6 +54,10 @@ class InventoryBaseSerializer(serializers.ModelSerializer):
             serialized_config = AccountinfoConfigSerializer(config, many=True).data
             config_mapping = {item["id"]: item["name"] for item in serialized_config}
 
+            values = AccountinfoValue.objects.all()
+            serialized_values = AccountinfoValueSerializer(values, many=True).data
+            values_mapping = {item["id"]: item["value"] for item in serialized_values}
+
             data = AccountinfoData.objects.filter(object_id=representation["id"])
 
             if not data:
@@ -65,6 +71,21 @@ class InventoryBaseSerializer(serializers.ModelSerializer):
                 for (key, value) in accountdata_only[0].items()
             }
 
-            representation["accountinfo"] = accountdata_with_names
+            account_data = {}
+            for key, value in accountdata_with_names.items():
+                if isinstance(value, dict):
+                    account_data[key] = value["text"]
+                elif isinstance(value, list):
+                    value_transform = ""
+                    for index, val in enumerate(value):
+                        value_transform = value_transform + values_mapping.get(
+                            int(val), val
+                        )
+                        if index + 1 < len(value):
+                            value_transform = value_transform + ", "
+                    account_data[key] = value_transform
+                else:
+                    account_data[key] = value
+            representation["accountinfo"] = account_data
 
         return representation
