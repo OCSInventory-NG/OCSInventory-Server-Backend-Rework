@@ -25,7 +25,6 @@ class AccountinfoConfig(models.Model):
 
     ACC_TARGET_CHOICES = (
         ("ASSET", "Assets"),
-        ("SNMP", "SNMP"),
         ("IPDISCOVER", "IPDiscover"),
     )
 
