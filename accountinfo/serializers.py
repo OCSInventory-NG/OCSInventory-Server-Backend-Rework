@@ -1,14 +1,14 @@
 from accountinfo.models import AccountinfoConfig, AccountinfoData, AccountinfoValue
 from django.contrib.contenttypes.models import ContentType
-from rest_framework import serializers
+from ocsinventory_backend.ocs_framework.serializers import ExpandableSerializer
 
 
-class AccountinfoDataSerializer(serializers.ModelSerializer):
+class AccountinfoDataSerializer(ExpandableSerializer):
     """
     This serialize class provide the API representation
 
     Args:
-        serializers ([ModelSerializer])
+        serializers ([ExpandableSerializer])
     """
 
     class Meta:
@@ -30,12 +30,12 @@ class AccountinfoDataSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
-class AccountinfoValueSerializer(serializers.ModelSerializer):
+class AccountinfoValueSerializer(ExpandableSerializer):
     """
     This serialize class provide the API representation
 
     Args:
-        serializers ([ModelSerializer])
+        serializers ([ExpandableSerializer])
     """
 
     class Meta:
@@ -45,15 +45,13 @@ class AccountinfoValueSerializer(serializers.ModelSerializer):
         fields = ["id", "accountinfo_config", "value"]
 
 
-class AccountinfoConfigSerializer(serializers.ModelSerializer):
+class AccountinfoConfigSerializer(ExpandableSerializer):
     """
     This serialize class provide the API representation
 
     Args:
-        serializers ([ModelSerializer])
+        serializers ([ExpandableSerializer])
     """
-
-    accountinfo_values = AccountinfoValueSerializer(many=True, required=False)
 
     class Meta:
         """Define the linked model and the fields registered in the API"""
@@ -68,3 +66,7 @@ class AccountinfoConfigSerializer(serializers.ModelSerializer):
             "accountinfo_values",
         ]
         extra_kwargs = {"accountinfo_values": {"read_only": True}}
+
+        expandable_fields = {
+            "accountinfo_values": "accountinfo.serializers.AccountinfoValueSerializer"
+        }

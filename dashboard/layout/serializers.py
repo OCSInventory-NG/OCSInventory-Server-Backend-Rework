@@ -1,8 +1,8 @@
 from dashboard.layout.models import DashboardLayout
-from rest_framework import serializers
+from ocsinventory_backend.ocs_framework.serializers import ExpandableSerializer
 
 
-class DashboardLayoutSerializer(serializers.ModelSerializer):
+class DashboardLayoutSerializer(ExpandableSerializer):
     """
     This serialize class provide the API representation.
     """

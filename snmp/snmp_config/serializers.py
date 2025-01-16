@@ -1,13 +1,13 @@
-from rest_framework import serializers
 from snmp.snmp_config.models import SnmpConfig
+from ocsinventory_backend.ocs_framework.serializers import ExpandableSerializer
 
 
-class SnmpConfigSerializer(serializers.ModelSerializer):
+class SnmpConfigSerializer(ExpandableSerializer):
     """
     This serializer class provide the API representation
 
     Args:
-        serializers ([ModelSerializer])
+        serializers ([ExpandableSerializer])
     """
 
     class Meta:
@@ -28,3 +28,7 @@ class SnmpConfigSerializer(serializers.ModelSerializer):
             "timeout",
             "subnets",
         ]
+
+        expandable_fields = {
+            "subnets": "snmp.subnet.serializers.SubnetSerializer",
+        }

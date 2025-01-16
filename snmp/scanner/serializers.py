@@ -1,20 +1,13 @@
-from rest_framework import serializers
 from snmp.scanner.models import SnmpScanner
-from snmp.snmp_config.models import SnmpConfig
-from snmp.snmp_config.serializers import SnmpConfigSerializer
+from ocsinventory_backend.ocs_framework.serializers import ExpandableSerializer
 
-
-class SnmpScannerSerializer(serializers.ModelSerializer):
+class SnmpScannerSerializer(ExpandableSerializer):
     """
     This serializer class provide the API representation
 
     Args:
-        serializers ([ModelSerializer])
+        serializers ([ExpandableSerializer])
     """
-
-    configs = serializers.PrimaryKeyRelatedField(
-        queryset=SnmpConfig.objects.all(), many=True
-    )
 
     class Meta:
         """Define the linked model and the fields registered in the API"""
@@ -34,12 +27,7 @@ class SnmpScannerSerializer(serializers.ModelSerializer):
         ]
         extra_kwargs = {"last_updated": {"read_only": True}}
 
-    def to_representation(self, instance):
-        """
-        Custom method to use SnmpConfigSerializer for representing configs
-        """
-        representation = super().to_representation(instance)
-        representation["configs"] = SnmpConfigSerializer(
-            instance.configs.all(), many=True
-        ).data
-        return representation
+        expandable_fields = {
+            "configs": "snmp.snmp_config.serializers.SnmpConfigSerializer",
+            "assets": "asset.inventory_base.serializers.InventoryBaseSerializer",
+        }

@@ -1,22 +1,19 @@
 from rest_framework import serializers
 from django.db.models import F
 from importlib import import_module
-from auth.auth_mapping.models import AuthMapping
 from auth.auth_method.models import AuthMethod
-
 from ocsinventory_backend import settings
 from .models import AuthConfig
-from auth.auth_mapping.serializers import AuthMappingSerializer
+from ocsinventory_backend.ocs_framework.serializers import ExpandableSerializer
 
 
-class AuthConfigSerializer(serializers.ModelSerializer):
+class AuthConfigSerializer(ExpandableSerializer):
     """
     This serialize class provide the API representation
 
     Args:
-        serializers ([ModelSerializer])
+        serializers ([ExpandableSerializer])
     """
-    mappings = AuthMappingSerializer(many=True, required=False)
 
     class Meta:
         """Define the linked model and the fields registered in the API"""

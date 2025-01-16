@@ -1,13 +1,13 @@
 from config.models import Config
-from rest_framework import serializers
+from ocsinventory_backend.ocs_framework.serializers import ExpandableSerializer
 
 
-class ConfigSerializer(serializers.ModelSerializer):
+class ConfigSerializer(ExpandableSerializer):
     """
     This serialize class provide the API representation
 
     Args:
-        serializers ([ModelSerializer])
+        serializers ([ExpandableSerializer])
     """
 
     class Meta:

@@ -1,13 +1,13 @@
-from rest_framework import serializers
 from search.models import Search
+from ocsinventory_backend.ocs_framework.serializers import ExpandableSerializer
 
 
-class SearchSerializer(serializers.ModelSerializer):
+class SearchSerializer(ExpandableSerializer):
     """
     This serialize class provide the API representation
 
     Args:
-        serializers ([ModelSerializer])
+        serializers ([ExpandableSerializer])
     """
 
     class Meta:

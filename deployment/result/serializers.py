@@ -1,13 +1,12 @@
 from deployment.result.models import Result
-from rest_framework import serializers
+from ocsinventory_backend.ocs_framework.serializers import ExpandableSerializer
 
-
-class ResultSerializer(serializers.ModelSerializer):
+class ResultSerializer(ExpandableSerializer):
     """
     This serializer class provides the API representation
 
     Args:
-        serializers ([ModelSerializer])
+        serializers ([ExpandableSerializer])
     """
 
     class Meta:
@@ -24,4 +23,11 @@ class ResultSerializer(serializers.ModelSerializer):
             "comment",
             "date_created",
         ]
+
+        expandable_fields = {
+            'package': 'deployment.package.serializers.PackageSerializer',
+            'asset': 'asset.inventory_base.serializers.InventoryBaseSerializer',
+            'group': 'asset.asset_group.serializers.AssetGroupSerializer',
+        }
+
         extra_kwargs = {"package": {"required": False}}

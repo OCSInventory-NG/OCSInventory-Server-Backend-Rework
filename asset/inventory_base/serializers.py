@@ -1,13 +1,13 @@
 from asset.inventory_base.models import InventoryBase
-from rest_framework import serializers
+from ocsinventory_backend.ocs_framework.serializers import ExpandableSerializer
 
 
-class InventoryBaseSerializer(serializers.ModelSerializer):
+class InventoryBaseSerializer(ExpandableSerializer):
     """
     Serializer class for Base
 
     Args:
-        serializers ([ModelSerializer])
+        serializers ([ExpandableSerializer])
     """
 
     # OS name constant that will determine the template
@@ -33,6 +33,11 @@ class InventoryBaseSerializer(serializers.ModelSerializer):
             "template",
             "last_update",
         ]
+
+        expandable_fields = {
+            'template': 'inventory.template.serializers.TemplateSerializer',
+        }
         extra_kwargs = {"last_update": {"read_only": True}}
 
         http_method_names = ["get", "post", "patch", "delete"]
+

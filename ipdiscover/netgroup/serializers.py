@@ -1,13 +1,13 @@
 from ipdiscover.netgroup.models import Netgroup
-from rest_framework import serializers
+from ocsinventory_backend.ocs_framework.serializers import ExpandableSerializer
 
 
-class NetgroupSerializer(serializers.ModelSerializer):
+class NetgroupSerializer(ExpandableSerializer):
     """
     This serialize class provide the API representation
 
     Args:
-        serializers ([ModelSerializer])
+        serializers ([ExpandableSerializer])
     """
 
     class Meta:

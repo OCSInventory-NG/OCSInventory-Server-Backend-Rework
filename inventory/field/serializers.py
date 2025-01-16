@@ -1,13 +1,12 @@
 from inventory.field.models import Field
-from rest_framework import serializers
+from ocsinventory_backend.ocs_framework.serializers import ExpandableSerializer
 
-
-class FieldSerializer(serializers.ModelSerializer):
+class FieldSerializer(ExpandableSerializer):
     """
     This serialize class provide the API representation
 
     Args:
-        serializers ([ModelSerializer])
+        serializers ([ExpandableSerializer])
     """
 
     class Meta:
@@ -15,3 +14,6 @@ class FieldSerializer(serializers.ModelSerializer):
 
         model = Field
         fields = ["id", "name", "retrival_value", "override_target", "new_target", "retrival_method", "retrival_output", "section", "options"]
+        expandable_fields = {
+            'section': 'inventory.section.serializers.SectionSerializer'
+        }

@@ -1,14 +1,14 @@
 from deployment.action.models import DeploymentAction
 from django.db.models import F
-from rest_framework import serializers
+from ocsinventory_backend.ocs_framework.serializers import ExpandableSerializer
 
 
-class ActionSerializer(serializers.ModelSerializer):
+class ActionSerializer(ExpandableSerializer):
     """
     This serializer class provides the API representation
 
     Args:
-        serializers ([ModelSerializer])
+        serializers ([ExpandableSerializer])
     """
 
     class Meta:
@@ -29,6 +29,10 @@ class ActionSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             "file": {"required": False},
             "original_file_name": {"required": False},
+        }
+
+        expandable_fields = {
+            "package": "deployment.package.serializers.PackageSerializer",
         }
 
     def custom_validate(self, data):

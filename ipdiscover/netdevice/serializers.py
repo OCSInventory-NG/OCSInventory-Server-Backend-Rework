@@ -1,13 +1,13 @@
 from ipdiscover.netdevice.models import Netdevice
-from rest_framework import serializers
+from ocsinventory_backend.ocs_framework.serializers import ExpandableSerializer
 
 
-class NetdeviceSerializer(serializers.ModelSerializer):
+class NetdeviceSerializer(ExpandableSerializer):
     """
     This serialize class provide the API representation
 
     Args:
-        serializers ([ModelSerializer])
+        serializers ([ExpandableSerializer])
     """
 
     class Meta:
