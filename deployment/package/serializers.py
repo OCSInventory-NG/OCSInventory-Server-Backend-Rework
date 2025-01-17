@@ -25,8 +25,8 @@ class PackageSerializer(ExpandableSerializer):
         ]
 
         expandable_fields = {
-            'actions_list': 'deployment.action.serializers.ActionSerializer',
-            'result': 'deployment.result.serializers.ResultSerializer'
+            "actions_list": "deployment.action.serializers.ActionSerializer",
+            "result": "deployment.result.serializers.ResultSerializer",
         }
 
     def create(self, validated_data):

@@ -1,4 +1,5 @@
 from ocsinventory_backend.ocs_framework.serializers import ExpandableSerializer
+
 from .models import AssetGroup
 
 

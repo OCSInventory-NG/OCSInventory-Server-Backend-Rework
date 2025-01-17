@@ -53,7 +53,7 @@ class RuleSerializer(ExpandableSerializer):
         model = Rule
         fields = ["id", "description", "trigger", "enabled", "logic", "actions"]
         expandable_fields = {
-            'actions': 'automation.rule.serializers.ActionSerializer',
+            "actions": "automation.rule.serializers.ActionSerializer",
         }
 
     def create(self, validated_data):

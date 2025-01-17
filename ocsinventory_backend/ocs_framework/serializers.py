@@ -1,5 +1,5 @@
-from rest_framework import serializers
 from django.utils.module_loading import import_string
+from rest_framework import serializers
 
 
 class ExpandableSerializer(serializers.ModelSerializer):
@@ -13,6 +13,7 @@ class ExpandableSerializer(serializers.ModelSerializer):
                 'related_field': 'path.to.RelatedSerializer'
             }
     """
+
     def __init__(self, *args, is_nested=False, **kwargs):
         super().__init__(*args, **kwargs)
         self.expanded_fields = set()
@@ -26,19 +27,19 @@ class ExpandableSerializer(serializers.ModelSerializer):
         Process which fields should be expanded based on the request parameters
         """
         # check if any expandable fields defined
-        if not hasattr(self.Meta, 'expandable_fields'):
+        if not hasattr(self.Meta, "expandable_fields"):
             return
 
-        request = self.context.get('request')
-        expand_param = request.query_params.get('expand', '')
+        request = self.context.get("request")
+        expand_param = request.query_params.get("expand", "")
 
         # if expand=* include all expandable fields
-        if expand_param == '*':
+        if expand_param == "*":
             self.expanded_fields = set(self.Meta.expandable_fields.keys())
             return
 
         # or comma separated list of fields
-        requested_fields = expand_param.split(',')
+        requested_fields = expand_param.split(",")
 
         # including only the fields that are defined in the expandable_fields
         # of the child serializer
@@ -81,19 +82,14 @@ class ExpandableSerializer(serializers.ModelSerializer):
             serializer_class = self.get_serializer_class(field_name)
 
             # mtm or reverse fk
-            if hasattr(related_data, 'all'):
+            if hasattr(related_data, "all"):
                 serializer = serializer_class(
-                    related_data.all(),
-                    many=True,
-                    context=self.context,
-                    is_nested=True
+                    related_data.all(), many=True, context=self.context, is_nested=True
                 )
             # fk
             else:
                 serializer = serializer_class(
-                    related_data,
-                    context=self.context,
-                    is_nested=True
+                    related_data, context=self.context, is_nested=True
                 )
 
             # replace field with serialized data

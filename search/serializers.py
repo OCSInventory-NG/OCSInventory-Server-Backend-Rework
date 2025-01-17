@@ -1,5 +1,5 @@
-from search.models import Search
 from ocsinventory_backend.ocs_framework.serializers import ExpandableSerializer
+from search.models import Search
 
 
 class SearchSerializer(ExpandableSerializer):

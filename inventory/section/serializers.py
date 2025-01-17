@@ -22,12 +22,12 @@ class SectionSerializer(ExpandableSerializer):
             "target",
             "template",
             "fields",
-            "options"
+            "options",
         ]
 
         expandable_fields = {
-            'fields': 'inventory.field.serializers.FieldSerializer',
-            'template': 'inventory.template.serializers.TemplateSerializer'
+            "fields": "inventory.field.serializers.FieldSerializer",
+            "template": "inventory.template.serializers.TemplateSerializer",
         }
 
     def create(self, validated_data):

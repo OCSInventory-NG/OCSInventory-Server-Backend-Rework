@@ -1,5 +1,5 @@
-from snmp.snmp_config.models import SnmpConfig
 from ocsinventory_backend.ocs_framework.serializers import ExpandableSerializer
+from snmp.snmp_config.models import SnmpConfig
 
 
 class SnmpConfigSerializer(ExpandableSerializer):

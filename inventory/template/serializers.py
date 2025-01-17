@@ -1,6 +1,7 @@
 from inventory.template.models import Template
 from ocsinventory_backend.ocs_framework.serializers import ExpandableSerializer
 
+
 class TemplateSerializer(ExpandableSerializer):
     """
     This serialize class provide the API representation
@@ -16,7 +17,7 @@ class TemplateSerializer(ExpandableSerializer):
         fields = ["id", "name", "os", "last_update", "sections"]
 
         expandable_fields = {
-            'sections': 'inventory.section.serializers.SectionSerializer',
+            "sections": "inventory.section.serializers.SectionSerializer",
         }
         extra_kwargs = {"last_update": {"read_only": True}}
 

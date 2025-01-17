@@ -1,5 +1,6 @@
-from snmp.scanner.models import SnmpScanner
 from ocsinventory_backend.ocs_framework.serializers import ExpandableSerializer
+from snmp.scanner.models import SnmpScanner
+
 
 class SnmpScannerSerializer(ExpandableSerializer):
     """

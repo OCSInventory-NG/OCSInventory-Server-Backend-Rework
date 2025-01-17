@@ -34,7 +34,7 @@ class NetworkSerializer(ExpandableSerializer):
         }
 
         expandable_fields = {
-            "netdevices": 'ipdiscover.netdevice.serializers.NetdeviceSerializer',
+            "netdevices": "ipdiscover.netdevice.serializers.NetdeviceSerializer",
         }
 
     def create(self, validated_data):

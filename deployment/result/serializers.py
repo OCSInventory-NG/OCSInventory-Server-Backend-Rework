@@ -1,6 +1,7 @@
 from deployment.result.models import Result
 from ocsinventory_backend.ocs_framework.serializers import ExpandableSerializer
 
+
 class ResultSerializer(ExpandableSerializer):
     """
     This serializer class provides the API representation
@@ -25,9 +26,9 @@ class ResultSerializer(ExpandableSerializer):
         ]
 
         expandable_fields = {
-            'package': 'deployment.package.serializers.PackageSerializer',
-            'asset': 'asset.inventory_base.serializers.InventoryBaseSerializer',
-            'group': 'asset.asset_group.serializers.AssetGroupSerializer',
+            "package": "deployment.package.serializers.PackageSerializer",
+            "asset": "asset.inventory_base.serializers.InventoryBaseSerializer",
+            "group": "asset.asset_group.serializers.AssetGroupSerializer",
         }
 
         extra_kwargs = {"package": {"required": False}}
