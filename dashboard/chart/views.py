@@ -1,4 +1,3 @@
-from collections import Counter
 from datetime import datetime, timedelta
 
 from asset.inventory_base.models import InventoryBase
@@ -10,6 +9,7 @@ from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.exceptions import APIException
 from rest_framework.response import Response
+from django.db.models import Count
 
 
 class DashboardChartViewSet(viewsets.OCSViewSet):
@@ -201,10 +201,7 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
         """
 
         try:
-            # could remove the template is null if we want to count
-            # all the InventoryBase objects whether they are linked
-            # to a template or not
-            data = InventoryBase.objects.all()
+            data = self.queryset
             count = 0
 
             # timeframe for contacted is today
@@ -247,18 +244,25 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
         Return unique OS names and their associated count
         """
         try:
-            data = InventoryBase.objects.all()
+            # get top 15 os counts
+            os_counts = (
+                self.queryset
+                .values('osname')
+                .annotate(count=Count('id'))
+                .order_by('-count')
+                [:15]
+            )
 
-            os_counters = Counter(device.osname for device in data)
-            top_os = os_counters.most_common(15)
+            labels = []
+            series = []
+            for item in os_counts:
+                labels.append(item['osname'])
+                series.append(item['count'])
 
-            labels, series = zip(*top_os) if top_os else ([], [])
-
-            os_data = {
-                "options": {"labels": list(labels)},
-                "series": list(series),
-            }
-            return Response(os_data, status=status.HTTP_200_OK)
+            return Response({
+                "options": {"labels": labels},
+                "series": series
+            }, status=status.HTTP_200_OK)
         except Exception as e:
             msg = f"Error in OS count: {e}"
             return Response(
