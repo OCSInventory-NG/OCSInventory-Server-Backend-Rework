@@ -9,8 +9,8 @@ class Template(models.Model):
     The model will contain the following info
     - Name
     - Operating system
-    - Sections template link
-    - Revision (Read Only)
+    - Last update
+    - Is protected (used to prevent deletion from the console)
     """
 
     OS_CHOICES = (
