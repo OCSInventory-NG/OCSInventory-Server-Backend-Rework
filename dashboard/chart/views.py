@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 from asset.inventory_base.models import InventoryBase
+from django.db.models import Count
 from ipdiscover.netdevice.models import Netdevice
 from ipdiscover.network.models import Network
 from ocsinventory_backend.ocs_framework import viewsets
@@ -9,7 +10,6 @@ from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.exceptions import APIException
 from rest_framework.response import Response
-from django.db.models import Count
 
 
 class DashboardChartViewSet(viewsets.OCSViewSet):
@@ -246,23 +246,21 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
         try:
             # get top 15 os counts
             os_counts = (
-                self.queryset
-                .values('osname')
-                .annotate(count=Count('id'))
-                .order_by('-count')
-                [:15]
+                self.queryset.values("osname")
+                .annotate(count=Count("id"))
+                .order_by("-count")[:15]
             )
 
             labels = []
             series = []
             for item in os_counts:
-                labels.append(item['osname'])
-                series.append(item['count'])
+                labels.append(item["osname"])
+                series.append(item["count"])
 
-            return Response({
-                "options": {"labels": labels},
-                "series": series
-            }, status=status.HTTP_200_OK)
+            return Response(
+                {"options": {"labels": labels}, "series": series},
+                status=status.HTTP_200_OK,
+            )
         except Exception as e:
             msg = f"Error in OS count: {e}"
             return Response(
