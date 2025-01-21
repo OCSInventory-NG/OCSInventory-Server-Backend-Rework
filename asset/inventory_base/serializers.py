@@ -1,8 +1,6 @@
 from accountinfo.models import AccountinfoConfig, AccountinfoData, AccountinfoValue
 from accountinfo.serializers import (
-    AccountinfoConfigSerializer,
     AccountinfoDataSerializer,
-    AccountinfoValueSerializer,
 )
 from asset.inventory_base.models import InventoryBase
 from rest_framework import serializers
