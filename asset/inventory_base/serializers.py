@@ -48,43 +48,53 @@ class InventoryBaseSerializer(serializers.ModelSerializer):
         request = self.context.get("request")
         accountinfo = request.query_params.get("accountinfo")
 
-        if accountinfo and accountinfo.lower() == "true":
-            config = AccountinfoConfig.objects.all()
-            serialized_config = AccountinfoConfigSerializer(config, many=True).data
-            config_mapping = {item["id"]: item["name"] for item in serialized_config}
+        if not (accountinfo and accountinfo.lower() == "true"):
+            return representation
 
-            values = AccountinfoValue.objects.all()
-            serialized_values = AccountinfoValueSerializer(values, many=True).data
-            values_mapping = {item["id"]: item["value"] for item in serialized_values}
+        # get the accountinfo data first return if not found
+        data = AccountinfoData.objects.filter(object_id=representation["id"]).first()
+        if not data:
+            return representation
 
-            data = AccountinfoData.objects.filter(object_id=representation["id"])
+        # get serialized data
+        serialized_data = AccountinfoDataSerializer(data).data
+        accountdata = serialized_data["accountdata"]
 
-            if not data:
-                return representation
+        if not accountdata:
+            return representation
 
-            serialized_data = AccountinfoDataSerializer(data, many=True).data
-            accountdata_only = [item["accountdata"] for item in serialized_data]
+        # get config and value records based on accountdata
+        config_ids = [int(key) for key in accountdata.keys()]
+        configs = AccountinfoConfig.objects.filter(id__in=config_ids)
+        config_mapping = {str(config.id): config.name for config in configs}
 
-            accountdata_with_names = {
-                config_mapping.get(int(key), key): value
-                for (key, value) in accountdata_only[0].items()
-            }
+        # collect value ids
+        value_ids = []
+        for value in accountdata.values():
+            if isinstance(value, list):
+                value_ids.extend(int(val) for val in value)
 
-            account_data = {}
-            for key, value in accountdata_with_names.items():
-                if isinstance(value, dict):
-                    account_data[key] = value["text"]
-                elif isinstance(value, list):
-                    value_transform = ""
-                    for index, val in enumerate(value):
-                        value_transform = value_transform + values_mapping.get(
-                            int(val), val
-                        )
-                        if index + 1 < len(value):
-                            value_transform = value_transform + ", "
-                    account_data[key] = value_transform
-                else:
-                    account_data[key] = value
-            representation["accountinfo"] = account_data
+        values_mapping = {}
+        if value_ids:
+            values = AccountinfoValue.objects.filter(id__in=value_ids)
+            values_mapping = {str(value.id): value.value for value in values}
 
+        # using a specific format for the accountinfo data (frontend requirement)
+        account_data = {}
+        for key, value in accountdata.items():
+            field_name = config_mapping.get(key, key)
+            # select
+            if isinstance(value, dict):
+                account_data[field_name] = value["text"]
+            # checkboxes
+            elif isinstance(value, list):
+                transformed_values = []
+                for val in value:
+                    transformed_values.append(values_mapping.get(str(val), val))
+                account_data[field_name] = ", ".join(transformed_values)
+            # text
+            else:
+                account_data[field_name] = value
+
+        representation["accountinfo"] = account_data
         return representation
