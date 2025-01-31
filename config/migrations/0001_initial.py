@@ -42,6 +42,14 @@ def create_base_config(apps, schema_editor):
                     "unit": "",
                     "options": ["name", "uuid", "srcmac"],
                 },
+                {
+                    "name": "accountinfo_generation",
+                    "description": "Mode of administrative data generation",
+                    "value": "agent",
+                    "type": "select",
+                    "unit": "",
+                    "options": ["agent", "automation"],
+                },
             ],
         },
         {
