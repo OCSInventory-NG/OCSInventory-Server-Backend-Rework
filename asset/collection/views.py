@@ -10,7 +10,8 @@ from inventory.section.models import Section
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from accountinfo.views import AccountinfoDataViewSet
+from config.models import Config
 
 class CollectionView(APIView):
     """
@@ -64,6 +65,17 @@ class CollectionView(APIView):
                 templateId = (
                     asset_instance.template_id if asset_instance.template else None
                 )
+                # if accountinfo_generation is set to agent mode
+                server_conf = Config.objects.filter(name="server").first()
+                accountinfo_gen = None
+                for item in server_conf.value:
+                    if item["name"] == "accountinfo_generation":
+                        accountinfo_gen = item
+                        break
+
+                if accountinfo_gen["value"] == "agent":
+                    # create accountinfo data for the new asset
+                    AccountinfoDataViewSet.generate_accountinfo(asset_instance, "inventory_base.inventorybase")
         except ValidationError as ve:
             errors.append(f"Error creating asset: {ve}")
             self.LOGGER.error(f"Error creating asset: {ve}")
