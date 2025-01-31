@@ -1,8 +1,8 @@
 from automation.rule.logic import Logic
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.contrib.contenttypes.fields import GenericRelation
 from inventory.template.models import Template
 
 
@@ -36,9 +36,11 @@ class InventoryBase(models.Model):
     template = models.ForeignKey(
         Template, on_delete=models.CASCADE, blank=True, null=True
     )
-    accountinfo = GenericRelation('accountinfo.AccountinfoData',
-                                content_type_field='content_type',
-                                object_id_field='object_id')
+    accountinfo = GenericRelation(
+        "accountinfo.AccountinfoData",
+        content_type_field="content_type",
+        object_id_field="object_id",
+    )
     last_update = models.DateTimeField(auto_now=True)
 
 
