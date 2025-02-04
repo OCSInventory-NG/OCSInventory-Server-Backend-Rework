@@ -36,20 +36,18 @@ class Command(BaseCommand):
                 "hourly": timedelta(hours=1),
                 "daily": timedelta(days=1),
                 "weekly": timedelta(weeks=1),
-                "monthly": timedelta(days=30)
+                "monthly": timedelta(days=30),
             }
 
             should_run = False
-            
+
             # for non-hourly tasks, check if we're within the scheduled hour
             if task.recurrence == "hourly":
                 should_run = True
-            elif (
-                task.hour == now.hour and (
-                    task.recurrence == "daily" or
-                    (task.recurrence == "weekly" and task.day_of_week == now.weekday()) or
-                    (task.recurrence == "monthly" and task.day_of_month == now.day)
-                )
+            elif task.hour == now.hour and (
+                task.recurrence == "daily"
+                or (task.recurrence == "weekly" and task.day_of_week == now.weekday())
+                or (task.recurrence == "monthly" and task.day_of_month == now.day)
             ):
                 should_run = True
 

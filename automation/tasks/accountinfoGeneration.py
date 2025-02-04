@@ -1,10 +1,12 @@
+import logging
+
 from accountinfo.views import AccountinfoDataViewSet
 from asset.inventory_base.models import InventoryBase
 from automation.tasks.abstractTask import AbstractTask
 from config.models import Config
-import logging
 
 logger = logging.getLogger(__name__)
+
 
 class AccountinfoGeneration(AbstractTask):
     """

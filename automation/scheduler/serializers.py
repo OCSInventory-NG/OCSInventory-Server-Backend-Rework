@@ -23,5 +23,5 @@ class SchedulerSerializer(serializers.ModelSerializer):
             "last_execution",
             "hour",
             "day_of_week",
-            "day_of_month"
+            "day_of_month",
         ]
