@@ -10,7 +10,13 @@ class ExpandableSerializer(serializers.ModelSerializer):
     Usage in the child serializer:
         class Meta:
             expandable_fields = {
-                'related_field': 'path.to.RelatedSerializer'
+                'related_field': 'path.to.RelatedSerializer',
+                # or with additional configuration:
+                'related_field': {
+                    'serializer': 'path.to.RelatedSerializer',
+                    'many': True,
+                    'required': False
+                }
             }
     """
 
@@ -21,6 +27,7 @@ class ExpandableSerializer(serializers.ModelSerializer):
         # process expansion if this isn't a nested serializer
         if not is_nested:
             self.process_expandable_fields()
+            self._process_field_configurations()
 
     def process_expandable_fields(self):
         """
@@ -31,6 +38,10 @@ class ExpandableSerializer(serializers.ModelSerializer):
             return
 
         request = self.context.get("request")
+        # If no request in context (e.g., during POST), skip expansion
+        if not request:
+            return
+
         expand_param = request.query_params.get("expand", "")
 
         # if expand=* include all expandable fields
@@ -48,19 +59,51 @@ class ExpandableSerializer(serializers.ModelSerializer):
             if field and field in self.Meta.expandable_fields:
                 self.expanded_fields.add(field)
 
+    def _process_field_configurations(self):
+        """
+        Process field configurations and set up serializer fields
+        """
+        if not hasattr(self.Meta, "expandable_fields"):
+            return
+
+        for field_name, field_config in self.Meta.expandable_fields.items():
+            # config
+            if isinstance(field_config, str):
+                serializer_class = import_string(field_config)
+                many = False
+                required = True
+            elif isinstance(field_config, dict):
+                serializer_class = import_string(field_config['serializer'])
+                many = field_config.get('many', False)
+                required = field_config.get('required', True)
+            else:
+                raise ValueError(
+                    f"Invalid expandable_fields configuration for {field_name}. "
+                    "Must be either a string or a dictionary."
+                )
+
+            # is_nested=True prevents recursion
+            self.fields[field_name] = serializer_class(
+                many=many,
+                required=required,
+                is_nested=True,
+                context=self.context
+            )
+
     def get_serializer_class(self, field_name):
         """
-        Get the serializer class for an expandable field
+        Get the serializer class and configuration for an expandable field
         """
         field_config = self.Meta.expandable_fields[field_name]
 
-        # import the serializer class
         if isinstance(field_config, str):
-            return import_string(field_config)
+            return import_string(field_config), False
+        elif isinstance(field_config, dict):
+            return import_string(field_config['serializer']), field_config.get('many', False)
 
         raise ValueError(
             f"Invalid expandable_fields configuration for {field_name}. "
-            "Must be either a string."
+            "Must be either a string or a dictionary."
         )
 
     def to_representation(self, instance):
@@ -79,17 +122,22 @@ class ExpandableSerializer(serializers.ModelSerializer):
             if related_data is None:
                 continue
 
-            serializer_class = self.get_serializer_class(field_name)
+            serializer_class, many = self.get_serializer_class(field_name)
 
             # mtm or reverse fk
-            if hasattr(related_data, "all"):
+            if hasattr(related_data, "all") or many:
                 serializer = serializer_class(
-                    related_data.all(), many=True, context=self.context, is_nested=True
+                    related_data.all() if hasattr(related_data, "all") else related_data,
+                    many=True,
+                    context=self.context,
+                    is_nested=True
                 )
             # fk
             else:
                 serializer = serializer_class(
-                    related_data, context=self.context, is_nested=True
+                    related_data,
+                    context=self.context,
+                    is_nested=True
                 )
 
             # replace field with serialized data
