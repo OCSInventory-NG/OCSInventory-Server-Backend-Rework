@@ -1,6 +1,6 @@
-from automation.tasks.abstractTask import AbstractTask
-from asset.inventory_base.models import InventoryBase
 from accountinfo.views import AccountinfoDataViewSet
+from asset.inventory_base.models import InventoryBase
+from automation.tasks.abstractTask import AbstractTask
 from config.models import Config
 import logging
 
@@ -48,8 +48,7 @@ class AccountinfoGeneration(AbstractTask):
         try:
             for asset in assets:
                 AccountinfoDataViewSet.generate_accountinfo(
-                    asset,
-                    "inventory_base.inventorybase"
+                    asset, "inventory_base.inventorybase"
                 )
         except Exception as e:
             logger.error(f"Error generating accountinfo: {e}")
