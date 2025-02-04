@@ -2,9 +2,11 @@ from automation.tasks.abstractTask import AbstractTask
 from asset.inventory_base.models import InventoryBase
 from accountinfo.views import AccountinfoDataViewSet
 from config.models import Config
+import logging
 
+logger = logging.getLogger(__name__)
 
-class AccountInfoGeneration(AbstractTask):
+class AccountinfoGeneration(AbstractTask):
     """
     Task to create missing AccountinfoData entries for assets. This task
     is intended to be run using the automation/scheduler module.
@@ -14,27 +16,32 @@ class AccountInfoGeneration(AbstractTask):
         """
         Find all assets without AccountinfoData and create entries for them
         """
+        logger.info("Starting AccountInfoGeneration task")
         if self.config_check():
             assets = self.get_assets()
             self.generate_accountinfo(assets)
 
-    def config_check(self):
+    def config_check():
         """
         Check if accountinfo generation is set to automation mode
         """
         server_conf = Config.objects.filter(name="server").first()
+        if not server_conf:
+            logger.error("No server config found")
+            return False
         for item in server_conf.value:
             if item["name"] == "accountinfo_generation":
                 return item["value"] == "automation"
+        logger.error("accountinfo_generation not found in config")
         return False
 
-    def get_assets(self):
+    def get_assets():
         """
         Get all assets that need accountinfo generation
         """
         return InventoryBase.objects.all()
 
-    def generate_accountinfo(self, assets):
+    def generate_accountinfo(assets):
         """
         Generate accountinfo for the given assets
         """
@@ -45,4 +52,4 @@ class AccountInfoGeneration(AbstractTask):
                     "inventory_base.inventorybase"
                 )
         except Exception as e:
-            print(f"Error generating accountinfo: {e}")
+            logger.error(f"Error generating accountinfo: {e}")
