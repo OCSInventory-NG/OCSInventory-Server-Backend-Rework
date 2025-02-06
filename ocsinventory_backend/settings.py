@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 import os
 
 from dotenv import load_dotenv
+import logging
+from ocsinventory_backend.ocs_framework.logging_handlers import DynamicLogLevelHandler
 
 load_dotenv()
 
@@ -136,16 +138,20 @@ LOGGING = {
             "formatter": "simple",
         },
         "asset_collection": {
-            "level": "DEBUG",
+            "level": "INFO",
             "class": "logging.FileHandler",
             "filename": f"{BASE_DIR}/logs/asset_collection.log",
             "formatter": "simple",
         },
     },
+    "root": {
+        "handlers": ["file"],
+        "level": "DEBUG",
+    },
     "loggers": {
         "django": {
             "handlers": ["file"],
-            "level": "DEBUG",
+            "level": "INFO",
             "propagate": True,
         },
         # ipdiscover command logger
@@ -166,6 +172,13 @@ LOGGING = {
     },
 }
 
+# wrapping existing handlers with dynamic handlers
+for handler_config in LOGGING['handlers'].values():
+    if handler_config.get('class') == 'logging.FileHandler':
+        base_handler = logging.FileHandler(handler_config['filename'])
+        handler_config['()'] = DynamicLogLevelHandler
+        handler_config['base_handler'] = base_handler
+        del handler_config['class']
 
 WSGI_APPLICATION = "ocsinventory_backend.wsgi.application"
 
