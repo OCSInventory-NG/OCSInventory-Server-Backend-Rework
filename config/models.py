@@ -1,8 +1,9 @@
-from django.db import models
-from django.dispatch import receiver
 import logging
-from ocsinventory_backend.ocs_framework.logging_handlers import DynamicLogLevelHandler
+
+from django.db import models
 from django.db.models.signals import post_save
+from django.dispatch import receiver
+from ocsinventory_backend.ocs_framework.logging_handlers import DynamicLogLevelHandler
 
 
 class Config(models.Model):
@@ -23,7 +24,7 @@ class Config(models.Model):
 def handle_config_change(sender, instance, **kwargs):
     """Update dynamic log level handlers when the server configuration changes"""
     logging.debug("handle_config_change triggered with instance: %s", instance)
-    if instance.name != 'server':
+    if instance.name != "server":
         return
 
     try:

@@ -10,10 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
+import logging
 import os
 
 from dotenv import load_dotenv
-import logging
 from ocsinventory_backend.ocs_framework.logging_handlers import DynamicLogLevelHandler
 
 load_dotenv()
@@ -173,12 +173,12 @@ LOGGING = {
 }
 
 # wrapping existing handlers with dynamic handlers
-for handler_config in LOGGING['handlers'].values():
-    if handler_config.get('class') == 'logging.FileHandler':
-        base_handler = logging.FileHandler(handler_config['filename'])
-        handler_config['()'] = DynamicLogLevelHandler
-        handler_config['base_handler'] = base_handler
-        del handler_config['class']
+for handler_config in LOGGING["handlers"].values():
+    if handler_config.get("class") == "logging.FileHandler":
+        base_handler = logging.FileHandler(handler_config["filename"])
+        handler_config["()"] = DynamicLogLevelHandler
+        handler_config["base_handler"] = base_handler
+        del handler_config["class"]
 
 WSGI_APPLICATION = "ocsinventory_backend.wsgi.application"
 

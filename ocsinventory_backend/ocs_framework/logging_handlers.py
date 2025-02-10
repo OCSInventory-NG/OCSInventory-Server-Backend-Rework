@@ -1,4 +1,5 @@
 import logging
+
 from django.apps import apps
 
 
@@ -28,15 +29,20 @@ class DynamicLogLevelHandler(logging.Handler):
             return
         try:
             from config.models import Config
-            server_config = Config.objects.get(name='server')
+
+            server_config = Config.objects.get(name="server")
 
             # find log level setting
             log_level_setting = next(
-                (setting for setting in server_config.value if setting['name'] == 'log_level'),
-                None
+                (
+                    setting
+                    for setting in server_config.value
+                    if setting["name"] == "log_level"
+                ),
+                None,
             )
-            if log_level_setting and log_level_setting['value']:
-                level_str = log_level_setting['value'].upper()
+            if log_level_setting and log_level_setting["value"]:
+                level_str = log_level_setting["value"].upper()
                 new_level = getattr(logging, level_str, logging.INFO)
             else:
                 new_level = logging.INFO
@@ -48,4 +54,6 @@ class DynamicLogLevelHandler(logging.Handler):
             logging.error(f"Error updating log level: {e}")
             self.setLevel(logging.INFO)
             self.base_handler.setLevel(logging.INFO)
-            logging.debug("DynamicLogLevelHandler: Log level set to default INFO due to error")
+            logging.debug(
+                "DynamicLogLevelHandler: Log level set to default INFO due to error"
+            )
