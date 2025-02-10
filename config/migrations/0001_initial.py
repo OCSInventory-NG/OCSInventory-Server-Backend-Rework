@@ -98,7 +98,7 @@ def create_base_config(apps, schema_editor):
                     },
                     {
                         "name": "macaddresses_list",
-                        "description": "List of macaddresses to blacklist",
+                        "description": "List of macaddresses to blacklist, separated by commas",
                         "value": "",
                         "type": "text input",
                         "unit": "",
@@ -107,14 +107,14 @@ def create_base_config(apps, schema_editor):
                 [
                     {
                         "name": "ipaddresses",
-                        "description": "Enable ipaddresses blacklist",
+                        "description": "Enable subnets blacklist",
                         "value": False,
                         "type": "switch",
                         "unit": "",
                     },
                     {
                         "name": "ipaddresses_list",
-                        "description": "List of ipaddresses to blacklist",
+                        "description": "List of subnets to blacklist in CIDR notation, separated by commas",
                         "value": "",
                         "type": "text input",
                         "unit": "",
@@ -130,7 +130,7 @@ def create_base_config(apps, schema_editor):
                     },
                     {
                         "name": "serialnumbers_list",
-                        "description": "List of serialnumbers to blacklist",
+                        "description": "List of serialnumbers to blacklist, separated by commas",
                         "value": "",
                         "type": "text input",
                         "unit": "",
