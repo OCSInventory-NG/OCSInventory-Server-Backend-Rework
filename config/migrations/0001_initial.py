@@ -37,10 +37,10 @@ def create_base_config(apps, schema_editor):
                 {
                     "name": "duplicate_reconciliation",
                     "description": "Field used to reconcile duplicate computers",
-                    "value": "",
+                    "value": "uuid",
                     "type": "select",
                     "unit": "",
-                    "options": ["name", "uuid", "srcmac"],
+                    "options": ["uuid", "uuid, name", "uuid, srcmac"],
                 },
             ],
         },
