@@ -102,7 +102,8 @@ class CollectionView(APIView):
             if asset_serializer.is_valid(raise_exception=True):
                 asset_instance = asset_serializer.save()
                 templateId = (
-                    asset_instance.template_id if asset_instance.template else None
+                    asset_instance.template_id if asset_instance.template
+                    else None
                 )
         except ValidationError as ve:
             errors.append(f"Error creating asset: {ve}")
