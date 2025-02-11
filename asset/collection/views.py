@@ -40,7 +40,8 @@ class CollectionView(APIView):
 
     def check_blacklist(self, data):
         """
-        Load the blacklist configuration and check if any of the device fields are blacklisted
+        Load the blacklist configuration and check if any of the device fields
+        are blacklisted
 
         The configuration structure is as follows:
           - 1st dict contains the enabled switch
@@ -96,7 +97,10 @@ class CollectionView(APIView):
                         try:
                             network = ipaddress.ip_network(cidr, strict=False)
                             if ip_obj in network:
-                                return True, f"IP address {device_ip} is blacklisted (matches CIDR {cidr})."
+                                return True, f"""
+                                IP address {device_ip} is blacklisted
+                                (matches CIDR {cidr}).
+                                """
                         except ValueError:
                             self.LOGGER.debug("Invalid CIDR notation: %s", cidr)
                             continue
