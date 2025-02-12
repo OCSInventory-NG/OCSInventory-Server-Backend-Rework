@@ -23,11 +23,46 @@ class ExpandableSerializer(serializers.ModelSerializer):
     def __init__(self, *args, is_nested=False, **kwargs):
         super().__init__(*args, **kwargs)
         self.expanded_fields = set()
+        
+        # get expandable fields configuration
+        self.expandable_fields = self.config_expandable_fields()
 
         # process expansion if this isn't a nested serializer
         if not is_nested:
             self.process_expandable_fields()
             self._process_field_configurations()
+
+    def config_expandable_fields(self):
+        """
+        Retrieves the expandable fields from the Meta class but does not
+        instantiate the serializer class yet.   
+        """
+        if not hasattr(self.Meta, "expandable_fields"):
+            return
+        
+        expandable_fields = {}
+        
+        for field_name, field_config in self.Meta.expandable_fields.items():
+            # config
+            if isinstance(field_config, str):
+                expandable_fields[field_name] = {
+                    'serializer': import_string(field_config),
+                    'many': False,
+                    'required': True
+                }
+            elif isinstance(field_config, dict):
+                expandable_fields[field_name] = {
+                    'serializer': import_string(field_config['serializer']),
+                    'many': field_config.get('many', False),
+                    'required': field_config.get('required', True)
+                }
+            else:
+                raise ValueError(
+                    f"Invalid expandable_fields configuration for {field_name}. "
+                    "Must be either a string or a dictionary."
+                )
+
+        return expandable_fields
 
     def process_expandable_fields(self):
         """
@@ -48,44 +83,33 @@ class ExpandableSerializer(serializers.ModelSerializer):
         if expand_param == "*":
             self.expanded_fields = set(self.Meta.expandable_fields.keys())
             return
+        
+        if not expand_param:
+            return
 
         # or comma separated list of fields
         requested_fields = expand_param.split(",")
 
-        # including only the fields that are defined in the expandable_fields
-        # of the child serializer
-        for field in requested_fields:
-            field = field.strip()
-            if field and field in self.Meta.expandable_fields:
-                self.expanded_fields.add(field)
+        if requested_fields:
+            # including only the fields that are defined in the expandable_fields
+            # of the child serializer
+            for field in requested_fields:
+                field = field.strip()
+                if field and field in self.expandable_fields:
+                    self.expanded_fields.add(field)
 
     def _process_field_configurations(self):
         """
         Process field configurations and set up serializer fields
         """
-        if not hasattr(self.Meta, "expandable_fields"):
+        if not self.expanded_fields:
             return
 
-        for field_name, field_config in self.Meta.expandable_fields.items():
-            # config
-            if isinstance(field_config, str):
-                serializer_class = import_string(field_config)
-                many = False
-                required = True
-            elif isinstance(field_config, dict):
-                serializer_class = import_string(field_config['serializer'])
-                many = field_config.get('many', False)
-                required = field_config.get('required', True)
-            else:
-                raise ValueError(
-                    f"Invalid expandable_fields configuration for {field_name}. "
-                    "Must be either a string or a dictionary."
-                )
-
-            # is_nested=True prevents recursion
-            self.fields[field_name] = serializer_class(
-                many=many,
-                required=required,
+        # is_nested=True prevents recursion
+        for field_name in self.expanded_fields:
+            self.fields[field_name] = self.expandable_fields[field_name]['serializer'](
+                many=self.expandable_fields[field_name]['many'],
+                required=self.expandable_fields[field_name]['required'],
                 is_nested=True,
                 context=self.context
             )
