@@ -27,10 +27,16 @@ class ExpandableSerializer(serializers.ModelSerializer):
         # get expandable fields configuration
         self.expandable_fields = self.config_expandable_fields()
 
-        # process expansion if this isn't a nested serializer
-        if not is_nested:
+        request = self.context.get("request")
+
+        # nested serializer for creation/update
+        if request and request.method in ("POST", "PUT", "PATCH") and not is_nested:
+            self.expanded_fields = set(self.Meta.expandable_fields.keys())
+            self.process_field_configurations()
+        # nested serializer for read
+        elif not is_nested:
             self.process_expandable_fields()
-            self._process_field_configurations()
+            self.process_field_configurations()
 
     def config_expandable_fields(self):
         """
@@ -41,7 +47,7 @@ class ExpandableSerializer(serializers.ModelSerializer):
             return
         
         expandable_fields = {}
-        
+
         for field_name, field_config in self.Meta.expandable_fields.items():
             # config
             if isinstance(field_config, str):
@@ -98,7 +104,7 @@ class ExpandableSerializer(serializers.ModelSerializer):
                 if field and field in self.expandable_fields:
                     self.expanded_fields.add(field)
 
-    def _process_field_configurations(self):
+    def process_field_configurations(self):
         """
         Process field configurations and set up serializer fields
         """
