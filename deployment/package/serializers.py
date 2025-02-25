@@ -40,22 +40,22 @@ class PackageSerializer(ExpandableSerializer):
     def create(self, validated_data):
         """Override create to allow nested creation of fields"""
         # any actions?
-        if "actions" in validated_data.keys():
-            actions = validated_data.pop("actions")
+        if "actions_list" in validated_data.keys():
+            actions = validated_data.pop("actions_list")
         if "result" in validated_data.keys():
             result = validated_data.pop("result")
 
         # keep the parent created
         parent = super().create(validated_data)
         # create actions
-        if "actions" in validated_data.keys():
+        if actions:
             for action in actions:
                 action["package"] = parent
             # actions serializer
-            self.fields["actions"].create(actions)
+            self.fields["actions_list"].create(actions)
 
         # create result
-        if "result" in validated_data.keys():
+        if result:
             for res in result:
                 res["package"] = parent
             # result serializer
