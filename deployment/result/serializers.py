@@ -10,9 +10,6 @@ from asset.asset_group.models import AssetGroup
 class ResultSerializer(ModelSerializer):
     """
     This serializer class provides the API representation
-
-    Args:
-        serializers ([ExpandableSerializer])
     """
     # using primary key related field to avoid circular import
     asset = serializers.PrimaryKeyRelatedField(

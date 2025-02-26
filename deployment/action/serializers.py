@@ -7,9 +7,6 @@ from rest_framework.serializers import ModelSerializer
 class ActionSerializer(ExpandableFieldsMixin, ModelSerializer):
     """
     This serializer class provides the API representation
-
-    Args:
-        serializers ([ExpandableSerializer])
     """
 
     class Meta:

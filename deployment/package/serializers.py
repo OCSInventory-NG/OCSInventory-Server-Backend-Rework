@@ -8,9 +8,6 @@ from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
 class PackageSerializer(ExpandableFieldsMixin, ModelSerializer):
     """
     This serializer class provides the API representation
-
-    Args:
-        serializers ([ExpandableSerializer])
     """
     actions_list = ActionSerializer(many=True, read_only=False)
     result = ResultSerializer(many=True, read_only=False)

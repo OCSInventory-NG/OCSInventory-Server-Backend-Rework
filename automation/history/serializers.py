@@ -1,13 +1,11 @@
 from automation.history.models import History
-from ocsinventory_backend.ocs_framework.serializers import ExpandableSerializer
+from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
+from rest_framework.serializers import ModelSerializer
 
 
-class HistorySerializer(ExpandableSerializer):
+class HistorySerializer(ExpandableFieldsMixin, ModelSerializer):
     """
     This serialize class provide the API representation
-
-    Args:
-        serializers ([ExpandableSerializer])
     """
 
     class Meta:

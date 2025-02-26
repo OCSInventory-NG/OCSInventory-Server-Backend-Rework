@@ -1,13 +1,13 @@
-from ocsinventory_backend.ocs_framework.serializers import ExpandableSerializer
+from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
+from rest_framework.serializers import ModelSerializer
 from snmp.scanner.models import SnmpScanner
+from snmp.snmp_config.serializers import SnmpConfigSerializer
+from asset.inventory_base.serializers import InventoryBaseSerializer
 
 
-class SnmpScannerSerializer(ExpandableSerializer):
+class SnmpScannerSerializer(ExpandableFieldsMixin, ModelSerializer):
     """
     This serializer class provide the API representation
-
-    Args:
-        serializers ([ExpandableSerializer])
     """
 
     class Meta:
@@ -29,14 +29,6 @@ class SnmpScannerSerializer(ExpandableSerializer):
         extra_kwargs = {"last_updated": {"read_only": True}}
 
         expandable_fields = {
-            "configs": {
-                "serializer": "snmp.snmp_config.serializers.SnmpConfigSerializer",
-                "many": True,
-                "required": False
-            },
-            "assets": {
-                "serializer": "asset.inventory_base.serializers.InventoryBaseSerializer",
-                "many": True,
-                "required": False
-            }
+            "configs": SnmpConfigSerializer,
+            "assets": InventoryBaseSerializer,
         }

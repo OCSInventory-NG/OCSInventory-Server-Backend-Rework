@@ -1,13 +1,12 @@
 from asset.inventory_section.models import InventorySection
-from ocsinventory_backend.ocs_framework.serializers import ExpandableSerializer
+from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
+from rest_framework.serializers import ModelSerializer
+from asset.inventory_field.serializers import InventoryFieldSerializer
 
 
-class InventorySectionSerializer(ExpandableSerializer):
+class InventorySectionSerializer(ExpandableFieldsMixin, ModelSerializer):
     """
     Serializer class for InventorySection
-
-    Args:
-        serializers ([ExpandableSerializer])
     """
 
     class Meta:
@@ -22,9 +21,5 @@ class InventorySectionSerializer(ExpandableSerializer):
         ]
 
         expandable_fields = {
-            "fields": {
-                "serializer": "asset.inventory_field.serializers.InventoryFieldSerializer",
-                "many": True,
-                "required": False
-            }
+            "fields": InventoryFieldSerializer,
         }

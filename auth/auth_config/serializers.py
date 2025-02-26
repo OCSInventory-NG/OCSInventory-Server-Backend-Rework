@@ -3,18 +3,16 @@ from importlib import import_module
 from auth.auth_method.models import AuthMethod
 from django.db.models import F
 from ocsinventory_backend import settings
-from ocsinventory_backend.ocs_framework.serializers import ExpandableSerializer
-from rest_framework import serializers
+from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
+from rest_framework.serializers import ModelSerializer
 
 from .models import AuthConfig
+from auth.auth_mapping.serializers import AuthMappingSerializer
 
 
-class AuthConfigSerializer(ExpandableSerializer):
+class AuthConfigSerializer(ExpandableFieldsMixin, ModelSerializer):
     """
     This serialize class provide the API representation
-
-    Args:
-        serializers ([ExpandableSerializer])
     """
 
     class Meta:
@@ -30,11 +28,7 @@ class AuthConfigSerializer(ExpandableSerializer):
             "mappings",
         ]
         expandable_fields = {
-            "mappings": {
-                "serializer": "auth.auth_mapping.serializers.AuthMappingSerializer",
-                "many": True,
-                "required": False
-            }
+            "mappings": AuthMappingSerializer,
         }
 
     def custom_validate(self, data):

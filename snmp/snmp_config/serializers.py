@@ -1,13 +1,11 @@
-from ocsinventory_backend.ocs_framework.serializers import ExpandableSerializer
+from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
+from rest_framework.serializers import ModelSerializer
 from snmp.snmp_config.models import SnmpConfig
 
 
-class SnmpConfigSerializer(ExpandableSerializer):
+class SnmpConfigSerializer(ExpandableFieldsMixin, ModelSerializer):
     """
     This serializer class provide the API representation
-
-    Args:
-        serializers ([ExpandableSerializer])
     """
 
     class Meta:

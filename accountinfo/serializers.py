@@ -1,14 +1,12 @@
 from accountinfo.models import AccountinfoConfig, AccountinfoData, AccountinfoValue
 from django.contrib.contenttypes.models import ContentType
-from ocsinventory_backend.ocs_framework.serializers import ExpandableSerializer
+from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
+from rest_framework.serializers import ModelSerializer
 
 
-class AccountinfoDataSerializer(ExpandableSerializer):
+class AccountinfoDataSerializer(ExpandableFieldsMixin, ModelSerializer):
     """
     This serialize class provide the API representation
-
-    Args:
-        serializers ([ExpandableSerializer])
     """
 
     class Meta:
@@ -31,12 +29,9 @@ class AccountinfoDataSerializer(ExpandableSerializer):
         return super().create(validated_data)
 
 
-class AccountinfoValueSerializer(ExpandableSerializer):
+class AccountinfoValueSerializer(ExpandableFieldsMixin, ModelSerializer):
     """
     This serialize class provide the API representation
-
-    Args:
-        serializers ([ExpandableSerializer])
     """
 
     class Meta:
@@ -47,12 +42,9 @@ class AccountinfoValueSerializer(ExpandableSerializer):
         expandable_fields = {}
 
 
-class AccountinfoConfigSerializer(ExpandableSerializer):
+class AccountinfoConfigSerializer(ExpandableFieldsMixin, ModelSerializer):
     """
     This serialize class provide the API representation
-
-    Args:
-        serializers ([ExpandableSerializer])
     """
 
     class Meta:
@@ -70,9 +62,5 @@ class AccountinfoConfigSerializer(ExpandableSerializer):
         extra_kwargs = {"accountinfo_values": {"read_only": True}}
 
         expandable_fields = {
-            "accountinfo_values": {
-                "serializer": "accountinfo.serializers.AccountinfoValueSerializer",
-                "many": True,
-                "required": False
-            }
+            "accountinfo_values": AccountinfoValueSerializer,
         }

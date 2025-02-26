@@ -1,14 +1,13 @@
 from inventory.section.models import Section
-from ocsinventory_backend.ocs_framework.serializers import ExpandableSerializer
+from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
+from rest_framework.serializers import ModelSerializer
+from inventory.field.serializers import FieldSerializer
 
-
-class SectionSerializer(ExpandableSerializer):
+class SectionSerializer(ExpandableFieldsMixin, ModelSerializer):
     """
     This serialize class provide the API representation
-
-    Args:
-        serializers ([ExpandableSerializer])
     """
+    fields = FieldSerializer(many=True, read_only=False)
 
     class Meta:
         """Define the linked model and the fields registered in the API"""
@@ -26,12 +25,7 @@ class SectionSerializer(ExpandableSerializer):
         ]
 
         expandable_fields = {
-            "fields": {
-                "serializer": "inventory.field.serializers.FieldSerializer",
-                "many": True,
-                "required": False
-            },
-            "template": "inventory.template.serializers.TemplateSerializer",
+            "fields": FieldSerializer,
         }
 
     def create(self, validated_data):

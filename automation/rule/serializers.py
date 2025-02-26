@@ -1,14 +1,12 @@
 from automation.rule.models import Action, Rule
 from django.contrib.contenttypes.models import ContentType
-from ocsinventory_backend.ocs_framework.serializers import ExpandableSerializer
+from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
+from rest_framework.serializers import ModelSerializer
 
 
-class ActionSerializer(ExpandableSerializer):
+class ActionSerializer(ExpandableFieldsMixin, ModelSerializer):
     """
     This serialize class provide the API representation
-
-    Args:
-        serializers ([ExpandableSerializer])
     """
 
     class Meta:
@@ -39,12 +37,9 @@ class ActionSerializer(ExpandableSerializer):
         return super().create(validated_data)
 
 
-class RuleSerializer(ExpandableSerializer):
+class RuleSerializer(ExpandableFieldsMixin, ModelSerializer):
     """
     This serialize class provide the API representation
-
-    Args:
-        serializers ([ExpandableSerializer])
     """
 
     class Meta:
@@ -53,11 +48,7 @@ class RuleSerializer(ExpandableSerializer):
         model = Rule
         fields = ["id", "description", "trigger", "enabled", "logic", "actions"]
         expandable_fields = {
-            "actions": {
-                "serializer": "automation.rule.serializers.ActionSerializer",
-                "many": True,
-                "required": False,
-            },
+            "actions": ActionSerializer,
         }
 
     def create(self, validated_data):

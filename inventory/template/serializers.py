@@ -1,14 +1,13 @@
 from inventory.template.models import Template
-from ocsinventory_backend.ocs_framework.serializers import ExpandableSerializer
+from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
+from rest_framework.serializers import ModelSerializer
+from inventory.section.serializers import SectionSerializer
 
-
-class TemplateSerializer(ExpandableSerializer):
+class TemplateSerializer(ExpandableFieldsMixin, ModelSerializer):
     """
     This serialize class provide the API representation
-
-    Args:
-        serializers ([ExpandableSerializer])
     """
+    sections = SectionSerializer(many=True, read_only=False)
     
     class Meta:
         """Define the linked model and the fields registered in the API"""
@@ -17,11 +16,7 @@ class TemplateSerializer(ExpandableSerializer):
         fields = ["id", "name", "os", "last_update", "sections"]
 
         expandable_fields = {
-            "sections": {
-                "serializer": "inventory.section.serializers.SectionSerializer",
-                "many": True,
-                "required": False
-            }
+            "sections": SectionSerializer,
         }
         extra_kwargs = {"last_update": {"read_only": True}}
 
