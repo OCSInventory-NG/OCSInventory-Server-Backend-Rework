@@ -29,6 +29,4 @@ class SnmpConfigSerializer(ExpandableSerializer):
             "subnets",
         ]
 
-        expandable_fields = {
-            "subnets": "snmp.subnet.serializers.SubnetSerializer",
-        }
+        expandable_fields = {}

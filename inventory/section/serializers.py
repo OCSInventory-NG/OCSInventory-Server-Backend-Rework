@@ -26,7 +26,11 @@ class SectionSerializer(ExpandableSerializer):
         ]
 
         expandable_fields = {
-            "fields": "inventory.field.serializers.FieldSerializer",
+            "fields": {
+                "serializer": "inventory.field.serializers.FieldSerializer",
+                "many": True,
+                "required": False
+            },
             "template": "inventory.template.serializers.TemplateSerializer",
         }
 

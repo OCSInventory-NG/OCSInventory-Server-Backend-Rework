@@ -22,5 +22,9 @@ class InventorySectionSerializer(ExpandableSerializer):
         ]
 
         expandable_fields = {
-            "fields": "asset.inventory_field.serializers.InventoryFieldSerializer",
+            "fields": {
+                "serializer": "asset.inventory_field.serializers.InventoryFieldSerializer",
+                "many": True,
+                "required": False
+            }
         }

@@ -1,3 +1,4 @@
+from rest_framework import serializers
 from asset.log.models import Log
 from ocsinventory_backend.ocs_framework.serializers import ExpandableSerializer
 
@@ -23,3 +24,4 @@ class LogSerializer(ExpandableSerializer):
         ]
         extra_kwargs = {"timestamp": {"read_only": True}}
         http_method_names = ["get", "post"]
+        expandable_fields = {}

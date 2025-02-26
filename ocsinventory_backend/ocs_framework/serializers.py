@@ -34,7 +34,7 @@ class ExpandableSerializer(serializers.ModelSerializer):
             self.expanded_fields = set(self.Meta.expandable_fields.keys())
             self.process_field_configurations()
         # nested serializer for read
-        elif not is_nested:
+        elif not is_nested and request and request.method == "GET":
             self.process_expandable_fields()
             self.process_field_configurations()
 

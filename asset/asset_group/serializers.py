@@ -18,5 +18,9 @@ class AssetGroupSerializer(ExpandableSerializer):
         fields = "__all__"
         extra_kwargs = {"last_updated": {"read_only": True}}
         expandable_fields = {
-            "assets": "asset.inventory_base.serializers.InventoryBaseSerializer",
+            "assets": {
+                "serializer": "asset.inventory_base.serializers.InventoryBaseSerializer",
+                "many": True,
+                "required": False
+            }
         }

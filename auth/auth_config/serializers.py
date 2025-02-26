@@ -29,6 +29,13 @@ class AuthConfigSerializer(ExpandableSerializer):
             "config",
             "mappings",
         ]
+        expandable_fields = {
+            "mappings": {
+                "serializer": "auth.auth_mapping.serializers.AuthMappingSerializer",
+                "many": True,
+                "required": False
+            }
+        }
 
     def custom_validate(self, data):
         """

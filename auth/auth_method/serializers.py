@@ -19,7 +19,11 @@ class AuthMethodSerializer(ExpandableSerializer):
         model = AuthMethod
         fields = ["id", "name", "auth_type", "enabled", "priority", "configs"]
         expandable_fields = {
-            "configs": "auth.auth_config.serializers.AuthConfigSerializer"
+            "configs": {
+                "serializer": "auth.auth_config.serializers.AuthConfigSerializer",
+                "many": True,
+                "required": False
+            }
         }
 
     def custom_validate(self, data):

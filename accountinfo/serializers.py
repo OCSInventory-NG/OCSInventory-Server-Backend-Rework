@@ -18,6 +18,7 @@ class AccountinfoDataSerializer(ExpandableSerializer):
         fields = ["id", "accountdata", "object_slug", "content_type", "object_id"]
 
         extra_kwargs = {"content_type": {"read_only": True}}
+        expandable_fields = {}
 
     def create(self, validated_data):
         """Override create to allow nested creation of fields"""
@@ -43,6 +44,7 @@ class AccountinfoValueSerializer(ExpandableSerializer):
 
         model = AccountinfoValue
         fields = ["id", "accountinfo_config", "value"]
+        expandable_fields = {}
 
 
 class AccountinfoConfigSerializer(ExpandableSerializer):
@@ -68,5 +70,9 @@ class AccountinfoConfigSerializer(ExpandableSerializer):
         extra_kwargs = {"accountinfo_values": {"read_only": True}}
 
         expandable_fields = {
-            "accountinfo_values": "accountinfo.serializers.AccountinfoValueSerializer"
+            "accountinfo_values": {
+                "serializer": "accountinfo.serializers.AccountinfoValueSerializer",
+                "many": True,
+                "required": False
+            }
         }

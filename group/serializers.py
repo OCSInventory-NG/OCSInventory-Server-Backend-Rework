@@ -15,3 +15,4 @@ class GroupSerializer(ExpandableSerializer):
 
         model = Group
         fields = ["id", "name", "permissions"]
+        expandable_fields = {}

@@ -35,8 +35,11 @@ class InventoryBaseSerializer(ExpandableSerializer):
         ]
 
         expandable_fields = {
-            "template": "inventory.template.serializers.TemplateSerializer",
+            "template": {
+                "serializer": "inventory.template.serializers.TemplateSerializer",
+                "many": False,
+                "required": False
+            }
         }
         extra_kwargs = {"last_update": {"read_only": True}}
-
         http_method_names = ["get", "post", "patch", "delete"]

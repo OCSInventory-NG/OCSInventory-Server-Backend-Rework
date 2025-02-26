@@ -29,6 +29,14 @@ class SnmpScannerSerializer(ExpandableSerializer):
         extra_kwargs = {"last_updated": {"read_only": True}}
 
         expandable_fields = {
-            "configs": "snmp.snmp_config.serializers.SnmpConfigSerializer",
-            "assets": "asset.inventory_base.serializers.InventoryBaseSerializer",
+            "configs": {
+                "serializer": "snmp.snmp_config.serializers.SnmpConfigSerializer",
+                "many": True,
+                "required": False
+            },
+            "assets": {
+                "serializer": "asset.inventory_base.serializers.InventoryBaseSerializer",
+                "many": True,
+                "required": False
+            }
         }

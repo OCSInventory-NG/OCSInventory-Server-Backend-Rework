@@ -9,7 +9,7 @@ class TemplateSerializer(ExpandableSerializer):
     Args:
         serializers ([ExpandableSerializer])
     """
-
+    
     class Meta:
         """Define the linked model and the fields registered in the API"""
 
@@ -17,7 +17,11 @@ class TemplateSerializer(ExpandableSerializer):
         fields = ["id", "name", "os", "last_update", "sections"]
 
         expandable_fields = {
-            "sections": "inventory.section.serializers.SectionSerializer",
+            "sections": {
+                "serializer": "inventory.section.serializers.SectionSerializer",
+                "many": True,
+                "required": False
+            }
         }
         extra_kwargs = {"last_update": {"read_only": True}}
 

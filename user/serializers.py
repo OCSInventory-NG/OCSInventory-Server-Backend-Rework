@@ -27,6 +27,7 @@ class UserSerializer(ExpandableSerializer):
             "user_permissions",
         ]
         extra_kwargs = {"password": {"write_only": True}}
+        expandable_fields = {}
 
     @staticmethod
     def create(validated_data):

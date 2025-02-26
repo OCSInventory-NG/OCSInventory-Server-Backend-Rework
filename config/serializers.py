@@ -15,3 +15,4 @@ class ConfigSerializer(ExpandableSerializer):
 
         model = Config
         fields = ["name", "value"]
+        expandable_fields = {}
