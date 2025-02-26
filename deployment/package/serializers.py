@@ -1,14 +1,19 @@
 from deployment.package.models import Package
-from ocsinventory_backend.ocs_framework.serializers import ExpandableSerializer
+from rest_framework.serializers import ModelSerializer
+from deployment.action.serializers import ActionSerializer
+from deployment.result.serializers import ResultSerializer
+from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
 
 
-class PackageSerializer(ExpandableSerializer):
+class PackageSerializer(ExpandableFieldsMixin, ModelSerializer):
     """
     This serializer class provides the API representation
 
     Args:
         serializers ([ExpandableSerializer])
     """
+    actions_list = ActionSerializer(many=True, read_only=False)
+    result = ResultSerializer(many=True, read_only=False)
 
     class Meta:
         """Define the linked model and the fields registered in the API"""
@@ -25,16 +30,8 @@ class PackageSerializer(ExpandableSerializer):
         ]
 
         expandable_fields = {
-            "actions_list": {
-                "serializer": "deployment.action.serializers.ActionSerializer",
-                "many": True,
-                "required": False
-            },
-            "result": {
-                "serializer": "deployment.result.serializers.ResultSerializer",
-                "many": True,
-                "required": False
-            }
+            "actions_list": ActionSerializer,
+            "result": ResultSerializer,
         }
 
     def create(self, validated_data):

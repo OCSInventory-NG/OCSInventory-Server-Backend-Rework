@@ -1,9 +1,10 @@
 from deployment.action.models import DeploymentAction
 from django.db.models import F
-from ocsinventory_backend.ocs_framework.serializers import ExpandableSerializer
+from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
+from rest_framework.serializers import ModelSerializer
 
 
-class ActionSerializer(ExpandableSerializer):
+class ActionSerializer(ExpandableFieldsMixin, ModelSerializer):
     """
     This serializer class provides the API representation
 
@@ -31,9 +32,7 @@ class ActionSerializer(ExpandableSerializer):
             "original_file_name": {"required": False},
         }
 
-        expandable_fields = {
-            "package": "deployment.package.serializers.PackageSerializer",
-        }
+        expandable_fields = {}
 
     def custom_validate(self, data):
         """
