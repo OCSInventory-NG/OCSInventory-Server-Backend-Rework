@@ -1,7 +1,7 @@
 from django.apps import apps
 from django.contrib.auth.management import create_permissions
-from django.core.management.commands.migrate import Command as MigrateCommand
 from django.contrib.auth.models import Group, Permission
+from django.core.management.commands.migrate import Command as MigrateCommand
 
 
 class Command(MigrateCommand):
@@ -22,15 +22,9 @@ class Command(MigrateCommand):
 
     def get_group_configs(self):
         return {
-            'super-admin': {
-                'patterns': ['add_', 'change_', 'delete_', 'view_']
-            },
-            'admin': {
-                'patterns': ['add_', 'change_', 'view_']
-            },
-            'user': {
-                'patterns': ['view_']
-            }
+            "super-admin": {"patterns": ["add_", "change_", "delete_", "view_"]},
+            "admin": {"patterns": ["add_", "change_", "view_"]},
+            "user": {"patterns": ["view_"]},
         }
 
     def get_filtered_permissions(self, patterns):
@@ -55,13 +49,13 @@ class Command(MigrateCommand):
             try:
                 group = Group.objects.get(name=group_name)
             except Group.DoesNotExist:
-                print(f"""Group '{group_name}' does not exist.
-                       Please run migrations first.""")
+                print(
+                    f"""Group '{group_name}' does not exist.
+                       Please run migrations first."""
+                )
                 continue
 
-            default_permissions = self.get_filtered_permissions(
-                config['patterns']
-                )
+            default_permissions = self.get_filtered_permissions(config["patterns"])
             current_permissions = set(group.permissions.all())
 
             # diff
@@ -71,13 +65,17 @@ class Command(MigrateCommand):
             # applying changes
             if permissions_to_add:
                 group.permissions.add(*permissions_to_add)
-                print(f"""Added {len(permissions_to_add)}
-                       permissions to '{group_name}'""")
+                print(
+                    f"""Added {len(permissions_to_add)}
+                       permissions to '{group_name}'"""
+                )
 
             if permissions_to_remove:
                 group.permissions.remove(*permissions_to_remove)
-                print(f"""Removed {len(permissions_to_remove)}
-                       permissions from '{group_name}'""")
+                print(
+                    f"""Removed {len(permissions_to_remove)}
+                       permissions from '{group_name}'"""
+                )
 
             if not permissions_to_add and not permissions_to_remove:
                 print(f"No changes needed for group '{group_name}'")
