@@ -15,6 +15,4 @@ class AssetGroupSerializer(ExpandableFieldsMixin, ModelSerializer):
         model = AssetGroup
         fields = "__all__"
         extra_kwargs = {"last_updated": {"read_only": True}}
-        expandable_fields = {
-            "assets": InventoryBaseSerializer,
-        }
+        expandable_fields = {}

@@ -5,9 +5,10 @@ from asset.asset_group.serializers import AssetGroupSerializer
 from rest_framework import serializers
 from asset.inventory_base.models import InventoryBase
 from asset.asset_group.models import AssetGroup
+from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
 
 
-class ResultSerializer(ModelSerializer):
+class ResultSerializer(ExpandableFieldsMixin, ModelSerializer):
     """
     This serializer class provides the API representation
     """

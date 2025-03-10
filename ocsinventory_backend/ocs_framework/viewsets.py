@@ -196,6 +196,11 @@ class ExpandableFieldsMixin:
         if not request:
             return representation
 
+        # track depth
+        current_depth = self.context.get('expand_depth', 0)
+        if current_depth >= 1:
+            return representation
+
         expand_param = request.query_params.get("expand", "")
         expandable_fields = getattr(self.Meta, "expandable_fields", {})
 
@@ -207,11 +212,11 @@ class ExpandableFieldsMixin:
                     if getattr(self.fields[field], "many", False):
                         # handle many
                         representation[field] = serializer_class(
-                            field_obj.all(), many=True, context=self.context
+                            field_obj.all(), many=True, context={**self.context, 'expand_depth': current_depth + 1}
                         ).data
                     else:
                         representation[field] = serializer_class(
-                            field_obj, context=self.context
+                            field_obj, context={**self.context, 'expand_depth': current_depth + 1}
                         ).data
             return representation
 
@@ -225,11 +230,11 @@ class ExpandableFieldsMixin:
                     # handle many
                     if getattr(self.fields[field], "many", False):
                         representation[field] = serializer_class(
-                            field_obj.all(), many=True, context=self.context
+                            field_obj.all(), many=True, context={**self.context, 'expand_depth': current_depth + 1}
                         ).data
                     else:
                         representation[field] = serializer_class(
-                            field_obj, context=self.context
+                            field_obj, context={**self.context, 'expand_depth': current_depth + 1}
                         ).data
             else:
                 # handle non expanded fields
