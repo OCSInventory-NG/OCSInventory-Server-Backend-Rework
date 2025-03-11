@@ -1,9 +1,11 @@
 import logging
 
+from accountinfo.views import AccountinfoDataViewSet
 from asset.inventory_base.models import InventoryBase
 from asset.inventory_base.serializers import InventoryBaseSerializer
 from asset.inventory_field.models import InventoryField
 from asset.inventory_section.models import InventorySection
+from config.models import Config
 from django.core.exceptions import ObjectDoesNotExist
 from inventory.field.models import Field
 from inventory.section.models import Section
@@ -64,6 +66,19 @@ class CollectionView(APIView):
                 templateId = (
                     asset_instance.template_id if asset_instance.template else None
                 )
+                # if accountinfo_generation is set to agent mode
+                server_conf = Config.objects.filter(name="server").first()
+                accountinfo_gen = None
+                for item in server_conf.value:
+                    if item["name"] == "accountinfo_generation":
+                        accountinfo_gen = item
+                        break
+
+                if accountinfo_gen["value"] == "agent":
+                    # create accountinfo data for the new asset
+                    AccountinfoDataViewSet.generate_accountinfo(
+                        asset_instance, "inventory_base.inventorybase"
+                    )
         except ValidationError as ve:
             errors.append(f"Error creating asset: {ve}")
             self.LOGGER.error(f"Error creating asset: {ve}")
