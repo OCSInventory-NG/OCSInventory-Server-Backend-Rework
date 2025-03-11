@@ -4,12 +4,12 @@ from asset.inventory_base.models import InventoryBase
 from asset.inventory_base.serializers import InventoryBaseSerializer
 from asset.inventory_field.models import InventoryField
 from asset.inventory_section.models import InventorySection
+from config.models import Config
 from inventory.field.models import Field
 from inventory.section.models import Section
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from config.models import Config
 
 
 class CollectionView(APIView):
@@ -74,7 +74,8 @@ class CollectionView(APIView):
         for field in fields:
             if field not in data:
                 raise ValueError(
-                    f"Missing field '{field}' required for reconciliation.")
+                    f"Missing field '{field}' required for reconciliation."
+                )
             filter_dict[field] = data[field]
         return filter_dict
 
@@ -104,8 +105,7 @@ class CollectionView(APIView):
             if asset_serializer.is_valid(raise_exception=True):
                 asset_instance = asset_serializer.save()
                 templateId = (
-                    asset_instance.template_id if asset_instance.template
-                    else None
+                    asset_instance.template_id if asset_instance.template else None
                 )
         except ValidationError as ve:
             errors.append(f"Error creating asset: {ve}")
@@ -228,12 +228,11 @@ class CollectionView(APIView):
 
         asset_instance = InventoryBase.objects.filter(**reconciliation_filter).first()
         if not asset_instance:
-            self.LOGGER.error(
-                f"Error retrieving asset: {reconciliation_filter}"
-                )
+            self.LOGGER.error(f"Error retrieving asset: {reconciliation_filter}")
             return Response(
                 {"error": f"Error retrieving asset: {reconciliation_filter}"},
-                status=500)
+                status=500,
+            )
         try:
             # update asset
             asset_serializer = InventoryBaseSerializer(asset_instance, data=data)
@@ -350,15 +349,13 @@ class CollectionView(APIView):
             self.LOGGER.error("Reconciliation error: %s", ve)
             return Response({"error": str(ve)}, status=400)
 
-        asset_instance = InventoryBase.objects.filter(
-            **reconciliation_filter).first()
+        asset_instance = InventoryBase.objects.filter(**reconciliation_filter).first()
         if not asset_instance:
-            self.LOGGER.error(
-                f"Error retrieving asset: {reconciliation_filter}"
-                )
+            self.LOGGER.error(f"Error retrieving asset: {reconciliation_filter}")
             return Response(
                 {"error": f"Error retrieving asset: {reconciliation_filter}"},
-                status=500)
+                status=500,
+            )
 
         try:
             # update asset
