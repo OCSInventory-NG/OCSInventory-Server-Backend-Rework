@@ -6,7 +6,6 @@ from asset.inventory_base.serializers import InventoryBaseSerializer
 from asset.inventory_field.models import InventoryField
 from asset.inventory_section.models import InventorySection
 from config.models import Config
-from django.core.exceptions import ObjectDoesNotExist
 from inventory.field.models import Field
 from inventory.section.models import Section
 from rest_framework.exceptions import ValidationError
