@@ -6,7 +6,6 @@ from asset.inventory_base.serializers import InventoryBaseSerializer
 from asset.inventory_field.models import InventoryField
 from asset.inventory_section.models import InventorySection
 from config.models import Config
-from django.core.exceptions import ObjectDoesNotExist
 from inventory.field.models import Field
 from inventory.section.models import Section
 from rest_framework.exceptions import ValidationError
@@ -37,6 +36,49 @@ class CollectionView(APIView):
     permission_classes = []
 
     LOGGER = logging.getLogger(__name__)
+
+    def get_reconciliation_fields(self):
+        """
+        Get the fields used for reconciliation from the server configuration
+
+        Possible values are:
+         - "uuid"
+         - "uuid, name"
+         - "uuid, srcmac"
+         Default is "uuid"
+        """
+        try:
+            config = Config.objects.get(name="server")
+            for item in config.value:
+                if item.get("name") == "duplicate_reconciliation":
+                    selection = item.get("value", "uuid")
+                    if selection == "uuid, name":
+                        return ["uuid", "name"]
+                    elif selection == "uuid, srcmac":
+                        return ["uuid", "srcmac"]
+                    # default or "uuid"
+                    return ["uuid"]
+            return ["uuid"]
+        except Config.DoesNotExist:
+            self.LOGGER.warning(
+                """No server configuration found, will be using uuid only as
+                  default reconciliation field"""
+            )
+            return ["uuid"]
+
+    def get_reconciliation_filter(self, data):
+        """
+        Build a filter for asset lookup from the reconciliation fields (config)
+        """
+        fields = self.get_reconciliation_fields()
+        filter_dict = {}
+        for field in fields:
+            if field not in data:
+                raise ValueError(
+                    f"Missing field '{field}' required for reconciliation."
+                )
+            filter_dict[field] = data[field]
+        return filter_dict
 
     def post(self, request, *args, **kwargs):
         """
@@ -193,18 +235,21 @@ class CollectionView(APIView):
         )
 
         try:
-            # retrieve asset from UUID
-            asset_query = InventoryBase.objects.get(uuid=data["uuid"])
-        except ObjectDoesNotExist:
-            self.LOGGER.error("Asset not found")
-            return Response({"error": "Asset not found"}, status=404)
-        except Exception as e:
-            self.LOGGER.error(f"Error retrieving asset: {e}")
-            return Response({"error": f"Error retrieving asset: {e}"}, status=500)
+            reconciliation_filter = self.get_reconciliation_filter(data)
+        except ValueError as ve:
+            self.LOGGER.error("Reconciliation error: %s", ve)
+            return Response({"error": str(ve)}, status=400)
 
+        asset_instance = InventoryBase.objects.filter(**reconciliation_filter).first()
+        if not asset_instance:
+            self.LOGGER.error(f"Error retrieving asset: {reconciliation_filter}")
+            return Response(
+                {"error": f"Error retrieving asset: {reconciliation_filter}"},
+                status=500,
+            )
         try:
             # update asset
-            asset_serializer = InventoryBaseSerializer(asset_query, data=data)
+            asset_serializer = InventoryBaseSerializer(asset_instance, data=data)
             if asset_serializer.is_valid(raise_exception=True):
                 asset_instance = asset_serializer.save()
         except ValidationError as ve:
@@ -313,18 +358,22 @@ class CollectionView(APIView):
         )
 
         try:
-            # retrieve asset from UUID
-            asset_query = InventoryBase.objects.get(uuid=data["uuid"])
-        except ObjectDoesNotExist:
-            self.LOGGER.error("Asset not found")
-            return Response({"error": "Asset not found"}, status=404)
-        except Exception as e:
-            self.LOGGER.error(f"Error retrieving asset: {e}")
-            return Response({"error": f"Error retrieving asset: {e}"}, status=500)
+            reconciliation_filter = self.get_reconciliation_filter(data)
+        except ValueError as ve:
+            self.LOGGER.error("Reconciliation error: %s", ve)
+            return Response({"error": str(ve)}, status=400)
+
+        asset_instance = InventoryBase.objects.filter(**reconciliation_filter).first()
+        if not asset_instance:
+            self.LOGGER.error(f"Error retrieving asset: {reconciliation_filter}")
+            return Response(
+                {"error": f"Error retrieving asset: {reconciliation_filter}"},
+                status=500,
+            )
 
         try:
             # update asset
-            asset_serializer = InventoryBaseSerializer(asset_query, data=data)
+            asset_serializer = InventoryBaseSerializer(asset_instance, data=data)
             if asset_serializer.is_valid(raise_exception=True):
                 asset_instance = asset_serializer.save()
         except ValidationError as ve:
