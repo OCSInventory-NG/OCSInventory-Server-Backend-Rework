@@ -60,7 +60,8 @@ class CollectionView(APIView):
             return ["uuid"]
         except Config.DoesNotExist:
             self.LOGGER.warning(
-                "No server configuration found, will be using uuid only as default reconciliation field"
+                """No server configuration found, will be using uuid only as
+                  default reconciliation field"""
             )
             return ["uuid"]
 
@@ -72,7 +73,8 @@ class CollectionView(APIView):
         filter_dict = {}
         for field in fields:
             if field not in data:
-                raise ValueError(f"Missing field '{field}' required for reconciliation.")
+                raise ValueError(
+                    f"Missing field '{field}' required for reconciliation.")
             filter_dict[field] = data[field]
         return filter_dict
 
