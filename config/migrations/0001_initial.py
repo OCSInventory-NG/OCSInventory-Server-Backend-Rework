@@ -28,11 +28,12 @@ def create_base_config(apps, schema_editor):
             "name": "server",
             "value": [
                 {
-                    "name": "debug",
-                    "description": "Enable debug mode",
-                    "value": False,
-                    "type": "switch",
+                    "name": "log_level",
+                    "description": "Application log level",
+                    "value": "INFO",
+                    "type": "select",
                     "unit": "",
+                    "options": ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
                 },
                 {
                     "name": "duplicate_reconciliation",
@@ -41,6 +42,14 @@ def create_base_config(apps, schema_editor):
                     "type": "select",
                     "unit": "",
                     "options": ["uuid", "uuid, name", "uuid, srcmac"],
+                },
+                {
+                    "name": "accountinfo_generation",
+                    "description": "Mode of administrative data generation",
+                    "value": "agent",
+                    "type": "select",
+                    "unit": "",
+                    "options": ["agent", "automation"],
                 },
             ],
         },
@@ -123,7 +132,7 @@ def create_base_config(apps, schema_editor):
                 [
                     {
                         "name": "serialnumbers",
-                        "description": "Enabble serialnumbers blacklist",
+                        "description": "Enable serialnumbers blacklist",
                         "value": False,
                         "type": "switch",
                         "unit": "",
