@@ -8,10 +8,9 @@ def create_default_groups(apps, schema_editor):
     Create default groups : super-admin / admin / user
     """
     Group = apps.get_model("auth", "Group")
-
-    Group.objects.create(name="super-admin")
-    Group.objects.create(name="admin")
-    Group.objects.create(name="user")
+    Group.objects.create(name="super-admin", is_protected=True)
+    Group.objects.create(name="admin", is_protected=True)
+    Group.objects.create(name="user", is_protected=True)
 
 
 class Migration(migrations.Migration):
@@ -19,7 +18,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("auth_config", "0001_initial"),
+        ("auth", "0001_initial"),
     ]
 
     operations = [migrations.RunPython(create_default_groups)]
