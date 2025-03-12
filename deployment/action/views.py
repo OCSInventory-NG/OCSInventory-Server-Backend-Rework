@@ -67,6 +67,15 @@ class ActionViewSet(viewsets.OCSViewSet):
         self.LOGGER.info("Creating action for package %s", data["package"])
 
         try:
+            # Retrieve the package instance using the provided package ID
+            package = Package.objects.get(id=data["package"])
+            # Serialize the package instance to get its data as a dictionary
+            packageData = PackageSerializer(package).data
+            # Compress the uploaded file based on the target OS specified in the package
+            # data
+            if "file" in data:
+                data["file"] = self.compress(data["file"], packageData["target_os"])
+
             # Create a serializer instance with the modified data
             actionSerializer = ActionSerializer(data=data)
             # Validate the data; if invalid, raise an exception

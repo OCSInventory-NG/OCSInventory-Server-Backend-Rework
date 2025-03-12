@@ -1,4 +1,5 @@
 import logging
+
 from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets
@@ -150,7 +151,7 @@ class RestrictVisibilityViewSet(OCSViewSet):
         private_personal, private_group)
         """
         user = request.user
-        queryset = self.get_queryset()
+        queryset = self.filter_queryset(self.get_queryset())
         queryset = queryset.filter(
             Q(visibility="public") | Q(user=user) | Q(groups__in=user.groups.all())
         ).distinct()
