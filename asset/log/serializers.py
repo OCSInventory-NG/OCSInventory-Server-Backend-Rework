@@ -1,6 +1,9 @@
 from asset.log.models import Log
 from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
 from rest_framework.serializers import ModelSerializer
+from asset.inventory_base.serializers import InventoryBaseSerializer
+from asset.inventory_base.models import InventoryBase
+from rest_framework import serializers
 
 
 class LogSerializer(ExpandableFieldsMixin, ModelSerializer):
@@ -20,5 +23,7 @@ class LogSerializer(ExpandableFieldsMixin, ModelSerializer):
             "comment",
         ]
         extra_kwargs = {"timestamp": {"read_only": True}}
+        expandable_fields = {
+            "asset": InventoryBaseSerializer,
+        }
         http_method_names = ["get", "post"]
-        expandable_fields = {}
