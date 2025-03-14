@@ -42,21 +42,39 @@ class FileUploadMixin(serializers.Serializer):
 
     def handle_file_upload(self, validated_data):
         """
-        Handles file compression and creates a FileManager object
+        Handles file compression and creates/updates a FileManager object
         """
         file = validated_data.pop('uploaded_file', None)
         if file:
             mimetype = mimetypes.guess_type(file.name)[0]
             compressed_file = self.compress(file)
-            uuid = uuid4()
-            file_manager = FileManager.objects.create(
-                file=compressed_file,
-                name=compressed_file.name,
-                filesize=compressed_file.size,
-                mimetype=mimetype,
-                linked_model=self.Meta.model.__name__,
-                uuid=uuid
-            )
+
+            # update existing instance
+            if (self.instance and hasattr(self.instance, 'file')
+                    and self.instance.file):
+                file_manager = self.instance.file
+                # delete old file from storage
+                if file_manager.file:
+                    storage = file_manager.file.storage
+                    if storage.exists(file_manager.file.name):
+                        storage.delete(file_manager.file.name)
+
+                file_manager.file = compressed_file
+                file_manager.name = compressed_file.name
+                file_manager.filesize = compressed_file.size
+                file_manager.mimetype = mimetype
+                file_manager.save()
+            else:
+                # new file instance
+                uuid = uuid4()
+                file_manager = FileManager.objects.create(
+                    file=compressed_file,
+                    name=compressed_file.name,
+                    filesize=compressed_file.size,
+                    mimetype=mimetype,
+                    linked_model=self.Meta.model.__name__,
+                    uuid=uuid
+                )
             validated_data["file"] = file_manager
         return validated_data
 

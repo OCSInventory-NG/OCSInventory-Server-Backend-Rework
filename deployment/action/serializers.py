@@ -92,6 +92,12 @@ class ActionSerializer(FileUploadMixin, serializers.ModelSerializer):
         Overriding the update method to manage action priority.
         """
         validated_data = self.custom_validate(validated_data)
+
+        # filename needs to be updated if the file changes
+        if 'uploaded_file' in validated_data:
+            validated_data['original_file_name'] = validated_data[
+                'uploaded_file'].name
+
         return super().update(instance, validated_data)
 
     def compress(self, file):
