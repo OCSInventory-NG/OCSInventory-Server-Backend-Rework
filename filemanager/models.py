@@ -17,7 +17,13 @@ class FileManager(models.Model):
         """
         Generate the upload path for the file.
         """
-        return f"{instance.linked_model}/{instance.created_at.year}/{instance.created_at.month}/{instance.uuid}/{filename}"
+        return (
+            f"{instance.linked_model}/"
+            f"{instance.created_at.year}/"
+            f"{instance.created_at.month}/"
+            f"{instance.uuid}/"
+            f"{filename}"
+        )
 
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
@@ -32,7 +38,8 @@ class FileManager(models.Model):
 @receiver(post_delete, sender=FileManager)
 def delete_file_on_entry_delete(sender, instance, **kwargs):
     """
-    Delete file and its parent directory when the associated FileManager instance is deleted
+    Delete file and its parent directory when the associated FileManager
+    instance is deleted
     """
     if instance.file:
         storage = instance.file.storage
@@ -41,7 +48,12 @@ def delete_file_on_entry_delete(sender, instance, **kwargs):
             storage.delete(instance.file.name)
 
         # delete parent dir (1 dir = 1 file = 1 action)
-        directory = f"{instance.linked_model}/{instance.created_at.year}/{instance.created_at.month}/{instance.uuid}"
+        directory = (
+            f"{instance.linked_model}/"
+            f"{instance.created_at.year}/"
+            f"{instance.created_at.month}/"
+            f"{instance.uuid}"
+        )
         try:
             full_path = os.path.join(storage.location, directory)
             if os.path.exists(full_path):
