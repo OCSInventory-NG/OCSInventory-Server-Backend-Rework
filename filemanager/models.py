@@ -2,12 +2,16 @@ from django.db import models
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from uuid import uuid4
+import os
+import logging
 
 
 class FileManager(models.Model):
     """
     File manager model to track uploaded files and their metadata.
     """
+
+    LOGGER = logging.getLogger(__name__)
 
     def upload_to(instance, filename):
         """
@@ -28,7 +32,20 @@ class FileManager(models.Model):
 @receiver(post_delete, sender=FileManager)
 def delete_file_on_entry_delete(sender, instance, **kwargs):
     """
-    Delete file from system when the associated FileManager instance is deleted
+    Delete file and its parent directory when the associated FileManager instance is deleted
     """
     if instance.file:
-        instance.file.delete(save=False)
+        storage = instance.file.storage
+        # delete file
+        if storage.exists(instance.file.name):
+            storage.delete(instance.file.name)
+
+        # delete parent dir (1 dir = 1 file = 1 action)
+        directory = f"{instance.linked_model}/{instance.created_at.year}/{instance.created_at.month}/{instance.uuid}"
+        try:
+            full_path = os.path.join(storage.location, directory)
+            if os.path.exists(full_path):
+                os.rmdir(full_path)
+        except OSError:
+            FileManager.LOGGER.error(f"Failed to delete directory {directory}")
+            pass

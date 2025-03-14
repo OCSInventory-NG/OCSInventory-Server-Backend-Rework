@@ -24,7 +24,7 @@ class FileManagerSerializer(serializers.ModelSerializer):
 
 
 class FileUploadMixin(serializers.Serializer):
-    file = serializers.FileField(write_only=True, required=False)
+    file = serializers.FileField(required=False)
 
     def create(self, validated_data):
         """
@@ -32,7 +32,7 @@ class FileUploadMixin(serializers.Serializer):
         """
         validated_data = self.handle_file_upload(validated_data)
         return super().create(validated_data)
-    
+
     def update(self, instance, validated_data):
         """
         Update method to handle file upload
@@ -44,7 +44,7 @@ class FileUploadMixin(serializers.Serializer):
         """
         Handles file compression and creates a FileManager object
         """
-        file = validated_data.pop('file', None)
+        file = validated_data.pop('uploaded_file', None)
         if file:
             mimetype = mimetypes.guess_type(file.name)[0]
             compressed_file = self.compress(file)

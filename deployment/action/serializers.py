@@ -1,7 +1,7 @@
 from deployment.action.models import DeploymentAction
 from django.db.models import F
 from rest_framework import serializers
-from filemanager.serializers import FileUploadMixin, FileManagerSerializer
+from filemanager.serializers import FileManagerSerializer, FileUploadMixin
 from django.core.files.base import ContentFile
 import tarfile
 import zipfile
@@ -16,8 +16,8 @@ class ActionSerializer(FileUploadMixin, serializers.ModelSerializer):
     Args:
         serializers ([ModelSerializer])
     """
-
-    file = FileManagerSerializer(required=False)
+    file = FileManagerSerializer(read_only=True, required=False)
+    uploaded_file = serializers.FileField(write_only=True, required=False)
 
     class Meta:
         """Define the linked model and the fields registered in the API"""
@@ -32,6 +32,7 @@ class ActionSerializer(FileUploadMixin, serializers.ModelSerializer):
             "action_type",
             "command",
             "file",
+            "uploaded_file",
             "original_file_name",
         ]
         extra_kwargs = {
