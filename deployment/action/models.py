@@ -20,6 +20,7 @@ class DeploymentAction(models.Model):
     - File
     - Original file name
     """
+
     package = models.ForeignKey(
         Package, related_name="actions_list", on_delete=models.CASCADE, null=True
     )
@@ -29,8 +30,11 @@ class DeploymentAction(models.Model):
     action_type = models.CharField(max_length=128)
     command = models.CharField(max_length=200)
     file = models.ForeignKey(
-        FileManager, on_delete=models.CASCADE,
-        related_name="deployment_actions", null=True, blank=True
+        FileManager,
+        on_delete=models.CASCADE,
+        related_name="deployment_actions",
+        null=True,
+        blank=True,
     )
     original_file_name = models.CharField(max_length=128, null=True)
 

@@ -1,13 +1,16 @@
-from rest_framework import serializers
-from .models import FileManager
 import mimetypes
 from uuid import uuid4
+
+from rest_framework import serializers
+
+from .models import FileManager
 
 
 class FileManagerSerializer(serializers.ModelSerializer):
     """
     Serializer for the FileManager model.
     """
+
     class Meta:
         model = FileManager
         fields = [
@@ -44,14 +47,13 @@ class FileUploadMixin(serializers.Serializer):
         """
         Handles file compression and creates/updates a FileManager object
         """
-        file = validated_data.pop('uploaded_file', None)
+        file = validated_data.pop("uploaded_file", None)
         if file:
             mimetype = mimetypes.guess_type(file.name)[0]
             compressed_file = self.compress(file)
 
             # update existing instance
-            if (self.instance and hasattr(self.instance, 'file')
-                    and self.instance.file):
+            if self.instance and hasattr(self.instance, "file") and self.instance.file:
                 file_manager = self.instance.file
                 # delete old file from storage
                 if file_manager.file:
@@ -73,7 +75,7 @@ class FileUploadMixin(serializers.Serializer):
                     filesize=compressed_file.size,
                     mimetype=mimetype,
                     linked_model=self.Meta.model.__name__,
-                    uuid=uuid
+                    uuid=uuid,
                 )
             validated_data["file"] = file_manager
         return validated_data

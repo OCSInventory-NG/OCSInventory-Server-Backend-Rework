@@ -31,8 +31,8 @@ from automation.history.routers import HistoryRouter
 from automation.rule.routers import RuleRouter
 from automation.scheduler.routers import SchedulerRouter
 from config.routers import ConfigRouter
-from dashboard.layout.routers import DashboardLayoutRouter
 from dashboard.chart.routers import DashboardChartRouter
+from dashboard.layout.routers import DashboardLayoutRouter
 from deployment.action.routers import ActionRouter
 from deployment.package.routers import PackageRouter
 from deployment.result.routers import ResultRouter
@@ -40,6 +40,7 @@ from django.conf.urls.static import static
 
 # Base import to get API Working
 from django.urls import include, path
+from filemanager.routers import FileManagerRouter
 from group.routers import GroupRouter
 from inventory.field.routers import FieldRouter
 from inventory.section.routers import SectionRouter
@@ -58,7 +59,6 @@ from search.views import SearchView
 from snmp.scanner.routers import SnmpScannerRouter
 from snmp.snmp_config.routers import SnmpConfigRouter
 from user.routers import UserRouter
-from filemanager.routers import FileManagerRouter
 
 # Routers provide a way of automatically determining the URL conf.
 defaultRouter = DefaultRouter()

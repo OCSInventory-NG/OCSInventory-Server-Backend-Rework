@@ -1,12 +1,13 @@
-from deployment.action.models import DeploymentAction
-from django.db.models import F
-from rest_framework import serializers
-from filemanager.serializers import FileManagerSerializer, FileUploadMixin
-from django.core.files.base import ContentFile
+import os
 import tarfile
 import zipfile
 from io import BytesIO
-import os
+
+from deployment.action.models import DeploymentAction
+from django.core.files.base import ContentFile
+from django.db.models import F
+from filemanager.serializers import FileManagerSerializer, FileUploadMixin
+from rest_framework import serializers
 
 
 class ActionSerializer(FileUploadMixin, serializers.ModelSerializer):
@@ -16,6 +17,7 @@ class ActionSerializer(FileUploadMixin, serializers.ModelSerializer):
     Args:
         serializers ([ModelSerializer])
     """
+
     file = FileManagerSerializer(read_only=True, required=False)
     uploaded_file = serializers.FileField(write_only=True, required=False)
 
@@ -94,9 +96,8 @@ class ActionSerializer(FileUploadMixin, serializers.ModelSerializer):
         validated_data = self.custom_validate(validated_data)
 
         # filename needs to be updated if the file changes
-        if 'uploaded_file' in validated_data:
-            validated_data['original_file_name'] = validated_data[
-                'uploaded_file'].name
+        if "uploaded_file" in validated_data:
+            validated_data["original_file_name"] = validated_data["uploaded_file"].name
 
         return super().update(instance, validated_data)
 
