@@ -45,7 +45,7 @@ def adjust_priorities_on_delete(sender, instance, **kwargs):
     This signal is triggered when a DeploymentAction is deleted.
     """
     configs_higher_priority = DeploymentAction.objects.filter(
-        package=instance.package,
+        package=instance.package_id,
         priority__gt=instance.priority if instance.priority else 0,
     )
 
