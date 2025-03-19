@@ -14,7 +14,7 @@ class Command(BaseCommand):
         BaseCommand ([type]): base class for management commands
     """
 
-    help = "Test command"
+    help = "Execute scheduled automation tasks"
     library = "automation.tasks."
     utc = pytz.UTC
 
@@ -26,39 +26,51 @@ class Command(BaseCommand):
             h = History(scheduler=task, comment=comment, status=status)
             h.save()
 
-        tasks = Scheduler.objects.all()
+        tasks = Scheduler.objects.filter(active=True)
+        # round current time to the nearest hour to avoid minute/second mismatches
+        now = datetime.now().replace(minute=0, second=0, microsecond=0, tzinfo=self.utc)
+
         for task in tasks:
-            # Set up task name
-            name = task.name
-            completeName = self.library + name
-            # Configure delta time by recurence
-            if task.recurence == "hourly":
-                delta = timedelta(hours=1)
-            elif task.recurence == "daily":
-                delta = timedelta(days=1)
-            elif task.recurence == "weekly":
-                delta = timedelta(weeks=1)
-            else:
-                delta = timedelta(days=30)
+            #  minimum intervals between runs
+            min_intervals = {
+                "hourly": timedelta(hours=1),
+                "daily": timedelta(days=1),
+                "weekly": timedelta(weeks=1),
+                "monthly": timedelta(days=30),
+            }
 
-            now = datetime.now().replace(tzinfo=self.utc)
+            should_run = False
 
-            # Check if task need to be start
-            if (
-                task.last_execution is None
-                or task.last_execution.replace(tzinfo=self.utc) + delta < now
+            # for non-hourly tasks, check if we're within the scheduled hour
+            if task.recurrence == "hourly":
+                should_run = True
+            elif task.hour == now.hour and (
+                task.recurrence == "daily"
+                or (task.recurrence == "weekly" and task.day_of_week == now.weekday())
+                or (task.recurrence == "monthly" and task.day_of_month == now.day)
             ):
-                # Save history
-                updateHistory(task, "Starting task " + name, 0)
+                should_run = True
 
-                # Import module task
-                taskClass = module_loading.import_string(completeName)
-                # Execute task command
-                taskClass.execute(taskClass)
-                # Update execution date
-                task.last_execution = datetime.now(tz=self.utc)
-                # Save new date
-                task.save()
+            # check minimum interval since last execution
+            if should_run and task.last_execution:
+                last_exec = task.last_execution.replace(tzinfo=self.utc)
+                if now - last_exec < min_intervals[task.recurrence]:
+                    should_run = False
 
-                # Save finish history
-                updateHistory(task, "Task " + name + " finished", 1)
+            if should_run:
+                try:
+                    # start history
+                    updateHistory(task, f"Starting task {task.name}", 0)
+
+                    # import and execute task
+                    task_class = module_loading.import_string(self.library + task.name)
+                    task_class.execute(task_class)
+
+                    task.last_execution = now
+                    task.save()
+
+                    # completion history
+                    updateHistory(task, f"Task {task.name} finished successfully", 1)
+
+                except Exception as e:
+                    updateHistory(task, f"Task {task.name} failed: {str(e)}", 2)
