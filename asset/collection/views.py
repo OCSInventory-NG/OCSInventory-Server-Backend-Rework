@@ -1,3 +1,4 @@
+import ipaddress
 import logging
 
 from accountinfo.views import AccountinfoDataViewSet
@@ -11,6 +12,7 @@ from inventory.section.models import Section
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from config.models import Config
 
 
 class CollectionView(APIView):
@@ -36,6 +38,86 @@ class CollectionView(APIView):
     permission_classes = []
 
     LOGGER = logging.getLogger(__name__)
+
+    def check_blacklist(self, data):
+        """
+        Load the blacklist configuration and check if any of the device fields
+        are blacklisted
+
+        The configuration structure is as follows:
+          - 1st dict contains the enabled switch
+          - 2nd dict contains a comma separated string with the blocked values
+
+        Ipaddresses should be in CIDR notation
+
+        Returns (blacklisted, message)
+        """
+        try:
+            config = Config.objects.get(name="blacklist")
+            blacklist_config = config.value
+        except Config.DoesNotExist:
+            self.LOGGER.warning("No blacklist configuration found")
+            return False, None
+
+        for group in blacklist_config:
+            # validating config format (grp = [switch, list_entry])
+            if not isinstance(group, list) or len(group) < 2:
+                continue
+
+            switch = group[0]
+            list_entry = group[1]
+
+            # macaddress blacklist
+            if switch.get("name") == "macaddresses" and switch.get("value"):
+                blacklist_list = []
+                for item in list_entry.get("value", "").split(","):
+                    stripped_item = item.strip()
+                    if stripped_item:
+                        blacklist_list.append(stripped_item.upper())
+                device_mac = data.get("srcmac", "").strip().upper()
+                if device_mac and device_mac in blacklist_list:
+                    return True, f"MAC address {device_mac} is blacklisted."
+
+            # ipaddress blacklist
+            elif switch.get("name") == "ipaddresses" and switch.get("value"):
+                # we expect CIDR
+                cidr_list = [
+                    item.strip()
+                    for item in list_entry.get("value", "").split(",")
+                    if item.strip()
+                ]
+                device_ip = data.get("srcip", "").strip()
+                if device_ip:
+                    try:
+                        ip_obj = ipaddress.ip_address(device_ip)
+                    except ValueError:
+                        self.LOGGER.debug("Invalid IP address: %s", device_ip)
+                        continue
+
+                    for cidr in cidr_list:
+                        try:
+                            network = ipaddress.ip_network(cidr, strict=False)
+                            if ip_obj in network:
+                                return True, f"""
+                                IP address {device_ip} is blacklisted
+                                (matches CIDR {cidr}).
+                                """
+                        except ValueError:
+                            self.LOGGER.debug("Invalid CIDR notation: %s", cidr)
+                            continue
+
+            # serialnumber blacklist
+            elif switch.get("name") == "serialnumbers" and switch.get("value"):
+                blacklist_list = []
+                for item in list_entry.get("value", "").split(","):
+                    stripped_item = item.strip()
+                    if stripped_item:
+                        blacklist_list.append(stripped_item.upper())
+                device_serial = data.get("serial", "").strip().upper()
+                if device_serial and device_serial in blacklist_list:
+                    return True, f"Serial number {device_serial} is blacklisted."
+
+        return False, None
 
     def get_reconciliation_fields(self):
         """
@@ -96,6 +178,13 @@ class CollectionView(APIView):
             Response object
         """
         data = request.data
+
+        # blacklist check
+        blacklisted, message = self.check_blacklist(data)
+        if blacklisted:
+            self.LOGGER.debug("Device creation rejected due to blacklist: %s", message)
+            return Response({"message": "Device creation rejected due to blacklist: " + message}, status=403)
+
         errors = []
         self.LOGGER.info(
             "Creating inventory for device %s - %s", data["uuid"], data["name"]
@@ -228,8 +317,14 @@ class CollectionView(APIView):
             Response object
         """
         data = request.data
-        errors = []
 
+        # blacklist check
+        blacklisted, message = self.check_blacklist(data)
+        if blacklisted:
+            self.LOGGER.debug("Device update rejected due to blacklist: %s", message)
+            return Response({"message": "Device update rejected due to blacklist: " + message}, status=403)
+
+        errors = []
         self.LOGGER.info(
             "Updating inventory for device %s - %s", data["uuid"], data["name"]
         )
@@ -351,8 +446,14 @@ class CollectionView(APIView):
         template_section will be created for the same asset.
         """
         data = request.data
-        errors = []
 
+        # blacklist check
+        blacklisted, message = self.check_blacklist(data)
+        if blacklisted:
+            self.LOGGER.debug("Device partial update rejected due to blacklist: %s", message)
+            return Response({"message": "Device partial update rejected due to blacklist: " + message}, status=403)
+
+        errors = []
         self.LOGGER.info(
             "Updating inventory for device %s - %s", data["uuid"], data["name"]
         )
