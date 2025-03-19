@@ -17,6 +17,13 @@ class Result(models.Model):
     - Date of creation
     """
 
+    STATUS_CHOICES = [
+        (0, "Sucess"),
+        (1, "Waiting notification"),
+        (2, "Notified"),
+        (3, "Error")
+    ]
+
     package = models.ForeignKey(
         Package, related_name="result", on_delete=models.CASCADE, null=True
     )
@@ -27,6 +34,6 @@ class Result(models.Model):
         AssetGroup, related_name="results", on_delete=models.CASCADE, null=True
     )
     name = models.CharField(max_length=128)
-    status = models.IntegerField()
+    status = models.IntegerField(choices=STATUS_CHOICES, default=1)
     comment = models.TextField(null=True)
     date_created = models.DateTimeField(auto_now_add=True)
