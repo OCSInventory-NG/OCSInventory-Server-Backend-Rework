@@ -49,7 +49,8 @@ class FileUploadMixin(serializers.Serializer):
         """
         file = validated_data.pop("uploaded_file", None)
         if file:
-            mimetype = mimetypes.guess_type(file.name)[0]
+            # use fallback if mimetype can't be determined
+            mimetype = mimetypes.guess_type(file.name)[0] or 'application/octet-stream'
             compressed_file = self.compress(file)
 
             # update existing instance
