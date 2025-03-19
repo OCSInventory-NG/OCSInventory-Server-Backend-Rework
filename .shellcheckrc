@@ -1,0 +1,2 @@
+# ~/.shellcheckrc
+disable=SC1091 # Disable no such file check (venv not present in CI)
