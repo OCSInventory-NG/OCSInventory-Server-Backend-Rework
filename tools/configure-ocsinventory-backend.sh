@@ -25,7 +25,7 @@ echo ""
 echo "[1] PostgreSQL"
 echo "[2] MySQL | MariaDB"
 echo ""
-read -p "Database engine [1|2]: " db_engine
+read -r -p "Database engine [1|2]: " db_engine
 
 case $db_engine in
     1)
@@ -50,19 +50,19 @@ case $db_engine in
         ;;
 esac
 
-read -p "Which host is running database server ?: " db_host
+read -r -p "Which host is running database server ?: " db_host
 sed -i "s/DB_HOST=.*/DB_HOST='$db_host'/" /usr/share/ocsinventory-backend/.env
 
-read -p "On which port is running database server ?: " db_port
+read -r -p "On which port is running database server ?: " db_port
 sed -i "s/DB_PORT=.*/DB_PORT='$db_port'/" /usr/share/ocsinventory-backend/.env
 
-read -p "What is the database name ?: " db_name
+read -r -p "What is the database name ?: " db_name
 sed -i "s/DB_NAME=.*/DB_NAME='$db_name'/" /usr/share/ocsinventory-backend/.env
 
-read -p "What is the database user name ?: " db_user
+read -r -p "What is the database user name ?: " db_user
 sed -i "s/DB_USER=.*/DB_USER='$db_user'/" /usr/share/ocsinventory-backend/.env
 
-read -p "What is the database user password ?: " db_password
+read -r -p "What is the database user password ?: " db_password
 sed -i "s/DB_PASSWORD=.*/DB_PASSWORD='$db_password'/" /usr/share/ocsinventory-backend/.env
 
 echo "Configuration completed !"
