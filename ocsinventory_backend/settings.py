@@ -81,6 +81,7 @@ INSTALLED_APPS = [
     "dashboard.chart.apps.DashboardChartConfig",
     "search.apps.SearchConfig",
     "django_cas_ng",
+    "filemanager.apps.FileManagerConfig",
 ]
 
 MIDDLEWARE = [
