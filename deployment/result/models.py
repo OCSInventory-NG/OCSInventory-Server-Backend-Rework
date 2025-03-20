@@ -21,7 +21,7 @@ class Result(models.Model):
         (0, "Sucess"),
         (1, "Waiting notification"),
         (2, "Notified"),
-        (3, "Error")
+        (3, "Error"),
     ]
 
     package = models.ForeignKey(
