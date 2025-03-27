@@ -184,7 +184,7 @@ class ExpandableFieldsMixin:
         }
         
     The mixin will:
-      - Expand all fields if expand="*"
+      - Expand all fields and childs if expand="*"
       - Expand fields provided in a comma separated list (expand=field1,field2)
       - or return the pks for the relation
       
@@ -216,11 +216,11 @@ class ExpandableFieldsMixin:
                     elif getattr(self.fields[field], "many", False):
                         # handle many
                         representation[field] = serializer_class(
-                            field_obj.all(), many=True, context={**self.context, 'expand_depth': current_depth + 1}
+                            field_obj.all(), many=True, context={**self.context, 'expand_depth': current_depth}
                         ).data
                     else:
                         representation[field] = serializer_class(
-                            field_obj, context={**self.context, 'expand_depth': current_depth + 1}
+                            field_obj, context={**self.context, 'expand_depth': current_depth}
                         ).data
             return representation
 
@@ -238,11 +238,11 @@ class ExpandableFieldsMixin:
                         ).data
                     elif getattr(self.fields[field], "many", False):
                         representation[field] = serializer_class(
-                            field_obj.all(), many=True, context={**self.context, 'expand_depth': current_depth + 1}
+                            field_obj.all(), many=True, context={**self.context, 'expand_depth': current_depth}
                         ).data
                     else:
                         representation[field] = serializer_class(
-                            field_obj, context={**self.context, 'expand_depth': current_depth + 1}
+                            field_obj, context={**self.context, 'expand_depth': current_depth}
                         ).data
             else:
                 # handle non expanded fields
