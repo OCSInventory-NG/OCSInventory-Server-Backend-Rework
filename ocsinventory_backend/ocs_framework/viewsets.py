@@ -209,7 +209,11 @@ class ExpandableFieldsMixin:
             for field, serializer_class in expandable_fields.items():
                 field_obj = getattr(instance, field, None)
                 if field_obj is not None:
-                    if getattr(self.fields[field], "many", False):
+                    if field == "assets" or field == "groups":
+                        representation[field+"_expand"] = serializer_class(
+                            field_obj.filter(id__in=representation[field]), many=True
+                        ).data
+                    elif getattr(self.fields[field], "many", False):
                         # handle many
                         representation[field] = serializer_class(
                             field_obj.all(), many=True, context={**self.context, 'expand_depth': current_depth + 1}
@@ -228,7 +232,11 @@ class ExpandableFieldsMixin:
                 field_obj = getattr(instance, field, None)
                 if field_obj is not None:
                     # handle many
-                    if getattr(self.fields[field], "many", False):
+                    if field == "assets" or field == "groups":
+                        representation[field+"_expand"] = serializer_class(
+                            field_obj.filter(id__in=representation[field]), many=True
+                        ).data
+                    elif getattr(self.fields[field], "many", False):
                         representation[field] = serializer_class(
                             field_obj.all(), many=True, context={**self.context, 'expand_depth': current_depth + 1}
                         ).data
