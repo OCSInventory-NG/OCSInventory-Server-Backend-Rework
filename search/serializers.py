@@ -1,6 +1,8 @@
 from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
 from rest_framework.serializers import ModelSerializer
 from search.models import Search
+from group.serializers import GroupSerializer
+from user.serializers import UserSerializer
 
 
 class SearchSerializer(ExpandableFieldsMixin, ModelSerializer):
@@ -14,3 +16,7 @@ class SearchSerializer(ExpandableFieldsMixin, ModelSerializer):
         model = Search
         fields = "__all__"
         extra_kwargs = {"last_updated": {"read_only": True}}
+        expandable_fields = {
+            "user": UserSerializer,
+            "groups": GroupSerializer
+        }
