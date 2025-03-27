@@ -25,7 +25,6 @@ class AccountinfoConfig(models.Model):
 
     ACC_TARGET_CHOICES = (
         ("ASSET", "Assets"),
-        ("SNMP", "SNMP"),
         ("IPDISCOVER", "IPDiscover"),
     )
 
@@ -37,6 +36,19 @@ class AccountinfoConfig(models.Model):
     datatarget = models.CharField(
         max_length=10, choices=ACC_TARGET_CHOICES, default="ASSET"
     )
+
+    def delete(self, *args, **kwargs):
+        """Override delete to reflect the change in accountdata"""
+        # get all accountinfo data entries
+        accountinfo_data_entries = AccountinfoData.objects.all()
+
+        # update accountdata to remove the deleted config
+        for entry in accountinfo_data_entries:
+            if entry.accountdata and str(self.id) in entry.accountdata:
+                entry.accountdata.pop(str(self.id))
+                entry.save()
+
+        super().delete(*args, **kwargs)
 
 
 class AccountinfoValue(models.Model):

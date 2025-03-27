@@ -31,8 +31,8 @@ from automation.history.routers import HistoryRouter
 from automation.rule.routers import RuleRouter
 from automation.scheduler.routers import SchedulerRouter
 from config.routers import ConfigRouter
-from dashboard.layout.routers import DashboardLayoutRouter
 from dashboard.chart.routers import DashboardChartRouter
+from dashboard.layout.routers import DashboardLayoutRouter
 from deployment.action.routers import ActionRouter
 from deployment.package.routers import PackageRouter
 from deployment.result.routers import ResultRouter
@@ -40,6 +40,7 @@ from django.conf.urls.static import static
 
 # Base import to get API Working
 from django.urls import include, path
+from filemanager.routers import FileManagerRouter
 from group.routers import GroupRouter
 from inventory.field.routers import FieldRouter
 from inventory.section.routers import SectionRouter
@@ -186,6 +187,10 @@ dashboardRouter = dashboardRouter.defineRoutes(defaultRouter)
 # Add Dashboard chart declaration
 dashboardChartRouter = DashboardChartRouter()
 dashboardChartRouter = dashboardChartRouter.defineRoutes(defaultRouter)
+
+# Add FileManager declaration
+fileManagerRouter = FileManagerRouter()
+fileManagerRouter = fileManagerRouter.defineRoutes(defaultRouter)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.

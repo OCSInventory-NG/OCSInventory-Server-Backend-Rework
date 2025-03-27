@@ -13,7 +13,7 @@ class TemplateSerializer(ExpandableFieldsMixin, ModelSerializer):
         """Define the linked model and the fields registered in the API"""
 
         model = Template
-        fields = ["id", "name", "os", "last_update", "sections"]
+        fields = ["id", "name", "os", "is_protected", "last_update", "sections"]
 
         expandable_fields = {
             "sections": SectionSerializer,

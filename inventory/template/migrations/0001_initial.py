@@ -8,18 +8,22 @@ def create_default_templates(apps, schema_editor):
         {
             "name": "Legacy",
             "os": "LEG",
+            "is_protected": True,
         },
         {
             "name": "Linux",
             "os": "LIN",
+            "is_protected": True,
         },
         {
             "name": "MacOS",
             "os": "MAC",
+            "is_protected": True,
         },
         {
             "name": "Windows",
             "os": "WIN",
+            "is_protected": True,
         },
     ]
 
@@ -66,6 +70,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ("last_update", models.DateTimeField(auto_now=True)),
+                ("is_protected", models.BooleanField(default=False)),
             ],
         ),
         migrations.RunPython(create_default_templates),

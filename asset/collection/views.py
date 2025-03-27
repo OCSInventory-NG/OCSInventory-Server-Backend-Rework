@@ -1,15 +1,18 @@
+import ipaddress
 import logging
 
+from accountinfo.views import AccountinfoDataViewSet
 from asset.inventory_base.models import InventoryBase
 from asset.inventory_base.serializers import InventoryBaseSerializer
 from asset.inventory_field.models import InventoryField
 from asset.inventory_section.models import InventorySection
-from django.core.exceptions import ObjectDoesNotExist
+from config.models import Config
 from inventory.field.models import Field
 from inventory.section.models import Section
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from config.models import Config
 
 
 class CollectionView(APIView):
@@ -36,6 +39,129 @@ class CollectionView(APIView):
 
     LOGGER = logging.getLogger(__name__)
 
+    def check_blacklist(self, data):
+        """
+        Load the blacklist configuration and check if any of the device fields
+        are blacklisted
+
+        The configuration structure is as follows:
+          - 1st dict contains the enabled switch
+          - 2nd dict contains a comma separated string with the blocked values
+
+        Ipaddresses should be in CIDR notation
+
+        Returns (blacklisted, message)
+        """
+        try:
+            config = Config.objects.get(name="blacklist")
+            blacklist_config = config.value
+        except Config.DoesNotExist:
+            self.LOGGER.warning("No blacklist configuration found")
+            return False, None
+
+        for group in blacklist_config:
+            # validating config format (grp = [switch, list_entry])
+            if not isinstance(group, list) or len(group) < 2:
+                continue
+
+            switch = group[0]
+            list_entry = group[1]
+
+            # macaddress blacklist
+            if switch.get("name") == "macaddresses" and switch.get("value"):
+                blacklist_list = []
+                for item in list_entry.get("value", "").split(","):
+                    stripped_item = item.strip()
+                    if stripped_item:
+                        blacklist_list.append(stripped_item.upper())
+                device_mac = data.get("srcmac", "").strip().upper()
+                if device_mac and device_mac in blacklist_list:
+                    return True, f"MAC address {device_mac} is blacklisted."
+
+            # ipaddress blacklist
+            elif switch.get("name") == "ipaddresses" and switch.get("value"):
+                # we expect CIDR
+                cidr_list = [
+                    item.strip()
+                    for item in list_entry.get("value", "").split(",")
+                    if item.strip()
+                ]
+                device_ip = data.get("srcip", "").strip()
+                if device_ip:
+                    try:
+                        ip_obj = ipaddress.ip_address(device_ip)
+                    except ValueError:
+                        self.LOGGER.debug("Invalid IP address: %s", device_ip)
+                        continue
+
+                    for cidr in cidr_list:
+                        try:
+                            network = ipaddress.ip_network(cidr, strict=False)
+                            if ip_obj in network:
+                                return True, f"""
+                                IP address {device_ip} is blacklisted
+                                (matches CIDR {cidr}).
+                                """
+                        except ValueError:
+                            self.LOGGER.debug("Invalid CIDR notation: %s", cidr)
+                            continue
+
+            # serialnumber blacklist
+            elif switch.get("name") == "serialnumbers" and switch.get("value"):
+                blacklist_list = []
+                for item in list_entry.get("value", "").split(","):
+                    stripped_item = item.strip()
+                    if stripped_item:
+                        blacklist_list.append(stripped_item.upper())
+                device_serial = data.get("serial", "").strip().upper()
+                if device_serial and device_serial in blacklist_list:
+                    return True, f"Serial number {device_serial} is blacklisted."
+
+        return False, None
+
+    def get_reconciliation_fields(self):
+        """
+        Get the fields used for reconciliation from the server configuration
+
+        Possible values are:
+         - "uuid"
+         - "uuid, name"
+         - "uuid, srcmac"
+         Default is "uuid"
+        """
+        try:
+            config = Config.objects.get(name="server")
+            for item in config.value:
+                if item.get("name") == "duplicate_reconciliation":
+                    selection = item.get("value", "uuid")
+                    if selection == "uuid, name":
+                        return ["uuid", "name"]
+                    elif selection == "uuid, srcmac":
+                        return ["uuid", "srcmac"]
+                    # default or "uuid"
+                    return ["uuid"]
+            return ["uuid"]
+        except Config.DoesNotExist:
+            self.LOGGER.warning(
+                """No server configuration found, will be using uuid only as
+                  default reconciliation field"""
+            )
+            return ["uuid"]
+
+    def get_reconciliation_filter(self, data):
+        """
+        Build a filter for asset lookup from the reconciliation fields (config)
+        """
+        fields = self.get_reconciliation_fields()
+        filter_dict = {}
+        for field in fields:
+            if field not in data:
+                raise ValueError(
+                    f"Missing field '{field}' required for reconciliation."
+                )
+            filter_dict[field] = data[field]
+        return filter_dict
+
     def post(self, request, *args, **kwargs):
         """
         Perform creation of asset and inventory. If inventory
@@ -52,6 +178,13 @@ class CollectionView(APIView):
             Response object
         """
         data = request.data
+
+        # blacklist check
+        blacklisted, message = self.check_blacklist(data)
+        if blacklisted:
+            self.LOGGER.debug("Device creation rejected due to blacklist: %s", message)
+            return Response({"message": "Device creation rejected due to blacklist: " + message}, status=403)
+
         errors = []
         self.LOGGER.info(
             "Creating inventory for device %s - %s", data["uuid"], data["name"]
@@ -64,6 +197,19 @@ class CollectionView(APIView):
                 templateId = (
                     asset_instance.template_id if asset_instance.template else None
                 )
+                # if accountinfo_generation is set to agent mode
+                server_conf = Config.objects.filter(name="server").first()
+                accountinfo_gen = None
+                for item in server_conf.value:
+                    if item["name"] == "accountinfo_generation":
+                        accountinfo_gen = item
+                        break
+
+                if accountinfo_gen["value"] == "agent":
+                    # create accountinfo data for the new asset
+                    AccountinfoDataViewSet.generate_accountinfo(
+                        asset_instance, "inventory_base.inventorybase"
+                    )
         except ValidationError as ve:
             errors.append(f"Error creating asset: {ve}")
             self.LOGGER.error(f"Error creating asset: {ve}")
@@ -171,25 +317,34 @@ class CollectionView(APIView):
             Response object
         """
         data = request.data
-        errors = []
 
+        # blacklist check
+        blacklisted, message = self.check_blacklist(data)
+        if blacklisted:
+            self.LOGGER.debug("Device update rejected due to blacklist: %s", message)
+            return Response({"message": "Device update rejected due to blacklist: " + message}, status=403)
+
+        errors = []
         self.LOGGER.info(
             "Updating inventory for device %s - %s", data["uuid"], data["name"]
         )
 
         try:
-            # retrieve asset from UUID
-            asset_query = InventoryBase.objects.get(uuid=data["uuid"])
-        except ObjectDoesNotExist:
-            self.LOGGER.error("Asset not found")
-            return Response({"error": "Asset not found"}, status=404)
-        except Exception as e:
-            self.LOGGER.error(f"Error retrieving asset: {e}")
-            return Response({"error": f"Error retrieving asset: {e}"}, status=500)
+            reconciliation_filter = self.get_reconciliation_filter(data)
+        except ValueError as ve:
+            self.LOGGER.error("Reconciliation error: %s", ve)
+            return Response({"error": str(ve)}, status=400)
 
+        asset_instance = InventoryBase.objects.filter(**reconciliation_filter).first()
+        if not asset_instance:
+            self.LOGGER.error(f"Error retrieving asset: {reconciliation_filter}")
+            return Response(
+                {"error": f"Error retrieving asset: {reconciliation_filter}"},
+                status=500,
+            )
         try:
             # update asset
-            asset_serializer = InventoryBaseSerializer(asset_query, data=data)
+            asset_serializer = InventoryBaseSerializer(asset_instance, data=data)
             if asset_serializer.is_valid(raise_exception=True):
                 asset_instance = asset_serializer.save()
         except ValidationError as ve:
@@ -291,25 +446,35 @@ class CollectionView(APIView):
         template_section will be created for the same asset.
         """
         data = request.data
-        errors = []
 
+        # blacklist check
+        blacklisted, message = self.check_blacklist(data)
+        if blacklisted:
+            self.LOGGER.debug("Device partial update rejected due to blacklist: %s", message)
+            return Response({"message": "Device partial update rejected due to blacklist: " + message}, status=403)
+
+        errors = []
         self.LOGGER.info(
             "Updating inventory for device %s - %s", data["uuid"], data["name"]
         )
 
         try:
-            # retrieve asset from UUID
-            asset_query = InventoryBase.objects.get(uuid=data["uuid"])
-        except ObjectDoesNotExist:
-            self.LOGGER.error("Asset not found")
-            return Response({"error": "Asset not found"}, status=404)
-        except Exception as e:
-            self.LOGGER.error(f"Error retrieving asset: {e}")
-            return Response({"error": f"Error retrieving asset: {e}"}, status=500)
+            reconciliation_filter = self.get_reconciliation_filter(data)
+        except ValueError as ve:
+            self.LOGGER.error("Reconciliation error: %s", ve)
+            return Response({"error": str(ve)}, status=400)
+
+        asset_instance = InventoryBase.objects.filter(**reconciliation_filter).first()
+        if not asset_instance:
+            self.LOGGER.error(f"Error retrieving asset: {reconciliation_filter}")
+            return Response(
+                {"error": f"Error retrieving asset: {reconciliation_filter}"},
+                status=500,
+            )
 
         try:
             # update asset
-            asset_serializer = InventoryBaseSerializer(asset_query, data=data)
+            asset_serializer = InventoryBaseSerializer(asset_instance, data=data)
             if asset_serializer.is_valid(raise_exception=True):
                 asset_instance = asset_serializer.save()
         except ValidationError as ve:

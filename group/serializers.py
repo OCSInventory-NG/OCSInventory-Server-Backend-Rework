@@ -12,5 +12,5 @@ class GroupSerializer(ExpandableFieldsMixin, ModelSerializer):
         """Define the linked model and the fields registered in the API"""
 
         model = Group
-        fields = ["id", "name", "permissions"]
+        fields = ["id", "name", "permissions", "is_protected"]
         expandable_fields = {}

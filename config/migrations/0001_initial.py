@@ -28,19 +28,28 @@ def create_base_config(apps, schema_editor):
             "name": "server",
             "value": [
                 {
-                    "name": "debug",
-                    "description": "Enable debug mode",
-                    "value": False,
-                    "type": "switch",
+                    "name": "log_level",
+                    "description": "Application log level",
+                    "value": "INFO",
+                    "type": "select",
                     "unit": "",
+                    "options": ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
                 },
                 {
                     "name": "duplicate_reconciliation",
                     "description": "Field used to reconcile duplicate computers",
-                    "value": "",
+                    "value": "uuid",
                     "type": "select",
                     "unit": "",
-                    "options": ["name", "uuid", "srcmac"],
+                    "options": ["uuid", "uuid, name", "uuid, srcmac"],
+                },
+                {
+                    "name": "accountinfo_generation",
+                    "description": "Mode of administrative data generation",
+                    "value": "agent",
+                    "type": "select",
+                    "unit": "",
+                    "options": ["agent", "automation"],
                 },
             ],
         },
@@ -98,7 +107,7 @@ def create_base_config(apps, schema_editor):
                     },
                     {
                         "name": "macaddresses_list",
-                        "description": "List of macaddresses to blacklist",
+                        "description": "List of macaddresses to blacklist, separated by commas",
                         "value": "",
                         "type": "text input",
                         "unit": "",
@@ -107,14 +116,14 @@ def create_base_config(apps, schema_editor):
                 [
                     {
                         "name": "ipaddresses",
-                        "description": "Enable ipaddresses blacklist",
+                        "description": "Enable subnets blacklist",
                         "value": False,
                         "type": "switch",
                         "unit": "",
                     },
                     {
                         "name": "ipaddresses_list",
-                        "description": "List of ipaddresses to blacklist",
+                        "description": "List of subnets to blacklist in CIDR notation, separated by commas",
                         "value": "",
                         "type": "text input",
                         "unit": "",
@@ -123,14 +132,14 @@ def create_base_config(apps, schema_editor):
                 [
                     {
                         "name": "serialnumbers",
-                        "description": "Enabble serialnumbers blacklist",
+                        "description": "Enable serialnumbers blacklist",
                         "value": False,
                         "type": "switch",
                         "unit": "",
                     },
                     {
                         "name": "serialnumbers_list",
-                        "description": "List of serialnumbers to blacklist",
+                        "description": "List of serialnumbers to blacklist, separated by commas",
                         "value": "",
                         "type": "text input",
                         "unit": "",

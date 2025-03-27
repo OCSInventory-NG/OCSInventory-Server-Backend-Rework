@@ -13,5 +13,8 @@ django-cas-ng>=4.3.0
 # Handling XML
 xmltodict>=0.13.0
 
+# timezones
+pytz>=2024.2
+
 # environment variables
 python-dotenv>=1.0.1
