@@ -1,14 +1,15 @@
-from deployment.package.models import Package
-from rest_framework.serializers import ModelSerializer
 from deployment.action.serializers import ActionSerializer
+from deployment.package.models import Package
 from deployment.result.serializers import ResultSerializer
 from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
+from rest_framework.serializers import ModelSerializer
 
 
 class PackageSerializer(ExpandableFieldsMixin, ModelSerializer):
     """
     This serializer class provides the API representation
     """
+
     actions_list = ActionSerializer(many=True, read_only=False)
     result = ResultSerializer(many=True, read_only=False)
 

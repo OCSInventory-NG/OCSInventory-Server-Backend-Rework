@@ -1,9 +1,7 @@
+from asset.inventory_base.serializers import InventoryBaseSerializer
 from asset.log.models import Log
 from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
 from rest_framework.serializers import ModelSerializer
-from asset.inventory_base.serializers import InventoryBaseSerializer
-from asset.inventory_base.models import InventoryBase
-from rest_framework import serializers
 
 
 class LogSerializer(ExpandableFieldsMixin, ModelSerializer):

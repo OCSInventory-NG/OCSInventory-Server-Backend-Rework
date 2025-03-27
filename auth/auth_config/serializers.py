@@ -1,14 +1,14 @@
 from importlib import import_module
 
+from auth.auth_mapping.serializers import AuthMappingSerializer
 from auth.auth_method.models import AuthMethod
 from django.db.models import F
 from ocsinventory_backend import settings
 from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
-from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
+from rest_framework.serializers import ModelSerializer
 
 from .models import AuthConfig
-from auth.auth_mapping.serializers import AuthMappingSerializer
 
 
 class AuthConfigSerializer(ExpandableFieldsMixin, ModelSerializer):

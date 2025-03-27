@@ -1,8 +1,8 @@
+from asset.inventory_base.serializers import InventoryBaseSerializer
 from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
 from rest_framework.serializers import ModelSerializer
 from snmp.scanner.models import SnmpScanner
 from snmp.snmp_config.serializers import SnmpConfigSerializer
-from asset.inventory_base.serializers import InventoryBaseSerializer
 
 
 class SnmpScannerSerializer(ExpandableFieldsMixin, ModelSerializer):

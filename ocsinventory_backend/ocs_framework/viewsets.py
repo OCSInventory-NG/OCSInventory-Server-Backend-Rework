@@ -175,20 +175,21 @@ class RestrictVisibilityViewSet(OCSViewSet):
 class ExpandableFieldsMixin:
     """
     Mixin to dynamically expand nested fields based on the "expand" query parameter.
-    
+
     To use, add an `expandable_fields` dictionary in your serializer's Meta:
-    
+
         expandable_fields = {
             "some_relation": SomeNestedSerializer,
             "other_relation": OtherNestedSerializer,
         }
-        
+
     The mixin will:
       - Expand all fields and childs if expand="*"
       - Expand fields provided in a comma separated list (expand=field1,field2)
       - or return the pks for the relation
-      
+
     """
+
     def to_representation(self, instance):
         # get default representation
         representation = super().to_representation(instance)
@@ -197,7 +198,7 @@ class ExpandableFieldsMixin:
             return representation
 
         # track depth
-        current_depth = self.context.get('expand_depth', 0)
+        current_depth = self.context.get("expand_depth", 0)
         if current_depth >= 1:
             return representation
 
@@ -210,22 +211,27 @@ class ExpandableFieldsMixin:
                 field_obj = getattr(instance, field, None)
                 if field_obj is not None:
                     if field == "assets" or field == "groups":
-                        representation[field+"_expand"] = serializer_class(
+                        representation[field + "_expand"] = serializer_class(
                             field_obj.filter(id__in=representation[field]), many=True
                         ).data
                     elif getattr(self.fields[field], "many", False):
                         # handle many
                         representation[field] = serializer_class(
-                            field_obj.all(), many=True, context={**self.context, 'expand_depth': current_depth}
+                            field_obj.all(),
+                            many=True,
+                            context={**self.context, "expand_depth": current_depth},
                         ).data
                     else:
                         representation[field] = serializer_class(
-                            field_obj, context={**self.context, 'expand_depth': current_depth}
+                            field_obj,
+                            context={**self.context, "expand_depth": current_depth},
                         ).data
             return representation
 
         # parse comma separated fields
-        expand_fields = [field.strip() for field in expand_param.split(",") if field.strip()]
+        expand_fields = [
+            field.strip() for field in expand_param.split(",") if field.strip()
+        ]
 
         for field, serializer_class in expandable_fields.items():
             if field in expand_fields:
@@ -233,16 +239,19 @@ class ExpandableFieldsMixin:
                 if field_obj is not None:
                     # handle many
                     if field == "assets" or field == "groups":
-                        representation[field+"_expand"] = serializer_class(
+                        representation[field + "_expand"] = serializer_class(
                             field_obj.filter(id__in=representation[field]), many=True
                         ).data
                     elif getattr(self.fields[field], "many", False):
                         representation[field] = serializer_class(
-                            field_obj.all(), many=True, context={**self.context, 'expand_depth': current_depth}
+                            field_obj.all(),
+                            many=True,
+                            context={**self.context, "expand_depth": current_depth},
                         ).data
                     else:
                         representation[field] = serializer_class(
-                            field_obj, context={**self.context, 'expand_depth': current_depth}
+                            field_obj,
+                            context={**self.context, "expand_depth": current_depth},
                         ).data
             else:
                 # handle non expanded fields

@@ -23,5 +23,4 @@ class FieldSerializer(ExpandableFieldsMixin, ModelSerializer):
             "section",
             "options",
         ]
-        expandable_fields = {
-        }
+        expandable_fields = {}
