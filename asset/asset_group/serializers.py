@@ -1,6 +1,8 @@
 from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
 from rest_framework.serializers import ModelSerializer
 from asset.inventory_base.serializers import InventoryBaseSerializer
+from group.serializers import GroupSerializer
+from user.serializers import UserSerializer
 from .models import AssetGroup
 
 
@@ -15,4 +17,8 @@ class AssetGroupSerializer(ExpandableFieldsMixin, ModelSerializer):
         model = AssetGroup
         fields = "__all__"
         extra_kwargs = {"last_updated": {"read_only": True}}
-        expandable_fields = {}
+        expandable_fields = {
+            "user": UserSerializer,
+            "groups": GroupSerializer,
+            "assets": InventoryBaseSerializer,
+        }
