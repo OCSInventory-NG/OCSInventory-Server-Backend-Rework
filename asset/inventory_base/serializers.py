@@ -1,11 +1,9 @@
 from accountinfo.models import AccountinfoConfig, AccountinfoData, AccountinfoValue
-from accountinfo.serializers import (
-    AccountinfoDataSerializer,
-)
+from accountinfo.serializers import AccountinfoDataSerializer
 from asset.inventory_base.models import InventoryBase
+from inventory.template.serializers import TemplateSerializer
 from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
 from rest_framework.serializers import ModelSerializer
-from inventory.template.serializers import TemplateSerializer
 
 
 class InventoryBaseSerializer(ExpandableFieldsMixin, ModelSerializer):

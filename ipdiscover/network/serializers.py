@@ -35,7 +35,7 @@ class NetworkSerializer(ExpandableFieldsMixin, ModelSerializer):
             "netdevices": {
                 "serializer": "ipdiscover.netdevice.serializers.NetdeviceSerializer",
                 "many": True,
-                "required": False
+                "required": False,
             }
         }
 

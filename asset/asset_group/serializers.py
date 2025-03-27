@@ -1,8 +1,9 @@
-from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
-from rest_framework.serializers import ModelSerializer
 from asset.inventory_base.serializers import InventoryBaseSerializer
 from group.serializers import GroupSerializer
+from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
+from rest_framework.serializers import ModelSerializer
 from user.serializers import UserSerializer
+
 from .models import AssetGroup
 
 
