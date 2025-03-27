@@ -46,7 +46,10 @@ class InventoryBaseSerializer(ExpandableFieldsMixin, ModelSerializer):
         representation = super().to_representation(instance)
 
         request = self.context.get("request")
-        accountinfo = request.query_params.get("accountinfo")
+        accountinfo = None
+
+        if request is not None:
+            accountinfo = request.query_params.get("accountinfo")
 
         if not (accountinfo and accountinfo.lower() == "true"):
             return representation
