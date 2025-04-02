@@ -1,9 +1,9 @@
 import logging
+from datetime import date, timedelta
 
 from asset.log.models import Log
 from automation.tasks.abstractTask import AbstractTask
 from config.models import Config
-from datetime import timedelta, date
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +40,7 @@ class PurgeAgentLog(AbstractTask):
                 return item["value"]
         logger.error("purge_agent_log not found or not enabled in config")
         return False
-    
+
     def get_logs(interval):
         """
         Get all logs older than today - interval
@@ -48,7 +48,7 @@ class PurgeAgentLog(AbstractTask):
         date_limit = date.today() - timedelta(days=interval)
         items = Log.objects.filter(timestamp__lte=date_limit)
         return items
-    
+
     def clean_logs(logs):
         """
         Purge logs
