@@ -19,7 +19,7 @@ def create_default_automations(apps, schema_editor):
     )
 
     Scheduler.objects.create(
-        name="accountInfoGeneration.AccountInfoGeneration",
+        name="accountinfoGeneration.AccountInfoGeneration",
         description="Account Info Generation",
         active=True,
         recurrence="daily",
