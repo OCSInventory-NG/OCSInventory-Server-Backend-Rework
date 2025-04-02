@@ -52,7 +52,7 @@ def create_base_config(apps, schema_editor):
                     "options": ["agent", "automation"],
                 },
                 {
-                    "name": "purge_log_agent",
+                    "name": "purge_agent_log",
                     "description": "Enable log agent purge",
                     "value": False,
                     "type": "switch",
