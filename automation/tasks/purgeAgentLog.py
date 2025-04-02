@@ -46,7 +46,7 @@ class PurgeAgentLog(AbstractTask):
         Get all logs older than today - interval
         """
         date_limit = date.today() - timedelta(days=interval)
-        items = Log.objects.filter(date__lte=date_limit)
+        items = Log.objects.filter(timestamp__lte=date_limit)
         return items
     
     def clean_logs(logs):
