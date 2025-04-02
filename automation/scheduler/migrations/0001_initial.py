@@ -8,7 +8,7 @@ def create_default_automations(apps, schema_editor):
     Scheduler = apps.get_model("scheduler", "Scheduler")
 
     Scheduler.objects.create(
-        name="dynaGroups.DynaGroups",
+        name="DynaGroups.DynaGroups",
         description="Dynamic Groups Generation",
         active=True,
         recurrence="daily",
@@ -19,8 +19,19 @@ def create_default_automations(apps, schema_editor):
     )
 
     Scheduler.objects.create(
-        name="accountinfoGeneration.AccountInfoGeneration",
+        name="AccountInfoGeneration.AccountInfoGeneration",
         description="Account Info Generation",
+        active=True,
+        recurrence="daily",
+        last_execution=None,
+        hour=None,
+        day_of_week=None,
+        day_of_month=None,
+    )
+    
+    Scheduler.objects.create(
+        name="PurgeAgentLog.PurgeAgentLog",
+        description="Log Agent Purge",
         active=True,
         recurrence="daily",
         last_execution=None,
