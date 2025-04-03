@@ -204,13 +204,15 @@ class ExpandableFieldsMixin:
 
         expand_param = request.query_params.get("expand", "")
         expandable_fields = getattr(self.Meta, "expandable_fields", {})
+        
+        manyToMany = ["assets", "groups", "sections"]
 
         # expand all fields
         if expand_param == "*":
             for field, serializer_class in expandable_fields.items():
                 field_obj = getattr(instance, field, None)
                 if field_obj is not None:
-                    if field == "assets" or field == "groups":
+                    if field in manyToMany:
                         representation[field + "_expand"] = serializer_class(
                             field_obj.filter(id__in=representation[field]), many=True
                         ).data
@@ -238,7 +240,7 @@ class ExpandableFieldsMixin:
                 field_obj = getattr(instance, field, None)
                 if field_obj is not None:
                     # handle many
-                    if field == "assets" or field == "groups":
+                    if field in manyToMany :
                         representation[field + "_expand"] = serializer_class(
                             field_obj.filter(id__in=representation[field]), many=True
                         ).data
