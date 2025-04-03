@@ -11,6 +11,7 @@ def create_default_categories(apps, schema_editor):
         {
             "name": "Administrative data",
             "description": "Default tab for asset details",
+            "is_protected": True,
             "sections": [
                 "ACCOUNT_INFO",
                 "USERS",
@@ -22,11 +23,13 @@ def create_default_categories(apps, schema_editor):
         {
             "name": "Deployment",
             "description": "Default tab for asset deployment",
+            "is_protected": True,
             "sections": ["DOWNLOADS"],
         },
         {
             "name": "Hardware",
             "description": "Default tab for hardware sections",
+            "is_protected": True,
             "sections": [
                 "BIOS",
                 "CPUS",
@@ -47,21 +50,25 @@ def create_default_categories(apps, schema_editor):
         {
             "name": "Networks",
             "description": "Default tab for network sections",
+            "is_protected": True,
             "sections": ["NETWORKS", "ETHERNET", "WI_FI"],
         },
         {
             "name": "Devices",
             "description": "Default tab for device sections",
+            "is_protected": True,
             "sections": ["INPUTS", "USB", "GRAPHIC/DISPLAY", "BLUETOOTH", "CAMERAS"],
         },
         {
             "name": "Softwares",
             "description": "Default tab for software sections",
+            "is_protected": True,
             "sections": ["SOFTWARES", "DEVELOPER_TOOLS", "EXTENSIONS"],
         },
         {
             "name": "Others",
             "description": "Default tab for inventory sections",
+            "is_protected": True,
             "sections": [
                 "VIRTUALMACHINES",
                 "REPOSITORIES",
@@ -78,7 +85,10 @@ def create_default_categories(apps, schema_editor):
             # Create categories without sections
             obj, created = Category.objects.get_or_create(
                 name=category["name"],
-                defaults={"description": category["description"]},
+                defaults={
+                    "description": category["description"],
+                    "is_protected": category["is_protected"]
+                },
             )
 
             if created:
