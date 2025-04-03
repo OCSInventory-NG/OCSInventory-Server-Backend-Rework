@@ -1,17 +1,13 @@
 from asset.inventory_field.serializers import InventoryFieldSerializer
 from asset.inventory_section.models import InventorySection
-from rest_framework import serializers
+from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
+from rest_framework.serializers import ModelSerializer
 
 
-class InventorySectionSerializer(serializers.ModelSerializer):
+class InventorySectionSerializer(ExpandableFieldsMixin, ModelSerializer):
     """
     Serializer class for InventorySection
-
-    Args:
-        serializers ([ModelSerializer])
     """
-
-    fields = InventoryFieldSerializer(many=True, required=False)
 
     class Meta:
         """Define the linked model and the fields registered in the API"""
@@ -23,3 +19,7 @@ class InventorySectionSerializer(serializers.ModelSerializer):
             "template_section",
             "fields",
         ]
+
+        expandable_fields = {
+            "fields": InventoryFieldSerializer,
+        }

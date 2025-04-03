@@ -1,13 +1,11 @@
 from config.models import Config
-from rest_framework import serializers
+from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
+from rest_framework.serializers import ModelSerializer
 
 
-class ConfigSerializer(serializers.ModelSerializer):
+class ConfigSerializer(ExpandableFieldsMixin, ModelSerializer):
     """
     This serialize class provide the API representation
-
-    Args:
-        serializers ([ModelSerializer])
     """
 
     class Meta:
@@ -15,3 +13,4 @@ class ConfigSerializer(serializers.ModelSerializer):
 
         model = Config
         fields = ["name", "value"]
+        expandable_fields = {}

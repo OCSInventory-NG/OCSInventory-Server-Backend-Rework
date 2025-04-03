@@ -1,13 +1,11 @@
 from automation.scheduler.models import Scheduler
-from rest_framework import serializers
+from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
+from rest_framework.serializers import ModelSerializer
 
 
-class SchedulerSerializer(serializers.ModelSerializer):
+class SchedulerSerializer(ExpandableFieldsMixin, ModelSerializer):
     """
     This serialize class provide the API representation
-
-    Args:
-        serializers ([ModelSerializer])
     """
 
     class Meta:

@@ -1,17 +1,14 @@
 from accountinfo.models import AccountinfoConfig, AccountinfoData, AccountinfoValue
-from accountinfo.serializers import (
-    AccountinfoDataSerializer,
-)
+from accountinfo.serializers import AccountinfoDataSerializer
 from asset.inventory_base.models import InventoryBase
-from rest_framework import serializers
+from inventory.template.serializers import TemplateSerializer
+from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
+from rest_framework.serializers import ModelSerializer
 
 
-class InventoryBaseSerializer(serializers.ModelSerializer):
+class InventoryBaseSerializer(ExpandableFieldsMixin, ModelSerializer):
     """
     Serializer class for Base
-
-    Args:
-        serializers ([ModelSerializer])
     """
 
     class Meta:
@@ -32,8 +29,11 @@ class InventoryBaseSerializer(serializers.ModelSerializer):
             "template",
             "last_update",
         ]
-        extra_kwargs = {"last_update": {"read_only": True}}
 
+        expandable_fields = {
+            "template": TemplateSerializer,
+        }
+        extra_kwargs = {"last_update": {"read_only": True}}
         http_method_names = ["get", "post", "patch", "delete"]
 
     def to_representation(self, instance):
@@ -44,7 +44,10 @@ class InventoryBaseSerializer(serializers.ModelSerializer):
         representation = super().to_representation(instance)
 
         request = self.context.get("request")
-        accountinfo = request.query_params.get("accountinfo")
+        accountinfo = None
+
+        if request is not None:
+            accountinfo = request.query_params.get("accountinfo")
 
         if not (accountinfo and accountinfo.lower() == "true"):
             return representation

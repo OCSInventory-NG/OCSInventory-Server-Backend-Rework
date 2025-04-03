@@ -1,13 +1,11 @@
 from django.contrib.auth.models import Group, User
-from rest_framework import serializers
+from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
+from rest_framework.serializers import ModelSerializer
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer(ExpandableFieldsMixin, ModelSerializer):
     """
     This serialize class provide the API representation
-
-    Args:
-        serializers ([ModelSerializer])
     """
 
     class Meta:
@@ -27,6 +25,7 @@ class UserSerializer(serializers.ModelSerializer):
             "user_permissions",
         ]
         extra_kwargs = {"password": {"write_only": True}}
+        expandable_fields = {}
 
     @staticmethod
     def create(validated_data):

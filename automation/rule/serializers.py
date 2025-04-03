@@ -1,14 +1,12 @@
 from automation.rule.models import Action, Rule
 from django.contrib.contenttypes.models import ContentType
-from rest_framework import serializers
+from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
+from rest_framework.serializers import ModelSerializer
 
 
-class ActionSerializer(serializers.ModelSerializer):
+class ActionSerializer(ExpandableFieldsMixin, ModelSerializer):
     """
     This serialize class provide the API representation
-
-    Args:
-        serializers ([ModelSerializer])
     """
 
     class Meta:
@@ -39,21 +37,19 @@ class ActionSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
-class RuleSerializer(serializers.ModelSerializer):
+class RuleSerializer(ExpandableFieldsMixin, ModelSerializer):
     """
     This serialize class provide the API representation
-
-    Args:
-        serializers ([ModelSerializer])
     """
-
-    actions = ActionSerializer(many=True, required=False)
 
     class Meta:
         """Define the linked model and the fields registered in the API"""
 
         model = Rule
         fields = ["id", "description", "trigger", "enabled", "logic", "actions"]
+        expandable_fields = {
+            "actions": ActionSerializer,
+        }
 
     def create(self, validated_data):
         """Override create to allow nested creation of fields"""
