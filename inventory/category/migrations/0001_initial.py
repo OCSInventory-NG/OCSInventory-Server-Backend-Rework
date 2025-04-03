@@ -2,6 +2,7 @@
 
 from django.db import migrations, models
 
+
 def create_default_categories(apps, schema_editor):
     Section = apps.get_model("section", "Section")
     Category = apps.get_model("category", "Category")
@@ -10,7 +11,13 @@ def create_default_categories(apps, schema_editor):
         {
             "name": "Administrative data",
             "description": "Default tab for asset details",
-            "sections": ["ACCOUNT_INFO", "USERS", "CURRENT_USER", "GROUPS", "OPERATING_SYSTEM"],
+            "sections": [
+                "ACCOUNT_INFO",
+                "USERS",
+                "CURRENT_USER",
+                "GROUPS",
+                "OPERATING_SYSTEM",
+            ],
         },
         {
             "name": "Deployment",
@@ -20,7 +27,22 @@ def create_default_categories(apps, schema_editor):
         {
             "name": "Hardware",
             "description": "Default tab for hardware sections",
-            "sections": ["BIOS", "CPUS", "MEMORIES", "STORAGES", "DRIVES", "VIDEOS", "SOUNDS", "CONTROLLERS", "SLOTS", "PORTS", "BATTERIES", "AUDIO", "FRAMEWORKS", "NVME"],
+            "sections": [
+                "BIOS",
+                "CPUS",
+                "MEMORIES",
+                "STORAGES",
+                "DRIVES",
+                "VIDEOS",
+                "SOUNDS",
+                "CONTROLLERS",
+                "SLOTS",
+                "PORTS",
+                "BATTERIES",
+                "AUDIO",
+                "FRAMEWORKS",
+                "NVME",
+            ],
         },
         {
             "name": "Networks",
@@ -40,7 +62,14 @@ def create_default_categories(apps, schema_editor):
         {
             "name": "Others",
             "description": "Default tab for inventory sections",
-            "sections": ["VIRTUALMACHINES", "REPOSITORIES", "LOCAL_USERS", "LOCAL_GROUPS", "TEAMVIEWER", "PACKAGES"],
+            "sections": [
+                "VIRTUALMACHINES",
+                "REPOSITORIES",
+                "LOCAL_USERS",
+                "LOCAL_GROUPS",
+                "TEAMVIEWER",
+                "PACKAGES",
+            ],
         },
     ]
 
@@ -72,10 +101,18 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="Category",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=50)),
-                ('description', models.CharField(max_length=255)),
-                ('sections', models.ManyToManyField(blank=True, to='section.section')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=50)),
+                ("description", models.CharField(max_length=255)),
+                ("sections", models.ManyToManyField(blank=True, to="section.section")),
             ],
         ),
         migrations.RunPython(create_default_categories),
