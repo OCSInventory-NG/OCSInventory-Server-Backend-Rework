@@ -3,93 +3,59 @@
 from django.db import migrations, models
 
 def create_default_categories(apps, schema_editor):
+    Section = apps.get_model("section", "Section")
+    Category = apps.get_model("category", "Category")
+
     categories = [
         {
             "name": "Administrative data",
             "description": "Default tab for asset details",
-            "sections": apps.get_model("section", "Section").objects.filter(name__in=[
-                "ACCOUNT_INFO",
-                "USERS",
-                "CURRENT_USER",
-                "GROUPS",
-                "OPERATING_SYSTEM"
-            ]),
+            "sections": ["ACCOUNT_INFO", "USERS", "CURRENT_USER", "GROUPS", "OPERATING_SYSTEM"],
         },
         {
             "name": "Deployment",
             "description": "Default tab for asset deployment",
-            "sections": apps.get_model("section", "Section").objects.filter(name__in=[
-                "DOWNLOADS"    
-            ]),
+            "sections": ["DOWNLOADS"],
         },
         {
             "name": "Hardware",
             "description": "Default tab for hardware sections",
-            "sections": apps.get_model("section", "Section").objects.filter(name__in=[
-                "BIOS",
-                "CPUS",
-                "MEMORIES",
-                "STORAGES",
-                "DRIVES",
-                "VIDEOS",
-                "SOUNDS",
-                "CONTROLLERS",
-                "SLOTS",
-                "PORTS",
-                "BATTERIES",
-                "AUDIO",
-                "FRAMEWORKS",
-                "NVME"
-            ]),
+            "sections": ["BIOS", "CPUS", "MEMORIES", "STORAGES", "DRIVES", "VIDEOS", "SOUNDS", "CONTROLLERS", "SLOTS", "PORTS", "BATTERIES", "AUDIO", "FRAMEWORKS", "NVME"],
         },
         {
             "name": "Networks",
             "description": "Default tab for network sections",
-            "sections": apps.get_model("section", "Section").objects.filter(name__in=[
-                "NETWORKS",
-                "ETHERNET",
-                "WI_FI"
-            ]),
+            "sections": ["NETWORKS", "ETHERNET", "WI_FI"],
         },
         {
             "name": "Devices",
             "description": "Default tab for device sections",
-            "sections": apps.get_model("section", "Section").objects.filter(name__in=[
-                "INPUTS",
-                "USB",
-                "GRAPHIC/DISPLAY",
-                "BLUETOOTH",
-                "CAMERAS"
-            ]),
+            "sections": ["INPUTS", "USB", "GRAPHIC/DISPLAY", "BLUETOOTH", "CAMERAS"],
         },
         {
             "name": "Softwares",
             "description": "Default tab for software sections",
-            "sections": apps.get_model("section", "Section").objects.filter(name__in=[
-                "SOFTWARES",
-                "DEVELOPER_TOOLS"
-                "EXTENSIONS"
-            ]),
+            "sections": ["SOFTWARES", "DEVELOPER_TOOLS", "EXTENSIONS"],
         },
         {
             "name": "Others",
             "description": "Default tab for inventory sections",
-            "sections": apps.get_model("section", "Section").objects.filter(name__in=[
-                "VIRTUALMACHINES",
-                "REPOSITORIES",
-                "LOCAL_USERS",
-                "LOCAL_GROUPS",
-                "TEAMVIEWER",
-                "PACKAGES"
-            ]),
+            "sections": ["VIRTUALMACHINES", "REPOSITORIES", "LOCAL_USERS", "LOCAL_GROUPS", "TEAMVIEWER", "PACKAGES"],
         },
     ]
 
-    Category = apps.get_model("category", "Category")
-
     for category in categories:
         try:
-            Category.objects.create(**category)
+            # Create categories without sections
+            obj, created = Category.objects.get_or_create(
+                name=category["name"],
+                defaults={"description": category["description"]},
+            )
+
+            if created:
+                # Set default sections to category after creation
+                sections = Section.objects.filter(name__in=category["sections"])
+                obj.sections.set(sections)
         except Exception as e:
             print(e)
 
