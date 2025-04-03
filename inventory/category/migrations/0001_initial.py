@@ -7,27 +7,81 @@ def create_default_categories(apps, schema_editor):
         {
             "name": "Administrative data",
             "description": "Default tab for asset details",
-            "sections": [],
+            "sections": apps.get_model("section", "Section").objects.filter(name__in=[
+                "ACCOUNT_INFO",
+                "USERS",
+                "CURRENT_USER",
+                "GROUPS",
+                "OPERATING_SYSTEM"
+            ]),
         },
         {
             "name": "Deployment",
             "description": "Default tab for asset deployment",
-            "sections": [],
+            "sections": apps.get_model("section", "Section").objects.filter(name__in=[
+                "DOWNLOADS"    
+            ]),
         },
         {
             "name": "Hardware",
             "description": "Default tab for hardware sections",
-            "sections": [],
+            "sections": apps.get_model("section", "Section").objects.filter(name__in=[
+                "BIOS",
+                "CPUS",
+                "MEMORIES",
+                "STORAGES",
+                "DRIVES",
+                "VIDEOS",
+                "SOUNDS",
+                "CONTROLLERS",
+                "SLOTS",
+                "PORTS",
+                "BATTERIES",
+                "AUDIO",
+                "FRAMEWORKS",
+                "NVME"
+            ]),
         },
         {
-            "name": "Software",
+            "name": "Networks",
+            "description": "Default tab for network sections",
+            "sections": apps.get_model("section", "Section").objects.filter(name__in=[
+                "NETWORKS",
+                "ETHERNET",
+                "WI_FI"
+            ]),
+        },
+        {
+            "name": "Devices",
+            "description": "Default tab for device sections",
+            "sections": apps.get_model("section", "Section").objects.filter(name__in=[
+                "INPUTS",
+                "USB",
+                "GRAPHIC/DISPLAY",
+                "BLUETOOTH",
+                "CAMERAS"
+            ]),
+        },
+        {
+            "name": "Softwares",
             "description": "Default tab for software sections",
-            "sections": [],
+            "sections": apps.get_model("section", "Section").objects.filter(name__in=[
+                "SOFTWARES",
+                "DEVELOPER_TOOLS"
+                "EXTENSIONS"
+            ]),
         },
         {
             "name": "Others",
             "description": "Default tab for inventory sections",
-            "sections": [],
+            "sections": apps.get_model("section", "Section").objects.filter(name__in=[
+                "VIRTUALMACHINES",
+                "REPOSITORIES",
+                "LOCAL_USERS",
+                "LOCAL_GROUPS",
+                "TEAMVIEWER",
+                "PACKAGES"
+            ]),
         },
     ]
 
@@ -45,7 +99,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("section", "0002_alter_section_retrival_method"),
+        ("section", "0001_initial"),
     ]
 
     operations = [
