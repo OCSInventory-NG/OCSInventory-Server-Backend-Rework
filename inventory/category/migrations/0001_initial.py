@@ -123,6 +123,7 @@ class Migration(migrations.Migration):
                 ("name", models.CharField(max_length=50)),
                 ("description", models.CharField(max_length=255)),
                 ("sections", models.ManyToManyField(blank=True, to="section.section")),
+                ("is_protected", models.BooleanField(default=False)),
             ],
         ),
         migrations.RunPython(create_default_categories),
