@@ -87,7 +87,7 @@ def create_default_categories(apps, schema_editor):
                 name=category["name"],
                 defaults={
                     "description": category["description"],
-                    "is_protected": category["is_protected"]
+                    "is_protected": category["is_protected"],
                 },
             )
 
