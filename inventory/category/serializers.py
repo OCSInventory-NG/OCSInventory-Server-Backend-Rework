@@ -1,8 +1,10 @@
 from inventory.category.models import Category
-from rest_framework import serializers
+from inventory.section.serializers import SectionSerializer
+from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
+from rest_framework.serializers import ModelSerializer
 
 
-class CategorySerializer(serializers.ModelSerializer):
+class CategorySerializer(ExpandableFieldsMixin, ModelSerializer):
     """
     This serialize class provide the API representation
 
@@ -14,4 +16,7 @@ class CategorySerializer(serializers.ModelSerializer):
         """Define the linked model and the fields registered in the API"""
 
         model = Category
-        fields = ["id", "name", "description", "sections"]
+        fields = ["id", "name", "description", "sections", "is_protected"]
+        expandable_fields = {
+            "sections": SectionSerializer,
+        }
