@@ -57,7 +57,13 @@ def create_default_categories(apps, schema_editor):
             "name": "Devices",
             "description": "Default tab for device sections",
             "is_protected": True,
-            "inventory_sections": ["INPUTS", "USB", "GRAPHIC/DISPLAY", "BLUETOOTH", "CAMERAS"],
+            "inventory_sections": [
+                "INPUTS",
+                "USB",
+                "GRAPHIC/DISPLAY",
+                "BLUETOOTH",
+                "CAMERAS",
+            ],
         },
         {
             "name": "Softwares",
@@ -93,7 +99,9 @@ def create_default_categories(apps, schema_editor):
 
             if created:
                 # Set default sections to category after creation
-                inventory_sections = Section.objects.filter(name__in=category["inventory_sections"])
+                inventory_sections = Section.objects.filter(
+                    name__in=category["inventory_sections"]
+                )
                 obj.inventory_sections.set(inventory_sections)
         except Exception as e:
             print(e)
@@ -122,7 +130,10 @@ class Migration(migrations.Migration):
                 ),
                 ("name", models.CharField(max_length=50)),
                 ("description", models.CharField(max_length=255)),
-                ("inventory_sections", models.ManyToManyField(blank=True, to="section.section")),
+                (
+                    "inventory_sections",
+                    models.ManyToManyField(blank=True, to="section.section"),
+                ),
                 ("is_protected", models.BooleanField(default=False)),
             ],
         ),
