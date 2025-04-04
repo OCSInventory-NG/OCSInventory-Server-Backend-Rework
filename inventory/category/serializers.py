@@ -16,7 +16,7 @@ class CategorySerializer(ExpandableFieldsMixin, ModelSerializer):
         """Define the linked model and the fields registered in the API"""
 
         model = Category
-        fields = ["id", "name", "description", "sections", "is_protected"]
+        fields = ["id", "name", "description", "inventory_sections", "is_protected"]
         expandable_fields = {
-            "sections": SectionSerializer,
+            "inventory_sections": SectionSerializer
         }

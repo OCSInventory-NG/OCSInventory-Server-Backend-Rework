@@ -12,7 +12,7 @@ def create_default_categories(apps, schema_editor):
             "name": "Administrative data",
             "description": "Default tab for asset details",
             "is_protected": True,
-            "sections": [
+            "inventory_sections": [
                 "ACCOUNT_INFO",
                 "USERS",
                 "CURRENT_USER",
@@ -24,13 +24,13 @@ def create_default_categories(apps, schema_editor):
             "name": "Deployment",
             "description": "Default tab for asset deployment",
             "is_protected": True,
-            "sections": ["DOWNLOADS"],
+            "inventory_sections": ["DOWNLOADS"],
         },
         {
             "name": "Hardware",
             "description": "Default tab for hardware sections",
             "is_protected": True,
-            "sections": [
+            "inventory_sections": [
                 "BIOS",
                 "CPUS",
                 "MEMORIES",
@@ -51,25 +51,25 @@ def create_default_categories(apps, schema_editor):
             "name": "Networks",
             "description": "Default tab for network sections",
             "is_protected": True,
-            "sections": ["NETWORKS", "ETHERNET", "WI_FI"],
+            "inventory_sections": ["NETWORKS", "ETHERNET", "WI_FI"],
         },
         {
             "name": "Devices",
             "description": "Default tab for device sections",
             "is_protected": True,
-            "sections": ["INPUTS", "USB", "GRAPHIC/DISPLAY", "BLUETOOTH", "CAMERAS"],
+            "inventory_sections": ["INPUTS", "USB", "GRAPHIC/DISPLAY", "BLUETOOTH", "CAMERAS"],
         },
         {
             "name": "Softwares",
             "description": "Default tab for software sections",
             "is_protected": True,
-            "sections": ["SOFTWARES", "DEVELOPER_TOOLS", "EXTENSIONS"],
+            "inventory_sections": ["SOFTWARES", "DEVELOPER_TOOLS", "EXTENSIONS"],
         },
         {
             "name": "Others",
             "description": "Default tab for inventory sections",
             "is_protected": True,
-            "sections": [
+            "inventory_sections": [
                 "VIRTUALMACHINES",
                 "REPOSITORIES",
                 "LOCAL_USERS",
@@ -93,8 +93,8 @@ def create_default_categories(apps, schema_editor):
 
             if created:
                 # Set default sections to category after creation
-                sections = Section.objects.filter(name__in=category["sections"])
-                obj.sections.set(sections)
+                inventory_sections = Section.objects.filter(name__in=category["inventory_sections"])
+                obj.inventory_sections.set(inventory_sections)
         except Exception as e:
             print(e)
 
@@ -122,7 +122,7 @@ class Migration(migrations.Migration):
                 ),
                 ("name", models.CharField(max_length=50)),
                 ("description", models.CharField(max_length=255)),
-                ("sections", models.ManyToManyField(blank=True, to="section.section")),
+                ("inventory_sections", models.ManyToManyField(blank=True, to="section.section")),
                 ("is_protected", models.BooleanField(default=False)),
             ],
         ),

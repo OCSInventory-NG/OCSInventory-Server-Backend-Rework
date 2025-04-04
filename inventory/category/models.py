@@ -14,5 +14,5 @@ class Category(models.Model):
 
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=255)
-    sections = models.ManyToManyField(Section, blank=True)
+    inventory_sections = models.ManyToManyField(Section, blank=True)
     is_protected = models.BooleanField(default=False)

@@ -205,7 +205,7 @@ class ExpandableFieldsMixin:
         expand_param = request.query_params.get("expand", "")
         expandable_fields = getattr(self.Meta, "expandable_fields", {})
         
-        manyToMany = ["assets", "groups", "sections"]
+        manyToMany = ["assets", "groups", "inventory_sections"]
 
         # expand all fields
         if expand_param == "*":
