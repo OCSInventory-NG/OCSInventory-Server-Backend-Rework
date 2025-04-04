@@ -19,4 +19,10 @@ class CategoryViewSet(viewsets.OCSViewSet):
     serializer_class = CategorySerializer
     model = Category
 
-    filterset_fields = ["id", "name", "description", "inventory_sections", "is_protected"]
+    filterset_fields = [
+        "id",
+        "name",
+        "description",
+        "inventory_sections",
+        "is_protected",
+    ]

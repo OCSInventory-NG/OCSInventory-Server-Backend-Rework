@@ -17,6 +17,4 @@ class CategorySerializer(ExpandableFieldsMixin, ModelSerializer):
 
         model = Category
         fields = ["id", "name", "description", "inventory_sections", "is_protected"]
-        expandable_fields = {
-            "inventory_sections": SectionSerializer
-        }
+        expandable_fields = {"inventory_sections": SectionSerializer}
