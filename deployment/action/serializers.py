@@ -122,7 +122,7 @@ class ActionSerializer(FileUploadMixin, serializers.ModelSerializer):
         """
         # check if file is already compressed
         file_extension = os.path.splitext(file.name)[1].lower()
-        archive_extensions = ['.zip', '.tar', '.gz', '.tgz', '.tar.gz']
+        archive_extensions = [".zip", ".tar", ".gz", ".tgz", ".tar.gz"]
 
         if any(file_extension.endswith(ext) for ext in archive_extensions):
             return ContentFile(file.read(), name=file.name)
