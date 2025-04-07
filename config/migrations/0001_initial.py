@@ -22,6 +22,14 @@ def create_base_config(apps, schema_editor):
                     "type": "switch",
                     "unit": "",
                 },
+                {
+                    "name": "inventory_loglevel",
+                    "description": "Inventory log level (server)",
+                    "value": "ERROR",
+                    "type": "select",
+                    "unit": "",
+                    "options": ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+                }
             ],
         },
         {
