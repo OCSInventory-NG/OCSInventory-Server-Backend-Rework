@@ -105,6 +105,7 @@ class ActionSerializer(FileUploadMixin, serializers.ModelSerializer):
         """
         Overriding FileUploadMixin compress method
         Compresses the provided file based on the specified operating system type.
+        Skips compression if the file is already in an archive format.
 
         Args:
             file (django.core.files.uploadedfile.UploadedFile): The file to be
@@ -119,6 +120,13 @@ class ActionSerializer(FileUploadMixin, serializers.ModelSerializer):
         Example:
             compressed_file = self.compress(file)
         """
+        # check if file is already compressed
+        file_extension = os.path.splitext(file.name)[1].lower()
+        archive_extensions = [".zip", ".tar", ".gz", ".tgz", ".tar.gz"]
+
+        if any(file_extension.endswith(ext) for ext in archive_extensions):
+            return ContentFile(file.read(), name=file.name)
+
         buffer = BytesIO()
 
         # getting os type from the package
