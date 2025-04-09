@@ -20,7 +20,7 @@ def create_default_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "Key value",
+            "name": "KEY VALUE",
             "retrival_value": "KEYVALUE",
             "override_target": False,
             "new_target": None,
