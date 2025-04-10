@@ -13,8 +13,7 @@ def create_default_categories(apps, schema_editor):
             "description": "Default tab for asset details",
             "is_protected": True,
             "inventory_sections": [
-                "ACCOUNT_INFO",
-                "USERS",
+                "ACCOUNTINFO",
                 "CURRENT_USER",
                 "GROUPS",
                 "OPERATING_SYSTEM",
@@ -24,7 +23,6 @@ def create_default_categories(apps, schema_editor):
             "name": "Deployment",
             "description": "Default tab for asset deployment",
             "is_protected": True,
-            "inventory_sections": ["DOWNLOADS"],
         },
         {
             "name": "Hardware",
@@ -58,7 +56,11 @@ def create_default_categories(apps, schema_editor):
             "description": "Default tab for device sections",
             "is_protected": True,
             "inventory_sections": [
+                "MONITORS",
                 "INPUTS",
+                "USBDEVICES",
+                "PRINTERS",
+                "MODEMS",
                 "USB",
                 "GRAPHIC/DISPLAY",
                 "BLUETOOTH",
@@ -77,10 +79,9 @@ def create_default_categories(apps, schema_editor):
             "is_protected": True,
             "inventory_sections": [
                 "VIRTUALMACHINES",
-                "REPOSITORIES",
+                "REPOSITORY",
                 "LOCAL_USERS",
                 "LOCAL_GROUPS",
-                "TEAMVIEWER",
                 "PACKAGES",
             ],
         },
