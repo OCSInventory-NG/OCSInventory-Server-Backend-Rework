@@ -225,50 +225,58 @@ class ExpandableFieldsMixin:
                     field_obj = getattr(instance, field, None)
                     if field_obj is not None:
                         model_field = model_meta.get_field(field)
-                        new_context = {**self.context, "expand_depth": current_depth + 1}
+                        new_context = {
+                            **self.context,
+                            "expand_depth": current_depth + 1
+                        }
 
-                        # Handle ManyToMany and Reverse ForeignKey/OneToOne (usually a Manager)
+                        # Handle ManyToMany and Reverse ForeignKey/OneToOne
                         if model_field.many_to_many or model_field.one_to_many:
                             representation[field] = serializer_class(
                                 field_obj.all(), many=True, context=new_context
                             ).data
                         # Handle ForeignKey and OneToOne
                         elif model_field.many_to_one or model_field.one_to_one:
-                             representation[field] = serializer_class(
+                            representation[field] = serializer_class(
                                 field_obj, context=new_context
                             ).data
                         # Optional: Handle other field types if necessary
 
                 except Exception as e:
-                    # Handle cases where getattr fails or field doesn't exist as expected
+                    # Handle cases where getattr fails
+                    # or field doesn't exist as expected
                     # Log the error or handle appropriately
-                    self.logger.error(f"Error expanding field '{field}': {e}") # Assuming you have a logger
-                    # Decide whether to keep the default representation or remove/set to null
+                    self.logger.error(f"Error expanding field '{field}': {e}")
+                    # Decide whether to keep the default representation
+                    # or remove/set to null
                     if field in representation:
-                       del representation[field] # Or set to None, or keep default PK
+                        del representation[field] # Or set to None, or keep default PK
 
             else:
                 # Handle non-expanded fields (represent as PKs)
-                # This part might be redundant if the default representation already does this
+                # This part might be redundant if the default
+                # representation already does this
                 # but explicit handling can be clearer.
                 try:
                     field_obj = getattr(instance, field, None)
                     if field_obj is not None:
                         model_field = model_meta.get_field(field)
                         if model_field.many_to_many or model_field.one_to_many:
-                             # Ensure it's iterable before list comprehension
-                             if hasattr(field_obj, 'all'):
-                                 representation[field] = [item.pk for item in field_obj.all()]
-                             else: # Should not happen for M2M/O2M, but defensive check
-                                 representation[field] = []
+                            # Ensure it's iterable before list comprehension
+                            if hasattr(field_obj, 'all'):
+                                representation[field] = [
+                                    item.pk for item in field_obj.all()
+                                ]
+                            else: # Should not happen for M2M/O2M, but defensive check
+                                representation[field] = []
                         elif model_field.many_to_one or model_field.one_to_one:
                             representation[field] = field_obj.pk
                         # else: keep original representation value if not a relation
 
                 except Exception as e:
-                     self.logger.error(f"Error getting PK for field '{field}': {e}")
-                     if field in representation:
-                         del representation[field]
+                    self.logger.error(f"Error getting PK for field '{field}': {e}")
+                    if field in representation:
+                        del representation[field]
 
 
         return representation
