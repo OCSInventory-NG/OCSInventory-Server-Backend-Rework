@@ -1,16 +1,15 @@
-from asset.inventory_base.models import InventoryBase
 from asset.inventory_base.serializers import InventoryBaseSerializer
-from rest_framework import serializers
+from group.serializers import GroupSerializer
+from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
+from rest_framework.serializers import ModelSerializer
+from user.serializers import UserSerializer
 
 from .models import AssetGroup
 
 
-class AssetGroupSerializer(serializers.ModelSerializer):
+class AssetGroupSerializer(ExpandableFieldsMixin, ModelSerializer):
     """
     Serializer class for AssetGroup
-
-    Args:
-        serializers ([ModelSerializer])
     """
 
     class Meta:
@@ -19,11 +18,8 @@ class AssetGroupSerializer(serializers.ModelSerializer):
         model = AssetGroup
         fields = "__all__"
         extra_kwargs = {"last_updated": {"read_only": True}}
-
-    def to_representation(self, instance):
-        ret = super().to_representation(instance)
-        ret["asset_bases"] = InventoryBaseSerializer(
-            InventoryBase.objects.filter(id__in=ret["assets"]), many=True
-        ).data
-
-        return ret
+        expandable_fields = {
+            "user": UserSerializer,
+            "groups": GroupSerializer,
+            "assets": InventoryBaseSerializer,
+        }

@@ -1,8 +1,9 @@
 from dashboard.layout.models import DashboardLayout
-from rest_framework import serializers
+from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
+from rest_framework.serializers import ModelSerializer
 
 
-class DashboardLayoutSerializer(serializers.ModelSerializer):
+class DashboardLayoutSerializer(ExpandableFieldsMixin, ModelSerializer):
     """
     This serialize class provide the API representation.
     """
@@ -22,3 +23,4 @@ class DashboardLayoutSerializer(serializers.ModelSerializer):
             "name",
             "layout",
         ]
+        expandable_fields = {}

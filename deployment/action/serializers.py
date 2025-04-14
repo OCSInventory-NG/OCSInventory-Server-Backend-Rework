@@ -13,9 +13,6 @@ from rest_framework import serializers
 class ActionSerializer(FileUploadMixin, serializers.ModelSerializer):
     """
     This serializer class provides the API representation
-
-    Args:
-        serializers ([ModelSerializer])
     """
 
     file = FileManagerSerializer(read_only=True, required=False)
@@ -41,6 +38,8 @@ class ActionSerializer(FileUploadMixin, serializers.ModelSerializer):
             "file": {"required": False},
             "original_file_name": {"required": False},
         }
+
+        expandable_fields = {}
 
     def custom_validate(self, data):
         """
