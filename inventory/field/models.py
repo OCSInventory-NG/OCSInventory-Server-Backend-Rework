@@ -1,6 +1,6 @@
 from django.db import models
 from inventory.section.models import Section
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 
 
@@ -54,6 +54,14 @@ class Field(models.Model):
 def update_template_on_field_save(sender, instance, **kwargs):
     """
     Updates template's last_update field when a field is saved
+    """
+    if instance.section and instance.section.template:
+        instance.section.template.save()
+
+@receiver(post_delete, sender=Field)
+def update_template_on_field_delete(sender, instance, **kwargs):
+    """
+    Updates template's last_update field when a field is deleted
     """
     if instance.section and instance.section.template:
         instance.section.template.save()
