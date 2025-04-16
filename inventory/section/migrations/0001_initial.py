@@ -7,7 +7,7 @@ from django.db import migrations, models
 def create_default_sections(apps, schema_editor):
     sections = [
         {
-            "name": "ACCOUNT_INFO",
+            "name": "ACCOUNTINFO",
             "retrival_method": "BASH",
             "retrival_output": "REGX",
             "target": "None",
@@ -40,14 +40,6 @@ def create_default_sections(apps, schema_editor):
         },
         {
             "name": "CPUS",
-            "retrival_method": "BASH",
-            "retrival_output": "REGX",
-            "target": "None",
-            "options": {"need_format": False},
-            "template": apps.get_model("template", "Template").objects.get(os="LEG"),
-        },
-        {
-            "name": "DOWNLOADS",
             "retrival_method": "BASH",
             "retrival_output": "REGX",
             "target": "None",
@@ -103,6 +95,22 @@ def create_default_sections(apps, schema_editor):
             "template": apps.get_model("template", "Template").objects.get(os="LEG"),
         },
         {
+            "name": "MODEMS",
+            "retrival_method": "BASH",
+            "retrival_output": "REGX",
+            "target": "None",
+            "options": {"need_format": False},
+            "template": apps.get_model("template", "Template").objects.get(os="LEG"),
+        },
+        {
+            "name": "MONITORS",
+            "retrival_method": "BASH",
+            "retrival_output": "REGX",
+            "target": "None",
+            "options": {"need_format": False},
+            "template": apps.get_model("template", "Template").objects.get(os="LEG"),
+        },
+        {
             "name": "NETWORKS",
             "retrival_method": "BASH",
             "retrival_output": "REGX",
@@ -119,7 +127,15 @@ def create_default_sections(apps, schema_editor):
             "template": apps.get_model("template", "Template").objects.get(os="LEG"),
         },
         {
-            "name": "REPOSITORIES",
+            "name": "PRINTERS",
+            "retrival_method": "BASH",
+            "retrival_output": "REGX",
+            "target": "None",
+            "options": {"need_format": False},
+            "template": apps.get_model("template", "Template").objects.get(os="LEG"),
+        },
+        {
+            "name": "REPOSITORY",
             "retrival_method": "BASH",
             "retrival_output": "REGX",
             "target": "None",
@@ -143,7 +159,7 @@ def create_default_sections(apps, schema_editor):
             "template": apps.get_model("template", "Template").objects.get(os="LEG"),
         },
         {
-            "name": "AUDIO",
+            "name": "SOUNDS",
             "retrival_method": "BASH",
             "retrival_output": "REGX",
             "target": "None",
@@ -159,15 +175,7 @@ def create_default_sections(apps, schema_editor):
             "template": apps.get_model("template", "Template").objects.get(os="LEG"),
         },
         {
-            "name": "TEAMVIEWER",
-            "retrival_method": "BASH",
-            "retrival_output": "REGX",
-            "target": "None",
-            "options": {"need_format": False},
-            "template": apps.get_model("template", "Template").objects.get(os="LEG"),
-        },
-        {
-            "name": "USERS",
+            "name": "USBDEVICES",
             "retrival_method": "BASH",
             "retrival_output": "REGX",
             "target": "None",
@@ -183,7 +191,7 @@ def create_default_sections(apps, schema_editor):
             "template": apps.get_model("template", "Template").objects.get(os="LEG"),
         },
         {
-            "name": "VIRTUAL_MACHINES",
+            "name": "VIRTUALMACHINES",
             "retrival_method": "BASH",
             "retrival_output": "REGX",
             "target": "None",
