@@ -1,5 +1,7 @@
 from django.db import models
 from inventory.template.models import Template
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 # Create your models here.
@@ -44,3 +46,11 @@ class Section(models.Model):
         Template, related_name="sections", on_delete=models.CASCADE, null=True
     )
     options = models.JSONField(null=True)
+
+@receiver(post_save, sender=Section)
+def update_template_on_section_save(sender, instance, **kwargs):
+    """
+    Updates template's last_update field when a section is saved
+    """
+    if instance.template:
+        instance.template.save()
