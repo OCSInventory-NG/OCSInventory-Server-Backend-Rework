@@ -25,7 +25,7 @@ class InventoryBase(models.Model):
     """
 
     name = models.CharField(max_length=50, null=False)
-    description = models.CharField(max_length=255)
+    description = models.CharField(max_length=255, null=True)
     serial = models.CharField(max_length=255)
     osname = models.CharField(max_length=255, null=False)
     osversion = models.CharField(max_length=255, blank=True)
