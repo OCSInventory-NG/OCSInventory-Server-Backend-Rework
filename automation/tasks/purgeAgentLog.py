@@ -54,7 +54,7 @@ class PurgeAgentLog(AbstractTask):
         Purge logs
         """
         try:
-            logger.info(f"{logs.count()} agent logs should be removed")
+            logger.info(f"Purging {logs.count()} agent logs")
             logs.delete()
         except Exception as e:
-            logger.error(f"Error agent logs purge: {e}")
+            logger.error(f"Error while purging agent logs: {e}")
