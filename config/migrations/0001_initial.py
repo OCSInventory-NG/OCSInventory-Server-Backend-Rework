@@ -51,6 +51,20 @@ def create_base_config(apps, schema_editor):
                     "unit": "",
                     "options": ["agent", "automation"],
                 },
+                {
+                    "name": "purge_agent_log",
+                    "description": "Enable log agent purge",
+                    "value": False,
+                    "type": "switch",
+                    "unit": "",
+                },
+                {
+                    "name": "purge_agent_log_interval",
+                    "description": "Interval in days for purging agent logs",
+                    "value": 30,
+                    "type": "number input",
+                    "unit": "days",
+                },
             ],
         },
         {
