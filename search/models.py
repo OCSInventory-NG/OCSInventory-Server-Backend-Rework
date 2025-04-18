@@ -19,4 +19,4 @@ class Search(RestrictVisibility):
     search = JSONField()
     last_updated = models.DateTimeField(auto_now=True)
     name = models.CharField(max_length=50)
-    description = models.TextField()
+    description = models.TextField(null=True)
