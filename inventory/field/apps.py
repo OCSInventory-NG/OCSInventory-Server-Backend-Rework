@@ -11,9 +11,3 @@ class FieldConfig(AppConfig):
 
     default_auto_field = "django.db.models.BigAutoField"
     name = "inventory.field"
-
-    def ready(self):
-        try:
-            import inventory.field.models
-        except ImportError:
-            pass

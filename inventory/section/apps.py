@@ -12,8 +12,3 @@ class SectionConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "inventory.section"
 
-    def ready(self):
-        try:
-            import inventory.section.models
-        except ImportError:
-            pass
