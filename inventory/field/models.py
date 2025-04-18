@@ -1,7 +1,7 @@
 from django.db import models
-from inventory.section.models import Section
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
+from inventory.section.models import Section
 
 
 # Create your models here.
@@ -42,13 +42,12 @@ class Field(models.Model):
     retrival_method = models.CharField(
         max_length=4, choices=RETRIVAL_CHOICES, null=True
     )
-    retrival_output = models.CharField(
-        max_length=4, choices=RETRIVAL_OUTPUT, null=True
-    )
+    retrival_output = models.CharField(max_length=4, choices=RETRIVAL_OUTPUT, null=True)
     section = models.ForeignKey(
         Section, related_name="fields", on_delete=models.CASCADE, null=True
     )
     options = models.JSONField(null=True)
+
 
 @receiver(post_save, sender=Field)
 def update_template_on_field_save(sender, instance, **kwargs):
@@ -57,6 +56,7 @@ def update_template_on_field_save(sender, instance, **kwargs):
     """
     if instance.section and instance.section.template:
         instance.section.template.save()
+
 
 @receiver(post_delete, sender=Field)
 def update_template_on_field_delete(sender, instance, **kwargs):

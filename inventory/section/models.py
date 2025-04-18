@@ -1,7 +1,7 @@
 from django.db import models
-from inventory.template.models import Template
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
+from inventory.template.models import Template
 
 
 # Create your models here.
@@ -47,6 +47,7 @@ class Section(models.Model):
     )
     options = models.JSONField(null=True)
 
+
 @receiver(post_save, sender=Section)
 def update_template_on_section_save(sender, instance, **kwargs):
     """
@@ -54,6 +55,7 @@ def update_template_on_section_save(sender, instance, **kwargs):
     """
     if instance.template:
         instance.template.save()
+
 
 @receiver(post_delete, sender=Section)
 def update_template_on_section_delete(sender, instance, **kwargs):
