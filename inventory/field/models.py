@@ -40,9 +40,7 @@ class Field(models.Model):
     retrival_method = models.CharField(
         max_length=4, choices=RETRIVAL_CHOICES, null=True
     )
-    retrival_output = models.CharField(
-        max_length=4, choices=RETRIVAL_OUTPUT, null=True
-    )
+    retrival_output = models.CharField(max_length=4, choices=RETRIVAL_OUTPUT, null=True)
     section = models.ForeignKey(
         Section, related_name="fields", on_delete=models.CASCADE
     )
