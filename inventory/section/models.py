@@ -41,6 +41,6 @@ class Section(models.Model):
     )
     target = models.CharField(max_length=255)
     template = models.ForeignKey(
-        Template, related_name="sections", on_delete=models.CASCADE, null=True
+        Template, related_name="sections", on_delete=models.CASCADE
     )
     options = models.JSONField(null=True)

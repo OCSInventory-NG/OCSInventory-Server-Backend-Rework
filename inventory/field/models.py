@@ -44,6 +44,6 @@ class Field(models.Model):
         max_length=4, choices=RETRIVAL_OUTPUT, null=True
     )
     section = models.ForeignKey(
-        Section, related_name="fields", on_delete=models.CASCADE, null=True
+        Section, related_name="fields", on_delete=models.CASCADE
     )
     options = models.JSONField(null=True)
