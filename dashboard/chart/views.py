@@ -285,7 +285,8 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
             }
             for device in contacted:
                 date_str = device.last_update.strftime("%Y-%m-%d")
-                last_contacted_counters[date_str] += 1
+                if date_str in last_contacted_counters:
+                    last_contacted_counters[date_str] += 1
 
             sorted_dates = sorted(last_contacted_counters.keys())
             sorted_counters = {
@@ -304,6 +305,7 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
             }
             return Response(last_contacted_data, status=status.HTTP_200_OK)
         except Exception as e:
+            # print stack trace
             msg = f"Error in last contacted : {e}"
             return Response(
                 {"error": msg}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
