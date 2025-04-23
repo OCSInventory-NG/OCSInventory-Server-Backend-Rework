@@ -19,7 +19,6 @@ class UserSerializer(ExpandableFieldsMixin, ModelSerializer):
             "first_name",
             "last_name",
             "password",
-            "is_staff",
             "is_superuser",
             "groups",
             "user_permissions",
