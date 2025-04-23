@@ -13,7 +13,7 @@ def create_osname_rules_with_actions(apps, schema_editor):
             "trigger": "inventory_received",
             "enabled": True,
             "logic": {
-                "regex": [{"var": "osname"}, "windows"]
+                "regex": [{"var": "osname"}, "(?i)(Windows)"]
             },
             "actions": [
                 {
@@ -29,7 +29,7 @@ def create_osname_rules_with_actions(apps, schema_editor):
             "trigger": "inventory_received",
             "enabled": True,
             "logic": {
-                "regex": [{"var": "osname"}, "linux"]
+                "regex": [{"var": "osname"}, "(?i)(Ubuntu|Debian|Redhat|Centos|Alma|Rocky)"]
             },
             "actions": [
                 {
@@ -45,7 +45,7 @@ def create_osname_rules_with_actions(apps, schema_editor):
             "trigger": "inventory_received",
             "enabled": True,
             "logic": {
-                "regex": [{"var": "osname"}, "mac"]
+                "regex": [{"var": "osname"}, "(?i)(Mac)"]
             },
             "actions": [
                 {
