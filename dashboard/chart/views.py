@@ -276,7 +276,7 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
         try:
             # timeframe for contacted is seven days from the current date
             today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-            since = today - timedelta(days=7)
+            since = today - timedelta(days=6)
 
             contacted = self.queryset.filter(last_update__gte=since)
 
