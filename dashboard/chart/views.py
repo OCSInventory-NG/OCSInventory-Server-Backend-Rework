@@ -305,7 +305,6 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
             }
             return Response(last_contacted_data, status=status.HTTP_200_OK)
         except Exception as e:
-            # print stack trace
             msg = f"Error in last contacted : {e}"
             return Response(
                 {"error": msg}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
