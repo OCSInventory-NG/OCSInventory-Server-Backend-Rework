@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models.signals import post_delete, post_save
+from django.dispatch import receiver
 from inventory.section.models import Section
 
 
@@ -45,3 +47,21 @@ class Field(models.Model):
         Section, related_name="fields", on_delete=models.CASCADE
     )
     options = models.JSONField(null=True)
+
+
+@receiver(post_save, sender=Field)
+def update_template_on_field_save(sender, instance, **kwargs):
+    """
+    Updates template's last_update field when a field is saved
+    """
+    if instance.section and instance.section.template:
+        instance.section.template.save()
+
+
+@receiver(post_delete, sender=Field)
+def update_template_on_field_delete(sender, instance, **kwargs):
+    """
+    Updates template's last_update field when a field is deleted
+    """
+    if instance.section and instance.section.template:
+        instance.section.template.save()
