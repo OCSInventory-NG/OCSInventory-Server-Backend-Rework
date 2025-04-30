@@ -6313,6 +6313,10 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": "PW",
             "retrival_output": "JSON",
             "options": {"need_format": False},
+            "section": apps.get_model("section", "Section").objects.get(
+                name="BATTERIES",
+                template=apps.get_model("template", "Template").objects.get(os="WIN"),
+            ),
         },
         {
             "name": "ARCHITECTURE",
@@ -6322,6 +6326,10 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": "PW",
             "retrival_output": "JSON",
             "options": {"need_format": False},
+            "section": apps.get_model("section", "Section").objects.get(
+                name="OPERATING_SYSTEM",
+                template=apps.get_model("template", "Template").objects.get(os="LIN"),
+            ),
         },
         {
             "name": "CORES",
@@ -6526,6 +6534,10 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": "PW",
             "retrival_output": "JSON",
             "options": {"need_format": False},
+            "section": apps.get_model("section", "Section").objects.get(
+                name="HARDWARE",
+                template=apps.get_model("template", "Template").objects.get(os="WIN"),
+            ),
         },
         {
             "name": "BIOS_MANUFACTURER",
@@ -6535,6 +6547,10 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": "PW",
             "retrival_output": "JSON",
             "options": {"need_format": False},
+            "section": apps.get_model("section", "Section").objects.get(
+                name="HARDWARE",
+                template=apps.get_model("template", "Template").objects.get(os="WIN"),
+            ),
         },
         {
             "name": "BIOS_VERSION",
@@ -6544,6 +6560,10 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": "PW",
             "retrival_output": "JSON",
             "options": {"need_format": False},
+            "section": apps.get_model("section", "Section").objects.get(
+                name="HARDWARE",
+                template=apps.get_model("template", "Template").objects.get(os="WIN"),
+            ),
         },
         {
             "name": "MOTHERBOARD_MANUFACTURER",
@@ -6735,6 +6755,10 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": "PW",
             "retrival_output": "JSON",
             "options": {"need_format": False},
+            "section": apps.get_model("section", "Section").objects.get(
+                name="CONTROLLERS",
+                template=apps.get_model("template", "Template").objects.get(os="WIN"),
+            ),
         },
         {
             "name": "MANUFACTURER",
@@ -6757,6 +6781,10 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": "PW",
             "retrival_output": "JSON",
             "options": {"need_format": False},
+            "section": apps.get_model("section", "Section").objects.get(
+                name="CONTROLLERS",
+                template=apps.get_model("template", "Template").objects.get(os="WIN"),
+            ),
         },
         {
             "name": "NAME",
@@ -6779,6 +6807,10 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": "PW",
             "retrival_output": "JSON",
             "options": {"need_format": False},
+            "section": apps.get_model("section", "Section").objects.get(
+                name="HARDWARE",
+                template=apps.get_model("template", "Template").objects.get(os="WIN"),
+            ),
         },
         {
             "name": "VERSION",
