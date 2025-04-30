@@ -42,7 +42,7 @@ class UserSerializer(ExpandableFieldsMixin, ModelSerializer):
             username=validated_data["username"],
             first_name=validated_data["first_name"],
             last_name=validated_data["last_name"],
-            is_staff=validated_data["is_staff"],
+            is_superuser=validated_data["is_superuser"],
         )
 
         user.set_password(validated_data["password"])
