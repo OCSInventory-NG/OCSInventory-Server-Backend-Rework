@@ -44,7 +44,7 @@ class Field(models.Model):
     )
     retrival_output = models.CharField(max_length=4, choices=RETRIVAL_OUTPUT, null=True)
     section = models.ForeignKey(
-        Section, related_name="fields", on_delete=models.CASCADE
+        Section, related_name="fields", on_delete=models.CASCADE, default=1
     )
     options = models.JSONField(null=True)
 

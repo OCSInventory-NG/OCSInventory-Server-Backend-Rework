@@ -43,7 +43,7 @@ class Section(models.Model):
     )
     target = models.CharField(max_length=255)
     template = models.ForeignKey(
-        Template, related_name="sections", on_delete=models.CASCADE
+        Template, related_name="sections", on_delete=models.CASCADE, default=1
     )
     options = models.JSONField(null=True)
 
