@@ -8049,7 +8049,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
-            "order": 2,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -8063,7 +8063,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
-            "order": 3,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -8077,7 +8077,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
-            "order": 4,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -8091,7 +8091,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
-            "order": 5,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -8105,7 +8105,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
-            "order": 6,
+            "order": 7,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -8119,7 +8119,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
-            "order": 7,
+            "order": 8,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -8133,7 +8133,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
-            "order": 8,
+            "order": 9,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
