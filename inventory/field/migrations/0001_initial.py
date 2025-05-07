@@ -14,6 +14,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ACCOUNTINFO",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -27,6 +28,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ACCOUNTINFO",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -40,6 +42,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -53,6 +56,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -66,6 +70,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -79,6 +84,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -92,6 +98,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -105,6 +112,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -118,6 +126,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 7,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -131,6 +140,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 8,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -144,6 +154,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 9,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -157,6 +168,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 10,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -170,6 +182,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -183,6 +196,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -196,6 +210,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -209,6 +224,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -222,6 +238,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -235,6 +252,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -248,6 +266,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 7,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -261,6 +280,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 8,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -274,6 +294,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 9,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -287,6 +308,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 10,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -300,6 +322,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 11,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -313,6 +336,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -326,6 +350,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -339,6 +364,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -352,6 +378,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -365,6 +392,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -378,6 +406,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -391,6 +420,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -404,6 +434,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -417,6 +448,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -430,6 +462,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -443,6 +476,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -456,6 +490,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -469,6 +504,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 7,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -482,6 +518,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 8,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -495,6 +532,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 9,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -508,6 +546,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 10,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -521,6 +560,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 11,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -534,6 +574,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 12,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -547,6 +588,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 13,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -560,6 +602,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="DRIVES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -573,6 +616,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="DRIVES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -586,6 +630,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="DRIVES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -599,6 +644,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="DRIVES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -612,6 +658,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="DRIVES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -625,6 +672,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="DRIVES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -638,6 +686,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -651,6 +700,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -664,6 +714,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -677,6 +728,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -690,6 +742,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -703,6 +756,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -716,6 +770,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 7,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -729,6 +784,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 8,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -742,6 +798,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 9,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -755,6 +812,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 10,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -768,6 +826,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 11,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -781,6 +840,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 12,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -794,6 +854,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 13,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -807,6 +868,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 14,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -820,6 +882,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 15,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -833,6 +896,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 16,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -846,6 +910,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 17,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -859,6 +924,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 18,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -872,6 +938,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 19,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -885,6 +952,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 20,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -898,6 +966,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 21,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -911,6 +980,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 22,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -924,6 +994,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 23,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -937,6 +1008,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 24,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -950,6 +1022,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 25,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -963,6 +1036,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="INPUTS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -976,6 +1050,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="INPUTS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -989,6 +1064,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="INPUTS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1002,6 +1078,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="INPUTS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1015,6 +1092,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="INPUTS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1028,6 +1106,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="LOCAL_GROUPS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1041,6 +1120,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="LOCAL_GROUPS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1054,6 +1134,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="LOCAL_GROUPS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1067,6 +1148,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="LOCAL_USERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1080,6 +1162,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="LOCAL_USERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1093,6 +1176,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="LOCAL_USERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1106,6 +1190,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="LOCAL_USERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1119,6 +1204,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="LOCAL_USERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1132,6 +1218,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="LOCAL_USERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1145,6 +1232,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 7,
             "section": apps.get_model("section", "Section").objects.get(
                 name="LOCAL_USERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1158,6 +1246,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1171,6 +1260,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1184,6 +1274,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1197,6 +1288,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1210,6 +1302,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1223,6 +1316,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1236,6 +1330,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 7,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1249,6 +1344,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 8,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1262,6 +1358,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MODEMS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1275,6 +1372,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MODEMS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1288,6 +1386,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MODEMS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1301,6 +1400,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MODEMS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1314,6 +1414,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MONITORS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1327,6 +1428,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MONITORS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1340,6 +1442,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MONITORS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1353,6 +1456,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MONITORS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1366,6 +1470,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MONITORS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1379,6 +1484,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1392,6 +1498,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1405,6 +1512,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1418,6 +1526,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1431,6 +1540,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1444,6 +1554,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1457,6 +1568,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 7,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1470,6 +1582,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 8,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1483,6 +1596,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 9,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1496,6 +1610,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 10,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1509,6 +1624,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 11,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1522,6 +1638,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PORTS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1535,6 +1652,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PORTS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1548,6 +1666,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PORTS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1561,6 +1680,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PORTS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1574,6 +1694,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1587,6 +1708,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1600,6 +1722,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1613,6 +1736,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1626,6 +1750,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1639,6 +1764,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1652,6 +1778,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 7,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1665,6 +1792,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 8,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1678,6 +1806,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 9,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1691,6 +1820,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 10,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1704,6 +1834,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="REPOSITORY",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1717,6 +1848,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="REPOSITORY",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1730,6 +1862,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1743,6 +1876,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1756,6 +1890,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1769,6 +1904,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1782,6 +1918,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1795,6 +1932,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1808,6 +1946,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1821,6 +1960,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1834,6 +1974,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1847,6 +1988,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1860,6 +2002,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1873,6 +2016,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 7,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1886,6 +2030,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 8,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1899,6 +2044,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 9,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1912,6 +2058,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 10,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1925,6 +2072,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 11,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1938,6 +2086,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 12,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1951,6 +2100,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 13,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1964,6 +2114,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 14,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1977,6 +2128,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOUNDS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1990,6 +2142,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOUNDS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2003,6 +2156,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOUNDS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2016,6 +2170,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2029,6 +2184,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2042,6 +2198,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2055,6 +2212,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2068,6 +2226,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2081,6 +2240,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2094,6 +2254,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 7,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2107,6 +2268,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 8,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2120,6 +2282,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USBDEVICES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2133,6 +2296,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USBDEVICES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2146,6 +2310,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USBDEVICES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2159,6 +2324,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USBDEVICES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2172,6 +2338,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USBDEVICES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2185,6 +2352,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="VIDEOS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2198,6 +2366,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="VIDEOS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2211,6 +2380,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="VIDEOS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2224,6 +2394,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="VIDEOS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2237,6 +2408,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="VIRTUALMACHINES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2250,6 +2422,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="VIRTUALMACHINES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2263,6 +2436,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="VIRTUALMACHINES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2276,6 +2450,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="VIRTUALMACHINES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2289,6 +2464,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="VIRTUALMACHINES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2302,6 +2478,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="VIRTUALMACHINES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2315,6 +2492,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 7,
             "section": apps.get_model("section", "Section").objects.get(
                 name="VIRTUALMACHINES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2328,6 +2506,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2341,6 +2520,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2354,6 +2534,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2367,6 +2548,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2380,6 +2562,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2393,6 +2576,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2406,6 +2590,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 7,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2419,6 +2604,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 8,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2432,6 +2618,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 9,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2445,6 +2632,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 10,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2458,6 +2646,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 11,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2471,6 +2660,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": "BASH",
             "retrival_output": "PTXT",
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2484,6 +2674,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": "BASH",
             "retrival_output": "PTXT",
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2497,6 +2688,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": "BASH",
             "retrival_output": "PTXT",
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2510,6 +2702,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": "BASH",
             "retrival_output": "PTXT",
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2523,6 +2716,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": "BASH",
             "retrival_output": "PTXT",
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2536,6 +2730,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": "BASH",
             "retrival_output": "PTXT",
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2549,6 +2744,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": "BASH",
             "retrival_output": "PTXT",
             "options": None,
+            "order": 7,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2562,6 +2758,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": "BASH",
             "retrival_output": "PTXT",
             "options": None,
+            "order": 8,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2575,6 +2772,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": "BASH",
             "retrival_output": "PTXT",
             "options": None,
+            "order": 9,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2588,6 +2786,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": "BASH",
             "retrival_output": "PTXT",
             "options": None,
+            "order": 10,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2601,6 +2800,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": "BASH",
             "retrival_output": "PTXT",
             "options": None,
+            "order": 11,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2614,6 +2814,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2627,6 +2828,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2640,6 +2842,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2653,6 +2856,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2666,6 +2870,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2679,6 +2884,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2692,6 +2898,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 7,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2705,6 +2912,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 8,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2718,6 +2926,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 9,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2731,6 +2940,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 10,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2744,6 +2954,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 11,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2757,6 +2968,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2770,6 +2982,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2783,6 +2996,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2796,6 +3010,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2809,6 +3024,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2822,6 +3038,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": "BASH",
             "retrival_output": "REGX",
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2835,6 +3052,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": "BASH",
             "retrival_output": "REGX",
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2848,6 +3066,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": "BASH",
             "retrival_output": "GREP",
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2861,6 +3080,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": "BASH",
             "retrival_output": "PTXT",
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2874,6 +3094,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": "BASH",
             "retrival_output": "REGX",
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2887,6 +3108,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": "BASH",
             "retrival_output": "JSON",
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2900,6 +3122,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": "BASH",
             "retrival_output": "PTXT",
             "options": None,
+            "order": 7,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2913,6 +3136,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": "BASH",
             "retrival_output": "PTXT",
             "options": None,
+            "order": 8,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2926,6 +3150,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": "BASH",
             "retrival_output": "PTXT",
             "options": None,
+            "order": 9,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2939,6 +3164,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": "BASH",
             "retrival_output": "PTXT",
             "options": None,
+            "order": 10,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2952,6 +3178,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": "BASH",
             "retrival_output": "JSON",
             "options": None,
+            "order": 11,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2965,6 +3192,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": "BASH",
             "retrival_output": "REGX",
             "options": None,
+            "order": 12,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2978,6 +3206,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CURRENT_USER",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -2991,6 +3220,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="INPUTS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3004,6 +3234,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="INPUTS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3017,6 +3248,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="INPUTS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3030,6 +3262,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="AUDIO",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3043,6 +3276,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="AUDIO",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3056,6 +3290,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="AUDIO",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3069,6 +3304,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3082,6 +3318,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3095,6 +3332,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3108,6 +3346,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3121,6 +3360,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PACKAGES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3134,6 +3374,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PACKAGES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3147,6 +3388,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PORTS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3160,6 +3402,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PORTS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3173,6 +3416,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PORTS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3186,6 +3430,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PORTS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3199,6 +3444,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3212,6 +3458,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3225,6 +3472,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3238,6 +3486,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3251,6 +3500,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3264,6 +3514,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3277,6 +3528,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3290,6 +3542,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3303,6 +3556,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3316,6 +3570,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3329,6 +3584,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3342,6 +3598,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 7,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3355,6 +3612,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GROUPS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3368,6 +3626,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GROUPS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3381,6 +3640,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GROUPS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3394,6 +3654,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USERS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3407,6 +3668,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USERS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3420,6 +3682,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USERS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3433,6 +3696,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USERS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3446,6 +3710,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USERS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3459,6 +3724,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USERS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3472,6 +3738,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3485,6 +3752,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3498,6 +3766,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3511,6 +3780,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3524,6 +3794,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3537,6 +3808,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USB",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3550,6 +3822,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USB",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3563,6 +3836,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USB",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3576,6 +3850,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USB",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3589,6 +3864,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3602,6 +3878,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3615,6 +3892,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3628,6 +3906,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3641,6 +3920,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3654,6 +3934,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3667,6 +3948,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3680,6 +3962,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3693,6 +3976,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3706,6 +3990,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3719,6 +4004,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3732,6 +4018,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GRAPHIC/DISPLAY",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3745,6 +4032,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GRAPHIC/DISPLAY",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3758,6 +4046,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GRAPHIC/DISPLAY",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3771,6 +4060,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GRAPHIC/DISPLAY",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3784,6 +4074,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="WI_FI",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3797,6 +4088,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="WI_FI",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3810,6 +4102,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="WI_FI",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3823,6 +4116,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="WI_FI",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3836,6 +4130,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3849,6 +4144,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3862,6 +4158,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3875,6 +4172,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3888,6 +4186,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3901,6 +4200,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3914,6 +4214,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 7,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3927,6 +4228,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 8,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -3940,6 +4242,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -3953,6 +4256,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -3966,6 +4270,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -3979,6 +4284,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -3992,6 +4298,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4005,6 +4312,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4018,6 +4326,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 7,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4031,6 +4340,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 8,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4044,6 +4354,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 9,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4057,6 +4368,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4070,6 +4382,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4083,6 +4396,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4096,6 +4410,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4109,6 +4424,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4122,6 +4438,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4135,6 +4452,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 7,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4148,6 +4466,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 8,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4161,6 +4480,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4174,6 +4494,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4187,6 +4508,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4200,6 +4522,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4213,6 +4536,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4226,6 +4550,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="AUDIO",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4239,6 +4564,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="AUDIO",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4252,6 +4578,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="AUDIO",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4265,6 +4592,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="AUDIO",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4278,6 +4606,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="AUDIO",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4291,6 +4620,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="AUDIO",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4304,6 +4634,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 7,
             "section": apps.get_model("section", "Section").objects.get(
                 name="AUDIO",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4317,6 +4648,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4330,6 +4662,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4343,6 +4676,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4356,6 +4690,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4369,6 +4704,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4382,6 +4718,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4395,6 +4732,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4408,6 +4746,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4421,6 +4760,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4434,6 +4774,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4447,6 +4788,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4460,6 +4802,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 7,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4473,6 +4816,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 8,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4486,6 +4830,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 9,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4499,6 +4844,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 10,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4512,6 +4858,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 11,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4525,6 +4872,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BLUETOOTH",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4538,6 +4886,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BLUETOOTH",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4551,6 +4900,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BLUETOOTH",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4564,6 +4914,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BLUETOOTH",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4577,6 +4928,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BLUETOOTH",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4590,6 +4942,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BLUETOOTH",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4603,6 +4956,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 7,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BLUETOOTH",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4616,6 +4970,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 8,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BLUETOOTH",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4629,6 +4984,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 9,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BLUETOOTH",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4642,6 +4998,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CAMERAS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4655,6 +5012,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CAMERAS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4668,6 +5026,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="DEVELOPER_TOOLS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4681,6 +5040,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="DEVELOPER_TOOLS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4694,6 +5054,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="DEVELOPER_TOOLS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4707,6 +5068,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="DEVELOPER_TOOLS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4720,6 +5082,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4733,6 +5096,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4746,6 +5110,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4759,6 +5124,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4772,6 +5138,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4785,6 +5152,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4798,6 +5166,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 7,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4811,6 +5180,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 8,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4824,6 +5194,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 9,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4837,6 +5208,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 10,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4850,6 +5222,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 11,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4863,6 +5236,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 12,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4876,6 +5250,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 13,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4889,6 +5264,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="EXTENSIONS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4902,6 +5278,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="EXTENSIONS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4915,6 +5292,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="EXTENSIONS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4928,6 +5306,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="EXTENSIONS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4941,6 +5320,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="EXTENSIONS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4954,6 +5334,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="EXTENSIONS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4967,6 +5348,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 7,
             "section": apps.get_model("section", "Section").objects.get(
                 name="EXTENSIONS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4980,6 +5362,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 8,
             "section": apps.get_model("section", "Section").objects.get(
                 name="EXTENSIONS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -4993,6 +5376,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 9,
             "section": apps.get_model("section", "Section").objects.get(
                 name="EXTENSIONS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5006,6 +5390,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5019,6 +5404,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5032,6 +5418,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5045,6 +5432,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5058,6 +5446,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5071,6 +5460,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5084,6 +5474,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 7,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5097,6 +5488,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 8,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5110,6 +5502,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 9,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5123,6 +5516,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 10,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5136,6 +5530,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 11,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5149,6 +5544,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5162,6 +5558,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5175,6 +5572,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5188,6 +5586,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5201,6 +5600,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5214,6 +5614,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5240,6 +5641,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="FRAMEWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5253,6 +5655,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="FRAMEWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5266,6 +5669,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="FRAMEWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5279,6 +5683,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="FRAMEWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5292,6 +5697,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="FRAMEWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5305,6 +5711,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="FRAMEWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5318,6 +5725,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USB",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5331,6 +5739,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USB",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5344,6 +5753,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USB",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5357,6 +5767,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USB",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5370,6 +5781,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USB",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5383,6 +5795,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USB",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5396,6 +5809,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 7,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USB",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5409,6 +5823,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 8,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USB",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5422,6 +5837,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 9,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USB",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5435,6 +5851,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GRAPHIC/DISPLAY",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5448,6 +5865,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GRAPHIC/DISPLAY",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5461,6 +5879,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GRAPHIC/DISPLAY",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5474,6 +5893,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GRAPHIC/DISPLAY",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5487,6 +5907,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GRAPHIC/DISPLAY",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5500,6 +5921,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5513,6 +5935,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5526,6 +5949,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5539,6 +5963,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5552,6 +5977,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5565,6 +5991,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5578,6 +6005,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5591,6 +6019,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5604,6 +6033,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5617,6 +6047,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 7,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5630,6 +6061,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 8,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5643,6 +6075,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 9,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5656,6 +6089,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 10,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5669,6 +6103,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 11,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5682,6 +6117,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 12,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5695,6 +6131,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 13,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5708,6 +6145,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 14,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5721,6 +6159,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 15,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5734,6 +6173,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 16,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5747,6 +6187,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5760,6 +6201,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5773,6 +6215,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5786,6 +6229,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5799,6 +6243,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5812,6 +6257,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NVME",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5825,6 +6271,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NVME",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5838,6 +6285,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NVME",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5851,6 +6299,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NVME",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5864,6 +6313,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NVME",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5877,6 +6327,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NVME",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5890,6 +6341,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5903,6 +6355,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5916,6 +6369,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5929,6 +6383,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5942,6 +6397,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5954,6 +6410,8 @@ def create_default_fields(apps, schema_editor):
             "new_target": None,
             "retrival_method": None,
             "retrival_output": None,
+            "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="WI_FI",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5966,6 +6424,8 @@ def create_default_fields(apps, schema_editor):
             "new_target": None,
             "retrival_method": None,
             "retrival_output": None,
+            "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="WI_FI",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5978,6 +6438,8 @@ def create_default_fields(apps, schema_editor):
             "new_target": None,
             "retrival_method": None,
             "retrival_output": None,
+            "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="WI_FI",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -5990,6 +6452,8 @@ def create_default_fields(apps, schema_editor):
             "new_target": None,
             "retrival_method": None,
             "retrival_output": None,
+            "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="WI_FI",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -6002,6 +6466,8 @@ def create_default_fields(apps, schema_editor):
             "new_target": None,
             "retrival_method": None,
             "retrival_output": None,
+            "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="WI_FI",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -6014,6 +6480,8 @@ def create_default_fields(apps, schema_editor):
             "new_target": None,
             "retrival_method": None,
             "retrival_output": None,
+            "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="WI_FI",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -6027,6 +6495,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CURRENT_USER",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -6040,6 +6509,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CURRENT_USER",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -6053,6 +6523,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GROUPS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -6066,6 +6537,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GROUPS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -6079,6 +6551,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GROUPS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -6092,6 +6565,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GROUPS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -6105,6 +6579,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GROUPS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -6118,6 +6593,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USERS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -6131,6 +6607,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USERS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -6144,6 +6621,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USERS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -6157,6 +6635,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USERS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -6170,6 +6649,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USERS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -6183,6 +6663,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USERS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -6196,6 +6677,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6209,6 +6691,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6222,6 +6705,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6235,6 +6719,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6248,6 +6733,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6261,6 +6747,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6274,6 +6761,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 7,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6287,6 +6775,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 8,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6300,6 +6789,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 9,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6313,6 +6803,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": "PW",
             "retrival_output": "JSON",
             "options": {"need_format": False},
+            "order": 10,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6326,6 +6817,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": "PW",
             "retrival_output": "JSON",
             "options": {"need_format": False},
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -6339,6 +6831,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6352,6 +6845,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6365,6 +6859,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6378,6 +6873,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6391,6 +6887,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6404,6 +6901,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6417,6 +6915,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 7,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6430,6 +6929,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GROUPS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6443,6 +6943,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GROUPS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6456,6 +6957,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GROUPS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6469,6 +6971,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="INPUTS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6482,6 +6985,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="INPUTS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6495,6 +6999,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="INPUTS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6508,6 +7013,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="INPUTS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6521,6 +7027,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6534,6 +7041,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": "PW",
             "retrival_output": "JSON",
             "options": {"need_format": False},
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6547,6 +7055,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": "PW",
             "retrival_output": "JSON",
             "options": {"need_format": False},
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6560,6 +7069,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": "PW",
             "retrival_output": "JSON",
             "options": {"need_format": False},
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6573,6 +7083,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6586,6 +7097,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6599,6 +7111,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 7,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6612,6 +7125,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 8,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6625,6 +7139,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6638,6 +7153,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6651,6 +7167,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6664,6 +7181,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6677,6 +7195,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6690,6 +7209,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6703,6 +7223,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 7,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6716,6 +7237,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 8,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6729,6 +7251,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 9,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6742,6 +7265,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6755,6 +7279,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": "PW",
             "retrival_output": "JSON",
             "options": {"need_format": False},
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6768,6 +7293,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6781,6 +7307,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": "PW",
             "retrival_output": "JSON",
             "options": {"need_format": False},
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6794,6 +7321,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6807,6 +7335,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": "PW",
             "retrival_output": "JSON",
             "options": {"need_format": False},
+            "order": 9,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6820,6 +7349,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6833,6 +7363,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6846,6 +7377,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6859,6 +7391,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6872,6 +7405,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6885,6 +7419,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6898,6 +7433,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6911,6 +7447,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6924,6 +7461,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6937,6 +7475,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6950,6 +7489,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6963,6 +7503,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6976,6 +7517,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -6989,6 +7531,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7002,6 +7545,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USERS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7015,6 +7559,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USERS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7028,6 +7573,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USERS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7041,6 +7587,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CURRENT_USER",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7054,6 +7601,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CURRENT_USER",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7067,6 +7615,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CURRENT_USER",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7080,6 +7629,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CURRENT_USER",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7093,6 +7643,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USB",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7106,6 +7657,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USB",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7119,6 +7671,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USB",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7132,6 +7685,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7145,6 +7699,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7158,6 +7713,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7171,6 +7727,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7184,6 +7741,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7197,6 +7755,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7210,6 +7769,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7223,6 +7783,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7236,6 +7797,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7249,6 +7811,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GRAPHIC/DISPLAY",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7262,6 +7825,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GRAPHIC/DISPLAY",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7275,6 +7839,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GRAPHIC/DISPLAY",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7288,6 +7853,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GRAPHIC/DISPLAY",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7301,6 +7867,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="WI_FI",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7314,6 +7881,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="WI_FI",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7327,6 +7895,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="WI_FI",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7340,6 +7909,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="WI_FI",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7353,6 +7923,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="WI_FI",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7366,6 +7937,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="AUDIO",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7379,6 +7951,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="AUDIO",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7392,6 +7965,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="AUDIO",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7405,6 +7979,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="AUDIO",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7418,6 +7993,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 1,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7431,6 +8007,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7444,6 +8021,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7457,6 +8035,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7470,6 +8049,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 2,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7483,6 +8063,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 3,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7496,6 +8077,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 4,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7509,6 +8091,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 5,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7522,6 +8105,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 6,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7535,6 +8119,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 7,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7548,6 +8133,7 @@ def create_default_fields(apps, schema_editor):
             "retrival_method": None,
             "retrival_output": None,
             "options": None,
+            "order": 8,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -7617,6 +8203,8 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ("options", models.JSONField(null=True)),
+                ("order", models.IntegerField(default=1)),
+                ("default_visibility", models.BooleanField(default=True)),
                 (
                     "section",
                     models.ForeignKey(

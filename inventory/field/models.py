@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import F
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 from inventory.section.models import Section
@@ -47,6 +48,8 @@ class Field(models.Model):
         Section, related_name="fields", on_delete=models.CASCADE, default=1
     )
     options = models.JSONField(null=True)
+    order = models.IntegerField(default=1)
+    default_visibility = models.BooleanField(default=True)
 
 
 @receiver(post_save, sender=Field)
@@ -65,3 +68,23 @@ def update_template_on_field_delete(sender, instance, **kwargs):
     """
     if instance.section and instance.section.template:
         instance.section.template.save()
+
+
+@receiver(post_delete, sender=Field)
+def adjust_order_on_delete(sender, instance, **kwargs):
+    """
+    This signal is triggered when a Field is deleted.
+    """
+    # if origin is Section, do not trigger the signal (nested deletion,
+    # all field will be deleted at the same time and the signal will raise
+    # a DoesNotExist exception when trying to decrement the order of an action)
+    if isinstance(kwargs.get("origin"), Section):
+        return
+
+    new_order = Field.objects.filter(
+        section=instance.section_id,
+        order__gt=instance.order if instance.order else 0,
+    )
+
+    # decrement their order
+    new_order.update(order=F("order") - 1)
