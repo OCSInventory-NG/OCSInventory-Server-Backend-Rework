@@ -51,6 +51,12 @@ class Field(models.Model):
     order = models.IntegerField(default=1)
     default_visibility = models.BooleanField(default=True)
 
+    class Meta:
+        ordering = ['order']
+
+    def __str__(self):
+        return self.name
+
 
 @receiver(post_save, sender=Field)
 def update_template_on_field_save(sender, instance, **kwargs):
