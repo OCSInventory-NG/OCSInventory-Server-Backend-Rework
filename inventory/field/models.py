@@ -52,7 +52,7 @@ class Field(models.Model):
     default_visibility = models.BooleanField(default=True)
 
     class Meta:
-        ordering = ['order']
+        ordering = ["order"]
 
     def __str__(self):
         return self.name
