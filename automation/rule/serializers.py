@@ -53,11 +53,11 @@ class RuleSerializer(ExpandableFieldsMixin, ModelSerializer):
 
     def create(self, validated_data):
         """Override create to allow nested creation of fields"""
-        actions_data = validated_data.pop('actions', [])
+        actions_data = validated_data.pop("actions", [])
         rule = super().create(validated_data)
 
         for action_data in actions_data:
-            action_data['rule'] = rule
+            action_data["rule"] = rule
             Action.objects.create(**action_data)
 
         return rule
