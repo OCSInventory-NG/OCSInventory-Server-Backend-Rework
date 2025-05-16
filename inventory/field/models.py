@@ -51,7 +51,7 @@ class Field(models.Model):
     order = models.IntegerField(default=1)
 
     class Meta:
-        ordering = ['order']
+        ordering = ["order"]
 
     def __str__(self):
         return self.name

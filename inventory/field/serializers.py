@@ -69,7 +69,6 @@ class FieldSerializer(ExpandableFieldsMixin, ModelSerializer):
         Overriding the create method to manage field order.
         """
         validated_data["order"] = (
-            Field.objects.filter(section=validated_data["section"]).count()
-            + 1
+            Field.objects.filter(section=validated_data["section"]).count() + 1
         )
         return super().create(validated_data)
