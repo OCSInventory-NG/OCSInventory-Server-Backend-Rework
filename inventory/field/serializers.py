@@ -26,7 +26,7 @@ class FieldSerializer(ExpandableFieldsMixin, ModelSerializer):
             "options",
         ]
         expandable_fields = {}
-    
+
     def custom_validate(self, data):
         """
         Perform custom validation on the Field data.
@@ -63,7 +63,7 @@ class FieldSerializer(ExpandableFieldsMixin, ModelSerializer):
                     section=data["section"], order__gte=data["order"]
                 ).update(order=F("order") + 1)
         return data
-    
+
     def create(self, validated_data):
         """
         Overriding the create method to manage field order.
