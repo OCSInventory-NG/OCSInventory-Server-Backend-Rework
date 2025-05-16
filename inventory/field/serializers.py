@@ -72,3 +72,11 @@ class FieldSerializer(ExpandableFieldsMixin, ModelSerializer):
             Field.objects.filter(section=validated_data["section"]).count() + 1
         )
         return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        """
+        Overriding the update method
+        """
+        # custom validation
+        validated_data = self.custom_validate(validated_data)
+        return super().update(instance, validated_data)
