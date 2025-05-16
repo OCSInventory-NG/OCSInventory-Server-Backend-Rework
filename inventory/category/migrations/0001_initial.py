@@ -115,7 +115,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("section", "0001_initial"),
+        ("section", "0005_windows"),
     ]
 
     operations = [
