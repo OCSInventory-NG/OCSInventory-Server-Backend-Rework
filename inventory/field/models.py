@@ -43,7 +43,9 @@ class Field(models.Model):
     retrieval_method = models.CharField(
         max_length=4, choices=RETRIEVAL_CHOICES, null=True
     )
-    retrieval_output = models.CharField(max_length=4, choices=RETRIEVAL_OUTPUT, null=True)
+    retrieval_output = models.CharField(
+        max_length=4, choices=RETRIEVAL_OUTPUT, null=True
+    )
     section = models.ForeignKey(
         Section, related_name="fields", on_delete=models.CASCADE, default=1
     )
