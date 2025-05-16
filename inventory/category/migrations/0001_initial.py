@@ -44,14 +44,20 @@ def create_default_categories(apps, schema_editor):
                 "AUDIO",
                 "FRAMEWORKS",
                 "NVME",
-                "HARDWARE"
+                "HARDWARE",
             ],
         },
         {
             "name": "Networks",
             "description": "Default tab for network sections",
             "is_protected": True,
-            "inventory_sections": ["NETWORKS", "ETHERNET", "WI_FI","CONNECTIONS","NETWORKS DEVICES"],
+            "inventory_sections": [
+                "NETWORKS",
+                "ETHERNET",
+                "WI_FI",
+                "CONNECTIONS",
+                "NETWORKS DEVICES",
+            ],
         },
         {
             "name": "Devices",

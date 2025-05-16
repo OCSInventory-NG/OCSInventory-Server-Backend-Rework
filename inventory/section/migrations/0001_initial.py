@@ -354,7 +354,7 @@ def create_default_sections(apps, schema_editor):
             "name": "GRAPHIC/DISPLAY",
             "retrival_method": "BASH",
             "retrival_output": "REGX",
-            "target": '''for f in /sys/class/drm/*/edid; do [ -f "$f" ] && echo "Screen: $(basename $(dirname "$f"))" && sudo cat "$f" | parse-edid && serial=$(sudo hexdump -v -e '1/1 "%02x"' "$f" | cut -c25-32) && [ -n "$serial" ] && echo "Serial number: $((0x$serial))"; done''',
+            "target": """for f in /sys/class/drm/*/edid; do [ -f "$f" ] && echo "Screen: $(basename $(dirname "$f"))" && sudo cat "$f" | parse-edid && serial=$(sudo hexdump -v -e '1/1 "%02x"' "$f" | cut -c25-32) && [ -n "$serial" ] && echo "Serial number: $((0x$serial))"; done""",
             "template": apps.get_model("template", "Template").objects.get(os="LIN"),
             "options": {"multiple": False, "separator": "Screen"},
         },
