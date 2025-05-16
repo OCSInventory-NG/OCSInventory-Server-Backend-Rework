@@ -2329,6 +2329,7 @@ def create_default_legacy_fields(apps, schema_editor):
         except Exception as e:
             print(e)
 
+
 class Migration(migrations.Migration):
     dependencies = [
         ("section", "0002_legacy"),

@@ -1627,6 +1627,7 @@ def create_default_linux_fields(apps, schema_editor):
         except Exception as e:
             print(e)
 
+
 class Migration(migrations.Migration):
     dependencies = [
         ("section", "0003_linux"),

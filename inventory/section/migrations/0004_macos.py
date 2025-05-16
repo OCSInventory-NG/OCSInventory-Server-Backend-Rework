@@ -74,7 +74,10 @@ def create_default_macos_sections(apps, schema_editor):
             "retrival_method": "BASH",
             "retrival_output": "REGX",
             "target": "system_profiler SPEthernetDataType",
-            "options": {"multiple": False, "separator": "^\\s*Maximum Link Speed:\\s*(.*)$"},
+            "options": {
+                "multiple": False,
+                "separator": "^\\s*Maximum Link Speed:\\s*(.*)$",
+            },
             "template": apps.get_model("template", "Template").objects.get(os="MAC"),
         },
         {

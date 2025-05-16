@@ -1380,6 +1380,7 @@ def create_default_windows_fields(apps, schema_editor):
         except Exception as e:
             print(e)
 
+
 class Migration(migrations.Migration):
     dependencies = [
         ("section", "0005_windows"),
