@@ -2141,6 +2141,7 @@ def create_default_macos_fields(apps, schema_editor):
         except Exception as e:
             print(e)
 
+
 class Migration(migrations.Migration):
     dependencies = [
         ("section", "0004_macos"),
