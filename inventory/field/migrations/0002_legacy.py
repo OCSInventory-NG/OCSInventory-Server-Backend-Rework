@@ -12,7 +12,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="ACCOUNTINFO",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -25,7 +25,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="ACCOUNTINFO",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -38,7 +38,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -51,7 +51,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -64,7 +64,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -77,7 +77,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -90,7 +90,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -103,7 +103,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -116,7 +116,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -129,7 +129,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -142,7 +142,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -155,7 +155,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -168,7 +168,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -181,7 +181,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -194,7 +194,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -207,7 +207,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -220,7 +220,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -233,7 +233,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -246,7 +246,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -259,7 +259,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -272,7 +272,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -285,7 +285,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -298,7 +298,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -311,7 +311,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -324,7 +324,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -337,7 +337,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -350,7 +350,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -363,7 +363,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -376,7 +376,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -389,7 +389,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -402,7 +402,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -415,7 +415,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -428,7 +428,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -441,7 +441,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -454,7 +454,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -467,7 +467,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -480,7 +480,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -493,7 +493,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -506,7 +506,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -519,7 +519,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -532,7 +532,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -545,7 +545,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -558,7 +558,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="DRIVES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -571,7 +571,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="DRIVES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -584,7 +584,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="DRIVES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -597,7 +597,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="DRIVES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -610,7 +610,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="DRIVES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -623,7 +623,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="DRIVES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -636,7 +636,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -649,7 +649,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -662,7 +662,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -675,7 +675,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -688,7 +688,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -701,7 +701,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -714,7 +714,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -727,7 +727,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -740,7 +740,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -753,7 +753,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -766,7 +766,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -779,7 +779,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -792,7 +792,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -805,7 +805,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -818,7 +818,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -831,7 +831,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -844,7 +844,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -857,7 +857,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -870,7 +870,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -883,7 +883,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -896,7 +896,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -909,7 +909,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -922,7 +922,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -935,7 +935,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -948,7 +948,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -961,7 +961,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="INPUTS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -974,7 +974,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="INPUTS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -987,7 +987,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="INPUTS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1000,7 +1000,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="INPUTS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1013,7 +1013,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="INPUTS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1026,7 +1026,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="LOCAL_GROUPS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1039,7 +1039,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="LOCAL_GROUPS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1052,7 +1052,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="LOCAL_GROUPS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1065,7 +1065,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="LOCAL_USERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1078,7 +1078,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="LOCAL_USERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1091,7 +1091,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="LOCAL_USERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1104,7 +1104,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="LOCAL_USERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1117,7 +1117,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="LOCAL_USERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1130,7 +1130,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="LOCAL_USERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1143,7 +1143,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="LOCAL_USERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1156,7 +1156,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1169,7 +1169,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1182,7 +1182,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1195,7 +1195,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1208,7 +1208,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1221,7 +1221,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1234,7 +1234,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1247,7 +1247,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1260,7 +1260,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="MODEMS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1273,7 +1273,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="MODEMS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1286,7 +1286,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="MODEMS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1299,7 +1299,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="MODEMS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1312,7 +1312,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="MONITORS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1325,7 +1325,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="MONITORS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1338,7 +1338,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="MONITORS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1351,7 +1351,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="MONITORS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1364,7 +1364,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="MONITORS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1377,7 +1377,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1390,7 +1390,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1403,7 +1403,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1416,7 +1416,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1429,7 +1429,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1442,7 +1442,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1455,7 +1455,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1468,7 +1468,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1481,7 +1481,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1494,7 +1494,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1507,7 +1507,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1520,7 +1520,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="PORTS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1533,7 +1533,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="PORTS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1546,7 +1546,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="PORTS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1559,7 +1559,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="PORTS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1572,7 +1572,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1585,7 +1585,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1598,7 +1598,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1611,7 +1611,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1624,7 +1624,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1637,7 +1637,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1650,7 +1650,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1663,7 +1663,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1676,7 +1676,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1689,7 +1689,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1702,7 +1702,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="REPOSITORY",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1715,7 +1715,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="REPOSITORY",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1728,7 +1728,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1741,7 +1741,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1754,7 +1754,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1767,7 +1767,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1780,7 +1780,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1793,7 +1793,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1806,7 +1806,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1819,7 +1819,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1832,7 +1832,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1845,7 +1845,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1858,7 +1858,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1871,7 +1871,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1884,7 +1884,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1897,7 +1897,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1910,7 +1910,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1923,7 +1923,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1936,7 +1936,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1949,7 +1949,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1962,7 +1962,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1975,7 +1975,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOUNDS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -1988,7 +1988,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOUNDS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2001,7 +2001,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOUNDS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2014,7 +2014,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2027,7 +2027,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2040,7 +2040,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2053,7 +2053,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2066,7 +2066,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2079,7 +2079,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2092,7 +2092,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2105,7 +2105,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2118,7 +2118,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="USBDEVICES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2131,7 +2131,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="USBDEVICES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2144,7 +2144,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="USBDEVICES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2157,7 +2157,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="USBDEVICES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2170,7 +2170,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="USBDEVICES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2183,7 +2183,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="VIDEOS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2196,7 +2196,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="VIDEOS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2209,7 +2209,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="VIDEOS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2222,7 +2222,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="VIDEOS",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2235,7 +2235,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="VIRTUALMACHINES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2248,7 +2248,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="VIRTUALMACHINES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2261,7 +2261,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="VIRTUALMACHINES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2274,7 +2274,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="VIRTUALMACHINES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2287,7 +2287,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="VIRTUALMACHINES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2300,7 +2300,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="VIRTUALMACHINES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),
@@ -2313,7 +2313,7 @@ def create_default_legacy_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="VIRTUALMACHINES",
                 template=apps.get_model("template", "Template").objects.get(os="LEG"),

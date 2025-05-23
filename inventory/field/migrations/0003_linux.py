@@ -12,7 +12,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -25,7 +25,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -38,7 +38,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -51,7 +51,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -64,7 +64,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -77,7 +77,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -90,7 +90,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -103,7 +103,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -116,7 +116,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -129,7 +129,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -142,7 +142,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -155,7 +155,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": "sudo dmidecode -s system-manufacturer",
             "retrieval_method": "BASH",
             "retrieval_output": "PTXT",
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -168,7 +168,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": "sudo dmidecode -s system-product-name",
             "retrieval_method": "BASH",
             "retrieval_output": "PTXT",
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -181,7 +181,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": "sudo dmidecode -s system-serial-number",
             "retrieval_method": "BASH",
             "retrieval_output": "PTXT",
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -194,7 +194,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": "sudo dmidecode -s chassis-asset-tag",
             "retrieval_method": "BASH",
             "retrieval_output": "PTXT",
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -207,7 +207,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": "sudo dmidecode -s chassis-type",
             "retrieval_method": "BASH",
             "retrieval_output": "PTXT",
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -220,7 +220,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": "sudo dmidecode -s baseboard-manufacturer",
             "retrieval_method": "BASH",
             "retrieval_output": "PTXT",
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -233,7 +233,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": "sudo dmidecode -s baseboard-product-name",
             "retrieval_method": "BASH",
             "retrieval_output": "PTXT",
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -246,7 +246,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": "sudo dmidecode -s baseboard-serial-number",
             "retrieval_method": "BASH",
             "retrieval_output": "PTXT",
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -259,7 +259,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": "sudo dmidecode -s bios-vendor",
             "retrieval_method": "BASH",
             "retrieval_output": "PTXT",
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -272,7 +272,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": "sudo dmidecode -s bios-version",
             "retrieval_method": "BASH",
             "retrieval_output": "PTXT",
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -285,7 +285,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": "sudo dmidecode -s bios-release-date",
             "retrieval_method": "BASH",
             "retrieval_output": "PTXT",
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -298,7 +298,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -311,7 +311,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -324,7 +324,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -337,7 +337,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -350,7 +350,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -363,7 +363,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -376,7 +376,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -389,7 +389,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -402,7 +402,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -415,7 +415,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -428,7 +428,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -441,7 +441,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -454,7 +454,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -467,7 +467,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -480,7 +480,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -493,7 +493,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -506,7 +506,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": "last -R -n 1",
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -519,7 +519,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": "ip route show",
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -532,7 +532,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": "cat /etc/resolv.conf",
             "retrieval_method": "BASH",
             "retrieval_output": "GREP",
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -545,7 +545,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": "hostname -I",
             "retrieval_method": "BASH",
             "retrieval_output": "PTXT",
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -558,7 +558,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": "last -R -n 1",
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -571,7 +571,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": "cat /proc/meminfo",
             "retrieval_method": "BASH",
             "retrieval_output": "JSON",
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -584,7 +584,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": "hostname",
             "retrieval_method": "BASH",
             "retrieval_output": "PTXT",
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -597,7 +597,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": "lsb_release -as",
             "retrieval_method": "BASH",
             "retrieval_output": "PTXT",
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -610,7 +610,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": "lsb_release -as",
             "retrieval_method": "BASH",
             "retrieval_output": "PTXT",
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -623,7 +623,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": "lsb_release -as",
             "retrieval_method": "BASH",
             "retrieval_output": "PTXT",
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -636,7 +636,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": "lscpu",
             "retrieval_method": "BASH",
             "retrieval_output": "JSON",
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -649,7 +649,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": "last -R -n 1",
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -662,7 +662,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CURRENT_USER",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -675,7 +675,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="INPUTS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -688,7 +688,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="INPUTS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -701,7 +701,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="INPUTS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -714,7 +714,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="AUDIO",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -727,7 +727,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="AUDIO",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -740,7 +740,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="AUDIO",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -753,7 +753,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -766,7 +766,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -779,7 +779,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -792,7 +792,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -805,7 +805,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="PACKAGES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -818,7 +818,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="PACKAGES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -831,7 +831,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="PORTS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -844,7 +844,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="PORTS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -857,7 +857,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="PORTS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -870,7 +870,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="PORTS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -883,7 +883,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -896,7 +896,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -909,7 +909,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -922,7 +922,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -935,7 +935,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -948,7 +948,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -961,7 +961,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -974,7 +974,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -987,7 +987,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1000,7 +1000,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1013,7 +1013,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1026,7 +1026,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1039,7 +1039,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="GROUPS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1052,7 +1052,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="GROUPS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1065,7 +1065,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="GROUPS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1078,7 +1078,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="USERS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1091,7 +1091,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="USERS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1104,7 +1104,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="USERS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1117,7 +1117,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="USERS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1130,7 +1130,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="USERS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1143,7 +1143,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="USERS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1156,7 +1156,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1169,7 +1169,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1182,7 +1182,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1195,7 +1195,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1208,7 +1208,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1221,7 +1221,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="USB",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1234,7 +1234,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="USB",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1247,7 +1247,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="USB",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1260,7 +1260,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="USB",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1273,7 +1273,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1286,7 +1286,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1299,7 +1299,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1312,7 +1312,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1325,7 +1325,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1338,7 +1338,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1351,7 +1351,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1364,7 +1364,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1377,7 +1377,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1390,7 +1390,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1403,7 +1403,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1416,7 +1416,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="GRAPHIC/DISPLAY",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1429,7 +1429,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="GRAPHIC/DISPLAY",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1442,7 +1442,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="GRAPHIC/DISPLAY",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1455,7 +1455,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="GRAPHIC/DISPLAY",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1468,7 +1468,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="WI_FI",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1481,7 +1481,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="WI_FI",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1494,7 +1494,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="WI_FI",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1507,7 +1507,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="WI_FI",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1520,7 +1520,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1533,7 +1533,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1546,7 +1546,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1559,7 +1559,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1572,7 +1572,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1585,7 +1585,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1598,7 +1598,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -1611,7 +1611,7 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),

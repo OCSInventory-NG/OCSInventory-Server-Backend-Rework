@@ -19,7 +19,7 @@ def create_default_linux_sections(apps, schema_editor):
             "retrieval_output": "REGX",
             "target": "sudo dmidecode -t 22 -q",
             "template": apps.get_model("template", "Template").objects.get(os="LIN"),
-            "options": None,
+            "options": {},
         },
         {
             "name": "CONTROLLERS",
@@ -35,7 +35,7 @@ def create_default_linux_sections(apps, schema_editor):
             "retrieval_output": "JSON",
             "target": "lscpu",
             "template": apps.get_model("template", "Template").objects.get(os="LIN"),
-            "options": None,
+            "options": {},
         },
         {
             "name": "CURRENT_USER",
@@ -43,7 +43,7 @@ def create_default_linux_sections(apps, schema_editor):
             "retrieval_output": "REGX",
             "target": "who",
             "template": apps.get_model("template", "Template").objects.get(os="LIN"),
-            "options": None,
+            "options": {},
         },
         {
             "name": "ETHERNET",
@@ -75,7 +75,7 @@ def create_default_linux_sections(apps, schema_editor):
             "retrieval_output": "PTXT",
             "target": "echo BIOS",
             "template": apps.get_model("template", "Template").objects.get(os="LIN"),
-            "options": None,
+            "options": {},
         },
         {
             "name": "INPUTS",
@@ -99,7 +99,7 @@ def create_default_linux_sections(apps, schema_editor):
             "retrieval_output": "PTXT",
             "target": "echo HARDWARE",
             "template": apps.get_model("template", "Template").objects.get(os="LIN"),
-            "options": None,
+            "options": {},
         },
         {
             "name": "OPERATING_SYSTEM",
