@@ -17,7 +17,7 @@ class Section(models.Model):
     - Last update (Read Only)
     """
 
-    RETRIVAL_CHOICES = (
+    RETRIEVAL_CHOICES = (
         ("FILE", "Read file"),
         ("BASH", "Bash command"),
         ("PW", "Powershell command"),
@@ -26,7 +26,7 @@ class Section(models.Model):
         ("SNMP_GET", "Get a specific OID"),
     )
 
-    RETRIVAL_OUTPUT = (
+    RETRIEVAL_OUTPUT = (
         ("PTXT", "Plain text"),
         ("JSON", "JSON format"),
         ("TBLE", "Table format"),
@@ -35,11 +35,11 @@ class Section(models.Model):
     )
 
     name = models.CharField(max_length=50)
-    retrival_method = models.CharField(
-        max_length=10, choices=RETRIVAL_CHOICES, default="FILE"
+    retrieval_method = models.CharField(
+        max_length=10, choices=RETRIEVAL_CHOICES, default="FILE"
     )
-    retrival_output = models.CharField(
-        max_length=4, choices=RETRIVAL_OUTPUT, default="JSON"
+    retrieval_output = models.CharField(
+        max_length=4, choices=RETRIEVAL_OUTPUT, default="JSON"
     )
     target = models.CharField(max_length=255)
     template = models.ForeignKey(

@@ -7,11 +7,11 @@ def create_default_windows_fields(apps, schema_editor):
     fields = [
         {
             "name": "NAME",
-            "retrival_value": "Name",
+            "retrieval_value": "Name",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="AUDIO",
@@ -20,11 +20,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrival_value": "Manufacturer",
+            "retrieval_value": "Manufacturer",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="AUDIO",
@@ -33,11 +33,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "STATUS",
-            "retrival_value": "Status",
+            "retrieval_value": "Status",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="AUDIO",
@@ -46,11 +46,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "DEVICE ID",
-            "retrival_value": "DeviceID",
+            "retrieval_value": "DeviceID",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="AUDIO",
@@ -59,11 +59,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "CHEMISTRY",
-            "retrival_value": "Chemistry",
+            "retrieval_value": "Chemistry",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
@@ -72,11 +72,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "DESIGN_CAPACITY",
-            "retrival_value": "DesignCapacity",
+            "retrieval_value": "DesignCapacity",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
@@ -85,11 +85,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "DESIGN_VOLTAGE",
-            "retrival_value": "DesignVoltage",
+            "retrieval_value": "DesignVoltage",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
@@ -98,11 +98,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "LOCATION",
-            "retrival_value": "Location",
+            "retrieval_value": "Location",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
@@ -111,11 +111,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrival_value": "Manufacturer",
+            "retrieval_value": "Manufacturer",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
@@ -124,11 +124,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER_DATE",
-            "retrival_value": "ManufacturerDate",
+            "retrieval_value": "ManufacturerDate",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
@@ -137,11 +137,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MAXIMUM_ERROR",
-            "retrival_value": "MaxBatteryError",
+            "retrieval_value": "MaxBatteryError",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
@@ -150,11 +150,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrival_value": "Name",
+            "retrieval_value": "Name",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
@@ -163,11 +163,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "SBDS_VERSION",
-            "retrival_value": "SmartBatteryVersion",
+            "retrieval_value": "SmartBatteryVersion",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
@@ -176,11 +176,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "SERIAL_NUMBER",
-            "retrival_value": "DeviceID",
+            "retrieval_value": "DeviceID",
             "override_target": True,
             "new_target": "Get-WmiObject -ClassName Win32_Battery -Property * | ConvertTo-Json",
-            "retrival_method": "PW",
-            "retrival_output": "JSON",
+            "retrieval_method": "PW",
+            "retrieval_output": "JSON",
             "options": {"need_format": False},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
@@ -189,11 +189,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "HOSTNAME",
-            "retrival_value": "DNSHostName",
+            "retrieval_value": "DNSHostName",
             "override_target": True,
             "new_target": "Get-WmiObject -ClassName Win32_ComputerSystem -Property * | ConvertTo-Json",
-            "retrival_method": "PW",
-            "retrival_output": "JSON",
+            "retrieval_method": "PW",
+            "retrieval_output": "JSON",
             "options": {"need_format": False},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
@@ -202,11 +202,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MODEL",
-            "retrival_value": "Model",
+            "retrieval_value": "Model",
             "override_target": True,
             "new_target": "Get-WmiObject -ClassName Win32_ComputerSystem -Property * | ConvertTo-Json",
-            "retrival_method": "PW",
-            "retrival_output": "JSON",
+            "retrieval_method": "PW",
+            "retrieval_output": "JSON",
             "options": {"need_format": False},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
@@ -215,11 +215,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "BOOT DEVICE",
-            "retrival_value": "BootDevice",
+            "retrieval_value": "BootDevice",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
@@ -228,11 +228,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MODEL",
-            "retrival_value": "Model",
+            "retrieval_value": "Model",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
@@ -241,11 +241,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrival_value": "Manufacturer",
+            "retrieval_value": "Manufacturer",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
@@ -254,11 +254,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "SYSTEM TYPE",
-            "retrival_value": "SystemType",
+            "retrieval_value": "SystemType",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
@@ -267,11 +267,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "STATUS",
-            "retrival_value": "Status",
+            "retrieval_value": "Status",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
@@ -280,11 +280,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "INSTALL DATE",
-            "retrival_value": "InstallDate",
+            "retrieval_value": "InstallDate",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
@@ -293,11 +293,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "BOOTUP STATE",
-            "retrival_value": "BootupState",
+            "retrieval_value": "BootupState",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
@@ -306,11 +306,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "CORES",
-            "retrival_value": "NumberOfLogicalProcessors",
+            "retrieval_value": "NumberOfLogicalProcessors",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
@@ -319,11 +319,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "CURRENT_SPEED",
-            "retrival_value": "CurrentClockSpeed",
+            "retrieval_value": "CurrentClockSpeed",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
@@ -332,11 +332,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "L2_CACHE_SIZE",
-            "retrival_value": "L2CacheSize",
+            "retrieval_value": "L2CacheSize",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
@@ -345,11 +345,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrival_value": "Manufacturer",
+            "retrieval_value": "Manufacturer",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
@@ -358,11 +358,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "SPEED",
-            "retrival_value": "MaxClockSpeed",
+            "retrieval_value": "MaxClockSpeed",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
@@ -371,11 +371,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "THREADS",
-            "retrival_value": "ThreadCount",
+            "retrieval_value": "ThreadCount",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
@@ -384,11 +384,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrival_value": "Name",
+            "retrieval_value": "Name",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
@@ -397,11 +397,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrival_value": "Name",
+            "retrieval_value": "Name",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CURRENT_USER",
@@ -410,11 +410,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "DOMAIN",
-            "retrival_value": "Domain",
+            "retrieval_value": "Domain",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CURRENT_USER",
@@ -423,11 +423,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "STATUS",
-            "retrival_value": "Status",
+            "retrieval_value": "Status",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CURRENT_USER",
@@ -436,11 +436,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "USER_ID",
-            "retrival_value": "SID",
+            "retrieval_value": "SID",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CURRENT_USER",
@@ -449,11 +449,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrival_value": "Name",
+            "retrieval_value": "Name",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
@@ -462,11 +462,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrival_value": "InterfaceDescription",
+            "retrieval_value": "InterfaceDescription",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
@@ -475,11 +475,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MAC ADDRESS",
-            "retrival_value": "MacAddress",
+            "retrieval_value": "MacAddress",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
@@ -488,11 +488,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "STATUS",
-            "retrival_value": "Status",
+            "retrieval_value": "Status",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
@@ -501,11 +501,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "SPEED",
-            "retrival_value": "LinkSpeed",
+            "retrieval_value": "LinkSpeed",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
@@ -514,11 +514,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrival_value": "Name",
+            "retrieval_value": "Name",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GRAPHIC/DISPLAY",
@@ -527,11 +527,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "COMPATIBILITY",
-            "retrival_value": "AdapterCompatibility",
+            "retrieval_value": "AdapterCompatibility",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GRAPHIC/DISPLAY",
@@ -540,11 +540,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "RAM",
-            "retrival_value": "AdapterRAM",
+            "retrieval_value": "AdapterRAM",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GRAPHIC/DISPLAY",
@@ -553,11 +553,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MODE",
-            "retrival_value": "VideoModeDescription",
+            "retrieval_value": "VideoModeDescription",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GRAPHIC/DISPLAY",
@@ -566,11 +566,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "GROUP_ID",
-            "retrival_value": "SID",
+            "retrieval_value": "SID",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GROUPS",
@@ -579,11 +579,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MEMBER",
-            "retrival_value": "null",
+            "retrieval_value": "null",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GROUPS",
@@ -592,11 +592,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrival_value": "Name",
+            "retrieval_value": "Name",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GROUPS",
@@ -605,11 +605,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "BIOS_ASSETTAG",
-            "retrival_value": "SMBIOSAssetTag",
+            "retrieval_value": "SMBIOSAssetTag",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -618,11 +618,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "BIOS_DATE",
-            "retrival_value": "ReleaseDate",
+            "retrieval_value": "ReleaseDate",
             "override_target": True,
             "new_target": "Get-WmiObject -ClassName Win32_Bios -Property * | ConvertTo-Json",
-            "retrival_method": "PW",
-            "retrival_output": "JSON",
+            "retrieval_method": "PW",
+            "retrieval_output": "JSON",
             "options": {"need_format": False},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -631,11 +631,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "BIOS_MANUFACTURER",
-            "retrival_value": "Manufacturer",
+            "retrieval_value": "Manufacturer",
             "override_target": True,
             "new_target": "Get-WmiObject -ClassName Win32_Bios -Property * | ConvertTo-Json",
-            "retrival_method": "PW",
-            "retrival_output": "JSON",
+            "retrieval_method": "PW",
+            "retrieval_output": "JSON",
             "options": {"need_format": False},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -644,11 +644,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "BIOS_VERSION",
-            "retrival_value": "SMBIOSBIOSVersion",
+            "retrieval_value": "SMBIOSBIOSVersion",
             "override_target": True,
             "new_target": "Get-WmiObject -ClassName Win32_Bios -Property * | ConvertTo-Json",
-            "retrival_method": "PW",
-            "retrival_output": "JSON",
+            "retrieval_method": "PW",
+            "retrieval_output": "JSON",
             "options": {"need_format": False},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -657,11 +657,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MOTHERBOARD_MANUFACTURER",
-            "retrival_value": "Manufacturer",
+            "retrieval_value": "Manufacturer",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -670,11 +670,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MOTHERBOARD_MODEL",
-            "retrival_value": "Model",
+            "retrieval_value": "Model",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -683,11 +683,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MOTHERBOARD_SERIAL_NUMBER",
-            "retrival_value": "SerialNumber",
+            "retrieval_value": "SerialNumber",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -696,11 +696,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MOTHERBOARD_TYPE",
-            "retrival_value": "ChassisTypes",
+            "retrieval_value": "ChassisTypes",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -709,11 +709,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "SERIAL_NUMBER",
-            "retrival_value": "SerialNumber",
+            "retrieval_value": "SerialNumber",
             "override_target": True,
             "new_target": "Get-WmiObject -ClassName Win32_Bios -Property * | ConvertTo-Json",
-            "retrival_method": "PW",
-            "retrival_output": "JSON",
+            "retrieval_method": "PW",
+            "retrieval_output": "JSON",
             "options": {"need_format": False},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -722,11 +722,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrival_value": "Description",
+            "retrieval_value": "Description",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="INPUTS",
@@ -735,11 +735,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrival_value": "Manufacturer",
+            "retrieval_value": "Manufacturer",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="INPUTS",
@@ -748,11 +748,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrival_value": "Name",
+            "retrieval_value": "Name",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="INPUTS",
@@ -761,11 +761,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrival_value": "PNPClass",
+            "retrieval_value": "PNPClass",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="INPUTS",
@@ -774,11 +774,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "CAPACITY",
-            "retrival_value": "Capacity",
+            "retrieval_value": "Capacity",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
@@ -787,11 +787,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "LOCATOR",
-            "retrival_value": "DeviceLocator",
+            "retrieval_value": "DeviceLocator",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
@@ -800,11 +800,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrival_value": "Manufacturer",
+            "retrieval_value": "Manufacturer",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
@@ -813,11 +813,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "SERIAL_NUMBER",
-            "retrival_value": "SerialNumber",
+            "retrieval_value": "SerialNumber",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
@@ -826,11 +826,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "SPEED",
-            "retrival_value": "Speed",
+            "retrieval_value": "Speed",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
@@ -839,11 +839,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "DEFAULT_GATEWAY",
-            "retrival_value": "DefaultIPGateway",
+            "retrieval_value": "DefaultIPGateway",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
@@ -852,11 +852,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrival_value": "Description",
+            "retrieval_value": "Description",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
@@ -865,11 +865,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "DHCP_ENABLED",
-            "retrival_value": "DHCPEnabled",
+            "retrieval_value": "DHCPEnabled",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
@@ -878,11 +878,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "DHCP_SERVER",
-            "retrival_value": "DHCPServer",
+            "retrieval_value": "DHCPServer",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
@@ -891,11 +891,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "DNS_DOMAIN",
-            "retrival_value": "DNSDomain",
+            "retrieval_value": "DNSDomain",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
@@ -904,11 +904,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "DNS_SERVER",
-            "retrival_value": "DNSServerSearchOrder",
+            "retrieval_value": "DNSServerSearchOrder",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
@@ -917,11 +917,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "IP_ADDRESS",
-            "retrival_value": "IPAddress",
+            "retrieval_value": "IPAddress",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
@@ -930,11 +930,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "IP_SUBNET",
-            "retrival_value": "IPSubnet",
+            "retrieval_value": "IPSubnet",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
@@ -943,11 +943,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MAC_ADDRESS",
-            "retrival_value": "MACAddress",
+            "retrieval_value": "MACAddress",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
@@ -956,11 +956,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "ARCHITECTURE",
-            "retrival_value": "OSArchitecture",
+            "retrieval_value": "OSArchitecture",
             "override_target": True,
             "new_target": "Get-WmiObject -ClassName Win32_OperatingSystem -Property * | ConvertTo-Json",
-            "retrival_method": "PW",
-            "retrival_output": "JSON",
+            "retrieval_method": "PW",
+            "retrieval_output": "JSON",
             "options": {"need_format": False},
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
@@ -969,11 +969,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrival_value": "Description",
+            "retrieval_value": "Description",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
@@ -982,11 +982,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrival_value": "Manufacturer",
+            "retrieval_value": "Manufacturer",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
@@ -995,11 +995,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrival_value": "Caption",
+            "retrieval_value": "Caption",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
@@ -1008,11 +1008,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "VERSION",
-            "retrival_value": "Version",
+            "retrieval_value": "Version",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
@@ -1021,11 +1021,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrival_value": "Name",
+            "retrieval_value": "Name",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
@@ -1034,11 +1034,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "Port Name",
-            "retrival_value": "PortName",
+            "retrieval_value": "PortName",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
@@ -1047,11 +1047,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "Driver name",
-            "retrival_value": "DriverName",
+            "retrieval_value": "DriverName",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
@@ -1060,11 +1060,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "Shared",
-            "retrival_value": "Shared",
+            "retrieval_value": "Shared",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
@@ -1073,11 +1073,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrival_value": "Tag",
+            "retrieval_value": "Tag",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
@@ -1086,11 +1086,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrival_value": "SlotDesignation",
+            "retrieval_value": "SlotDesignation",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
@@ -1099,11 +1099,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "STATUS",
-            "retrival_value": "PMESignal",
+            "retrieval_value": "PMESignal",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
@@ -1112,11 +1112,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrival_value": "DisplayName",
+            "retrieval_value": "DisplayName",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
@@ -1125,11 +1125,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "PUBLISHER",
-            "retrival_value": "Publisher",
+            "retrieval_value": "Publisher",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
@@ -1138,11 +1138,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "INSTALL DATE",
-            "retrival_value": "InstallDate",
+            "retrieval_value": "InstallDate",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
@@ -1151,11 +1151,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "VERSION",
-            "retrival_value": "DisplayVersion",
+            "retrieval_value": "DisplayVersion",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
@@ -1164,11 +1164,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "FILE_SYSTEM",
-            "retrival_value": "Name",
+            "retrieval_value": "Name",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
@@ -1177,11 +1177,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "FREE",
-            "retrival_value": "FreeSpace",
+            "retrieval_value": "FreeSpace",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
@@ -1190,11 +1190,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "TOTAL",
-            "retrival_value": "Size",
+            "retrieval_value": "Size",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
@@ -1203,11 +1203,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrival_value": "FileSystem",
+            "retrieval_value": "FileSystem",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
@@ -1216,11 +1216,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "VOLUME",
-            "retrival_value": "DeviceID",
+            "retrieval_value": "DeviceID",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
@@ -1229,11 +1229,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrival_value": "Name",
+            "retrieval_value": "Name",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USB",
@@ -1242,11 +1242,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrival_value": "Description",
+            "retrieval_value": "Description",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USB",
@@ -1255,11 +1255,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "DEVICE_ID",
-            "retrival_value": "DeviceID",
+            "retrieval_value": "DeviceID",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USB",
@@ -1268,11 +1268,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "DOMAIN",
-            "retrival_value": "Domain",
+            "retrieval_value": "Domain",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USERS",
@@ -1281,11 +1281,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "LOGGED_USER",
-            "retrival_value": "Name",
+            "retrieval_value": "Name",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USERS",
@@ -1294,11 +1294,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "USER_ID",
-            "retrival_value": "SID",
+            "retrieval_value": "SID",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USERS",
@@ -1307,11 +1307,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "SSID",
-            "retrival_value": "SSID",
+            "retrieval_value": "SSID",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="WI_FI",
@@ -1320,11 +1320,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "Authentication",
-            "retrival_value": "Authentication",
+            "retrieval_value": "Authentication",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="WI_FI",
@@ -1333,11 +1333,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "State",
-            "retrival_value": "State",
+            "retrieval_value": "State",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="WI_FI",
@@ -1346,11 +1346,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "SIGNAL",
-            "retrival_value": "Signal",
+            "retrieval_value": "Signal",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="WI_FI",
@@ -1359,11 +1359,11 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "PROFILE",
-            "retrival_value": "Profile",
+            "retrieval_value": "Profile",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="WI_FI",
@@ -1374,7 +1374,16 @@ def create_default_windows_fields(apps, schema_editor):
 
     Field = apps.get_model("field", "Field")
 
+    current_section = None
+    order = 1
     for field in fields:
+        section_obj = field["section"]
+        section_name = section_obj.name if hasattr(section_obj, "name") else section_obj
+        if section_name != current_section:
+            current_section = section_name
+            order = 1
+        field["order"] = order
+        order += 1
         try:
             Field.objects.create(**field)
         except Exception as e:

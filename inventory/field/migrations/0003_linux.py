@@ -7,11 +7,11 @@ def create_default_linux_fields(apps, schema_editor):
     fields = [
         {
             "name": "Location",
-            "retrival_value": "^\\t?Location:\\s*(.*)$",
+            "retrieval_value": "^\\t?Location:\\s*(.*)$",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
@@ -20,11 +20,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "Manufacturer",
-            "retrival_value": "^\\t?Manufacturer:\\s*(.*)$",
+            "retrieval_value": "^\\t?Manufacturer:\\s*(.*)$",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
@@ -33,11 +33,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "Manufacture Date",
-            "retrival_value": "^\\t?Manufacture Date:\\s*(.*)$",
+            "retrieval_value": "^\\t?Manufacture Date:\\s*(.*)$",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
@@ -46,11 +46,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "Serial Number",
-            "retrival_value": "^\\t?Serial Number:\\s*(.*)$",
+            "retrieval_value": "^\\t?Serial Number:\\s*(.*)$",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
@@ -59,11 +59,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "Name",
-            "retrival_value": "^\\t?Name:\\s*(.*)$",
+            "retrieval_value": "^\\t?Name:\\s*(.*)$",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
@@ -72,11 +72,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "Chemistry",
-            "retrival_value": "^\\t?Chemistry:\\s*(.*)$",
+            "retrieval_value": "^\\t?Chemistry:\\s*(.*)$",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
@@ -85,11 +85,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "Design Capacity",
-            "retrival_value": "^\\t?Design Capacity:\\s*(.*)$",
+            "retrieval_value": "^\\t?Design Capacity:\\s*(.*)$",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
@@ -98,11 +98,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "Design Voltage",
-            "retrival_value": "^\\t?Design Voltage:\\s*(.*)$",
+            "retrieval_value": "^\\t?Design Voltage:\\s*(.*)$",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
@@ -111,11 +111,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "SBDS Version",
-            "retrival_value": "^\\t?SBDS Version:\\s*(.*)$",
+            "retrieval_value": "^\\t?SBDS Version:\\s*(.*)$",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
@@ -124,11 +124,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "Maximum Error",
-            "retrival_value": "^\\t?Maximum Error:\\s*(.*)$",
+            "retrieval_value": "^\\t?Maximum Error:\\s*(.*)$",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
@@ -137,11 +137,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "OEM-specific Information",
-            "retrival_value": "^\\t?OEM-specific Information:\\s*(.*)$",
+            "retrieval_value": "^\\t?OEM-specific Information:\\s*(.*)$",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
@@ -150,11 +150,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "SMANUFACTURER",
-            "retrival_value": "1",
+            "retrieval_value": "1",
             "override_target": True,
             "new_target": "sudo dmidecode -s system-manufacturer",
-            "retrival_method": "BASH",
-            "retrival_output": "PTXT",
+            "retrieval_method": "BASH",
+            "retrieval_output": "PTXT",
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -163,11 +163,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "SMODEL",
-            "retrival_value": "1",
+            "retrieval_value": "1",
             "override_target": True,
             "new_target": "sudo dmidecode -s system-product-name",
-            "retrival_method": "BASH",
-            "retrival_output": "PTXT",
+            "retrieval_method": "BASH",
+            "retrieval_output": "PTXT",
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -176,11 +176,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "SSN",
-            "retrival_value": "1",
+            "retrieval_value": "1",
             "override_target": True,
             "new_target": "sudo dmidecode -s system-serial-number",
-            "retrival_method": "BASH",
-            "retrival_output": "PTXT",
+            "retrieval_method": "BASH",
+            "retrieval_output": "PTXT",
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -189,11 +189,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "ASSETTAG",
-            "retrival_value": "1",
+            "retrieval_value": "1",
             "override_target": True,
             "new_target": "sudo dmidecode -s chassis-asset-tag",
-            "retrival_method": "BASH",
-            "retrival_output": "PTXT",
+            "retrieval_method": "BASH",
+            "retrieval_output": "PTXT",
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -202,11 +202,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrival_value": "1",
+            "retrieval_value": "1",
             "override_target": True,
             "new_target": "sudo dmidecode -s chassis-type",
-            "retrival_method": "BASH",
-            "retrival_output": "PTXT",
+            "retrieval_method": "BASH",
+            "retrieval_output": "PTXT",
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -215,11 +215,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "MMANUFACTURER",
-            "retrival_value": "1",
+            "retrieval_value": "1",
             "override_target": True,
             "new_target": "sudo dmidecode -s baseboard-manufacturer",
-            "retrival_method": "BASH",
-            "retrival_output": "PTXT",
+            "retrieval_method": "BASH",
+            "retrieval_output": "PTXT",
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -228,11 +228,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "MMODEL",
-            "retrival_value": "1",
+            "retrieval_value": "1",
             "override_target": True,
             "new_target": "sudo dmidecode -s baseboard-product-name",
-            "retrival_method": "BASH",
-            "retrival_output": "PTXT",
+            "retrieval_method": "BASH",
+            "retrieval_output": "PTXT",
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -241,11 +241,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "MSN",
-            "retrival_value": "1",
+            "retrieval_value": "1",
             "override_target": True,
             "new_target": "sudo dmidecode -s baseboard-serial-number",
-            "retrival_method": "BASH",
-            "retrival_output": "PTXT",
+            "retrieval_method": "BASH",
+            "retrieval_output": "PTXT",
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -254,11 +254,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "BMANUFACTURER",
-            "retrival_value": "1",
+            "retrieval_value": "1",
             "override_target": True,
             "new_target": "sudo dmidecode -s bios-vendor",
-            "retrival_method": "BASH",
-            "retrival_output": "PTXT",
+            "retrieval_method": "BASH",
+            "retrieval_output": "PTXT",
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -267,11 +267,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "BVERSION",
-            "retrival_value": "1",
+            "retrieval_value": "1",
             "override_target": True,
             "new_target": "sudo dmidecode -s bios-version",
-            "retrival_method": "BASH",
-            "retrival_output": "PTXT",
+            "retrieval_method": "BASH",
+            "retrieval_output": "PTXT",
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -280,11 +280,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "BDATE",
-            "retrival_value": "1",
+            "retrieval_value": "1",
             "override_target": True,
             "new_target": "sudo dmidecode -s bios-release-date",
-            "retrival_method": "BASH",
-            "retrival_output": "PTXT",
+            "retrieval_method": "BASH",
+            "retrieval_output": "PTXT",
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -293,11 +293,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "CPUSEARCH",
-            "retrival_value": "Architecture",
+            "retrieval_value": "Architecture",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
@@ -306,11 +306,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "NBCPU",
-            "retrival_value": "CPU(s)",
+            "retrieval_value": "CPU(s)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
@@ -319,11 +319,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "THREADS",
-            "retrival_value": "Thread(s) per core",
+            "retrieval_value": "Thread(s) per core",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
@@ -332,11 +332,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "CORES",
-            "retrival_value": "Core(s) per socket",
+            "retrieval_value": "Core(s) per socket",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
@@ -345,11 +345,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "NBSOCKET",
-            "retrival_value": "Socket(s)",
+            "retrieval_value": "Socket(s)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
@@ -358,11 +358,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrival_value": "Model name",
+            "retrieval_value": "Model name",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
@@ -371,11 +371,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrival_value": "Vendor ID",
+            "retrieval_value": "Vendor ID",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
@@ -384,11 +384,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "SPEED",
-            "retrival_value": "CPU max MHz",
+            "retrieval_value": "CPU max MHz",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
@@ -397,11 +397,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "CURRENT_SPEED",
-            "retrival_value": "CPU MHz",
+            "retrieval_value": "CPU MHz",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
@@ -410,11 +410,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "L2CACHESIZE",
-            "retrival_value": "L2 cache",
+            "retrieval_value": "L2 cache",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
@@ -423,11 +423,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "LOGICAL_CPU",
-            "retrival_value": "Thread(s) per core",
+            "retrieval_value": "Thread(s) per core",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
@@ -436,11 +436,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "FREE",
-            "retrival_value": "4",
+            "retrieval_value": "4",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
@@ -449,11 +449,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "FILESYSTEM",
-            "retrival_value": "0",
+            "retrieval_value": "0",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
@@ -462,11 +462,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "VOLUMN",
-            "retrival_value": "6",
+            "retrieval_value": "6",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
@@ -475,11 +475,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrival_value": "1",
+            "retrieval_value": "1",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
@@ -488,11 +488,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "TOTAL",
-            "retrival_value": "2",
+            "retrieval_value": "2",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
@@ -501,11 +501,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "DATELASTLOGGEDUSER",
-            "retrival_value": "((Mon|Tue|Wed|Tue|Fri|Sat|Sun) *(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) *\\d* *\\d*:\\d*)",
+            "retrieval_value": "((Mon|Tue|Wed|Tue|Fri|Sat|Sun) *(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) *\\d* *\\d*:\\d*)",
             "override_target": True,
             "new_target": "last -R -n 1",
-            "retrival_method": "BASH",
-            "retrival_output": "REGX",
+            "retrieval_method": "BASH",
+            "retrieval_output": "REGX",
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
@@ -514,11 +514,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "DEFAULTGATEWAY",
-            "retrival_value": "(\\d*\\.\\d*\\.\\d*\\.\\d*)",
+            "retrieval_value": "(\\d*\\.\\d*\\.\\d*\\.\\d*)",
             "override_target": True,
             "new_target": "ip route show",
-            "retrival_method": "BASH",
-            "retrival_output": "REGX",
+            "retrieval_method": "BASH",
+            "retrieval_output": "REGX",
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
@@ -527,11 +527,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "DNS",
-            "retrival_value": "nameserver",
+            "retrieval_value": "nameserver",
             "override_target": True,
             "new_target": "cat /etc/resolv.conf",
-            "retrival_method": "BASH",
-            "retrival_output": "GREP",
+            "retrieval_method": "BASH",
+            "retrieval_output": "GREP",
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
@@ -540,11 +540,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "IPADDR",
-            "retrival_value": "1",
+            "retrieval_value": "1",
             "override_target": True,
             "new_target": "hostname -I",
-            "retrival_method": "BASH",
-            "retrival_output": "PTXT",
+            "retrieval_method": "BASH",
+            "retrieval_output": "PTXT",
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
@@ -553,11 +553,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "LASTLOGGEDUSER",
-            "retrival_value": "(^\\w*)",
+            "retrieval_value": "(^\\w*)",
             "override_target": True,
             "new_target": "last -R -n 1",
-            "retrival_method": "BASH",
-            "retrival_output": "REGX",
+            "retrieval_method": "BASH",
+            "retrieval_output": "REGX",
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
@@ -566,11 +566,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "MEMORIES",
-            "retrival_value": "MemTotal",
+            "retrieval_value": "MemTotal",
             "override_target": True,
             "new_target": "cat /proc/meminfo",
-            "retrival_method": "BASH",
-            "retrival_output": "JSON",
+            "retrieval_method": "BASH",
+            "retrieval_output": "JSON",
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
@@ -579,11 +579,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrival_value": "1",
+            "retrieval_value": "1",
             "override_target": True,
             "new_target": "hostname",
-            "retrival_method": "BASH",
-            "retrival_output": "PTXT",
+            "retrieval_method": "BASH",
+            "retrieval_output": "PTXT",
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
@@ -592,11 +592,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "OSCOMMENTS",
-            "retrival_value": "3",
+            "retrieval_value": "3",
             "override_target": True,
             "new_target": "lsb_release -as",
-            "retrival_method": "BASH",
-            "retrival_output": "PTXT",
+            "retrieval_method": "BASH",
+            "retrieval_output": "PTXT",
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
@@ -605,11 +605,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "OSNAME",
-            "retrival_value": "2",
+            "retrieval_value": "2",
             "override_target": True,
             "new_target": "lsb_release -as",
-            "retrival_method": "BASH",
-            "retrival_output": "PTXT",
+            "retrieval_method": "BASH",
+            "retrieval_output": "PTXT",
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
@@ -618,11 +618,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "OSVERSION",
-            "retrival_value": "4",
+            "retrieval_value": "4",
             "override_target": True,
             "new_target": "lsb_release -as",
-            "retrival_method": "BASH",
-            "retrival_output": "PTXT",
+            "retrieval_method": "BASH",
+            "retrieval_output": "PTXT",
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
@@ -631,11 +631,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "PROCESSORT",
-            "retrival_value": "CPU(s)",
+            "retrieval_value": "CPU(s)",
             "override_target": True,
             "new_target": "lscpu",
-            "retrival_method": "BASH",
-            "retrival_output": "JSON",
+            "retrieval_method": "BASH",
+            "retrieval_output": "JSON",
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
@@ -644,11 +644,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "USERID",
-            "retrival_value": "(^\\w*)",
+            "retrieval_value": "(^\\w*)",
             "override_target": True,
             "new_target": "last -R -n 1",
-            "retrival_method": "BASH",
-            "retrival_output": "REGX",
+            "retrieval_method": "BASH",
+            "retrieval_output": "REGX",
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
@@ -657,11 +657,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "LOGIN",
-            "retrival_value": "^(\\S+)",
+            "retrieval_value": "^(\\S+)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CURRENT_USER",
@@ -670,11 +670,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "CAPTION",
-            "retrival_value": '^N: Name=\\"(.*)\\"$',
+            "retrieval_value": '^N: Name=\\"(.*)\\"$',
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="INPUTS",
@@ -683,11 +683,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrival_value": '^N: Name=\\"(.*)\\"$',
+            "retrieval_value": '^N: Name=\\"(.*)\\"$',
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="INPUTS",
@@ -696,11 +696,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrival_value": "^H: Handlers=(.*)$",
+            "retrieval_value": "^H: Handlers=(.*)$",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="INPUTS",
@@ -709,11 +709,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrival_value": "(Multimedia audio controller|Audio device)",
+            "retrieval_value": "(Multimedia audio controller|Audio device)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="AUDIO",
@@ -722,11 +722,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrival_value": "(?:Multimedia audio controller|Audio device): ([^\\(\\[]*)",
+            "retrieval_value": "(?:Multimedia audio controller|Audio device): ([^\\(\\[]*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="AUDIO",
@@ -735,11 +735,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrival_value": "(?:Multimedia audio controller|Audio device): .*\\((.*)\\)",
+            "retrieval_value": "(?:Multimedia audio controller|Audio device): .*\\((.*)\\)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="AUDIO",
@@ -748,11 +748,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrival_value": "Type: (.*)$",
+            "retrieval_value": "Type: (.*)$",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
@@ -761,11 +761,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrival_value": "Designation: (.*)$",
+            "retrieval_value": "Designation: (.*)$",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
@@ -774,11 +774,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "DESIGNATION",
-            "retrival_value": "ID: (.*)$",
+            "retrieval_value": "ID: (.*)$",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
@@ -787,11 +787,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "STATUS",
-            "retrival_value": "Current Usage: (.*)$",
+            "retrieval_value": "Current Usage: (.*)$",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
@@ -800,11 +800,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "BASEURL",
-            "retrival_value": "(http:.*?|https.*?) jammy.*?\\/.*?\\s",
+            "retrieval_value": "(http:.*?|https.*?) jammy.*?\\/.*?\\s",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PACKAGES",
@@ -813,11 +813,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrival_value": "(?:http:.*|https.*) jammy.*\\/(.*?)\\s",
+            "retrieval_value": "(?:http:.*|https.*) jammy.*\\/(.*?)\\s",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PACKAGES",
@@ -826,11 +826,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "CAPTION",
-            "retrival_value": "External Connector Type: (.*)",
+            "retrieval_value": "External Connector Type: (.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PORTS",
@@ -839,11 +839,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrival_value": "Internal Connector Type: (.*)",
+            "retrieval_value": "Internal Connector Type: (.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PORTS",
@@ -852,11 +852,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrival_value": "Internal Reference Designator: (.*)",
+            "retrieval_value": "Internal Reference Designator: (.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PORTS",
@@ -865,11 +865,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrival_value": "Port Type: (.*)",
+            "retrieval_value": "Port Type: (.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PORTS",
@@ -878,11 +878,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrival_value": ": ([^\\(\\[]*)\\s",
+            "retrieval_value": ": ([^\\(\\[]*)\\s",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
@@ -891,11 +891,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrival_value": "[.*:]*.*\\.. (.*) \\[.*\\]:",
+            "retrieval_value": "[.*:]*.*\\.. (.*) \\[.*\\]:",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
@@ -904,11 +904,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "PCIID",
-            "retrival_value": "\\[(.{4}:.{4})\\]",
+            "retrieval_value": "\\[(.{4}:.{4})\\]",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
@@ -917,11 +917,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "PCISLOT",
-            "retrival_value": "((?:.*\\:)+..\\..)\\s",
+            "retrieval_value": "((?:.*\\:)+..\\..)\\s",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
@@ -930,11 +930,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrival_value": "\\((rev .*)\\)",
+            "retrieval_value": "\\((rev .*)\\)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
@@ -943,11 +943,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "CAPTION",
-            "retrival_value": "[^ ]Locator:\\s([\\w\\d_\\-\\s#]+)$",
+            "retrieval_value": "[^ ]Locator:\\s([\\w\\d_\\-\\s#]+)$",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
@@ -956,11 +956,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "SPEED",
-            "retrival_value": "[^ ]Speed:\\s([\\w\\d]+)",
+            "retrieval_value": "[^ ]Speed:\\s([\\w\\d]+)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
@@ -969,11 +969,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrival_value": "Type:\\s([\\s\\w]+)$",
+            "retrieval_value": "Type:\\s([\\s\\w]+)$",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
@@ -982,11 +982,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrival_value": "Type\\sDetail:\\s([\\s\\w]+)$",
+            "retrieval_value": "Type\\sDetail:\\s([\\s\\w]+)$",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
@@ -995,11 +995,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrival_value": "Manufacturer:\\s([\\w\\d\\-\\_\\s]+)$",
+            "retrieval_value": "Manufacturer:\\s([\\w\\d\\-\\_\\s]+)$",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
@@ -1008,11 +1008,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "SERIALNUMBER",
-            "retrival_value": "Serial\\sNumber:\\s([\\w\\d\\-\\_\\s]+)$",
+            "retrieval_value": "Serial\\sNumber:\\s([\\w\\d\\-\\_\\s]+)$",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
@@ -1021,11 +1021,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "CAPACITY",
-            "retrival_value": "[^ ]Size:\\s(\\d+)\\s(MB|GB|TB|MByte|GByte|TByte)",
+            "retrieval_value": "[^ ]Size:\\s(\\d+)\\s(MB|GB|TB|MByte|GByte|TByte)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
@@ -1034,11 +1034,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "ID_GROUP",
-            "retrival_value": ":(\\d*):",
+            "retrieval_value": ":(\\d*):",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GROUPS",
@@ -1047,11 +1047,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrival_value": "^(.*):",
+            "retrieval_value": "^(.*):",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GROUPS",
@@ -1060,11 +1060,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "MEMBER",
-            "retrival_value": ".*:.*:(.*)$",
+            "retrieval_value": ".*:.*:(.*)$",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GROUPS",
@@ -1073,11 +1073,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "GID",
-            "retrival_value": ".*:.*:.*:(.*):.*:.*:.*",
+            "retrieval_value": ".*:.*:.*:(.*):.*:.*:.*",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USERS",
@@ -1086,11 +1086,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "HOME",
-            "retrival_value": ".*:.*:.*:.*:.*:(.*):.*",
+            "retrieval_value": ".*:.*:.*:.*:.*:(.*):.*",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USERS",
@@ -1099,11 +1099,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "ID_USER",
-            "retrival_value": ".*:.*:(.*):.*:.*:.*:.*",
+            "retrieval_value": ".*:.*:(.*):.*:.*:.*:.*",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USERS",
@@ -1112,11 +1112,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "LOGIN",
-            "retrival_value": "(.*):.*:.*:.*:.*:.*:.*",
+            "retrieval_value": "(.*):.*:.*:.*:.*:.*:.*",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USERS",
@@ -1125,11 +1125,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrival_value": ".*:.*:.*:.*:(.*):.*:.*",
+            "retrieval_value": ".*:.*:.*:.*:(.*):.*:.*",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USERS",
@@ -1138,11 +1138,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "SHELL",
-            "retrival_value": ".*:.*:.*:.*:.*:.*:(.*)",
+            "retrieval_value": ".*:.*:.*:.*:.*:.*:(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USERS",
@@ -1151,11 +1151,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "ARCHITECTURE",
-            "retrival_value": "\\$.*---\\$(.*)---\\$.*---\\$.*---\\$.*",
+            "retrieval_value": "\\$.*---\\$(.*)---\\$.*---\\$.*---\\$.*",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
@@ -1164,11 +1164,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrival_value": "\\$(.*)---\\$.*---\\$.*---\\$.*---\\$.*",
+            "retrieval_value": "\\$(.*)---\\$.*---\\$.*---\\$.*---\\$.*",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
@@ -1177,11 +1177,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "VERSION",
-            "retrival_value": "\\$.*---\\$.*---\\$(.*)---\\$.*---\\$.*",
+            "retrieval_value": "\\$.*---\\$.*---\\$(.*)---\\$.*---\\$.*",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
@@ -1190,11 +1190,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "FILESIZE",
-            "retrival_value": "\\$.*---\\$.*---\\$.*---\\$(.*)---\\$.*",
+            "retrieval_value": "\\$.*---\\$.*---\\$.*---\\$(.*)---\\$.*",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
@@ -1203,11 +1203,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "PUBLISHER",
-            "retrival_value": "\\$.*---\\$.*---\\$.*---\\$.*---\\$(.*)",
+            "retrieval_value": "\\$.*---\\$.*---\\$.*---\\$.*---\\$(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
@@ -1216,11 +1216,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "Name",
-            "retrival_value": "Bus\\s\\w+\\sDevice\\s\\w+:\\sID\\s\\w+:\\w+\\s(.*)",
+            "retrieval_value": "Bus\\s\\w+\\sDevice\\s\\w+:\\sID\\s\\w+:\\w+\\s(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USB",
@@ -1229,11 +1229,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "BUS",
-            "retrival_value": "Bus\\s(\\w+)",
+            "retrieval_value": "Bus\\s(\\w+)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USB",
@@ -1242,11 +1242,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "DEVICE",
-            "retrival_value": "Bus\\s\\w+\\sDevice\\s(\\w+)",
+            "retrieval_value": "Bus\\s\\w+\\sDevice\\s(\\w+)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USB",
@@ -1255,11 +1255,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "ID",
-            "retrival_value": "Bus\\s\\w+\\sDevice\\s\\w+:\\sID\\s(\\w+:\\w+)",
+            "retrieval_value": "Bus\\s\\w+\\sDevice\\s\\w+:\\sID\\s(\\w+:\\w+)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USB",
@@ -1268,11 +1268,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "Name",
-            "retrival_value": "^([A-Za-z0-9-]+)",
+            "retrieval_value": "^([A-Za-z0-9-]+)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
@@ -1281,11 +1281,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "Connection Type",
-            "retrival_value": "^[A-Za-z0-9-]+\\s(\\w+)",
+            "retrieval_value": "^[A-Za-z0-9-]+\\s(\\w+)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
@@ -1294,11 +1294,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "URI",
-            "retrival_value": "ipp:(//[a-zA-Z0-9\\-\\.]\\S+)",
+            "retrieval_value": "ipp:(//[a-zA-Z0-9\\-\\.]\\S+)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
@@ -1307,11 +1307,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "DNS-SD URI",
-            "retrival_value": "dnssd:(//[a-zA-Z0-9\\-\\.]\\S+)",
+            "retrieval_value": "dnssd:(//[a-zA-Z0-9\\-\\.]\\S+)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
@@ -1320,11 +1320,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "UUID",
-            "retrival_value": "uuid=([a-fA-F0-9\\-]+)",
+            "retrieval_value": "uuid=([a-fA-F0-9\\-]+)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
@@ -1333,11 +1333,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "HOSTNAME",
-            "retrival_value": "dnssd://([a-zA-Z0-9\\-\\.%()_/]+)",
+            "retrieval_value": "dnssd://([a-zA-Z0-9\\-\\.%()_/]+)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
@@ -1346,11 +1346,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "Name",
-            "retrival_value": "^([a-zA-Z0-9\\_\\-]+)",
+            "retrieval_value": "^([a-zA-Z0-9\\_\\-]+)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
@@ -1359,11 +1359,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "IP Address v4",
-            "retrival_value": "inet\\s([0-9.]+)",
+            "retrieval_value": "inet\\s([0-9.]+)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
@@ -1372,11 +1372,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "IP Address v6",
-            "retrival_value": "inet6\\s([0-9a-fA-F:]+)",
+            "retrieval_value": "inet6\\s([0-9a-fA-F:]+)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
@@ -1385,11 +1385,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "Broadcast",
-            "retrival_value": "broadcast\\s([0-9.]+)",
+            "retrieval_value": "broadcast\\s([0-9.]+)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
@@ -1398,11 +1398,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "Netmask",
-            "retrival_value": "netmask\\s([0-9.]+)",
+            "retrieval_value": "netmask\\s([0-9.]+)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
@@ -1411,11 +1411,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "Description",
-            "retrival_value": "^\\s{7}description:\\s(.*)",
+            "retrieval_value": "^\\s{7}description:\\s(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GRAPHIC/DISPLAY",
@@ -1424,11 +1424,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "PROCUCT",
-            "retrival_value": "^\\s{7}product:\\s(.*)",
+            "retrieval_value": "^\\s{7}product:\\s(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GRAPHIC/DISPLAY",
@@ -1437,11 +1437,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "Vendor",
-            "retrival_value": "^\\s{7}vendor:\\s(.*)",
+            "retrieval_value": "^\\s{7}vendor:\\s(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GRAPHIC/DISPLAY",
@@ -1450,11 +1450,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "Configuration",
-            "retrival_value": "^\\s{7}configuration:\\s(.*)",
+            "retrieval_value": "^\\s{7}configuration:\\s(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GRAPHIC/DISPLAY",
@@ -1463,11 +1463,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "Name",
-            "retrival_value": "^(\\S+\\s+)[a-fA-F0-9\\-]{36}",
+            "retrieval_value": "^(\\S+\\s+)[a-fA-F0-9\\-]{36}",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="WI_FI",
@@ -1476,11 +1476,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "UUID",
-            "retrival_value": "([a-fA-F0-9\\-]{36})",
+            "retrieval_value": "([a-fA-F0-9\\-]{36})",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="WI_FI",
@@ -1489,11 +1489,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "Type",
-            "retrival_value": "[\\S\\s]+?\\s+[a-fA-F0-9\\-]{36}\\s+(\\S+)",
+            "retrieval_value": "[\\S\\s]+?\\s+[a-fA-F0-9\\-]{36}\\s+(\\S+)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="WI_FI",
@@ -1502,11 +1502,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "Device",
-            "retrival_value": "[\\S\\s]+?\\s+[a-fA-F0-9\\-]{36}\\s+\\S+\\s+(\\S+)",
+            "retrieval_value": "[\\S\\s]+?\\s+[a-fA-F0-9\\-]{36}\\s+\\S+\\s+(\\S+)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="WI_FI",
@@ -1515,11 +1515,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "Chassis",
-            "retrival_value": "Chassis:\\s(.*)",
+            "retrieval_value": "Chassis:\\s(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
@@ -1528,11 +1528,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "Operating System",
-            "retrival_value": "Operating System:\\s(.*)",
+            "retrieval_value": "Operating System:\\s(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
@@ -1541,11 +1541,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "Kernel",
-            "retrival_value": "Kernel:\\s(.*)",
+            "retrieval_value": "Kernel:\\s(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
@@ -1554,11 +1554,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "Architecture",
-            "retrival_value": "Architecture:\\s(.*)",
+            "retrieval_value": "Architecture:\\s(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
@@ -1567,11 +1567,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "Hostname",
-            "retrival_value": "Static hostname:\\s(.*)",
+            "retrieval_value": "Static hostname:\\s(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
@@ -1580,11 +1580,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "Machine ID",
-            "retrival_value": "Machine ID:\\s(.*)",
+            "retrieval_value": "Machine ID:\\s(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
@@ -1593,11 +1593,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "Hardware vendor",
-            "retrival_value": "Hardware Vendor:\\s(.*)",
+            "retrieval_value": "Hardware Vendor:\\s(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
@@ -1606,11 +1606,11 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "Hardware model",
-            "retrival_value": "Hardware Model:\\s(.*)",
+            "retrieval_value": "Hardware Model:\\s(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
@@ -1621,7 +1621,16 @@ def create_default_linux_fields(apps, schema_editor):
 
     Field = apps.get_model("field", "Field")
 
+    current_section = None
+    order = 1
     for field in fields:
+        section_obj = field["section"]
+        section_name = section_obj.name if hasattr(section_obj, "name") else section_obj
+        if section_name != current_section:
+            current_section = section_name
+            order = 1
+        field["order"] = order
+        order += 1
         try:
             Field.objects.create(**field)
         except Exception as e:
