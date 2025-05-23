@@ -18,8 +18,8 @@ class SectionSerializer(ExpandableFieldsMixin, ModelSerializer):
         fields = [
             "id",
             "name",
-            "retrival_method",
-            "retrival_output",
+            "retrieval_method",
+            "retrieval_output",
             "target",
             "template",
             "fields",
