@@ -19,7 +19,7 @@ def create_default_linux_sections(apps, schema_editor):
             "retrieval_output": "REGX",
             "target": "upower -i $(upower -e | grep BAT)",
             "template": apps.get_model("template", "Template").objects.get(os="LIN"),
-            "options": None,
+            "options": {},
         },
         {
             "name": "CONTROLLERS",
@@ -35,7 +35,7 @@ def create_default_linux_sections(apps, schema_editor):
             "retrieval_output": "REGX",
             "target": "LANG=C lscpu",
             "template": apps.get_model("template", "Template").objects.get(os="LIN"),
-            "options": None,
+            "options": {},
         },
         {
             "name": "CURRENT_USER",
@@ -43,7 +43,7 @@ def create_default_linux_sections(apps, schema_editor):
             "retrieval_output": "REGX",
             "target": "who",
             "template": apps.get_model("template", "Template").objects.get(os="LIN"),
-            "options": None,
+            "options": {},
         },
         {
             "name": "NETWORKS DEVICES",
@@ -75,7 +75,7 @@ def create_default_linux_sections(apps, schema_editor):
             "retrieval_output": "REGX",
             "target": 'for f in system-manufacturer system-product-name system-serial-number chassis-type baseboard-manufacturer baseboard-product-name baseboard-serial-number bios-vendor bios-version; do echo -n "$f: "; dmidecode -s $f; done',
             "template": apps.get_model("template", "Template").objects.get(os="LIN"),
-            "options": None,
+            "options": {},
         },
         {
             "name": "INPUTS",
@@ -107,7 +107,7 @@ def create_default_linux_sections(apps, schema_editor):
             "retrieval_output": "REGX",
             "target": "hostnamectl",
             "template": apps.get_model("template", "Template").objects.get(os="LIN"),
-            "options": None,
+            "options": {},
         },
         {
             "name": "PACKAGES",
