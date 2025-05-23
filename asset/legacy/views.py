@@ -102,7 +102,7 @@ class LegacyView(APIView):
                 field_objs = Field.objects.filter(section__in=section_objs)
                 section_field_map = {
                     section.name: {
-                        field.retrival_value: field
+                        field.retrieval_value: field
                         for field in field_objs.filter(section=section)
                     }
                     for section in section_objs
@@ -221,7 +221,7 @@ class LegacyView(APIView):
                 field_objs = Field.objects.filter(section__in=section_objs)
                 section_field_map = {
                     section.name: {
-                        field.retrival_value: field
+                        field.retrieval_value: field
                         for field in field_objs.filter(section=section)
                     }
                     for section in section_objs

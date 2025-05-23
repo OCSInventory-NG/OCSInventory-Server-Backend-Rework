@@ -19,4 +19,14 @@ class FieldViewSet(viewsets.OCSViewSet):
     serializer_class = FieldSerializer
     model = Field
 
-    filterset_fields = ['id', 'name', 'retrival_value', 'override_target', 'new_target', 'retrival_method', 'retrival_output', 'section' ]
+    filterset_fields = [
+        "id",
+        "name",
+        "retrieval_value",
+        "override_target",
+        "new_target",
+        "retrieval_method",
+        "retrieval_output",
+        "section",
+        "order",
+    ]
