@@ -11,8 +11,8 @@ class Section(models.Model):
 
     The model will contain the following info
     - Name
-    - Retrival method
-    - Retrival output
+    - retrieval method
+    - retrieval output
     - Template link
     - Last update (Read Only)
     """

@@ -12,7 +12,7 @@ class Field(models.Model):
 
     The model will contain the following info
     - Name
-    - Retrival value
+    - retrieval value
 
     Some explanation on the retrieval value :
     - Depending on the retrieval output, the value is diffrent
