@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
                 ),
                 ("name", models.CharField(max_length=50)),
                 (
-                    "retrival_method",
+                    "retrieval_method",
                     models.CharField(
                         choices=[
                             ("FILE", "Read file"),
@@ -40,7 +40,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    "retrival_output",
+                    "retrieval_output",
                     models.CharField(
                         choices=[
                             ("PTXT", "Plain text"),

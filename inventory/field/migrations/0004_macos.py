@@ -20,11 +20,24 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Default Output Device",
-            "retrival_value": "coreaudio_default_audio_output_device",
+            "retrieval_value": "coreaudio_default_audio_output_device",
             "override_target": False,
             "new_target": None,
             "retrival_method": None,
             "retrival_output": None,
+            "options": None,
+            "section": apps.get_model("section", "Section").objects.get(
+                name="AUDIO",
+                template=apps.get_model("template", "Template").objects.get(os="MAC"),
+            ),
+        },
+        {
+            "name": "Default Output Device",
+            "retrival_value": "Default Output Device",
+            "override_target": False,
+            "new_target": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="AUDIO",
@@ -33,11 +46,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Default System Output Device",
-            "retrival_value": "coreaudio_default_audio_system_device",
+            "retrieval_value": "coreaudio_default_audio_system_device",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="AUDIO",
@@ -46,11 +59,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Manufacturer",
-            "retrival_value": "coreaudio_device_manufacturer",
+            "retrieval_value": "coreaudio_device_manufacturer",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="AUDIO",
@@ -59,11 +72,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Output Channels",
-            "retrival_value": "coreaudio_device_output",
+            "retrieval_value": "coreaudio_device_output",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="AUDIO",
@@ -72,11 +85,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Current SampleRate",
-            "retrival_value": "coreaudio_device_srate",
+            "retrieval_value": "coreaudio_device_srate",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="AUDIO",
@@ -85,11 +98,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Transport",
-            "retrival_value": "coreaudio_device_transport",
+            "retrieval_value": "coreaudio_device_transport",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="AUDIO",
@@ -98,11 +111,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Output Source",
-            "retrival_value": "coreaudio_output_source",
+            "retrieval_value": "coreaudio_output_source",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="AUDIO",
@@ -111,11 +124,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "System Sleep Timer (Minutes)",
-            "retrival_value": "System Sleep Timer \\(Minutes\\):\\s*(.*)",
+            "retrieval_value": "System Sleep Timer \\(Minutes\\):\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
@@ -124,11 +137,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Disk Sleep Timer (Minutes)",
-            "retrival_value": "Disk Sleep Timer \\(Minutes\\):\\s*(.*)",
+            "retrieval_value": "Disk Sleep Timer \\(Minutes\\):\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
@@ -137,11 +150,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Display Sleep Timer (Minutes)",
-            "retrival_value": "Display Sleep Timer \\(Minutes\\):\\s*(.*)",
+            "retrieval_value": "Display Sleep Timer \\(Minutes\\):\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
@@ -150,11 +163,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Wake on LAN",
-            "retrival_value": "Wake on LAN:\\s*(.*)",
+            "retrieval_value": "Wake on LAN:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
@@ -163,11 +176,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "UPS Installed",
-            "retrival_value": "UPS Installed:\\s*(.*)",
+            "retrieval_value": "UPS Installed:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
@@ -176,11 +189,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Address",
-            "retrival_value": "Address:\\s*(.*)",
+            "retrieval_value": "Address:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BLUETOOTH",
@@ -189,11 +202,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "State",
-            "retrival_value": "State:\\s*(.*)",
+            "retrieval_value": "State:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BLUETOOTH",
@@ -202,11 +215,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Chipset",
-            "retrival_value": "Chipset:\\s*(.*)",
+            "retrieval_value": "Chipset:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BLUETOOTH",
@@ -215,11 +228,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Discoverable",
-            "retrival_value": "Discoverable:\\s*(.*)",
+            "retrieval_value": "Discoverable:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BLUETOOTH",
@@ -228,11 +241,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Firmware Version",
-            "retrival_value": "Firmware Version:\\s*(.*)",
+            "retrieval_value": "Firmware Version:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BLUETOOTH",
@@ -241,11 +254,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Product ID",
-            "retrival_value": "Product ID:\\s*(.*)",
+            "retrieval_value": "Product ID:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BLUETOOTH",
@@ -254,11 +267,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Supported services",
-            "retrival_value": "Supported services:\\s*(.*)",
+            "retrieval_value": "Supported services:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BLUETOOTH",
@@ -267,11 +280,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Transport",
-            "retrival_value": "Transport:\\s*(.*)",
+            "retrieval_value": "Transport:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BLUETOOTH",
@@ -280,11 +293,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Vendor ID",
-            "retrival_value": "Vendor ID:\\s*(.*)",
+            "retrieval_value": "Vendor ID:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BLUETOOTH",
@@ -293,11 +306,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Model ID",
-            "retrival_value": "Model ID:\\s*(.*)",
+            "retrieval_value": "Model ID:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CAMERAS",
@@ -306,11 +319,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Unique ID",
-            "retrival_value": "Unique ID:\\s*(.*)",
+            "retrieval_value": "Unique ID:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CAMERAS",
@@ -319,11 +332,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Model Identifier",
-            "retrival_value": "Model Identifier:\\s*(.*)",
+            "retrieval_value": "Model Identifier:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
@@ -332,11 +345,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Boot UUID",
-            "retrival_value": "Boot UUID:\\s*(.*)",
+            "retrieval_value": "Boot UUID:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
@@ -345,11 +358,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Firmware Version",
-            "retrival_value": "Firmware Version:\\s*(.*)",
+            "retrieval_value": "Firmware Version:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
@@ -358,11 +371,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Secure Boot",
-            "retrival_value": "Secure Boot:\\s*(.*)",
+            "retrieval_value": "Secure Boot:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
@@ -371,11 +384,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "System Integrity Protection",
-            "retrival_value": "System Integrity Protection:\\s*(.*)",
+            "retrieval_value": "System Integrity Protection:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
@@ -384,11 +397,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Signed System Volume",
-            "retrival_value": "Signed System Volume:\\s*(.*)",
+            "retrieval_value": "Signed System Volume:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
@@ -397,11 +410,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Kernel CTRR",
-            "retrival_value": "Kernel CTRR:\\s*(.*)",
+            "retrieval_value": "Kernel CTRR:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
@@ -410,11 +423,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Boot Arguments Filtering",
-            "retrival_value": "Boot Arguments Filtering:\\s*(.*)",
+            "retrieval_value": "Boot Arguments Filtering:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
@@ -423,11 +436,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Allow All Kernel Extensions",
-            "retrival_value": "Allow All Kernel Extensions:\\s*(.*)",
+            "retrieval_value": "Allow All Kernel Extensions:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
@@ -436,11 +449,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "User Approved Privileged MDM Operations",
-            "retrival_value": "User Approved Privileged MDM Operations:\\s*(.*)",
+            "retrieval_value": "User Approved Privileged MDM Operations:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
@@ -449,11 +462,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "DEP Approved Privileged MDM Operations",
-            "retrival_value": "DEP Approved Privileged MDM Operations:\\s*(.*)",
+            "retrieval_value": "DEP Approved Privileged MDM Operations:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
@@ -462,11 +475,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Name",
-            "retrival_value": "Chip:\\s*(.*)",
+            "retrieval_value": "Chip:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
@@ -475,11 +488,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Total Number of Cores",
-            "retrival_value": "Total Number of Cores:\\s*(.*)",
+            "retrieval_value": "Total Number of Cores:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
@@ -488,11 +501,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Memory",
-            "retrival_value": "Memory:\\s*(.*)",
+            "retrieval_value": "Memory:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
@@ -501,11 +514,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "L2 Cache (per Core)",
-            "retrival_value": "L2 Cache \\(per Core\\):\\s*(.*)",
+            "retrieval_value": "L2 Cache \\(per Core\\):\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
@@ -514,11 +527,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "L3 Cache",
-            "retrival_value": "L3 Cache:\\s*(.*)",
+            "retrieval_value": "L3 Cache:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
@@ -527,11 +540,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Name",
-            "retrival_value": "User Name:\\s*(.*)",
+            "retrieval_value": "User Name:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CURRENT_USER",
@@ -540,11 +553,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Time since boot",
-            "retrival_value": "Time since boot:\\s*(.*)",
+            "retrieval_value": "Time since boot:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CURRENT_USER",
@@ -553,11 +566,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Version",
-            "retrival_value": "Version:\\s*(.*)",
+            "retrieval_value": "Version:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="DEVELOPER_TOOLS",
@@ -566,11 +579,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Location",
-            "retrival_value": "Location:\\s*(.*)",
+            "retrieval_value": "Location:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="DEVELOPER_TOOLS",
@@ -579,11 +592,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Xcode",
-            "retrival_value": "Xcode:\\s*(.*)",
+            "retrieval_value": "Xcode:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="DEVELOPER_TOOLS",
@@ -592,14 +605,14 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Instruments",
-            "retrival_value": "Instruments:\\s*(.*)",
+            "retrieval_value": "Instruments:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
-                name="DEVELOPER_TOOLS",
+                name="ETHERNET",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
             ),
         },
@@ -618,11 +631,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Bus",
-            "retrival_value": "spethernet_bus",
+            "retrieval_value": "spethernet_bus",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
@@ -631,11 +644,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Vendor ID",
-            "retrival_value": "spethernet_vendor-id",
+            "retrieval_value": "spethernet_vendor-id",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
@@ -644,11 +657,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Device ID",
-            "retrival_value": "spethernet_device-id",
+            "retrieval_value": "spethernet_device-id",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
@@ -657,11 +670,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Subsystem Vendor ID",
-            "retrival_value": "spethernet_subsystem-vendor-id",
+            "retrieval_value": "spethernet_subsystem-vendor-id",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
@@ -670,11 +683,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Subsystem ID",
-            "retrival_value": "spethernet_subsystem-id",
+            "retrieval_value": "spethernet_subsystem-id",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
@@ -683,11 +696,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Revision ID",
-            "retrival_value": "spethernet_revision-id",
+            "retrieval_value": "spethernet_revision-id",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
@@ -696,11 +709,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "PCIe Link Speed",
-            "retrival_value": "spethernet_pcie_link-speed",
+            "retrieval_value": "spethernet_pcie_link-speed",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
@@ -709,11 +722,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "PCIe Link Width",
-            "retrival_value": "spethernet_pcie_link-width",
+            "retrieval_value": "spethernet_pcie_link-width",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
@@ -722,11 +735,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Driver",
-            "retrival_value": "spethernet_driver",
+            "retrieval_value": "spethernet_driver",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
@@ -735,11 +748,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "BSD Device Name",
-            "retrival_value": "spethernet_BSD_Device_Name",
+            "retrieval_value": "spethernet_BSD_Device_Name",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
@@ -748,11 +761,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "MAC Address",
-            "retrival_value": "spethernet_mac_address",
+            "retrieval_value": "spethernet_mac_address",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
@@ -761,11 +774,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "AVB Support",
-            "retrival_value": "spethernet_avb_support",
+            "retrieval_value": "spethernet_avb_support",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
@@ -774,11 +787,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Maximum Link Speed",
-            "retrival_value": "spethernet_max_link_speed",
+            "retrieval_value": "spethernet_max_link_speed",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ETHERNET",
@@ -787,11 +800,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Name",
-            "retrival_value": "_name",
+            "retrieval_value": "_name",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="EXTENSIONS",
@@ -800,11 +813,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Loadable",
-            "retrival_value": "spext_loadable",
+            "retrieval_value": "spext_loadable",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="EXTENSIONS",
@@ -813,11 +826,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Loaded",
-            "retrival_value": "spext_loaded",
+            "retrieval_value": "spext_loaded",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="EXTENSIONS",
@@ -826,11 +839,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Obtained From",
-            "retrival_value": "spext_obtained_from",
+            "retrieval_value": "spext_obtained_from",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="EXTENSIONS",
@@ -839,11 +852,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Path",
-            "retrival_value": "spext_path",
+            "retrieval_value": "spext_path",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="EXTENSIONS",
@@ -852,11 +865,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Signed By",
-            "retrival_value": "spext_signed_by",
+            "retrieval_value": "spext_signed_by",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="EXTENSIONS",
@@ -865,11 +878,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Version",
-            "retrival_value": "version",
+            "retrieval_value": "version",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="EXTENSIONS",
@@ -878,11 +891,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Last Modified",
-            "retrival_value": "spext_lastModified",
+            "retrieval_value": "spext_lastModified",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="EXTENSIONS",
@@ -891,11 +904,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Bundle ID",
-            "retrival_value": "spext_bundleid",
+            "retrieval_value": "spext_bundleid",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="EXTENSIONS",
@@ -904,11 +917,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Name",
-            "retrival_value": "_name",
+            "retrieval_value": "_name",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="FRAMEWORKS",
@@ -917,11 +930,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Last Modified",
-            "retrival_value": "lastModified",
+            "retrieval_value": "lastModified",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="FRAMEWORKS",
@@ -930,11 +943,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Obtained From",
-            "retrival_value": "obtained_from",
+            "retrieval_value": "obtained_from",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="FRAMEWORKS",
@@ -943,11 +956,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Location",
-            "retrival_value": "path",
+            "retrieval_value": "path",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="FRAMEWORKS",
@@ -956,11 +969,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Private",
-            "retrival_value": "private_framework",
+            "retrieval_value": "private_framework",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="FRAMEWORKS",
@@ -969,11 +982,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Version",
-            "retrival_value": "version",
+            "retrieval_value": "version",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="FRAMEWORKS",
@@ -982,11 +995,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Name",
-            "retrival_value": "Chipset Model:\\s*(.*)",
+            "retrieval_value": "Chipset Model:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GRAPHIC/DISPLAY",
@@ -995,11 +1008,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Type",
-            "retrival_value": "Type:\\s*(.*)",
+            "retrieval_value": "Type:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GRAPHIC/DISPLAY",
@@ -1008,11 +1021,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Total Number of Cores",
-            "retrival_value": "Total Number of Cores:\\s*(.*)",
+            "retrieval_value": "Total Number of Cores:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GRAPHIC/DISPLAY",
@@ -1021,11 +1034,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Resolution:",
-            "retrival_value": "Resolution:\\s*(.*)",
+            "retrieval_value": "Resolution:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GRAPHIC/DISPLAY",
@@ -1034,11 +1047,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Vendor",
-            "retrival_value": "Vendor:\\s*(.*)",
+            "retrieval_value": "Vendor:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GRAPHIC/DISPLAY",
@@ -1047,11 +1060,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Real Name",
-            "retrival_value": "RealName:\\s*(.*)",
+            "retrieval_value": "RealName:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GROUPS",
@@ -1060,11 +1073,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Record Name",
-            "retrival_value": "RecordName:\\s*(.*)",
+            "retrieval_value": "RecordName:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GROUPS",
@@ -1073,11 +1086,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Record Type",
-            "retrival_value": "RecordType:\\s*(.*)",
+            "retrieval_value": "RecordType:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GROUPS",
@@ -1086,11 +1099,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Primary Group ID",
-            "retrival_value": "PrimaryGroupID:\\s*(.*)",
+            "retrieval_value": "PrimaryGroupID:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GROUPS",
@@ -1099,11 +1112,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Group Membership",
-            "retrival_value": "GroupMembership:\\s*(.*)",
+            "retrieval_value": "GroupMembership:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="GROUPS",
@@ -1112,11 +1125,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Model name",
-            "retrival_value": "Model Name:\\s*(.*)",
+            "retrieval_value": "Model Name:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -1125,11 +1138,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Model identifier",
-            "retrival_value": "Model identifier:\\s*(.*)",
+            "retrieval_value": "Model identifier:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -1138,11 +1151,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Model number",
-            "retrival_value": "Model Number:\\s*(.*)",
+            "retrieval_value": "Model Number:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -1151,11 +1164,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "System firmware version",
-            "retrival_value": "System Firmware Version:\\s*(.*)|Boot ROM Version:\\s*(.*)",
+            "retrieval_value": "System Firmware Version:\\s*(.*)|Boot ROM Version:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -1164,11 +1177,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "OS Loader Version",
-            "retrival_value": "OS Loader Version:\\s*(.*)|SMC Version \\(system\\):\\s*(.*)",
+            "retrieval_value": "OS Loader Version:\\s*(.*)|SMC Version \\(system\\):\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -1177,11 +1190,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Serial Number (system)",
-            "retrival_value": "Serial Number \\(system\\):\\s*(.*)",
+            "retrieval_value": "Serial Number \\(system\\):\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -1190,11 +1203,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Hardware UUID",
-            "retrival_value": "Hardware UUID:\\s*(.*)",
+            "retrieval_value": "Hardware UUID:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -1203,11 +1216,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Provisioning UDID",
-            "retrival_value": "Provisioning UDID:\\s*(.*)",
+            "retrieval_value": "Provisioning UDID:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -1216,11 +1229,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Memory",
-            "retrival_value": "SPMemoryDataType",
+            "retrieval_value": "SPMemoryDataType",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
@@ -1229,11 +1242,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Type",
-            "retrival_value": "dimm_type",
+            "retrieval_value": "dimm_type",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
@@ -1242,11 +1255,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Manufacturer",
-            "retrival_value": "dimm_manufacturer",
+            "retrieval_value": "dimm_manufacturer",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
@@ -1255,11 +1268,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Name",
-            "retrival_value": "_name",
+            "retrieval_value": "_name",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
@@ -1268,11 +1281,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "MAC Address",
-            "retrival_value": "MAC Address",
+            "retrieval_value": "MAC Address",
             "override_target": True,
             "new_target": "system_profiler SPNetworkDataType -json",
-            "retrival_method": "BASH",
-            "retrival_output": "JSON",
+            "retrieval_method": "BASH",
+            "retrieval_output": "JSON",
             "options": {"submap": "Ethernet"},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
@@ -1281,11 +1294,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Hardware",
-            "retrival_value": "hardware",
+            "retrieval_value": "hardware",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
@@ -1294,7 +1307,20 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Interface",
-            "retrival_value": "interface",
+            "retrieval_value": "interface",
+            "override_target": False,
+            "new_target": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
+            "options": None,
+            "section": apps.get_model("section", "Section").objects.get(
+                name="NETWORKS",
+                template=apps.get_model("template", "Template").objects.get(os="MAC"),
+            ),
+        },
+        {
+            "name": "IPv4",
+            "retrival_value": "IPv4",
             "override_target": False,
             "new_target": None,
             "retrival_method": None,
@@ -1306,25 +1332,38 @@ def create_default_macos_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "Config Method",
+            "name": "Config method",
             "retrival_value": "ConfigMethod",
-            "override_target": True,
-            "new_target": "system_profiler SPNetworkDataType -json",
-            "retrival_method": "BASH",
-            "retrival_output": "JSON",
-            "options": {"submap": "IPv4"},
+            "override_target": False,
+            "new_target": None,
+            "retrival_method": None,
+            "retrival_output": None,
+            "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
             ),
         },
         {
-            "name": "Type",
-            "retrival_value": "type",
+            "name": "dhcp",
+            "retrival_value": "dhcp",
             "override_target": False,
             "new_target": None,
             "retrival_method": None,
             "retrival_output": None,
+            "options": None,
+            "section": apps.get_model("section", "Section").objects.get(
+                name="NETWORKS",
+                template=apps.get_model("template", "Template").objects.get(os="MAC"),
+            ),
+        },
+        {
+            "name": "type",
+            "retrival_value": "type",
+            "override_target": False,
+            "new_target": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
@@ -1333,11 +1372,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "DHCP Domain Name",
-            "retrival_value": "dhcp_domain_name",
+            "retrieval_value": "dhcp_domain_name",
             "override_target": True,
             "new_target": "system_profiler SPNetworkDataType -json",
-            "retrival_method": "BASH",
-            "retrival_output": "JSON",
+            "retrieval_method": "BASH",
+            "retrieval_output": "JSON",
             "options": {"submap": "dhcp"},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
@@ -1359,11 +1398,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "DHCP Routers",
-            "retrival_value": "dhcp_routers",
+            "retrieval_value": "dhcp_routers",
             "override_target": True,
             "new_target": "system_profiler SPNetworkDataType -json",
-            "retrival_method": "BASH",
-            "retrival_output": "JSON",
+            "retrieval_method": "BASH",
+            "retrieval_output": "JSON",
             "options": {"submap": "dhcp"},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
@@ -1385,11 +1424,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Name",
-            "retrival_value": "_name",
+            "retrieval_value": "_name",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NVME",
@@ -1398,11 +1437,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "BSD Name",
-            "retrival_value": "bsd_name",
+            "retrieval_value": "bsd_name",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NVME",
@@ -1411,11 +1450,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Capacity",
-            "retrival_value": "size",
+            "retrieval_value": "size",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NVME",
@@ -1424,11 +1463,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Model",
-            "retrival_value": "device_model",
+            "retrieval_value": "device_model",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NVME",
@@ -1437,11 +1476,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Removable Media",
-            "retrival_value": "removable_media",
+            "retrieval_value": "removable_media",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NVME",
@@ -1450,11 +1489,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "System version",
-            "retrival_value": "System Version:\\s*(.*)",
+            "retrieval_value": "System Version:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
@@ -1463,11 +1502,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Kernel version",
-            "retrival_value": "Kernel Version:\\s*(.*)",
+            "retrieval_value": "Kernel Version:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
@@ -1476,11 +1515,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Boot volume",
-            "retrival_value": "Boot Volume:\\s*(.*)",
+            "retrieval_value": "Boot Volume:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
@@ -1489,11 +1528,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Boot mode",
-            "retrival_value": "Boot Mode:\\s*(.*)",
+            "retrieval_value": "Boot Mode:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
@@ -1502,11 +1541,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Computer name",
-            "retrival_value": "Computer Name:\\s*(.*)",
+            "retrieval_value": "Computer Name:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
@@ -1515,11 +1554,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "User name",
-            "retrival_value": "User Name:\\s*(.*)",
+            "retrieval_value": "User Name:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
@@ -1528,11 +1567,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Secure virtual memory",
-            "retrival_value": "Secure Virtual Memory:\\s*(.*)",
+            "retrieval_value": "Secure Virtual Memory:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
@@ -1541,11 +1580,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "System integrity protection",
-            "retrival_value": "System Integrity Protection:\\s*(.*)",
+            "retrieval_value": "System Integrity Protection:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
@@ -1554,11 +1593,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Time since boot",
-            "retrival_value": "Time since boot:\\s*(.*)",
+            "retrieval_value": "Time since boot:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="OPERATING_SYSTEM",
@@ -1567,11 +1606,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Name",
-            "retrival_value": "_name",
+            "retrieval_value": "_name",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
@@ -1580,11 +1619,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Added",
-            "retrival_value": "creationDate",
+            "retrieval_value": "creationDate",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
@@ -1593,11 +1632,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Printer server",
-            "retrival_value": "printserver",
+            "retrieval_value": "printserver",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
@@ -1606,11 +1645,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Status",
-            "retrival_value": "status",
+            "retrieval_value": "status",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
@@ -1619,11 +1658,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Driver version",
-            "retrival_value": "driverversion",
+            "retrieval_value": "driverversion",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
@@ -1632,11 +1671,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Default",
-            "retrival_value": "default",
+            "retrieval_value": "default",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
@@ -1645,11 +1684,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "URI",
-            "retrival_value": "uri",
+            "retrieval_value": "uri",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
@@ -1658,11 +1697,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Automounted",
-            "retrival_value": "spnetworkvolume_automounted",
+            "retrieval_value": "spnetworkvolume_automounted",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
@@ -1671,11 +1710,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Name",
-            "retrival_value": "_name",
+            "retrieval_value": "_name",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
@@ -1684,11 +1723,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Mount Point",
-            "retrival_value": "spnetworkvolume_fsmtnonname",
+            "retrieval_value": "spnetworkvolume_fsmtnonname",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
@@ -1697,11 +1736,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Mounted From",
-            "retrival_value": "spnetworkvolume_mntfromname",
+            "retrieval_value": "spnetworkvolume_mntfromname",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
@@ -1710,11 +1749,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Type",
-            "retrival_value": "spnetworkvolume_fstypename",
+            "retrieval_value": "spnetworkvolume_fstypename",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
@@ -1723,11 +1762,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Name",
-            "retrival_value": "_name",
+            "retrieval_value": "_name",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
@@ -1736,11 +1775,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Last Modified",
-            "retrival_value": "lastModified",
+            "retrieval_value": "lastModified",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
@@ -1749,11 +1788,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Obtained From",
-            "retrival_value": "obtained_from",
+            "retrieval_value": "obtained_from",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
@@ -1762,11 +1801,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Location",
-            "retrival_value": "path",
+            "retrieval_value": "path",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
@@ -1775,11 +1814,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Version",
-            "retrival_value": "version",
+            "retrieval_value": "version",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
@@ -1788,11 +1827,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Name",
-            "retrival_value": "_name",
+            "retrieval_value": "_name",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
@@ -1801,11 +1840,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "BSD Name",
-            "retrival_value": "bsd_name",
+            "retrieval_value": "bsd_name",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
@@ -1814,11 +1853,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Device Name",
-            "retrival_value": "device_name",
+            "retrieval_value": "device_name",
             "override_target": True,
             "new_target": "system_profiler SPStorageDataType -json",
-            "retrival_method": "BASH",
-            "retrival_output": "JSON",
+            "retrieval_method": "BASH",
+            "retrieval_output": "JSON",
             "options": {"submap": "physical_drive"},
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
@@ -1827,11 +1866,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "File System",
-            "retrival_value": "file_system",
+            "retrieval_value": "file_system",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
@@ -1840,11 +1879,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Free space in bytes",
-            "retrival_value": "free_space_in_bytes",
+            "retrieval_value": "free_space_in_bytes",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
@@ -1853,11 +1892,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Writable",
-            "retrival_value": "writable",
+            "retrieval_value": "writable",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
@@ -1866,11 +1905,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Size in bytes",
-            "retrival_value": "size_in_bytes",
+            "retrieval_value": "size_in_bytes",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
@@ -1879,11 +1918,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Volume UUID",
-            "retrival_value": "volume_uuid",
+            "retrieval_value": "volume_uuid",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
@@ -1892,11 +1931,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Medium Type",
-            "retrival_value": "medium_type",
+            "retrieval_value": "medium_type",
             "override_target": True,
             "new_target": "system_profiler SPStorageDataType -json",
-            "retrival_method": "BASH",
-            "retrival_output": "JSON",
+            "retrieval_method": "BASH",
+            "retrieval_output": "JSON",
             "options": {"submap": "physical_drive"},
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
@@ -1905,11 +1944,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Is Internal Disk",
-            "retrival_value": "is_internal_disk",
+            "retrieval_value": "is_internal_disk",
             "override_target": True,
             "new_target": "system_profiler SPStorageDataType -json",
-            "retrival_method": "BASH",
-            "retrival_output": "JSON",
+            "retrieval_method": "BASH",
+            "retrieval_output": "JSON",
             "options": {"submap": "physical_drive"},
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
@@ -1918,11 +1957,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Name",
-            "retrival_value": "_name",
+            "retrieval_value": "_name",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USB",
@@ -1934,8 +1973,8 @@ def create_default_macos_fields(apps, schema_editor):
             "retrival_value": "host_controller",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USB",
@@ -1944,11 +1983,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "PCI Device",
-            "retrival_value": "pci_device",
+            "retrieval_value": "pci_device",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USB",
@@ -1957,11 +1996,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "PCI Revision",
-            "retrival_value": "pci_revision",
+            "retrieval_value": "pci_revision",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USB",
@@ -1973,8 +2012,8 @@ def create_default_macos_fields(apps, schema_editor):
             "retrival_value": "pci_vendor",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USB",
@@ -1983,11 +2022,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Real Name",
-            "retrival_value": "RealName:\\s*(.*)",
+            "retrieval_value": "RealName:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USERS",
@@ -1996,11 +2035,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Record Name",
-            "retrival_value": "RecordName:\\s*(.*)",
+            "retrieval_value": "RecordName:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USERS",
@@ -2009,11 +2048,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Record Type",
-            "retrival_value": "RecordType:\\s*(.*)",
+            "retrieval_value": "RecordType:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USERS",
@@ -2022,11 +2061,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Primary Group ID",
-            "retrival_value": "PrimaryGroupID:\\s*(.*)",
+            "retrieval_value": "PrimaryGroupID:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USERS",
@@ -2035,11 +2074,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Unique ID",
-            "retrival_value": "UniqueID:\\s*(.*)",
+            "retrieval_value": "UniqueID:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USERS",
@@ -2048,11 +2087,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "User Shell",
-            "retrival_value": "UserShell:\\s*(.*)",
+            "retrieval_value": "UserShell:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USERS",
@@ -2061,11 +2100,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Network Name",
-            "retrival_value": "(\\w+)",
+            "retrieval_value": "(\\w+)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="WI_FI",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -2073,11 +2112,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Status",
-            "retrival_value": "(Current)",
+            "retrieval_value": "(Current)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="WI_FI",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -2085,11 +2124,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "PHY Mode",
-            "retrival_value": "PHY Mode:\\s*(.*)",
+            "retrieval_value": "PHY Mode:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="WI_FI",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -2097,11 +2136,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Channel",
-            "retrival_value": "Channel:\\s*(.*)",
+            "retrieval_value": "Channel:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="WI_FI",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -2109,11 +2148,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Network Type",
-            "retrival_value": "Network Type:\\s*(.*)",
+            "retrieval_value": "Network Type:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="WI_FI",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -2121,11 +2160,11 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Security",
-            "retrival_value": "Security:\\s*(.*)",
+            "retrieval_value": "Security:\\s*(.*)",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="WI_FI",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -2135,7 +2174,16 @@ def create_default_macos_fields(apps, schema_editor):
 
     Field = apps.get_model("field", "Field")
 
+    current_section = None
+    order = 1
     for field in fields:
+        section_obj = field["section"]
+        section_name = section_obj.name if hasattr(section_obj, "name") else section_obj
+        if section_name != current_section:
+            current_section = section_name
+            order = 1
+        field["order"] = order
+        order += 1
         try:
             Field.objects.create(**field)
         except Exception as e:

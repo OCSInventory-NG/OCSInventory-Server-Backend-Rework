@@ -7,11 +7,11 @@ def create_default_legacy_fields(apps, schema_editor):
     fields = [
         {
             "name": "KEY NAME",
-            "retrival_value": "KEYNAME",
+            "retrieval_value": "KEYNAME",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ACCOUNTINFO",
@@ -20,11 +20,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "KEY VALUE",
-            "retrival_value": "KEYVALUE",
+            "retrieval_value": "KEYVALUE",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="ACCOUNTINFO",
@@ -33,11 +33,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "CHEMISTRY",
-            "retrival_value": "CHEMISTRY",
+            "retrieval_value": "CHEMISTRY",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
@@ -46,11 +46,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "CYCLES",
-            "retrival_value": "CYCLES",
+            "retrieval_value": "CYCLES",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
@@ -59,11 +59,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrival_value": "DESCRIPTION",
+            "retrieval_value": "DESCRIPTION",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
@@ -72,11 +72,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "DESIGN CAPACITY",
-            "retrival_value": "DESIGNCAPACITY",
+            "retrieval_value": "DESIGNCAPACITY",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
@@ -85,11 +85,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "DESIGN VOLTAGE",
-            "retrival_value": "DESIGNVOLTAGE",
+            "retrieval_value": "DESIGNVOLTAGE",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
@@ -98,11 +98,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "ESTIMATED CHARGE REMAINING",
-            "retrival_value": "ESTIMATEDCHARGEREMAINING",
+            "retrieval_value": "ESTIMATEDCHARGEREMAINING",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
@@ -111,11 +111,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrival_value": "MANUFACTURER",
+            "retrieval_value": "MANUFACTURER",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
@@ -124,11 +124,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrival_value": "NAME",
+            "retrieval_value": "NAME",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
@@ -137,11 +137,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "SERIAL NUMBER",
-            "retrival_value": "SERIALNUMBER",
+            "retrieval_value": "SERIALNUMBER",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
@@ -150,11 +150,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "STATUS",
-            "retrival_value": "STATUS",
+            "retrieval_value": "STATUS",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
@@ -163,11 +163,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrival_value": "SMANUFACTURER",
+            "retrieval_value": "SMANUFACTURER",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
@@ -176,11 +176,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "MODEL",
-            "retrival_value": "SMODEL",
+            "retrieval_value": "SMODEL",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
@@ -189,11 +189,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "SERIAL NUMBER",
-            "retrival_value": "SSN",
+            "retrieval_value": "SSN",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
@@ -202,11 +202,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrival_value": "TYPE",
+            "retrieval_value": "TYPE",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
@@ -215,11 +215,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "BIOS MANUFACTURER",
-            "retrival_value": "BMANUFACTURER",
+            "retrieval_value": "BMANUFACTURER",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
@@ -228,11 +228,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "BIOS VERSION",
-            "retrival_value": "BVERSION",
+            "retrieval_value": "BVERSION",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
@@ -241,11 +241,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "BIOS DATE",
-            "retrival_value": "BDATE",
+            "retrieval_value": "BDATE",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
@@ -254,11 +254,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "ASSET TAG",
-            "retrival_value": "ASSETTAG",
+            "retrieval_value": "ASSETTAG",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
@@ -267,11 +267,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "MOTHERBOARD MANUFACTURER",
-            "retrival_value": "MMANUFACTURER",
+            "retrieval_value": "MMANUFACTURER",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
@@ -280,11 +280,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "MOTHERBOARD MODEL",
-            "retrival_value": "MMODEL",
+            "retrieval_value": "MMODEL",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
@@ -293,11 +293,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "MOTHERBOARD SERIAL NUMBER",
-            "retrival_value": "MSN",
+            "retrieval_value": "MSN",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
@@ -306,11 +306,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrival_value": "MANUFACTURER",
+            "retrieval_value": "MANUFACTURER",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
@@ -319,11 +319,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrival_value": "NAME",
+            "retrieval_value": "NAME",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
@@ -332,11 +332,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "CAPTION",
-            "retrival_value": "CAPTION",
+            "retrieval_value": "CAPTION",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
@@ -345,11 +345,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrival_value": "DESCRIPTION",
+            "retrieval_value": "DESCRIPTION",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
@@ -358,11 +358,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "VERSION",
-            "retrival_value": "VERSION",
+            "retrieval_value": "VERSION",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
@@ -371,11 +371,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrival_value": "TYPE",
+            "retrieval_value": "TYPE",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
@@ -384,11 +384,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrival_value": "MANUFACTURER",
+            "retrieval_value": "MANUFACTURER",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
@@ -397,11 +397,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrival_value": "TYPE",
+            "retrieval_value": "TYPE",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
@@ -410,11 +410,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "SERIAL NUMBER",
-            "retrival_value": "SERIALNUMBER",
+            "retrieval_value": "SERIALNUMBER",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
@@ -423,11 +423,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "FREQUENCY",
-            "retrival_value": "SPEED",
+            "retrieval_value": "SPEED",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
@@ -436,11 +436,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "CORES NUMBER",
-            "retrival_value": "CORES",
+            "retrieval_value": "CORES",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
@@ -449,11 +449,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "L2 CACHE SIZE",
-            "retrival_value": "L2CACHESIZE",
+            "retrieval_value": "L2CACHESIZE",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
@@ -462,11 +462,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "ARCHICTECTURE",
-            "retrival_value": "CPUARCH",
+            "retrieval_value": "CPUARCH",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
@@ -475,11 +475,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "DATA WIDTH",
-            "retrival_value": "DATA_WIDTH",
+            "retrieval_value": "DATA_WIDTH",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
@@ -488,11 +488,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "CURRENT ADDRESS WIDTH",
-            "retrival_value": "CURRENT_ADDRESS_WIDTH",
+            "retrieval_value": "CURRENT_ADDRESS_WIDTH",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
@@ -501,11 +501,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "LOGICAL CPUS",
-            "retrival_value": "LOGICAL_CPUS",
+            "retrieval_value": "LOGICAL_CPUS",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
@@ -514,11 +514,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "VOLTAGE",
-            "retrival_value": "VOLTAGE",
+            "retrieval_value": "VOLTAGE",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
@@ -527,11 +527,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "CURRENT SPEED",
-            "retrival_value": "CURRENT_SPEED",
+            "retrieval_value": "CURRENT_SPEED",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
@@ -540,11 +540,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "SOCKET TYPE",
-            "retrival_value": "SOCKET",
+            "retrieval_value": "SOCKET",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
@@ -553,11 +553,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "LETTER",
-            "retrival_value": "LETTER",
+            "retrieval_value": "LETTER",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="DRIVES",
@@ -566,11 +566,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrival_value": "TYPE",
+            "retrieval_value": "TYPE",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="DRIVES",
@@ -579,11 +579,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "FILE SYSTEM",
-            "retrival_value": "FILESYSTEM",
+            "retrieval_value": "FILESYSTEM",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="DRIVES",
@@ -592,11 +592,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "TOTAL (MB)",
-            "retrival_value": "TOTAL",
+            "retrieval_value": "TOTAL",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="DRIVES",
@@ -605,11 +605,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "FREE (MB)",
-            "retrival_value": "FREE",
+            "retrieval_value": "FREE",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="DRIVES",
@@ -618,11 +618,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "VOLUMN",
-            "retrival_value": "VOLUMN",
+            "retrieval_value": "VOLUMN",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="DRIVES",
@@ -631,11 +631,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrival_value": "NAME",
+            "retrieval_value": "NAME",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -644,11 +644,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "DOMAIN",
-            "retrival_value": "WORKGROUP",
+            "retrieval_value": "WORKGROUP",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -657,11 +657,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "OPERATING SYSTEM",
-            "retrival_value": "OSNAME",
+            "retrieval_value": "OSNAME",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -670,11 +670,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "OS VERSION",
-            "retrival_value": "OSVERSION",
+            "retrieval_value": "OSVERSION",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -683,11 +683,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "SERVICE PACK",
-            "retrival_value": "OSCOMMENTS",
+            "retrieval_value": "OSCOMMENTS",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -696,11 +696,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "CPU TYPE",
-            "retrival_value": "PROCESSORT",
+            "retrieval_value": "PROCESSORT",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -709,11 +709,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "CPU (MHz)",
-            "retrival_value": "PROCESSORS",
+            "retrieval_value": "PROCESSORS",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -722,11 +722,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "CPU NUMBER",
-            "retrival_value": "PROCESSORN",
+            "retrieval_value": "PROCESSORN",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -735,11 +735,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "MEMORY",
-            "retrival_value": "MEMORY",
+            "retrieval_value": "MEMORY",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -748,11 +748,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "SWAP",
-            "retrival_value": "SWAP",
+            "retrieval_value": "SWAP",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -761,11 +761,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "IP ADDRESS",
-            "retrival_value": "IPADDR",
+            "retrieval_value": "IPADDR",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -774,11 +774,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "DNS",
-            "retrival_value": "DNS",
+            "retrieval_value": "DNS",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -787,11 +787,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "DEFAULT GATEWAY",
-            "retrival_value": "DEFAULTGATEWAY",
+            "retrieval_value": "DEFAULTGATEWAY",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -800,11 +800,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "QUALITY",
-            "retrival_value": "QUALITY",
+            "retrieval_value": "QUALITY",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -813,11 +813,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "FIDELITY",
-            "retrival_value": "FIDELITY",
+            "retrieval_value": "FIDELITY",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -826,11 +826,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "CONNECTED USER",
-            "retrival_value": "USERID",
+            "retrieval_value": "USERID",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -839,11 +839,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrival_value": "DESCRIPTION",
+            "retrieval_value": "DESCRIPTION",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -852,11 +852,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "COMPANY",
-            "retrival_value": "WINCOMPANY",
+            "retrieval_value": "WINCOMPANY",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -865,11 +865,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "OWNER",
-            "retrival_value": "WINOWNER",
+            "retrieval_value": "WINOWNER",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -878,11 +878,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "WINDOWS LICENSE",
-            "retrival_value": "WINPRODID",
+            "retrieval_value": "WINPRODID",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -891,11 +891,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "WINDOWS KEY",
-            "retrival_value": "WINPRODKEY",
+            "retrieval_value": "WINPRODKEY",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -904,11 +904,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "USER AGENT",
-            "retrival_value": "USERAGENT",
+            "retrieval_value": "USERAGENT",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -917,11 +917,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "IP SOURCE",
-            "retrival_value": "IPSRC",
+            "retrieval_value": "IPSRC",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -930,11 +930,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "UUID",
-            "retrival_value": "UUID",
+            "retrieval_value": "UUID",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -943,11 +943,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "ARCHITECTURE",
-            "retrival_value": "ARCH",
+            "retrieval_value": "ARCH",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
@@ -956,11 +956,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrival_value": "TYPE",
+            "retrieval_value": "TYPE",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="INPUTS",
@@ -969,11 +969,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrival_value": "MANUFACTURER",
+            "retrieval_value": "MANUFACTURER",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="INPUTS",
@@ -982,11 +982,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "CAPTION",
-            "retrival_value": "CAPTION",
+            "retrieval_value": "CAPTION",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="INPUTS",
@@ -995,11 +995,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrival_value": "DESCRIPTION",
+            "retrieval_value": "DESCRIPTION",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="INPUTS",
@@ -1008,11 +1008,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "INTERFACE",
-            "retrival_value": "INTERFACE",
+            "retrieval_value": "INTERFACE",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="INPUTS",
@@ -1021,11 +1021,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "ID GROUP",
-            "retrival_value": "ID_GROUP",
+            "retrieval_value": "ID_GROUP",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="LOCAL_GROUPS",
@@ -1034,11 +1034,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "MEMBER",
-            "retrival_value": "MEMBER",
+            "retrieval_value": "MEMBER",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="LOCAL_GROUPS",
@@ -1047,11 +1047,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrival_value": "NAME",
+            "retrieval_value": "NAME",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="LOCAL_GROUPS",
@@ -1060,11 +1060,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "USER ID",
-            "retrival_value": "ID_USER",
+            "retrieval_value": "ID_USER",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="LOCAL_USERS",
@@ -1073,11 +1073,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "GROUP ID",
-            "retrival_value": "GID",
+            "retrieval_value": "GID",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="LOCAL_USERS",
@@ -1086,11 +1086,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrival_value": "NAME",
+            "retrieval_value": "NAME",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="LOCAL_USERS",
@@ -1099,11 +1099,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "HOME",
-            "retrival_value": "HOME",
+            "retrieval_value": "HOME",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="LOCAL_USERS",
@@ -1112,11 +1112,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "SHELL",
-            "retrival_value": "SHELL",
+            "retrieval_value": "SHELL",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="LOCAL_USERS",
@@ -1125,11 +1125,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "LOGIN",
-            "retrival_value": "LOGIN",
+            "retrieval_value": "LOGIN",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="LOCAL_USERS",
@@ -1138,11 +1138,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "MEMBER",
-            "retrival_value": "MEMBER",
+            "retrieval_value": "MEMBER",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="LOCAL_USERS",
@@ -1151,11 +1151,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "CAPTION",
-            "retrival_value": "CAPTION",
+            "retrieval_value": "CAPTION",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
@@ -1164,11 +1164,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrival_value": "DESCRIPTION",
+            "retrieval_value": "DESCRIPTION",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
@@ -1177,11 +1177,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "CAPACITY",
-            "retrival_value": "CAPACITY",
+            "retrieval_value": "CAPACITY",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
@@ -1190,11 +1190,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "PURPOSE",
-            "retrival_value": "PURPOSE",
+            "retrieval_value": "PURPOSE",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
@@ -1203,11 +1203,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrival_value": "TYPE",
+            "retrieval_value": "TYPE",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
@@ -1216,11 +1216,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "SPEED",
-            "retrival_value": "SPEED",
+            "retrieval_value": "SPEED",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
@@ -1229,11 +1229,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "SLOT NUMBER",
-            "retrival_value": "NUMSLOTS",
+            "retrieval_value": "NUMSLOTS",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
@@ -1242,11 +1242,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "SERIAL NUMBER",
-            "retrival_value": "SERIALNUMBER",
+            "retrieval_value": "SERIALNUMBER",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
@@ -1255,11 +1255,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrival_value": "NAME",
+            "retrieval_value": "NAME",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MODEMS",
@@ -1268,11 +1268,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "MODEL",
-            "retrival_value": "MODEL",
+            "retrieval_value": "MODEL",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MODEMS",
@@ -1281,11 +1281,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrival_value": "DESCRIPTION",
+            "retrieval_value": "DESCRIPTION",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MODEMS",
@@ -1294,11 +1294,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrival_value": "TYPE",
+            "retrieval_value": "TYPE",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MODEMS",
@@ -1307,11 +1307,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrival_value": "MANUFACTURER",
+            "retrieval_value": "MANUFACTURER",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MONITORS",
@@ -1320,11 +1320,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "CAPTION",
-            "retrival_value": "CAPTION",
+            "retrieval_value": "CAPTION",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MONITORS",
@@ -1333,11 +1333,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURED ON (WEEK/YEAR)",
-            "retrival_value": "DESCRIPTION",
+            "retrieval_value": "DESCRIPTION",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MONITORS",
@@ -1346,11 +1346,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrival_value": "TYPE",
+            "retrieval_value": "TYPE",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MONITORS",
@@ -1359,11 +1359,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "SERIAL NUMBER",
-            "retrival_value": "SERIAL",
+            "retrieval_value": "SERIAL",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="MONITORS",
@@ -1372,11 +1372,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrival_value": "DESCRIPTION",
+            "retrieval_value": "DESCRIPTION",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
@@ -1385,11 +1385,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrival_value": "TYPE",
+            "retrieval_value": "TYPE",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
@@ -1398,11 +1398,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "SPEED",
-            "retrival_value": "SPEED",
+            "retrieval_value": "SPEED",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
@@ -1411,11 +1411,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "MTU",
-            "retrival_value": "MTU",
+            "retrieval_value": "MTU",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
@@ -1424,11 +1424,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "MAC ADDRESS",
-            "retrival_value": "MACADDR",
+            "retrieval_value": "MACADDR",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
@@ -1437,11 +1437,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "STATUS",
-            "retrival_value": "STATUS",
+            "retrieval_value": "STATUS",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
@@ -1450,11 +1450,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "IP ADDRESS",
-            "retrival_value": "IPADDRESS",
+            "retrieval_value": "IPADDRESS",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
@@ -1463,11 +1463,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "NETMASK",
-            "retrival_value": "IPMASK",
+            "retrieval_value": "IPMASK",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
@@ -1476,11 +1476,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "GATEWAY",
-            "retrival_value": "IPGATEWAY",
+            "retrieval_value": "IPGATEWAY",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
@@ -1489,11 +1489,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "NETWORK NUMBER",
-            "retrival_value": "IPSUBNET",
+            "retrieval_value": "IPSUBNET",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
@@ -1502,11 +1502,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "DHCP IP",
-            "retrival_value": "IPDHCP",
+            "retrieval_value": "IPDHCP",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
@@ -1515,11 +1515,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrival_value": "TYPE",
+            "retrieval_value": "TYPE",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PORTS",
@@ -1528,11 +1528,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrival_value": "NAME",
+            "retrieval_value": "NAME",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PORTS",
@@ -1541,11 +1541,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "CAPTION",
-            "retrival_value": "CAPTION",
+            "retrieval_value": "CAPTION",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PORTS",
@@ -1554,11 +1554,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrival_value": "DESCRIPTION",
+            "retrieval_value": "DESCRIPTION",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PORTS",
@@ -1567,11 +1567,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrival_value": "NAME",
+            "retrieval_value": "NAME",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
@@ -1580,11 +1580,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "DRIVER",
-            "retrival_value": "DRIVER",
+            "retrieval_value": "DRIVER",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
@@ -1593,11 +1593,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "PORT",
-            "retrival_value": "PORT",
+            "retrieval_value": "PORT",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
@@ -1606,11 +1606,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrival_value": "DESCRIPTION",
+            "retrieval_value": "DESCRIPTION",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
@@ -1619,11 +1619,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "SERVER PRINTER SHARING",
-            "retrival_value": "SERVERNAME",
+            "retrieval_value": "SERVERNAME",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
@@ -1632,11 +1632,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "SHARING PRINTER ON SERVER",
-            "retrival_value": "SHARENAME",
+            "retrieval_value": "SHARENAME",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
@@ -1645,11 +1645,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "SCREEN (HORIZONTAL/VERTICAL)",
-            "retrival_value": "RESOLUTION",
+            "retrieval_value": "RESOLUTION",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
@@ -1658,11 +1658,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "COMMENT",
-            "retrival_value": "COMMENT",
+            "retrieval_value": "COMMENT",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
@@ -1671,11 +1671,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "SHARED",
-            "retrival_value": "SHARED",
+            "retrieval_value": "SHARED",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
@@ -1684,11 +1684,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "LOCAL/NETWORKS",
-            "retrival_value": "NETWORK",
+            "retrieval_value": "NETWORK",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
@@ -1697,11 +1697,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrival_value": "NAME",
+            "retrieval_value": "NAME",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="REPOSITORY",
@@ -1710,11 +1710,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "BASE URL",
-            "retrival_value": "BASEURL",
+            "retrieval_value": "BASEURL",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="REPOSITORY",
@@ -1723,11 +1723,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrival_value": "NAME",
+            "retrieval_value": "NAME",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
@@ -1736,11 +1736,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrival_value": "DESCRIPTION",
+            "retrieval_value": "DESCRIPTION",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
@@ -1749,11 +1749,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "DESIGNATION",
-            "retrival_value": "DESIGNATION",
+            "retrieval_value": "DESIGNATION",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
@@ -1762,11 +1762,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "PURPOSE",
-            "retrival_value": "PURPOSE",
+            "retrieval_value": "PURPOSE",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
@@ -1775,11 +1775,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "STATUS",
-            "retrival_value": "STATUS",
+            "retrieval_value": "STATUS",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
@@ -1788,11 +1788,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrival_value": "NAME",
+            "retrieval_value": "NAME",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
@@ -1801,11 +1801,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "PUBLISHER",
-            "retrival_value": "PUBLISHER",
+            "retrieval_value": "PUBLISHER",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
@@ -1814,11 +1814,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "VERSION",
-            "retrival_value": "VERSION",
+            "retrieval_value": "VERSION",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
@@ -1827,11 +1827,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "FOLDER",
-            "retrival_value": "FOLDER",
+            "retrieval_value": "FOLDER",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
@@ -1840,11 +1840,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "COMMENTS",
-            "retrival_value": "COMMENTS",
+            "retrieval_value": "COMMENTS",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
@@ -1853,11 +1853,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "FILENAME",
-            "retrival_value": "FILENAME",
+            "retrieval_value": "FILENAME",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
@@ -1866,11 +1866,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "FILESIZE",
-            "retrival_value": "FILESIZE",
+            "retrieval_value": "FILESIZE",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
@@ -1879,11 +1879,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "GUID",
-            "retrival_value": "GUID",
+            "retrieval_value": "GUID",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
@@ -1892,11 +1892,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "LANGUAGE",
-            "retrival_value": "LANGUAGE",
+            "retrieval_value": "LANGUAGE",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
@@ -1905,11 +1905,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "INSTALLATION DATE",
-            "retrival_value": "INSTALLDATE",
+            "retrieval_value": "INSTALLDATE",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
@@ -1918,11 +1918,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "DATA WIDTH",
-            "retrival_value": "BITSWIDTH",
+            "retrieval_value": "BITSWIDTH",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
@@ -1931,11 +1931,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "SOURCE",
-            "retrival_value": "SOURCE",
+            "retrieval_value": "SOURCE",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
@@ -1944,11 +1944,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "FROM",
-            "retrival_value": "FROM",
+            "retrieval_value": "FROM",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
@@ -1957,11 +1957,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "ARCHITECTURE",
-            "retrival_value": "ARCHITECTURE",
+            "retrieval_value": "ARCHITECTURE",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
@@ -1970,11 +1970,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrival_value": "MANUFACTURER",
+            "retrieval_value": "MANUFACTURER",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOUNDS",
@@ -1983,11 +1983,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrival_value": "NAME",
+            "retrieval_value": "NAME",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOUNDS",
@@ -1996,11 +1996,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrival_value": "DESCRIPTION",
+            "retrieval_value": "DESCRIPTION",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOUNDS",
@@ -2009,11 +2009,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrival_value": "MANUFACTURER",
+            "retrieval_value": "MANUFACTURER",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
@@ -2022,11 +2022,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrival_value": "NAME",
+            "retrieval_value": "NAME",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
@@ -2035,11 +2035,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "MODEL",
-            "retrival_value": "MODEL",
+            "retrieval_value": "MODEL",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
@@ -2048,11 +2048,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrival_value": "DESCRIPTION",
+            "retrieval_value": "DESCRIPTION",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
@@ -2061,11 +2061,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrival_value": "TYPE",
+            "retrieval_value": "TYPE",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
@@ -2074,11 +2074,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "DISK SIZE (MB)",
-            "retrival_value": "DISKSIZE",
+            "retrieval_value": "DISKSIZE",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
@@ -2087,11 +2087,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "SERIAL NUMBER",
-            "retrival_value": "SERIALNUMBER",
+            "retrieval_value": "SERIALNUMBER",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
@@ -2100,11 +2100,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "FIRMWARE",
-            "retrival_value": "FIRMWARE",
+            "retrieval_value": "FIRMWARE",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
@@ -2113,11 +2113,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrival_value": "DESCRIPTION",
+            "retrieval_value": "DESCRIPTION",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USBDEVICES",
@@ -2126,11 +2126,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "INTERFACE",
-            "retrival_value": "INTERFACE",
+            "retrieval_value": "INTERFACE",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USBDEVICES",
@@ -2139,11 +2139,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrival_value": "MANUFACTURER",
+            "retrieval_value": "MANUFACTURER",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USBDEVICES",
@@ -2152,11 +2152,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "SERIAL NUMBER",
-            "retrival_value": "SERIAL",
+            "retrieval_value": "SERIAL",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USBDEVICES",
@@ -2165,11 +2165,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrival_value": "TYPE",
+            "retrieval_value": "TYPE",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="USBDEVICES",
@@ -2178,11 +2178,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrival_value": "NAME",
+            "retrieval_value": "NAME",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="VIDEOS",
@@ -2191,11 +2191,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "CHIPSET",
-            "retrival_value": "CHIPSET",
+            "retrieval_value": "CHIPSET",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="VIDEOS",
@@ -2204,11 +2204,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "MEMORY (MB)",
-            "retrival_value": "MEMORY",
+            "retrieval_value": "MEMORY",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="VIDEOS",
@@ -2217,11 +2217,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "RESOLUTION",
-            "retrival_value": "RESOLUTION",
+            "retrieval_value": "RESOLUTION",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="VIDEOS",
@@ -2230,11 +2230,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrival_value": "NAME",
+            "retrieval_value": "NAME",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="VIRTUALMACHINES",
@@ -2243,11 +2243,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "STATUS",
-            "retrival_value": "STATUS",
+            "retrieval_value": "STATUS",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="VIRTUALMACHINES",
@@ -2256,11 +2256,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "OPERATING SYSTEM",
-            "retrival_value": "SUBSYSTEM",
+            "retrieval_value": "SUBSYSTEM",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="VIRTUALMACHINES",
@@ -2269,11 +2269,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrival_value": "VMID",
+            "retrieval_value": "VMID",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="VIRTUALMACHINES",
@@ -2282,11 +2282,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "UUID",
-            "retrival_value": "UUID",
+            "retrieval_value": "UUID",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="VIRTUALMACHINES",
@@ -2295,11 +2295,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "PROCESSORS",
-            "retrival_value": "VCPU",
+            "retrieval_value": "VCPU",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="VIRTUALMACHINES",
@@ -2308,11 +2308,11 @@ def create_default_legacy_fields(apps, schema_editor):
         },
         {
             "name": "MEMORY",
-            "retrival_value": "MEMORY",
+            "retrieval_value": "MEMORY",
             "override_target": False,
             "new_target": None,
-            "retrival_method": None,
-            "retrival_output": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
             "options": None,
             "section": apps.get_model("section", "Section").objects.get(
                 name="VIRTUALMACHINES",
@@ -2323,7 +2323,16 @@ def create_default_legacy_fields(apps, schema_editor):
 
     Field = apps.get_model("field", "Field")
 
+    current_section = None
+    order = 1
     for field in fields:
+        section_obj = field["section"]
+        section_name = section_obj.name if hasattr(section_obj, "name") else section_obj
+        if section_name != current_section:
+            current_section = section_name
+            order = 1
+        field["order"] = order
+        order += 1
         try:
             Field.objects.create(**field)
         except Exception as e:
