@@ -71,7 +71,7 @@ def create_default_windows_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "DESIGN_CAPACITY",
+            "name": "DESIGN CAPACITY",
             "retrieval_value": "DesignCapacity",
             "override_target": False,
             "new_target": None,
@@ -84,7 +84,7 @@ def create_default_windows_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "DESIGN_VOLTAGE",
+            "name": "DESIGN VOLTAGE",
             "retrieval_value": "DesignVoltage",
             "override_target": False,
             "new_target": None,
@@ -123,7 +123,7 @@ def create_default_windows_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "MANUFACTURER_DATE",
+            "name": "MANUFACTURER DATE",
             "retrieval_value": "ManufacturerDate",
             "override_target": False,
             "new_target": None,
@@ -136,7 +136,7 @@ def create_default_windows_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "MAXIMUM_ERROR",
+            "name": "MAXIMUM ERROR",
             "retrieval_value": "MaxBatteryError",
             "override_target": False,
             "new_target": None,
@@ -162,7 +162,7 @@ def create_default_windows_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "SBDS_VERSION",
+            "name": "SMART BATTERY VERSION",
             "retrieval_value": "SmartBatteryVersion",
             "override_target": False,
             "new_target": None,
@@ -175,7 +175,7 @@ def create_default_windows_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "SERIAL_NUMBER",
+            "name": "SERIAL NUMBER",
             "retrieval_value": "DeviceID",
             "override_target": True,
             "new_target": "Get-WmiObject -ClassName Win32_Battery -Property * | ConvertTo-Json",
@@ -188,34 +188,8 @@ def create_default_windows_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "HOSTNAME",
+            "name": "DNS HOSTNAME",
             "retrieval_value": "DNSHostName",
-            "override_target": True,
-            "new_target": "Get-WmiObject -ClassName Win32_ComputerSystem -Property * | ConvertTo-Json",
-            "retrieval_method": "PW",
-            "retrieval_output": "JSON",
-            "options": {"need_format": False},
-            "section": apps.get_model("section", "Section").objects.get(
-                name="CONTROLLERS",
-                template=apps.get_model("template", "Template").objects.get(os="WIN"),
-            ),
-        },
-        {
-            "name": "MODEL",
-            "retrieval_value": "Model",
-            "override_target": True,
-            "new_target": "Get-WmiObject -ClassName Win32_ComputerSystem -Property * | ConvertTo-Json",
-            "retrieval_method": "PW",
-            "retrieval_output": "JSON",
-            "options": {"need_format": False},
-            "section": apps.get_model("section", "Section").objects.get(
-                name="CONTROLLERS",
-                template=apps.get_model("template", "Template").objects.get(os="WIN"),
-            ),
-        },
-        {
-            "name": "BOOT DEVICE",
-            "retrieval_value": "BootDevice",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -318,7 +292,7 @@ def create_default_windows_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "CURRENT_SPEED",
+            "name": "CURRENT SPEED",
             "retrieval_value": "CurrentClockSpeed",
             "override_target": False,
             "new_target": None,
@@ -331,7 +305,7 @@ def create_default_windows_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "L2_CACHE_SIZE",
+            "name": "L2 CACHE SIZE",
             "retrieval_value": "L2CacheSize",
             "override_target": False,
             "new_target": None,
@@ -357,7 +331,7 @@ def create_default_windows_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "SPEED",
+            "name": "MAX CLOCK SPEED",
             "retrieval_value": "MaxClockSpeed",
             "override_target": False,
             "new_target": None,
@@ -404,7 +378,7 @@ def create_default_windows_fields(apps, schema_editor):
             "retrieval_output": None,
             "options": {},
             "section": apps.get_model("section", "Section").objects.get(
-                name="CURRENT_USER",
+                name="CURRENT USER",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
             ),
         },
@@ -417,7 +391,7 @@ def create_default_windows_fields(apps, schema_editor):
             "retrieval_output": None,
             "options": {},
             "section": apps.get_model("section", "Section").objects.get(
-                name="CURRENT_USER",
+                name="CURRENT USER",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
             ),
         },
@@ -430,12 +404,12 @@ def create_default_windows_fields(apps, schema_editor):
             "retrieval_output": None,
             "options": {},
             "section": apps.get_model("section", "Section").objects.get(
-                name="CURRENT_USER",
+                name="CURRENT USER",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
             ),
         },
         {
-            "name": "USER_ID",
+            "name": "USER ID",
             "retrieval_value": "SID",
             "override_target": False,
             "new_target": None,
@@ -443,7 +417,7 @@ def create_default_windows_fields(apps, schema_editor):
             "retrieval_output": None,
             "options": {},
             "section": apps.get_model("section", "Section").objects.get(
-                name="CURRENT_USER",
+                name="CURRENT USER",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
             ),
         },
@@ -565,21 +539,8 @@ def create_default_windows_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "GROUP_ID",
+            "name": "GROUP ID",
             "retrieval_value": "SID",
-            "override_target": False,
-            "new_target": None,
-            "retrieval_method": None,
-            "retrieval_output": None,
-            "options": {},
-            "section": apps.get_model("section", "Section").objects.get(
-                name="GROUPS",
-                template=apps.get_model("template", "Template").objects.get(os="WIN"),
-            ),
-        },
-        {
-            "name": "MEMBER",
-            "retrieval_value": "null",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -604,7 +565,7 @@ def create_default_windows_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "BIOS_ASSETTAG",
+            "name": "BIOS ASSETTAG",
             "retrieval_value": "SMBIOSAssetTag",
             "override_target": False,
             "new_target": None,
@@ -617,7 +578,7 @@ def create_default_windows_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "BIOS_DATE",
+            "name": "BIOS DATE",
             "retrieval_value": "ReleaseDate",
             "override_target": True,
             "new_target": "Get-WmiObject -ClassName Win32_Bios -Property * | ConvertTo-Json",
@@ -630,7 +591,7 @@ def create_default_windows_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "BIOS_MANUFACTURER",
+            "name": "BIOS MANUFACTURER",
             "retrieval_value": "Manufacturer",
             "override_target": True,
             "new_target": "Get-WmiObject -ClassName Win32_Bios -Property * | ConvertTo-Json",
@@ -643,7 +604,7 @@ def create_default_windows_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "BIOS_VERSION",
+            "name": "BIOS VERSION",
             "retrieval_value": "SMBIOSBIOSVersion",
             "override_target": True,
             "new_target": "Get-WmiObject -ClassName Win32_Bios -Property * | ConvertTo-Json",
@@ -656,7 +617,7 @@ def create_default_windows_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "MOTHERBOARD_MANUFACTURER",
+            "name": "MOTHERBOARD MANUFACTURER",
             "retrieval_value": "Manufacturer",
             "override_target": False,
             "new_target": None,
@@ -669,7 +630,7 @@ def create_default_windows_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "MOTHERBOARD_MODEL",
+            "name": "MOTHERBOARD MODEL",
             "retrieval_value": "Model",
             "override_target": False,
             "new_target": None,
@@ -682,7 +643,7 @@ def create_default_windows_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "MOTHERBOARD_SERIAL_NUMBER",
+            "name": "MOTHERBOARD SERIAL NUMBER",
             "retrieval_value": "SerialNumber",
             "override_target": False,
             "new_target": None,
@@ -695,7 +656,7 @@ def create_default_windows_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "MOTHERBOARD_TYPE",
+            "name": "MOTHERBOARD TYPE",
             "retrieval_value": "ChassisTypes",
             "override_target": False,
             "new_target": None,
@@ -708,7 +669,7 @@ def create_default_windows_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "SERIAL_NUMBER",
+            "name": "SERIAL NUMBER",
             "retrieval_value": "SerialNumber",
             "override_target": True,
             "new_target": "Get-WmiObject -ClassName Win32_Bios -Property * | ConvertTo-Json",
@@ -812,7 +773,7 @@ def create_default_windows_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "SERIAL_NUMBER",
+            "name": "SERIAL NUMBER",
             "retrieval_value": "SerialNumber",
             "override_target": False,
             "new_target": None,
@@ -838,7 +799,7 @@ def create_default_windows_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "DEFAULT_GATEWAY",
+            "name": "DEFAULT GATEWAY",
             "retrieval_value": "DefaultIPGateway",
             "override_target": False,
             "new_target": None,
@@ -864,7 +825,7 @@ def create_default_windows_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "DHCP_ENABLED",
+            "name": "DHCP ENABLED",
             "retrieval_value": "DHCPEnabled",
             "override_target": False,
             "new_target": None,
@@ -877,7 +838,7 @@ def create_default_windows_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "DHCP_SERVER",
+            "name": "DHCP SERVER",
             "retrieval_value": "DHCPServer",
             "override_target": False,
             "new_target": None,
@@ -890,7 +851,7 @@ def create_default_windows_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "DNS_DOMAIN",
+            "name": "DNS DOMAIN",
             "retrieval_value": "DNSDomain",
             "override_target": False,
             "new_target": None,
@@ -903,7 +864,7 @@ def create_default_windows_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "DNS_SERVER",
+            "name": "DNS SERVER",
             "retrieval_value": "DNSServerSearchOrder",
             "override_target": False,
             "new_target": None,
@@ -916,7 +877,7 @@ def create_default_windows_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "IP_ADDRESS",
+            "name": "IP ADDRESS",
             "retrieval_value": "IPAddress",
             "override_target": False,
             "new_target": None,
@@ -929,7 +890,7 @@ def create_default_windows_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "IP_SUBNET",
+            "name": "IP SUBNET",
             "retrieval_value": "IPSubnet",
             "override_target": False,
             "new_target": None,
@@ -942,7 +903,7 @@ def create_default_windows_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "MAC_ADDRESS",
+            "name": "MAC ADDRESS",
             "retrieval_value": "MACAddress",
             "override_target": False,
             "new_target": None,
@@ -957,13 +918,13 @@ def create_default_windows_fields(apps, schema_editor):
         {
             "name": "ARCHITECTURE",
             "retrieval_value": "OSArchitecture",
-            "override_target": True,
+            "override_target": False,
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
             "options": {},
             "section": apps.get_model("section", "Section").objects.get(
-                name="OPERATING_SYSTEM",
+                name="OPERATING SYSTEM",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
             ),
         },
@@ -976,7 +937,7 @@ def create_default_windows_fields(apps, schema_editor):
             "retrieval_output": None,
             "options": {},
             "section": apps.get_model("section", "Section").objects.get(
-                name="OPERATING_SYSTEM",
+                name="OPERATING SYSTEM",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
             ),
         },
@@ -989,7 +950,7 @@ def create_default_windows_fields(apps, schema_editor):
             "retrieval_output": None,
             "options": {},
             "section": apps.get_model("section", "Section").objects.get(
-                name="OPERATING_SYSTEM",
+                name="OPERATING SYSTEM",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
             ),
         },
@@ -1002,7 +963,7 @@ def create_default_windows_fields(apps, schema_editor):
             "retrieval_output": None,
             "options": {},
             "section": apps.get_model("section", "Section").objects.get(
-                name="OPERATING_SYSTEM",
+                name="OPERATING SYSTEM",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
             ),
         },
@@ -1015,7 +976,7 @@ def create_default_windows_fields(apps, schema_editor):
             "retrieval_output": None,
             "options": {},
             "section": apps.get_model("section", "Section").objects.get(
-                name="OPERATING_SYSTEM",
+                name="OPERATING SYSTEM",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
             ),
         },
@@ -1033,7 +994,7 @@ def create_default_windows_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "Port Name",
+            "name": "PORT NAME",
             "retrieval_value": "PortName",
             "override_target": False,
             "new_target": None,
@@ -1046,7 +1007,7 @@ def create_default_windows_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "Driver name",
+            "name": "DRIVER NAME",
             "retrieval_value": "DriverName",
             "override_target": False,
             "new_target": None,
@@ -1059,7 +1020,7 @@ def create_default_windows_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "Shared",
+            "name": "SHARED",
             "retrieval_value": "Shared",
             "override_target": False,
             "new_target": None,
@@ -1163,7 +1124,7 @@ def create_default_windows_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "FILE_SYSTEM",
+            "name": "FILE SYSTEM",
             "retrieval_value": "Name",
             "override_target": False,
             "new_target": None,
@@ -1254,7 +1215,7 @@ def create_default_windows_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "DEVICE_ID",
+            "name": "DEVICE ID",
             "retrieval_value": "DeviceID",
             "override_target": False,
             "new_target": None,
@@ -1280,7 +1241,7 @@ def create_default_windows_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "LOGGED_USER",
+            "name": "LOGGED USER",
             "retrieval_value": "Name",
             "override_target": False,
             "new_target": None,
@@ -1293,7 +1254,7 @@ def create_default_windows_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "USER_ID",
+            "name": "USER ID",
             "retrieval_value": "SID",
             "override_target": False,
             "new_target": None,
@@ -1314,12 +1275,12 @@ def create_default_windows_fields(apps, schema_editor):
             "retrieval_output": None,
             "options": {},
             "section": apps.get_model("section", "Section").objects.get(
-                name="WI_FI",
+                name="WIFI",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
             ),
         },
         {
-            "name": "Authentication",
+            "name": "AUTHENTIFICATION",
             "retrieval_value": "Authentication",
             "override_target": False,
             "new_target": None,
@@ -1327,12 +1288,12 @@ def create_default_windows_fields(apps, schema_editor):
             "retrieval_output": None,
             "options": {},
             "section": apps.get_model("section", "Section").objects.get(
-                name="WI_FI",
+                name="WIFI",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
             ),
         },
         {
-            "name": "State",
+            "name": "STATE",
             "retrieval_value": "State",
             "override_target": False,
             "new_target": None,
@@ -1340,7 +1301,7 @@ def create_default_windows_fields(apps, schema_editor):
             "retrieval_output": None,
             "options": {},
             "section": apps.get_model("section", "Section").objects.get(
-                name="WI_FI",
+                name="WIFI",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
             ),
         },
@@ -1353,7 +1314,7 @@ def create_default_windows_fields(apps, schema_editor):
             "retrieval_output": None,
             "options": {},
             "section": apps.get_model("section", "Section").objects.get(
-                name="WI_FI",
+                name="WIFI",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
             ),
         },
@@ -1366,7 +1327,7 @@ def create_default_windows_fields(apps, schema_editor):
             "retrieval_output": None,
             "options": {},
             "section": apps.get_model("section", "Section").objects.get(
-                name="WI_FI",
+                name="WIFI",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
             ),
         },

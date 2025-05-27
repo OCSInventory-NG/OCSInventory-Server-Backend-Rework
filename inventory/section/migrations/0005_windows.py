@@ -38,7 +38,7 @@ def create_default_windows_sections(apps, schema_editor):
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
-            "name": "CURRENT_USER",
+            "name": "CURRENT USER",
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": "Get-WmiObject -Class Win32_UserAccount -Property * | Where-Object { $_.Name -eq $env:USERNAME } | ConvertTo-Json",
@@ -102,7 +102,7 @@ def create_default_windows_sections(apps, schema_editor):
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
-            "name": "OPERATING_SYSTEM",
+            "name": "OPERATING SYSTEM",
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": "Get-WmiObject -ClassName Win32_OperatingSystem -Property * | ConvertTo-Json",
@@ -158,7 +158,7 @@ def create_default_windows_sections(apps, schema_editor):
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
-            "name": "WI_FI",
+            "name": "WIFI",
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": 'Get-NetAdapter -Name "*Wi-Fi*" | ConvertTo-Json',

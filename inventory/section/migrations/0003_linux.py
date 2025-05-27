@@ -20,7 +20,6 @@ def create_default_linux_sections(apps, schema_editor):
             "target": "upower -i $(upower -e | grep BAT)",
             "template": apps.get_model("template", "Template").objects.get(os="LIN"),
             "options": {},
-            "options": {},
         },
         {
             "name": "CONTROLLERS",

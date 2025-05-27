@@ -13,7 +13,6 @@ def create_default_linux_fields(apps, schema_editor):
             "retrieval_method": None,
             "retrieval_output": None,
             "options": {},
-            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="AUDIO",
                 template=apps.get_model("template", "Template").objects.get(os="LIN"),
@@ -26,7 +25,6 @@ def create_default_linux_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": {},
             "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="AUDIO",
