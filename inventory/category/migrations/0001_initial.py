@@ -57,7 +57,7 @@ def create_default_categories(apps, schema_editor):
                 "ETHERNET",
                 "NETWORKS",
                 "NETWORKS DEVICES",
-                "WI_FI"
+                "WI_FI",
             ],
         },
         {
