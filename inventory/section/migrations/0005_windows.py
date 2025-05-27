@@ -10,7 +10,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": "Get-WmiObject -Class Win32_SoundDevice | ConvertTo-Json",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
@@ -18,7 +18,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": "Get-WmiObject -ClassName Win32_PortableBattery -Property * | ConvertTo-Json",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
@@ -26,7 +26,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": "Get-WmiObject -Class Win32_ComputerSystem | ConvertTo-Json",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
@@ -34,7 +34,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": "Get-WmiObject -ClassName Win32_Processor -Property * | ConvertTo-Json",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
@@ -42,7 +42,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": "Get-WmiObject -Class Win32_UserAccount -Property * | Where-Object { $_.Name -eq $env:USERNAME } | ConvertTo-Json",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
@@ -50,7 +50,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": 'Get-NetAdapter -Name "*Ethernet*" | ConvertTo-Json',
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
@@ -58,7 +58,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": "Get-WmiObject -Class Win32_VideoController | ConvertTo-Json",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
@@ -66,7 +66,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": "Get-WmiObject -ClassName Win32_Group -Property * | ConvertTo-Json",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
@@ -74,7 +74,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": "Get-WmiObject -ClassName Win32_SystemEnclosure -Property * | ConvertTo-Json",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
@@ -82,7 +82,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": "Get-WmiObject -className Win32_PnpEntity -Property * | ConvertTo-Json",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
@@ -90,7 +90,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": "Get-WmiObject -ClassName Win32_PhysicalMemory -Property * | ForEach-Object { $_.Capacity = [math]::round($_.Capacity / 1GB, 2); $_ } | ConvertTo-Json",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
@@ -98,7 +98,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": "Get-WmiObject -ClassName Win32_NetworkAdapterConfiguration -property * -Filter IPEnabled=$True | ConvertTo-Json",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
@@ -106,7 +106,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": "Get-WmiObject -ClassName Win32_OperatingSystem -Property * | ConvertTo-Json",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
@@ -114,7 +114,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": "Get-WmiObject -Class Win32_Printer | Select-Object Name, PortName, DriverName, Shared | ConvertTo-Json",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
@@ -122,7 +122,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": "Get-WmiObject -className Win32_SystemSlot -Property * | ConvertTo-Json",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
@@ -130,7 +130,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": "Get-ItemProperty HKLM:\\Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\* | ConvertTo-Json",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
@@ -138,7 +138,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": "Get-WmiObject -ClassName Win32_LogicalDisk -Property * | ForEach-Object { $_.FreeSpace = [math]::round($_.FreeSpace / 1GB, 2); $_.Size = [math]::round($_.Size / 1GB, 2); $_ } | ConvertTo-Json",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
@@ -146,7 +146,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": "Get-WmiObject -Class Win32_USBControllerDevice | ForEach-Object { $usbDevice = [WMI]$_; $usbDevice.GetRelated('Win32_PnPEntity') | Select-Object Name, Description, DeviceID } | ConvertTo-Json",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
@@ -154,7 +154,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": "Get-WmiObject -ClassName Win32_UserAccount -Property * | ConvertTo-Json",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
@@ -162,7 +162,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": 'Get-NetAdapter -Name "*Wi-Fi*" | ConvertTo-Json',
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
     ]

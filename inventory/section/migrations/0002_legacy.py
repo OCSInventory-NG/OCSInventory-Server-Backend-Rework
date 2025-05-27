@@ -10,7 +10,7 @@ def create_default_legacy_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
             "target": "None",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="LEG"),
         },
         {
@@ -18,7 +18,7 @@ def create_default_legacy_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
             "target": "None",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="LEG"),
         },
         {
@@ -26,7 +26,7 @@ def create_default_legacy_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
             "target": "None",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="LEG"),
         },
         {
@@ -34,7 +34,7 @@ def create_default_legacy_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
             "target": "None",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="LEG"),
         },
         {
@@ -42,7 +42,7 @@ def create_default_legacy_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
             "target": "None",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="LEG"),
         },
         {
@@ -50,7 +50,7 @@ def create_default_legacy_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
             "target": "None",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="LEG"),
         },
         {
@@ -58,7 +58,7 @@ def create_default_legacy_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
             "target": "None",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="LEG"),
         },
         {
@@ -66,7 +66,7 @@ def create_default_legacy_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
             "target": "None",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="LEG"),
         },
         {
@@ -74,7 +74,7 @@ def create_default_legacy_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
             "target": "None",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="LEG"),
         },
         {
@@ -82,7 +82,7 @@ def create_default_legacy_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
             "target": "None",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="LEG"),
         },
         {
@@ -90,7 +90,7 @@ def create_default_legacy_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
             "target": "None",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="LEG"),
         },
         {
@@ -98,7 +98,7 @@ def create_default_legacy_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
             "target": "None",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="LEG"),
         },
         {
@@ -106,7 +106,7 @@ def create_default_legacy_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
             "target": "None",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="LEG"),
         },
         {
@@ -114,7 +114,7 @@ def create_default_legacy_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
             "target": "None",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="LEG"),
         },
         {
@@ -122,7 +122,7 @@ def create_default_legacy_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
             "target": "None",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="LEG"),
         },
         {
@@ -130,7 +130,7 @@ def create_default_legacy_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
             "target": "None",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="LEG"),
         },
         {
@@ -138,7 +138,7 @@ def create_default_legacy_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
             "target": "None",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="LEG"),
         },
         {
@@ -146,7 +146,7 @@ def create_default_legacy_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
             "target": "None",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="LEG"),
         },
         {
@@ -154,7 +154,7 @@ def create_default_legacy_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
             "target": "None",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="LEG"),
         },
         {
@@ -162,7 +162,7 @@ def create_default_legacy_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
             "target": "None",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="LEG"),
         },
         {
@@ -170,7 +170,7 @@ def create_default_legacy_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
             "target": "None",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="LEG"),
         },
         {
@@ -178,7 +178,7 @@ def create_default_legacy_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
             "target": "None",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="LEG"),
         },
         {
@@ -186,7 +186,7 @@ def create_default_legacy_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
             "target": "None",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="LEG"),
         },
         {
@@ -194,7 +194,7 @@ def create_default_legacy_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
             "target": "None",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="LEG"),
         },
     ]

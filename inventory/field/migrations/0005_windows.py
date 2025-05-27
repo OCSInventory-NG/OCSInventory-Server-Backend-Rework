@@ -181,7 +181,7 @@ def create_default_windows_fields(apps, schema_editor):
             "new_target": "Get-WmiObject -ClassName Win32_Battery -Property * | ConvertTo-Json",
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
-            "options": {"need_format": False},
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -584,7 +584,7 @@ def create_default_windows_fields(apps, schema_editor):
             "new_target": "Get-WmiObject -ClassName Win32_Bios -Property * | ConvertTo-Json",
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
-            "options": {"need_format": False},
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -597,7 +597,7 @@ def create_default_windows_fields(apps, schema_editor):
             "new_target": "Get-WmiObject -ClassName Win32_Bios -Property * | ConvertTo-Json",
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
-            "options": {"need_format": False},
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -610,7 +610,7 @@ def create_default_windows_fields(apps, schema_editor):
             "new_target": "Get-WmiObject -ClassName Win32_Bios -Property * | ConvertTo-Json",
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
-            "options": {"need_format": False},
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
@@ -675,7 +675,7 @@ def create_default_windows_fields(apps, schema_editor):
             "new_target": "Get-WmiObject -ClassName Win32_Bios -Property * | ConvertTo-Json",
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
-            "options": {"need_format": False},
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="HARDWARE",
                 template=apps.get_model("template", "Template").objects.get(os="WIN"),
