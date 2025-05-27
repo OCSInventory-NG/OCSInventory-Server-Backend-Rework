@@ -8,9 +8,9 @@ def create_default_macos_sections(apps, schema_editor):
         {
             "name": "AUDIO",
             "retrieval_method": "BASH",
-            "retrieval_output": "REGX",
-            "target": "system_profiler SPAudioDataType",
-            "options": {"multiple": False, "separator": "^\\s*Output Source:\\s*(.*)$"},
+            "retrieval_output": "JSON",
+            "target": "system_profiler SPAudioDataType -json",
+            "options": {"submap": "_items"},
             "template": apps.get_model("template", "Template").objects.get(os="MAC"),
         },
         {
@@ -72,28 +72,25 @@ def create_default_macos_sections(apps, schema_editor):
         {
             "name": "ETHERNET",
             "retrieval_method": "BASH",
-            "retrieval_output": "REGX",
-            "target": "system_profiler SPEthernetDataType",
-            "options": {
-                "multiple": False,
-                "separator": "^\\s*Maximum Link Speed:\\s*(.*)$",
-            },
+            "retrieval_output": "JSON",
+            "target": "system_profiler SPEthernetDataType -json",
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="MAC"),
         },
         {
             "name": "EXTENSIONS",
             "retrieval_method": "BASH",
-            "retrieval_output": "REGX",
-            "target": "system_profiler SPExtensionsDataType",
-            "options": {"multiple": False, "separator": "^\\s*Signed by:\\s*(.*)$"},
+            "retrieval_output": "JSON",
+            "target": "system_profiler SPExtensionsDataType -json",
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="MAC"),
         },
         {
             "name": "FRAMEWORKS",
             "retrieval_method": "BASH",
-            "retrieval_output": "REGX",
-            "target": "system_profiler SPFrameworksDataType",
-            "options": {"multiple": False, "separator": "^\\s*Private:\\s*(.*)$"},
+            "retrieval_output": "JSON",
+            "target": "system_profiler SPFrameworksDataType -json",
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="MAC"),
         },
         {
@@ -101,7 +98,7 @@ def create_default_macos_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
             "target": "system_profiler SPDisplaysDataType",
-            "options": {"multiple": False, "separator": "^\\s*Rotation:\\s*(.*)$"},
+            "options": {"multiple": False, "separator": "Rotation:\\s(.*)"},
             "template": apps.get_model("template", "Template").objects.get(os="MAC"),
         },
         {
@@ -109,7 +106,7 @@ def create_default_macos_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
             "target": "dscl . readall /groups",
-            "options": {"multiple": True, "separator": "-"},
+            "options": {"multiple": False, "separator": "-"},
             "template": apps.get_model("template", "Template").objects.get(os="MAC"),
         },
         {
@@ -125,7 +122,7 @@ def create_default_macos_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "JSON",
             "target": "system_profiler SPMemoryDataType -json",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="MAC"),
         },
         {
@@ -133,7 +130,7 @@ def create_default_macos_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "JSON",
             "target": "system_profiler SPNetworkDataType -json",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="MAC"),
         },
         {
@@ -141,7 +138,7 @@ def create_default_macos_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "JSON",
             "target": "system_profiler SPNVMeDataType -json",
-            "options": {"need_format": False},
+            "options": {"submap": "_items"},
             "template": apps.get_model("template", "Template").objects.get(os="MAC"),
         },
         {
@@ -157,7 +154,7 @@ def create_default_macos_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "JSON",
             "target": "system_profiler SPPrintersDataType -json",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="MAC"),
         },
         {
@@ -165,7 +162,7 @@ def create_default_macos_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "JSON",
             "target": "system_profiler SPNetworkVolumeDataType -json",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="MAC"),
         },
         {
@@ -173,7 +170,7 @@ def create_default_macos_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "JSON",
             "target": "system_profiler SPApplicationsDataType -json",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="MAC"),
         },
         {
@@ -181,7 +178,7 @@ def create_default_macos_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "JSON",
             "target": "system_profiler SPStorageDataType -json",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="MAC"),
         },
         {
@@ -189,7 +186,7 @@ def create_default_macos_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "JSON",
             "target": "system_profiler SPUSBDataType -json",
-            "options": {"need_format": False},
+            "options": {},
             "template": apps.get_model("template", "Template").objects.get(os="MAC"),
         },
         {
@@ -197,7 +194,7 @@ def create_default_macos_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
             "target": "dscl . readall /groups",
-            "options": {"multiple": True, "separator": "-"},
+            "options": {"multiple": False, "separator": "-"},
             "template": apps.get_model("template", "Template").objects.get(os="MAC"),
         },
         {
@@ -205,7 +202,7 @@ def create_default_macos_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
             "target": "system_profiler SPAirPortDataType",
-            "options": {"multiple": True, "separator": "^\\s*Security:\\s*(.*)$"},
+            "options": {"multiple": False, "separator": "Security:\\s(.*)"},
             "template": apps.get_model("template", "Template").objects.get(os="MAC"),
         },
     ]

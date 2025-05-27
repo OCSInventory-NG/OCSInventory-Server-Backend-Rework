@@ -6,6 +6,32 @@ from django.db import migrations
 def create_default_macos_fields(apps, schema_editor):
     fields = [
         {
+            "name": "Name",
+            "retrieval_value": "_name",
+            "override_target": False,
+            "new_target": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
+            "options": {},
+            "section": apps.get_model("section", "Section").objects.get(
+                name="AUDIO",
+                template=apps.get_model("template", "Template").objects.get(os="MAC"),
+            ),
+        },
+        {
+            "name": "Default Output Device",
+            "retrieval_value": "coreaudio_default_audio_output_device",
+            "override_target": False,
+            "new_target": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
+            "options": {},
+            "section": apps.get_model("section", "Section").objects.get(
+                name="AUDIO",
+                template=apps.get_model("template", "Template").objects.get(os="MAC"),
+            ),
+        },
+        {
             "name": "Default Output Device",
             "retrieval_value": "Default Output Device",
             "override_target": False,
@@ -20,7 +46,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Default System Output Device",
-            "retrieval_value": "Default System Output Device",
+            "retrieval_value": "coreaudio_default_audio_system_device",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -33,7 +59,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Manufacturer",
-            "retrieval_value": "Manufacturer",
+            "retrieval_value": "coreaudio_device_manufacturer",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -46,7 +72,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Output Channels",
-            "retrieval_value": "Output Channels",
+            "retrieval_value": "coreaudio_device_output",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -59,7 +85,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Current SampleRate",
-            "retrieval_value": "Current SampleRate",
+            "retrieval_value": "coreaudio_device_srate",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -72,7 +98,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Transport",
-            "retrieval_value": "Transport",
+            "retrieval_value": "coreaudio_device_transport",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -85,7 +111,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Output Source",
-            "retrieval_value": "Output Source",
+            "retrieval_value": "coreaudio_output_source",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -98,7 +124,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "System Sleep Timer (Minutes)",
-            "retrieval_value": "System Sleep Timer (Minutes)",
+            "retrieval_value": "System Sleep Timer \\(Minutes\\):\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -111,7 +137,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Disk Sleep Timer (Minutes)",
-            "retrieval_value": "Disk Sleep Timer (Minutes)",
+            "retrieval_value": "Disk Sleep Timer \\(Minutes\\):\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -124,7 +150,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Display Sleep Timer (Minutes)",
-            "retrieval_value": "Display Sleep Timer (Minutes)",
+            "retrieval_value": "Display Sleep Timer \\(Minutes\\):\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -137,7 +163,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Wake on LAN",
-            "retrieval_value": "Wake on LAN",
+            "retrieval_value": "Wake on LAN:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -150,7 +176,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "UPS Installed",
-            "retrieval_value": "UPS Installed",
+            "retrieval_value": "UPS Installed:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -163,7 +189,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Address",
-            "retrieval_value": "Address",
+            "retrieval_value": "Address:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -176,7 +202,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "State",
-            "retrieval_value": "State",
+            "retrieval_value": "State:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -189,7 +215,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Chipset",
-            "retrieval_value": "Chipset",
+            "retrieval_value": "Chipset:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -202,7 +228,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Discoverable",
-            "retrieval_value": "Discoverable",
+            "retrieval_value": "Discoverable:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -215,7 +241,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Firmware Version",
-            "retrieval_value": "Firmware Version",
+            "retrieval_value": "Firmware Version:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -228,7 +254,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Product ID",
-            "retrieval_value": "Product ID",
+            "retrieval_value": "Product ID:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -241,7 +267,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Supported services",
-            "retrieval_value": "Supported services",
+            "retrieval_value": "Supported services:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -254,7 +280,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Transport",
-            "retrieval_value": "Transport",
+            "retrieval_value": "Transport:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -267,7 +293,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Vendor ID",
-            "retrieval_value": "Vendor ID",
+            "retrieval_value": "Vendor ID:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -280,7 +306,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Model ID",
-            "retrieval_value": "Model ID",
+            "retrieval_value": "Model ID:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -293,7 +319,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Unique ID",
-            "retrieval_value": "Unique ID",
+            "retrieval_value": "Unique ID:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -306,7 +332,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Model Identifier",
-            "retrieval_value": "Model Identifier",
+            "retrieval_value": "Model Identifier:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -319,7 +345,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Boot UUID",
-            "retrieval_value": "Boot UUID",
+            "retrieval_value": "Boot UUID:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -332,7 +358,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Firmware Version",
-            "retrieval_value": "Firmware Version",
+            "retrieval_value": "Firmware Version:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -345,7 +371,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Secure Boot",
-            "retrieval_value": "Secure Boot",
+            "retrieval_value": "Secure Boot:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -358,7 +384,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "System Integrity Protection",
-            "retrieval_value": "System Integrity Protection",
+            "retrieval_value": "System Integrity Protection:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -371,7 +397,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Signed System Volume",
-            "retrieval_value": "Signed System Volume",
+            "retrieval_value": "Signed System Volume:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -384,7 +410,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Kernel CTRR",
-            "retrieval_value": "Kernel CTRR",
+            "retrieval_value": "Kernel CTRR:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -397,7 +423,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Boot Arguments Filtering",
-            "retrieval_value": "Boot Arguments Filterings",
+            "retrieval_value": "Boot Arguments Filtering:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -410,7 +436,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Allow All Kernel Extensions",
-            "retrieval_value": "Allow All Kernel Extensions",
+            "retrieval_value": "Allow All Kernel Extensions:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -423,7 +449,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "User Approved Privileged MDM Operations",
-            "retrieval_value": "User Approved Privileged MDM Operations",
+            "retrieval_value": "User Approved Privileged MDM Operations:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -436,7 +462,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "DEP Approved Privileged MDM Operations",
-            "retrieval_value": "DEP Approved Privileged MDM Operations",
+            "retrieval_value": "DEP Approved Privileged MDM Operations:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -449,7 +475,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Name",
-            "retrieval_value": "\\s{6}Chip:\\s(.*)|\\s{6}Processor Name:\\s(.*)",
+            "retrieval_value": "Chip:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -462,7 +488,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Total Number of Cores",
-            "retrieval_value": "\\s{6}Total Number of Cores:\\s(.*)",
+            "retrieval_value": "Total Number of Cores:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -475,7 +501,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Memory",
-            "retrieval_value": "\\s{6}Memory:\\s(.*)",
+            "retrieval_value": "Memory:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -488,7 +514,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "L2 Cache (per Core)",
-            "retrieval_value": "\\s{6}L2 Cache \\(per Core\\):\\s(.*)",
+            "retrieval_value": "L2 Cache \\(per Core\\):\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -501,7 +527,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "L3 Cache",
-            "retrieval_value": "\\s{6}L3 Cache:\\s(.*)",
+            "retrieval_value": "L3 Cache:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -514,7 +540,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Name",
-            "retrieval_value": "User Name",
+            "retrieval_value": "User Name:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -527,7 +553,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Time since boot",
-            "retrieval_value": "Time since boot",
+            "retrieval_value": "Time since boot:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -540,7 +566,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Version",
-            "retrieval_value": "Version",
+            "retrieval_value": "Version:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -553,7 +579,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Location",
-            "retrieval_value": "Location",
+            "retrieval_value": "Location:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -566,7 +592,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Xcode",
-            "retrieval_value": "Xcode",
+            "retrieval_value": "Xcode:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -579,20 +605,33 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Instruments",
-            "retrieval_value": "Instruments",
+            "retrieval_value": "Instruments:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
             "options": {},
             "section": apps.get_model("section", "Section").objects.get(
-                name="DEVELOPER_TOOLS",
+                name="ETHERNET",
+                template=apps.get_model("template", "Template").objects.get(os="MAC"),
+            ),
+        },
+        {
+            "name": "Name",
+            "retrieval_value": "_name",
+            "override_target": False,
+            "new_target": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
+            "options": {},
+            "section": apps.get_model("section", "Section").objects.get(
+                name="ETHERNET",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
             ),
         },
         {
             "name": "Bus",
-            "retrieval_value": "Bus",
+            "retrieval_value": "spethernet_bus",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -605,7 +644,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Vendor ID",
-            "retrieval_value": "Vendor ID",
+            "retrieval_value": "spethernet_vendor-id",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -618,7 +657,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Device ID",
-            "retrieval_value": "Device ID",
+            "retrieval_value": "spethernet_device-id",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -631,7 +670,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Subsystem Vendor ID",
-            "retrieval_value": "Subsystem Vendor ID",
+            "retrieval_value": "spethernet_subsystem-vendor-id",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -644,7 +683,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Subsystem ID",
-            "retrieval_value": "Subsystem ID",
+            "retrieval_value": "spethernet_subsystem-id",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -657,7 +696,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Revision ID",
-            "retrieval_value": "Revision ID",
+            "retrieval_value": "spethernet_revision-id",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -670,7 +709,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "PCIe Link Speed",
-            "retrieval_value": "PCIe Link Speed",
+            "retrieval_value": "spethernet_pcie_link-speed",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -683,7 +722,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "PCIe Link Width",
-            "retrieval_value": "PCIe Link Width",
+            "retrieval_value": "spethernet_pcie_link-width",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -696,7 +735,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Driver",
-            "retrieval_value": "Driver",
+            "retrieval_value": "spethernet_driver",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -708,8 +747,8 @@ def create_default_macos_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "BBSD Device Nameus",
-            "retrieval_value": "BSD Device Name",
+            "name": "BSD Device Name",
+            "retrieval_value": "spethernet_BSD_Device_Name",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -722,7 +761,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "MAC Address",
-            "retrieval_value": "MAC Address",
+            "retrieval_value": "spethernet_mac_address",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -735,7 +774,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "AVB Support",
-            "retrieval_value": "AVB Support",
+            "retrieval_value": "spethernet_avb_support",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -748,7 +787,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Maximum Link Speed",
-            "retrieval_value": "Maximum Link Speed",
+            "retrieval_value": "spethernet_max_link_speed",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -799,7 +838,7 @@ def create_default_macos_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "Obtained from",
+            "name": "Obtained From",
             "retrieval_value": "spext_obtained_from",
             "override_target": False,
             "new_target": None,
@@ -839,7 +878,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Version",
-            "retrieval_value": "spext_version",
+            "retrieval_value": "version",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -851,7 +890,7 @@ def create_default_macos_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "Last modified",
+            "name": "Last Modified",
             "retrieval_value": "spext_lastModified",
             "override_target": False,
             "new_target": None,
@@ -890,7 +929,7 @@ def create_default_macos_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "Last modified",
+            "name": "Last Modified",
             "retrieval_value": "lastModified",
             "override_target": False,
             "new_target": None,
@@ -903,7 +942,7 @@ def create_default_macos_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "Obtained from",
+            "name": "Obtained From",
             "retrieval_value": "obtained_from",
             "override_target": False,
             "new_target": None,
@@ -956,7 +995,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Name",
-            "retrieval_value": "Chipset Model",
+            "retrieval_value": "Chipset Model:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -969,7 +1008,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Type",
-            "retrieval_value": "Type",
+            "retrieval_value": "Type:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -982,7 +1021,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Total Number of Cores",
-            "retrieval_value": "Total Number of Cores",
+            "retrieval_value": "Total Number of Cores:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -995,7 +1034,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Resolution:",
-            "retrieval_value": "Resolution:",
+            "retrieval_value": "Resolution:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1008,7 +1047,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Vendor",
-            "retrieval_value": "Vendor",
+            "retrieval_value": "Vendor:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1021,7 +1060,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Real Name",
-            "retrieval_value": "^RealName:\\s*(.*)",
+            "retrieval_value": "RealName:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1033,8 +1072,8 @@ def create_default_macos_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "Record name",
-            "retrieval_value": "^RecordName:\\s(.*)",
+            "name": "Record Name",
+            "retrieval_value": "RecordName:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1046,8 +1085,8 @@ def create_default_macos_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "Record type",
-            "retrieval_value": "^RecordType:\\s(.*)",
+            "name": "Record Type",
+            "retrieval_value": "RecordType:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1059,8 +1098,8 @@ def create_default_macos_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "PrimaryGroupID",
-            "retrieval_value": "^PrimaryGroupID:\\s(.*)",
+            "name": "Primary Group ID",
+            "retrieval_value": "PrimaryGroupID:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1072,8 +1111,8 @@ def create_default_macos_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "GroupMembership",
-            "retrieval_value": "^GroupMembership:\\s(.*)",
+            "name": "Group Membership",
+            "retrieval_value": "GroupMembership:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1086,7 +1125,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Model name",
-            "retrieval_value": "\\s{6}Model Name:\\s(.*)",
+            "retrieval_value": "Model Name:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1099,7 +1138,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Model identifier",
-            "retrieval_value": "\\s{6}Model identifier :\\s(.*)",
+            "retrieval_value": "Model identifier:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1112,7 +1151,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Model number",
-            "retrieval_value": "\\s{6}Model Number :\\s(.*)",
+            "retrieval_value": "Model Number:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1125,7 +1164,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "System firmware version",
-            "retrieval_value": "\\s{6}System Firmware Version:\\s(.*)|\\s{6}Boot ROM Version:\\s(.*)",
+            "retrieval_value": "System Firmware Version:\\s*(.*)|Boot ROM Version:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1138,7 +1177,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "OS Loader Version",
-            "retrieval_value": "\\s{6}OS Loader Version:\\s(.*)|\\s{6}SMC Version \\(system\\):\\s(.*)",
+            "retrieval_value": "OS Loader Version:\\s*(.*)|SMC Version \\(system\\):\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1151,7 +1190,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Serial Number (system)",
-            "retrieval_value": "\\s{6}Serial Number \\(system\\):\\s(.*)",
+            "retrieval_value": "Serial Number \\(system\\):\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1164,7 +1203,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Hardware UUID",
-            "retrieval_value": "\\s{6}Hardware UUID:\\s(.*)",
+            "retrieval_value": "Hardware UUID:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1177,7 +1216,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Provisioning UDID",
-            "retrieval_value": "\\s{6}Provisioning UDID:\\s(.*)",
+            "retrieval_value": "Provisioning UDID:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1241,26 +1280,13 @@ def create_default_macos_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "Ethernet",
-            "retrieval_value": "Ethernet",
-            "override_target": False,
-            "new_target": None,
-            "retrieval_method": None,
-            "retrieval_output": None,
-            "options": {},
-            "section": apps.get_model("section", "Section").objects.get(
-                name="NETWORKS",
-                template=apps.get_model("template", "Template").objects.get(os="MAC"),
-            ),
-        },
-        {
             "name": "MAC Address",
             "retrieval_value": "MAC Address",
-            "override_target": False,
-            "new_target": None,
-            "retrieval_method": None,
-            "retrieval_output": None,
-            "options": {},
+            "override_target": True,
+            "new_target": "system_profiler SPNetworkDataType -json",
+            "retrieval_method": "BASH",
+            "retrieval_output": "JSON",
+            "options": {"submap": "Ethernet"},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1345,106 +1371,54 @@ def create_default_macos_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "dhcp_domain_name",
+            "name": "DHCP Domain Name",
             "retrieval_value": "dhcp_domain_name",
-            "override_target": False,
-            "new_target": None,
-            "retrieval_method": None,
-            "retrieval_output": None,
-            "options": {},
+            "override_target": True,
+            "new_target": "system_profiler SPNetworkDataType -json",
+            "retrieval_method": "BASH",
+            "retrieval_output": "JSON",
+            "options": {"submap": "dhcp"},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
             ),
         },
         {
-            "name": "Ethernet",
-            "retrieval_value": "Ethernet",
-            "override_target": False,
-            "new_target": None,
-            "retrieval_method": None,
-            "retrieval_output": None,
-            "options": {},
-            "section": apps.get_model("section", "Section").objects.get(
-                name="NETWORKS",
-                template=apps.get_model("template", "Template").objects.get(os="MAC"),
-            ),
-        },
-        {
-            "name": "dhcp_domain_name_servers",
+            "name": "DHCP Domain Name Servers",
             "retrieval_value": "dhcp_domain_name_servers",
-            "override_target": False,
-            "new_target": None,
-            "retrieval_method": None,
-            "retrieval_output": None,
-            "options": {},
+            "override_target": True,
+            "new_target": "system_profiler SPNetworkDataType -json",
+            "retrieval_method": "BASH",
+            "retrieval_output": "JSON",
+            "options": {"submap": "dhcp"},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
             ),
         },
         {
-            "name": "dhcp_routers",
+            "name": "DHCP Routers",
             "retrieval_value": "dhcp_routers",
-            "override_target": False,
-            "new_target": None,
-            "retrieval_method": None,
-            "retrieval_output": None,
-            "options": {},
+            "override_target": True,
+            "new_target": "system_profiler SPNetworkDataType -json",
+            "retrieval_method": "BASH",
+            "retrieval_output": "JSON",
+            "options": {"submap": "dhcp"},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
             ),
         },
         {
-            "name": "DNS",
-            "retrieval_value": "DNS",
-            "override_target": False,
-            "new_target": None,
-            "retrieval_method": None,
-            "retrieval_output": None,
-            "options": {},
-            "section": apps.get_model("section", "Section").objects.get(
-                name="NETWORKS",
-                template=apps.get_model("template", "Template").objects.get(os="MAC"),
-            ),
-        },
-        {
-            "name": "DomainName",
+            "name": "Domain Name",
             "retrieval_value": "DomainName",
-            "override_target": False,
-            "new_target": None,
-            "retrieval_method": None,
-            "retrieval_output": None,
-            "options": {},
+            "override_target": True,
+            "new_target": "system_profiler SPNetworkDataType -json",
+            "retrieval_method": "BASH",
+            "retrieval_output": "JSON",
+            "options": {"submap": "DNS"},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
-                template=apps.get_model("template", "Template").objects.get(os="MAC"),
-            ),
-        },
-        {
-            "name": "DNS",
-            "retrieval_value": "DNS",
-            "override_target": False,
-            "new_target": None,
-            "retrieval_method": None,
-            "retrieval_output": None,
-            "options": {},
-            "section": apps.get_model("section", "Section").objects.get(
-                name="NETWORKS",
-                template=apps.get_model("template", "Template").objects.get(os="MAC"),
-            ),
-        },
-        {
-            "name": "_items",
-            "retrieval_value": "_items",
-            "override_target": False,
-            "new_target": None,
-            "retrieval_method": None,
-            "retrieval_output": None,
-            "options": {},
-            "section": apps.get_model("section", "Section").objects.get(
-                name="NVME",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
             ),
         },
@@ -1462,7 +1436,7 @@ def create_default_macos_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "BDS Name",
+            "name": "BSD Name",
             "retrieval_value": "bsd_name",
             "override_target": False,
             "new_target": None,
@@ -1515,7 +1489,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "System version",
-            "retrieval_value": "System Version",
+            "retrieval_value": "System Version:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1528,7 +1502,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Kernel version",
-            "retrieval_value": "Kernel Version",
+            "retrieval_value": "Kernel Version:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1541,7 +1515,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Boot volume",
-            "retrieval_value": "Boot Volume",
+            "retrieval_value": "Boot Volume:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1554,7 +1528,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Boot mode",
-            "retrieval_value": "Boot Mode",
+            "retrieval_value": "Boot Mode:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1567,7 +1541,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Computer name",
-            "retrieval_value": "Computer Name",
+            "retrieval_value": "Computer Name:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1580,7 +1554,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "User name",
-            "retrieval_value": "User Name",
+            "retrieval_value": "User Name:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1593,7 +1567,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Secure virtual memory",
-            "retrieval_value": "Secure Virtual Memory",
+            "retrieval_value": "Secure Virtual Memory:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1606,7 +1580,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "System integrity protection",
-            "retrieval_value": "System Integrity Protection",
+            "retrieval_value": "System Integrity Protection:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1619,7 +1593,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Time since boot",
-            "retrieval_value": "Time since boot",
+            "retrieval_value": "Time since boot:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1813,7 +1787,7 @@ def create_default_macos_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "Obtained from",
+            "name": "Obtained From",
             "retrieval_value": "obtained_from",
             "override_target": False,
             "new_target": None,
@@ -1878,26 +1852,13 @@ def create_default_macos_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "Physical drive",
-            "retrieval_value": "physical_drive",
-            "override_target": False,
-            "new_target": None,
-            "retrieval_method": None,
-            "retrieval_output": None,
-            "options": {},
-            "section": apps.get_model("section", "Section").objects.get(
-                name="STORAGES",
-                template=apps.get_model("template", "Template").objects.get(os="MAC"),
-            ),
-        },
-        {
             "name": "Device Name",
             "retrieval_value": "device_name",
-            "override_target": False,
-            "new_target": None,
-            "retrieval_method": None,
-            "retrieval_output": None,
-            "options": {},
+            "override_target": True,
+            "new_target": "system_profiler SPStorageDataType -json",
+            "retrieval_method": "BASH",
+            "retrieval_output": "JSON",
+            "options": {"submap": "physical_drive"},
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1971,39 +1932,26 @@ def create_default_macos_fields(apps, schema_editor):
         {
             "name": "Medium Type",
             "retrieval_value": "medium_type",
-            "override_target": False,
-            "new_target": None,
-            "retrieval_method": None,
-            "retrieval_output": None,
-            "options": {},
+            "override_target": True,
+            "new_target": "system_profiler SPStorageDataType -json",
+            "retrieval_method": "BASH",
+            "retrieval_output": "JSON",
+            "options": {"submap": "physical_drive"},
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
             ),
         },
         {
-            "name": "Internal",
+            "name": "Is Internal Disk",
             "retrieval_value": "is_internal_disk",
-            "override_target": False,
-            "new_target": None,
-            "retrieval_method": None,
-            "retrieval_output": None,
-            "options": {},
+            "override_target": True,
+            "new_target": "system_profiler SPStorageDataType -json",
+            "retrieval_method": "BASH",
+            "retrieval_output": "JSON",
+            "options": {"submap": "physical_drive"},
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
-                template=apps.get_model("template", "Template").objects.get(os="MAC"),
-            ),
-        },
-        {
-            "name": "Items",
-            "retrieval_value": "_items",
-            "override_target": False,
-            "new_target": None,
-            "retrieval_method": None,
-            "retrieval_output": None,
-            "options": {},
-            "section": apps.get_model("section", "Section").objects.get(
-                name="USB",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
             ),
         },
@@ -2021,20 +1969,7 @@ def create_default_macos_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "bcd_device",
-            "retrieval_value": "bcd_device",
-            "override_target": False,
-            "new_target": None,
-            "retrieval_method": None,
-            "retrieval_output": None,
-            "options": {},
-            "section": apps.get_model("section", "Section").objects.get(
-                name="USB",
-                template=apps.get_model("template", "Template").objects.get(os="MAC"),
-            ),
-        },
-        {
-            "name": "host_controller",
+            "name": "Host Controller",
             "retrieval_value": "host_controller",
             "override_target": False,
             "new_target": None,
@@ -2047,8 +1982,8 @@ def create_default_macos_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "Manufacturer",
-            "retrieval_value": "manufacturer",
+            "name": "PCI Device",
+            "retrieval_value": "pci_device",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -2060,8 +1995,8 @@ def create_default_macos_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "Vendor ID",
-            "retrieval_value": "vendor_id",
+            "name": "PCI Revision",
+            "retrieval_value": "pci_revision",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -2073,34 +2008,8 @@ def create_default_macos_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "host_controller",
-            "retrieval_value": "host_controller",
-            "override_target": False,
-            "new_target": None,
-            "retrieval_method": None,
-            "retrieval_output": None,
-            "options": {},
-            "section": apps.get_model("section", "Section").objects.get(
-                name="USB",
-                template=apps.get_model("template", "Template").objects.get(os="MAC"),
-            ),
-        },
-        {
-            "name": "Location ID",
-            "retrieval_value": "location_id",
-            "override_target": False,
-            "new_target": None,
-            "retrieval_method": None,
-            "retrieval_output": None,
-            "options": {},
-            "section": apps.get_model("section", "Section").objects.get(
-                name="USB",
-                template=apps.get_model("template", "Template").objects.get(os="MAC"),
-            ),
-        },
-        {
-            "name": "device speed",
-            "retrieval_value": "device_speed",
+            "name": "PCI Vendor",
+            "retrieval_value": "pci_vendor",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -2113,7 +2022,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Real Name",
-            "retrieval_value": "^RealName:\\s*(.*)",
+            "retrieval_value": "RealName:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -2125,8 +2034,8 @@ def create_default_macos_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "Record name",
-            "retrieval_value": "^RecordName:\\s(.*)",
+            "name": "Record Name",
+            "retrieval_value": "RecordName:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -2138,8 +2047,8 @@ def create_default_macos_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "Record type",
-            "retrieval_value": "^RecordType:\\s(.*)",
+            "name": "Record Type",
+            "retrieval_value": "RecordType:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -2151,8 +2060,8 @@ def create_default_macos_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "PrimaryGroupID",
-            "retrieval_value": "^PrimaryGroupID:\\s(.*)",
+            "name": "Primary Group ID",
+            "retrieval_value": "PrimaryGroupID:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -2165,7 +2074,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Unique ID",
-            "retrieval_value": "^UniqueID:\\s(.*)",
+            "retrieval_value": "UniqueID:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -2178,7 +2087,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "User Shell",
-            "retrieval_value": "^UserShell:\\s(.*)",
+            "retrieval_value": "UserShell:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -2191,7 +2100,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Network Name",
-            "retrieval_value": "^\\s{12}(\\w+)",
+            "retrieval_value": "(\\w+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -2203,7 +2112,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Status",
-            "retrieval_value": "^\\s{10}(Current)",
+            "retrieval_value": "(Current)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -2215,7 +2124,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "PHY Mode",
-            "retrieval_value": "\\s{14}PHY Mode:\\s(.*)",
+            "retrieval_value": "PHY Mode:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -2227,7 +2136,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Channel",
-            "retrieval_value": "\\s{14}Channel:\\s(.*)",
+            "retrieval_value": "Channel:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -2239,7 +2148,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Network Type",
-            "retrieval_value": "\\s{14}Network Type:\\s(.*)",
+            "retrieval_value": "Network Type:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -2251,7 +2160,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "Security",
-            "retrieval_value": "\\s{14}Security:\\s(.*)",
+            "retrieval_value": "Security:\\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
