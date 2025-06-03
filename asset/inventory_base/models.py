@@ -1,3 +1,4 @@
+import logging
 from automation.rule.logic import Logic
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
@@ -22,6 +23,7 @@ class InventoryBase(models.Model):
     - SRCMAC
     - Template
     - Domain
+    - is_template_forced
     """
 
     name = models.CharField(max_length=50, null=False)
@@ -36,6 +38,9 @@ class InventoryBase(models.Model):
     template = models.ForeignKey(
         Template, on_delete=models.CASCADE, blank=True, null=True
     )
+    is_template_forced = models.BooleanField(
+        default=False
+    )                                 
     accountinfo = GenericRelation(
         "accountinfo.AccountinfoData",
         content_type_field="content_type",
@@ -46,6 +51,14 @@ class InventoryBase(models.Model):
 
 @receiver(post_save, sender=InventoryBase)
 def inventory_received_handler(sender, instance, created, **kwargs):
+    logger = logging.getLogger(__name__)
+    # manually assigned > auto assigned
+    if instance.is_template_forced:
+        # skip auto os based template assignment logic
+        logger.debug(f"Template is manually assigned for ID {instance.id}, skipping inventory_received Rules.")
+        return
+
     if not getattr(instance, "processed", False):
+        logger.debug(f"Running inventory_received Rules for ID {instance.id}.")
         logic = Logic("inventory_received", instance)
         instance = logic.process_rules()
