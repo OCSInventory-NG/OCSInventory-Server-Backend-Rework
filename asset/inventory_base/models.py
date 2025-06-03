@@ -55,7 +55,10 @@ def inventory_received_handler(sender, instance, created, **kwargs):
     # manually assigned > auto assigned
     if instance.is_template_forced:
         # skip auto os based template assignment logic
-        logger.debug(f"Template is manually assigned for ID {instance.id}, skipping inventory_received Rules.")
+        logger.debug(
+            f"Template is manually assigned for ID {instance.id}, "
+            "skipping inventory_received Rules."
+        )
         return
 
     if not getattr(instance, "processed", False):
