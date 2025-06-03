@@ -47,13 +47,19 @@ class DynamicLogLevelHandler(logging.Handler):
             else:
                 new_level = logging.INFO
 
+            # preserve the formatter when updating levels
+            formatter = self.base_handler.formatter
             self.setLevel(new_level)
             self.base_handler.setLevel(new_level)
+            if formatter:
+                self.base_handler.setFormatter(formatter)
 
         except Exception as e:
             logging.error(f"Error updating log level: {e}")
             self.setLevel(logging.INFO)
             self.base_handler.setLevel(logging.INFO)
+            if hasattr(self.base_handler, 'formatter'):
+                self.base_handler.setFormatter(self.base_handler.formatter)
             logging.debug(
                 "DynamicLogLevelHandler: Log level set to default INFO due to error"
             )

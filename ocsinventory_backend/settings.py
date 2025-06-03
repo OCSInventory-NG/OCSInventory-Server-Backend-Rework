@@ -134,6 +134,7 @@ LOGGING = {
             "level": "DEBUG",
             "class": "logging.FileHandler",
             "filename": f"{BASE_DIR}/logs/ocsbackend.log",
+            "formatter": "verbose",
         },
         "console": {
             "class": "logging.StreamHandler",
@@ -178,6 +179,12 @@ LOGGING = {
 for handler_config in LOGGING["handlers"].values():
     if handler_config.get("class") == "logging.FileHandler":
         base_handler = logging.FileHandler(handler_config["filename"])
+        # set the formatter on the base handler
+        formatter_name = handler_config.get("formatter")
+        if formatter_name:
+            formatter = logging.Formatter(LOGGING["formatters"][formatter_name]["format"], 
+                                       style=LOGGING["formatters"][formatter_name]["style"])
+            base_handler.setFormatter(formatter)
         handler_config["()"] = DynamicLogLevelHandler
         handler_config["base_handler"] = base_handler
         del handler_config["class"]
