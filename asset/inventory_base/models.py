@@ -1,4 +1,5 @@
 import logging
+
 from automation.rule.logic import Logic
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
@@ -38,9 +39,7 @@ class InventoryBase(models.Model):
     template = models.ForeignKey(
         Template, on_delete=models.CASCADE, blank=True, null=True
     )
-    is_template_forced = models.BooleanField(
-        default=False
-    )                                 
+    is_template_forced = models.BooleanField(default=False)
     accountinfo = GenericRelation(
         "accountinfo.AccountinfoData",
         content_type_field="content_type",
