@@ -14,7 +14,6 @@ import logging
 import os
 
 from dotenv import load_dotenv
-from ocsinventory_backend.ocs_framework.logging_handlers import DynamicLogLevelHandler
 
 load_dotenv()
 
@@ -121,73 +120,69 @@ LOGGING = {
     "disable_existing_loggers": False,
     "formatters": {
         "verbose": {
-            "format": "{levelname} - {asctime} - {module} {process:d} : {message}",
+            "format": "[{levelname}][{asctime}][{name}:{funcName}:{lineno}]: {message}",
             "style": "{",
         },
         "simple": {
-            "format": "{levelname} - {asctime} - {module} : {message}",
+            "format": "[{levelname}][{asctime}][{name}]: {message}",
             "style": "{",
         },
     },
     "handlers": {
-        "file": {
-            "level": "DEBUG",
-            "class": "logging.FileHandler",
-            "filename": f"{BASE_DIR}/logs/ocsbackend.log",
+        "django": {
+            "class": "logging.handlers.TimedRotatingFileHandler",
+            "filename": f"{BASE_DIR}/logs/ocs_django.log",
+            'when': 'W6',
+            'backupCount': 2,
+            "formatter": "simple",
+        },
+        "ocs_backend": {
+            "class": "logging.handlers.TimedRotatingFileHandler",
+            "filename": f"{BASE_DIR}/logs/ocs_backend.log",
+            'when': 'W6',
+            'backupCount': 2,
             "formatter": "verbose",
         },
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "simple",
+        "ocs_collection": {
+            "class": "logging.handlers.TimedRotatingFileHandler",
+            "filename": f"{BASE_DIR}/logs/ocs_collection.log",
+            'when': 'W6',
+            'backupCount': 2,
+            "formatter": "verbose",
         },
-        "asset_collection": {
-            "level": "INFO",
-            "class": "logging.FileHandler",
-            "filename": f"{BASE_DIR}/logs/asset_collection.log",
-            "formatter": "simple",
+        "ocs_management": {
+            "class": "logging.handlers.TimedRotatingFileHandler",
+            "filename": f"{BASE_DIR}/logs/ocs_management.log",
+            'when': 'W6',
+            'backupCount': 2,
+            "formatter": "verbose",
         },
-    },
-    "root": {
-        "handlers": ["file"],
-        "level": "DEBUG",
     },
     "loggers": {
         "django": {
-            "handlers": ["file"],
+            "handlers": ["django"],
             "level": "INFO",
-            "propagate": True,
+            "propagate": False,
+        },
+        # inventory collection  only
+        "asset.collection.views": {
+            "handlers": ["ocs_collection"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        # root
+        "": {
+            "handlers": ["ocs_backend"],
+            "level": "INFO",
         },
         # ipdiscover command logger
-        "ipdiscover": {
-            "handlers": ["console"],
-            "level": "INFO",
-        },
-        # inventory collection logger
-        "asset.collection.views": {
-            "handlers": ["asset_collection"],
-            "level": "INFO",
-        },
-        # common logger for all viewsets
-        "OCSViewSet": {
-            "handlers": ["file"],
+        "mgmt.management.commands": {
+            "handlers": ["ocs_management"],
             "level": "INFO",
         },
     },
 }
 
-# wrapping existing handlers with dynamic handlers
-for handler_config in LOGGING["handlers"].values():
-    if handler_config.get("class") == "logging.FileHandler":
-        base_handler = logging.FileHandler(handler_config["filename"])
-        # set the formatter on the base handler
-        formatter_name = handler_config.get("formatter")
-        if formatter_name:
-            formatter = logging.Formatter(LOGGING["formatters"][formatter_name]["format"], 
-                                       style=LOGGING["formatters"][formatter_name]["style"])
-            base_handler.setFormatter(formatter)
-        handler_config["()"] = DynamicLogLevelHandler
-        handler_config["base_handler"] = base_handler
-        del handler_config["class"]
 
 WSGI_APPLICATION = "ocsinventory_backend.wsgi.application"
 
