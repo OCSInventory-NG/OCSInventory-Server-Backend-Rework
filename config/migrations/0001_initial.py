@@ -28,8 +28,8 @@ def create_base_config(apps, schema_editor):
                     "value": "ERROR",
                     "type": "select",
                     "unit": "",
-                    "options": ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
-                }
+                    "options": ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+                },
             ],
         },
         {
