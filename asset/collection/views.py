@@ -55,8 +55,10 @@ class CollectionView(APIView):
             config = Config.objects.get(name="blacklist")
             blacklist_config = config.value
         except Config.DoesNotExist:
-            self.LOGGER.warning("Blacklist configuration not found in database",
-                                extra={'classname': __name__})
+            self.LOGGER.warning(
+                "Blacklist configuration not found in database",
+                extra={"classname": __name__},
+            )
             return False, None
 
         for group in blacklist_config:
@@ -76,8 +78,10 @@ class CollectionView(APIView):
                         blacklist_list.append(stripped_item.upper())
                 device_mac = data.get("srcmac", "").strip().upper()
                 if device_mac and device_mac in blacklist_list:
-                    self.LOGGER.debug(f"Blacklisted MAC address detected: {device_mac}",
-                                      extra={'classname': __name__})
+                    self.LOGGER.debug(
+                        f"Blacklisted MAC address detected: {device_mac}",
+                        extra={"classname": __name__},
+                    )
                     return True, f"MAC address {device_mac} is blacklisted."
 
             # ipaddress blacklist
@@ -93,23 +97,32 @@ class CollectionView(APIView):
                     try:
                         ip_obj = ipaddress.ip_address(device_ip)
                     except ValueError:
-                        self.LOGGER.warning(f"Invalid IP address format: {device_ip}",
-                                            extra={'classname': __name__})
+                        self.LOGGER.warning(
+                            f"Invalid IP address format: {device_ip}",
+                            extra={"classname": __name__},
+                        )
                         continue
 
                     for cidr in cidr_list:
                         try:
                             network = ipaddress.ip_network(cidr, strict=False)
                             if ip_obj in network:
-                                self.LOGGER.debug(f"""
+                                self.LOGGER.debug(
+                                    f"""
                                                   Blacklisted IP address detected:
                                                    {device_ip} (matches CIDR {cidr})""",
-                                                  extra={'classname': __name__})
-                                return True, f"""IP address {device_ip}
-                                  is blacklisted (matches CIDR {cidr})."""
+                                    extra={"classname": __name__},
+                                )
+                                return (
+                                    True,
+                                    f"""IP address {device_ip}
+                                  is blacklisted (matches CIDR {cidr}).""",
+                                )
                         except ValueError:
-                            self.LOGGER.warning(f"Invalid CIDR notation: {cidr}",
-                                                extra={'classname': __name__})
+                            self.LOGGER.warning(
+                                f"Invalid CIDR notation: {cidr}",
+                                extra={"classname": __name__},
+                            )
                             continue
 
             # serialnumber blacklist
@@ -121,9 +134,11 @@ class CollectionView(APIView):
                         blacklist_list.append(stripped_item.upper())
                 device_serial = data.get("serial", "").strip().upper()
                 if device_serial and device_serial in blacklist_list:
-                    self.LOGGER.debug(f"""Blacklisted serial number detected:
+                    self.LOGGER.debug(
+                        f"""Blacklisted serial number detected:
                                        {device_serial}""",
-                                      extra={'classname': __name__})
+                        extra={"classname": __name__},
+                    )
                     return True, f"Serial number {device_serial} is blacklisted."
 
         return False, None
@@ -150,21 +165,28 @@ class CollectionView(APIView):
                     else:
                         # default or "uuid"
                         fields = ["uuid"]
-                    self.LOGGER.debug(f"Reconciliation fields configured as: {fields}",
-                                      extra={'classname': __name__})
+                    self.LOGGER.debug(
+                        f"Reconciliation fields configured as: {fields}",
+                        extra={"classname": __name__},
+                    )
                     return fields
             fields = ["uuid"]
-            self.LOGGER.debug(f"Using default reconciliation fields: {fields}",
-                              extra={'classname': __name__})
+            self.LOGGER.debug(
+                f"Using default reconciliation fields: {fields}",
+                extra={"classname": __name__},
+            )
             return fields
         except Config.DoesNotExist:
             self.LOGGER.warning(
                 """No server configuration found, will be using uuid only as
                   default reconciliation field""",
-                extra={'classname': __name__})
+                extra={"classname": __name__},
+            )
             fields = ["uuid"]
-            self.LOGGER.debug(f"Using default reconciliation fields: {fields}",
-                              extra={'classname': __name__})
+            self.LOGGER.debug(
+                f"Using default reconciliation fields: {fields}",
+                extra={"classname": __name__},
+            )
             return fields
 
     def get_reconciliation_filter(self, data):
@@ -175,8 +197,10 @@ class CollectionView(APIView):
         filter_dict = {}
         for field in fields:
             if field not in data:
-                raise ValueError(f"""Missing field '{field}'
-                                  required for reconciliation.""")
+                raise ValueError(
+                    f"""Missing field '{field}'
+                                  required for reconciliation."""
+                )
             filter_dict[field] = data[field]
         return filter_dict
 
@@ -207,14 +231,22 @@ class CollectionView(APIView):
         # blacklist check
         blacklisted, message = self.check_blacklist(data)
         if blacklisted:
-            self.LOGGER.debug(f"Device creation rejected - {device_id}: {message}",
-                              extra={'classname': __name__})
-            return Response({"message": f"""Device creation rejected due
-                              to blacklist: {message}"""}, status=403)
+            self.LOGGER.debug(
+                f"Device creation rejected - {device_id}: {message}",
+                extra={"classname": __name__},
+            )
+            return Response(
+                {
+                    "message": f"""Device creation rejected due
+                              to blacklist: {message}"""
+                },
+                status=403,
+            )
 
         errors = []
-        self.LOGGER.info(f"Creating inventory for device: {device_id}",
-                         extra={'classname': __name__})
+        self.LOGGER.info(
+            f"Creating inventory for device: {device_id}", extra={"classname": __name__}
+        )
 
         try:
             asset_serializer = InventoryBaseSerializer(data=data)
@@ -237,14 +269,18 @@ class CollectionView(APIView):
                         asset_instance, "inventory_base.inventorybase"
                     )
         except ValidationError as ve:
-            self.LOGGER.error(f"""Validation error creating device
+            self.LOGGER.error(
+                f"""Validation error creating device
                                {device_id}: {str(ve)}""",
-                              extra={'classname': __name__})
+                extra={"classname": __name__},
+            )
             return Response({"error": str(ve)}, status=400)
         except Exception as e:
-            self.LOGGER.error(f"""Unexpected error creating device
+            self.LOGGER.error(
+                f"""Unexpected error creating device
                                {device_id}: {str(e)}""",
-                              extra={'classname': __name__})
+                extra={"classname": __name__},
+            )
             return Response({"error": f"Error creating asset: {e}"}, status=500)
 
         # pre-fetch all Sections and Fields for this template
@@ -299,8 +335,10 @@ class CollectionView(APIView):
             InventoryField.objects.bulk_create(fields_to_create)
 
         if errors:
-            self.LOGGER.warning(f"Device {device_id} created with errors: {errors}",
-                                extra={'classname': __name__})
+            self.LOGGER.warning(
+                f"Device {device_id} created with errors: {errors}",
+                extra={"classname": __name__},
+            )
             return Response(
                 {
                     f"""Inventory created but errors were encountered while
@@ -309,8 +347,10 @@ class CollectionView(APIView):
                 status=201,
             )
         else:
-            self.LOGGER.info(f"Successfully created inventory for device: {device_id}",
-                             extra={'classname': __name__})
+            self.LOGGER.info(
+                f"Successfully created inventory for device: {device_id}",
+                extra={"classname": __name__},
+            )
 
         # successful creation response
         return Response(
@@ -342,14 +382,22 @@ class CollectionView(APIView):
         # blacklist check
         blacklisted, message = self.check_blacklist(data)
         if blacklisted:
-            self.LOGGER.debug(f"Device update rejected - {device_id}: {message}",
-                              extra={'classname': __name__})
-            return Response({"message": f"""Device update rejected due
-                              to blacklist: {message}"""}, status=403)
+            self.LOGGER.debug(
+                f"Device update rejected - {device_id}: {message}",
+                extra={"classname": __name__},
+            )
+            return Response(
+                {
+                    "message": f"""Device update rejected due
+                              to blacklist: {message}"""
+                },
+                status=403,
+            )
 
         errors = []
-        self.LOGGER.info(f"Updating inventory for device: {device_id}",
-                         extra={'classname': __name__})
+        self.LOGGER.info(
+            f"Updating inventory for device: {device_id}", extra={"classname": __name__}
+        )
 
         try:
             reconciliation_filter = self.get_reconciliation_filter(data)
@@ -359,8 +407,10 @@ class CollectionView(APIView):
 
         asset_instance = InventoryBase.objects.filter(**reconciliation_filter).first()
         if not asset_instance:
-            self.LOGGER.error(f"Error retrieving asset: {reconciliation_info}",
-                              extra={'classname': __name__})
+            self.LOGGER.error(
+                f"Error retrieving asset: {reconciliation_info}",
+                extra={"classname": __name__},
+            )
             return Response(
                 {"error": f"Error retrieving asset: {reconciliation_info}"},
                 status=500,
@@ -371,8 +421,9 @@ class CollectionView(APIView):
             if asset_serializer.is_valid(raise_exception=True):
                 asset_instance = asset_serializer.save()
         except ValidationError as ve:
-            self.LOGGER.error(f"Error updating asset: {ve}",
-                              extra={'classname': __name__})
+            self.LOGGER.error(
+                f"Error updating asset: {ve}", extra={"classname": __name__}
+            )
             return Response({"error": str(ve)}, status=400)
         except Exception as e:
             self.LOGGER.error(f"Error updating asset: {e}")
@@ -431,8 +482,10 @@ class CollectionView(APIView):
             InventorySection.objects.bulk_create(sections_to_create)
             InventoryField.objects.bulk_create(fields_to_create)
         if errors:
-            self.LOGGER.warning(f"Device {device_id} updated with errors: {errors}",
-                                extra={'classname': __name__})
+            self.LOGGER.warning(
+                f"Device {device_id} updated with errors: {errors}",
+                extra={"classname": __name__},
+            )
             return Response(
                 {
                     f"""Update succeeded but errors were encountered while
@@ -441,8 +494,10 @@ class CollectionView(APIView):
                 status=200,
             )
         else:
-            self.LOGGER.info(f"Successfully updated inventory for device: {device_id}",
-                             extra={'classname': __name__})
+            self.LOGGER.info(
+                f"Successfully updated inventory for device: {device_id}",
+                extra={"classname": __name__},
+            )
 
         return Response(
             {"message": "Inventory updated successfully", "id": asset_instance.id},
@@ -466,26 +521,38 @@ class CollectionView(APIView):
         # blacklist check
         blacklisted, message = self.check_blacklist(data)
         if blacklisted:
-            self.LOGGER.debug(f"Device partial update rejected: {device_id}: {message}",
-                              extra={'classname': __name__})
-            return Response({"message": f"""Device partial update rejected
-                              due to blacklist: {message}"""}, status=403)
+            self.LOGGER.debug(
+                f"Device partial update rejected: {device_id}: {message}",
+                extra={"classname": __name__},
+            )
+            return Response(
+                {
+                    "message": f"""Device partial update rejected
+                              due to blacklist: {message}"""
+                },
+                status=403,
+            )
 
         errors = []
-        self.LOGGER.info(f"Performing partial update for device: {device_id}",
-                         extra={'classname': __name__})
+        self.LOGGER.info(
+            f"Performing partial update for device: {device_id}",
+            extra={"classname": __name__},
+        )
 
         try:
             reconciliation_filter = self.get_reconciliation_filter(data)
         except ValueError as ve:
-            self.LOGGER.error("Reconciliation error: %s", ve,
-                              extra={'classname': __name__})
+            self.LOGGER.error(
+                "Reconciliation error: %s", ve, extra={"classname": __name__}
+            )
             return Response({"error": str(ve)}, status=400)
 
         asset_instance = InventoryBase.objects.filter(**reconciliation_filter).first()
         if not asset_instance:
-            self.LOGGER.error(f"Error retrieving asset: {reconciliation_info}",
-                              extra={'classname': __name__})
+            self.LOGGER.error(
+                f"Error retrieving asset: {reconciliation_info}",
+                extra={"classname": __name__},
+            )
             return Response(
                 {"error": f"Error retrieving asset: {reconciliation_info}"},
                 status=500,
@@ -497,12 +564,14 @@ class CollectionView(APIView):
             if asset_serializer.is_valid(raise_exception=True):
                 asset_instance = asset_serializer.save()
         except ValidationError as ve:
-            self.LOGGER.error(f"Error updating asset: {ve}",
-                              extra={'classname': __name__})
+            self.LOGGER.error(
+                f"Error updating asset: {ve}", extra={"classname": __name__}
+            )
             return Response({"error": str(ve)}, status=400)
         except Exception as e:
-            self.LOGGER.error(f"Error updating asset: {e}",
-                              extra={'classname': __name__})
+            self.LOGGER.error(
+                f"Error updating asset: {e}", extra={"classname": __name__}
+            )
             return Response({"error": f"Error updating asset: {e}"}, status=500)
 
         # pre-fetch Sections and Fields
@@ -560,9 +629,11 @@ class CollectionView(APIView):
             InventoryField.objects.bulk_create(new_fields)
 
         if errors:
-            self.LOGGER.warning(f"""Device {device_id} partially updated
+            self.LOGGER.warning(
+                f"""Device {device_id} partially updated
                                  with errors: {errors}""",
-                                extra={'classname': __name__})
+                extra={"classname": __name__},
+            )
             return Response(
                 {
                     f"""Partial update succeeded but errors were encountered
@@ -571,9 +642,11 @@ class CollectionView(APIView):
                 status=200,
             )
         else:
-            self.LOGGER.info(f"""Successfully completed partial update for
+            self.LOGGER.info(
+                f"""Successfully completed partial update for
                               device: {device_id}""",
-                             extra={'classname': __name__})
+                extra={"classname": __name__},
+            )
 
         return Response(
             {

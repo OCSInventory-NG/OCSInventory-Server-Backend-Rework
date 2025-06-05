@@ -10,7 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
-import logging
 import os
 
 from dotenv import load_dotenv
@@ -132,29 +131,29 @@ LOGGING = {
         "django": {
             "class": "logging.handlers.TimedRotatingFileHandler",
             "filename": f"{BASE_DIR}/logs/ocs_django.log",
-            'when': 'W6',
-            'backupCount': 2,
+            "when": "W6",
+            "backupCount": 2,
             "formatter": "simple",
         },
         "ocs_backend": {
             "class": "logging.handlers.TimedRotatingFileHandler",
             "filename": f"{BASE_DIR}/logs/ocs_backend.log",
-            'when': 'W6',
-            'backupCount': 2,
+            "when": "W6",
+            "backupCount": 2,
             "formatter": "verbose",
         },
         "ocs_collection": {
             "class": "logging.handlers.TimedRotatingFileHandler",
             "filename": f"{BASE_DIR}/logs/ocs_collection.log",
-            'when': 'W6',
-            'backupCount': 2,
+            "when": "W6",
+            "backupCount": 2,
             "formatter": "verbose",
         },
         "ocs_management": {
             "class": "logging.handlers.TimedRotatingFileHandler",
             "filename": f"{BASE_DIR}/logs/ocs_management.log",
-            'when': 'W6',
-            'backupCount': 2,
+            "when": "W6",
+            "backupCount": 2,
             "formatter": "verbose",
         },
     },

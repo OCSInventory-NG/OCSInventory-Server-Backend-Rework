@@ -39,8 +39,9 @@ class DynamicLogLevelManager:
             for logger_name in self.LOGGER_MAPPING.values():
                 self.set_level_for_logger(logger_name, "DEBUG", True)
 
-    def set_level_for_logger(self, logger_name: str, level_str: str,
-                             is_default: bool = False):
+    def set_level_for_logger(
+        self, logger_name: str, level_str: str, is_default: bool = False
+    ):
         """
         Applies a level string like "INFO", "DEBUG", etc. to a specific logger.
         """
@@ -51,5 +52,7 @@ class DynamicLogLevelManager:
             handler.setLevel(level)
         self.levels[logger_name] = level
         default_msg = " (using default)" if is_default else ""
-        self.logger.warning(f"{logger_name or 'root'} level set"
-                            f" to {logging.getLevelName(level)}{default_msg}")
+        self.logger.warning(
+            f"{logger_name or 'root'} level set"
+            f" to {logging.getLevelName(level)}{default_msg}"
+        )
