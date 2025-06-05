@@ -1736,7 +1736,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrieval_value": "\"(.*)\"",
+            "retrieval_value": '"(.*)"',
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,

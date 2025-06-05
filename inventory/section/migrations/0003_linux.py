@@ -107,7 +107,7 @@ def create_default_linux_sections(apps, schema_editor):
             "retrieval_output": "REGX",
             "target": """echo -e "=== Détails des interfaces (nmcli device show) ===";nmcli device show | awk 'BEGIN{RS=""; count=0} {data[count++] = $0} END {for (i=0; i<count; i++) {print data[i]; if (i < count - 1) print "#"}}'""",
             "template": apps.get_model("template", "Template").objects.get(os="LIN"),
-            "options": {"separator":"#"},
+            "options": {"separator": "#"},
         },
         {
             "name": "PORTS",
