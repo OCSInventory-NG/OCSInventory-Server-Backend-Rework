@@ -1,13 +1,11 @@
 from django.contrib.auth.models import Group
-from rest_framework import serializers
+from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
+from rest_framework.serializers import ModelSerializer
 
 
-class GroupSerializer(serializers.ModelSerializer):
+class GroupSerializer(ExpandableFieldsMixin, ModelSerializer):
     """
     This serialize class provide the API representation
-
-    Args:
-        serializers ([ModelSerializer])
     """
 
     class Meta:
@@ -15,3 +13,4 @@ class GroupSerializer(serializers.ModelSerializer):
 
         model = Group
         fields = ["id", "name", "permissions", "is_protected"]
+        expandable_fields = {}

@@ -44,6 +44,12 @@ def adjust_priorities_on_delete(sender, instance, **kwargs):
     """
     This signal is triggered when a DeploymentAction is deleted.
     """
+    # if origin is Package, do not trigger the signal (nested deletion,
+    # all actions will be deleted at the same time and the signal will raise
+    # a DoesNotExist exception when trying to decrement the priority of an action)
+    if isinstance(kwargs.get("origin"), Package):
+        return
+
     configs_higher_priority = DeploymentAction.objects.filter(
         package=instance.package_id,
         priority__gt=instance.priority if instance.priority else 0,

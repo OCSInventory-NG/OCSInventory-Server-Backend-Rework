@@ -1,13 +1,11 @@
 from django.contrib.auth.models import Group, User
-from rest_framework import serializers
+from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
+from rest_framework.serializers import ModelSerializer
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer(ExpandableFieldsMixin, ModelSerializer):
     """
     This serialize class provide the API representation
-
-    Args:
-        serializers ([ModelSerializer])
     """
 
     class Meta:
@@ -21,12 +19,12 @@ class UserSerializer(serializers.ModelSerializer):
             "first_name",
             "last_name",
             "password",
-            "is_staff",
             "is_superuser",
             "groups",
             "user_permissions",
         ]
         extra_kwargs = {"password": {"write_only": True}}
+        expandable_fields = {}
 
     @staticmethod
     def create(validated_data):
@@ -44,7 +42,7 @@ class UserSerializer(serializers.ModelSerializer):
             username=validated_data["username"],
             first_name=validated_data["first_name"],
             last_name=validated_data["last_name"],
-            is_staff=validated_data["is_staff"],
+            is_superuser=validated_data["is_superuser"],
         )
 
         user.set_password(validated_data["password"])

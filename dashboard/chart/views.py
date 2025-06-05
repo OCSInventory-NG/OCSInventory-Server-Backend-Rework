@@ -276,7 +276,7 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
         try:
             # timeframe for contacted is seven days from the current date
             today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-            since = today - timedelta(days=7)
+            since = today - timedelta(days=6)
 
             contacted = self.queryset.filter(last_update__gte=since)
 
@@ -285,7 +285,8 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
             }
             for device in contacted:
                 date_str = device.last_update.strftime("%Y-%m-%d")
-                last_contacted_counters[date_str] += 1
+                if date_str in last_contacted_counters:
+                    last_contacted_counters[date_str] += 1
 
             sorted_dates = sorted(last_contacted_counters.keys())
             sorted_counters = {

@@ -1,13 +1,11 @@
 from asset.inventory_field.models import InventoryField
-from rest_framework import serializers
+from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
+from rest_framework.serializers import ModelSerializer
 
 
-class InventoryFieldSerializer(serializers.ModelSerializer):
+class InventoryFieldSerializer(ExpandableFieldsMixin, ModelSerializer):
     """
     Serializer class for InventoryField
-
-    Args:
-        serializers ([ModelSerializer])
     """
 
     class Meta:

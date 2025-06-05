@@ -1,18 +1,13 @@
 from ipdiscover.netdevice.models import Netdevice
-from ipdiscover.netdevice.serializers import NetdeviceSerializer
 from ipdiscover.network.models import Network
-from rest_framework import serializers
+from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
+from rest_framework.serializers import ModelSerializer
 
 
-class NetworkSerializer(serializers.ModelSerializer):
+class NetworkSerializer(ExpandableFieldsMixin, ModelSerializer):
     """
     This serialize class provide the API representation
-
-    Args:
-        serializers ([ModelSerializer])
     """
-
-    netdevices = NetdeviceSerializer(many=True, required=False)
 
     class Meta:
         """Define the linked model and the fields registered in the API"""
@@ -34,6 +29,14 @@ class NetworkSerializer(serializers.ModelSerializer):
             "description": {"required": False},
             "location": {"required": False},
             "last_update": {"read_only": True},
+        }
+
+        expandable_fields = {
+            "netdevices": {
+                "serializer": "ipdiscover.netdevice.serializers.NetdeviceSerializer",
+                "many": True,
+                "required": False,
+            }
         }
 
     def create(self, validated_data):

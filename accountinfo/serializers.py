@@ -1,14 +1,12 @@
 from accountinfo.models import AccountinfoConfig, AccountinfoData, AccountinfoValue
 from django.contrib.contenttypes.models import ContentType
-from rest_framework import serializers
+from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
+from rest_framework.serializers import ModelSerializer
 
 
-class AccountinfoDataSerializer(serializers.ModelSerializer):
+class AccountinfoDataSerializer(ExpandableFieldsMixin, ModelSerializer):
     """
     This serialize class provide the API representation
-
-    Args:
-        serializers ([ModelSerializer])
     """
 
     class Meta:
@@ -18,6 +16,7 @@ class AccountinfoDataSerializer(serializers.ModelSerializer):
         fields = ["id", "accountdata", "object_slug", "content_type", "object_id"]
 
         extra_kwargs = {"content_type": {"read_only": True}}
+        expandable_fields = {}
 
     def create(self, validated_data):
         """Override create to allow nested creation of fields"""
@@ -30,12 +29,9 @@ class AccountinfoDataSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
-class AccountinfoValueSerializer(serializers.ModelSerializer):
+class AccountinfoValueSerializer(ExpandableFieldsMixin, ModelSerializer):
     """
     This serialize class provide the API representation
-
-    Args:
-        serializers ([ModelSerializer])
     """
 
     class Meta:
@@ -43,17 +39,13 @@ class AccountinfoValueSerializer(serializers.ModelSerializer):
 
         model = AccountinfoValue
         fields = ["id", "accountinfo_config", "value"]
+        expandable_fields = {}
 
 
-class AccountinfoConfigSerializer(serializers.ModelSerializer):
+class AccountinfoConfigSerializer(ExpandableFieldsMixin, ModelSerializer):
     """
     This serialize class provide the API representation
-
-    Args:
-        serializers ([ModelSerializer])
     """
-
-    accountinfo_values = AccountinfoValueSerializer(many=True, required=False)
 
     class Meta:
         """Define the linked model and the fields registered in the API"""
@@ -68,3 +60,7 @@ class AccountinfoConfigSerializer(serializers.ModelSerializer):
             "accountinfo_values",
         ]
         extra_kwargs = {"accountinfo_values": {"read_only": True}}
+
+        expandable_fields = {
+            "accountinfo_values": AccountinfoValueSerializer,
+        }

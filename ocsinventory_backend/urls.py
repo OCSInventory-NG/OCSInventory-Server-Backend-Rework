@@ -42,6 +42,7 @@ from django.conf.urls.static import static
 from django.urls import include, path
 from filemanager.routers import FileManagerRouter
 from group.routers import GroupRouter
+from inventory.category.routers import CategoryRouter
 from inventory.field.routers import FieldRouter
 from inventory.section.routers import SectionRouter
 from inventory.template.routers import TemplateRouter
@@ -107,6 +108,10 @@ sectionRouter = sectionRouter.defineRoutes(defaultRouter)
 # Add fieldRouter declaration
 fieldRouter = FieldRouter()
 fieldRouter = fieldRouter.defineRoutes(defaultRouter)
+
+# Add categoryRouter declaration
+categoryRouter = CategoryRouter()
+categoryRouter = categoryRouter.defineRoutes(defaultRouter)
 
 # Add Netdevicce declaration
 netrouter = NetdeviceRouter()

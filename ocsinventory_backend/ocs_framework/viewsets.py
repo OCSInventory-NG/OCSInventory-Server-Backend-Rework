@@ -170,3 +170,112 @@ class RestrictVisibilityViewSet(OCSViewSet):
             {"detail": "You do not have permission to delete this item."},
             status=status.HTTP_403_FORBIDDEN,
         )
+
+
+class ExpandableFieldsMixin:
+    """
+    Mixin to dynamically expand nested fields based on the "expand" query parameter.
+
+    To use, add an `expandable_fields` dictionary in your serializer's Meta:
+
+        expandable_fields = {
+            "some_relation": SomeNestedSerializer,
+            "other_relation": OtherNestedSerializer,
+        }
+
+    The mixin will:
+      - Expand all fields and childs if expand="*"
+      - Expand fields provided in a comma separated list (expand=field1,field2)
+      - or return the pks for the relation
+
+    """
+
+    def to_representation(self, instance):
+        # get default representation
+        representation = super().to_representation(instance)
+        request = self.context.get("request")
+        if not request:
+            return representation
+
+        # track depth
+        current_depth = self.context.get("expand_depth", 0)
+        # Limit recursion depth if needed (e.g., max_depth=1 or 2)
+        # You might want to make max_depth configurable
+        max_depth = 1  # Example: Allow only one level of expansion
+        if current_depth >= max_depth:
+            return representation
+
+        expand_param = request.query_params.get("expand", "")
+        expandable_fields = getattr(self.Meta, "expandable_fields", {})
+
+        # Determine which fields to expand
+        expand_all = expand_param == "*"
+        explicit_expand_fields = set(
+            field.strip() for field in expand_param.split(",") if field.strip()
+        )
+
+        # Get model metadata once
+        model_meta = instance._meta
+
+        for field, serializer_class in expandable_fields.items():
+            should_expand = expand_all or field in explicit_expand_fields
+
+            if should_expand:
+                try:
+                    field_obj = getattr(instance, field, None)
+                    if field_obj is not None:
+                        model_field = model_meta.get_field(field)
+                        new_context = {
+                            **self.context,
+                            "expand_depth": current_depth + 1,
+                        }
+
+                        # Handle ManyToMany and Reverse ForeignKey/OneToOne
+                        if model_field.many_to_many or model_field.one_to_many:
+                            representation[field] = serializer_class(
+                                field_obj.all(), many=True, context=new_context
+                            ).data
+                        # Handle ForeignKey and OneToOne
+                        elif model_field.many_to_one or model_field.one_to_one:
+                            representation[field] = serializer_class(
+                                field_obj, context=new_context
+                            ).data
+                        # Optional: Handle other field types if necessary
+
+                except Exception as e:
+                    # Handle cases where getattr fails
+                    # or field doesn't exist as expected
+                    # Log the error or handle appropriately
+                    self.logger.error(f"Error expanding field '{field}': {e}")
+                    # Decide whether to keep the default representation
+                    # or remove/set to null
+                    if field in representation:
+                        del representation[field]  # Or set to None, or keep default PK
+
+            else:
+                # Handle non-expanded fields (represent as PKs)
+                # This part might be redundant if the default
+                # representation already does this
+                # but explicit handling can be clearer.
+                try:
+                    field_obj = getattr(instance, field, None)
+                    if field_obj is not None:
+                        model_field = model_meta.get_field(field)
+                        if model_field.many_to_many or model_field.one_to_many:
+                            # Ensure it's iterable before list comprehension
+                            if hasattr(field_obj, "all"):
+                                representation[field] = [
+                                    item.pk for item in field_obj.all()
+                                ]
+                            else:  # Should not happen for M2M/O2M, but defensive check
+                                representation[field] = []
+                        elif model_field.many_to_one or model_field.one_to_one:
+                            representation[field] = field_obj.pk
+                        # else: keep original representation value if not a relation
+
+                except Exception as e:
+                    self.logger.error(f"Error getting PK for field '{field}': {e}")
+                    if field in representation:
+                        del representation[field]
+
+        return representation
