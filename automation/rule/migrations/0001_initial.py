@@ -56,6 +56,20 @@ def create_osname_rules_with_actions(apps, schema_editor):
                 }
             ],
         },
+        {
+            "description": "Assign Legacy template",
+            "trigger": "inventory_received",
+            "enabled": True,
+            "logic": {"regex": [{"var": "agent"}, "(?i)(OCS-NG)"]},
+            "actions": [
+                {
+                    "description": "Update template for Legacy",
+                    "action": "set",
+                    "field": "template",
+                    "value": 1,
+                }
+            ],
+        },
     ]
 
     # create rules and associated actions
