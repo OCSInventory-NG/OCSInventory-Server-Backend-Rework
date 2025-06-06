@@ -86,14 +86,6 @@ def create_default_linux_sections(apps, schema_editor):
             "options": {"multiple": False, "separator": "Memory Device"},
         },
         {
-            "name": "MODEMS",
-            "retrieval_method": "BASH",
-            "retrieval_output": "REGX",
-            "target": "",
-            "template": apps.get_model("template", "Template").objects.get(os="LIN"),
-            "options": {"multiple": False, "separator": "collisions"},
-        },
-        {
             "name": "MONITORS",
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
