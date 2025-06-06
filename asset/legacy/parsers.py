@@ -2,9 +2,6 @@ import logging
 import zlib
 
 import xmltodict
-from django.core.exceptions import ObjectDoesNotExist
-from inventory.template.models import Template
-from rest_framework.response import Response
 from rest_framework_xml.parsers import XMLParser
 
 
@@ -83,7 +80,9 @@ class LegacyXMLParser(XMLParser):
             template_data["domain"] = self.get_nested(request_data, ["HARDWARE", "DNS"])
 
             # user agent is stored in http header
-            template_data["agent"] = parser_context.get('request').META.get('HTTP_USER_AGENT', 'Empty')
+            template_data["agent"] = parser_context.get("request").META.get(
+                "HTTP_USER_AGENT", "Empty"
+            )
 
             # Transforming the section to a list if it is a dictionary
             template_inventory = {}
