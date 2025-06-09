@@ -10,6 +10,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.forms.models import model_to_dict
 from ipdiscover.netdevice.models import Netdevice
 from ipdiscover.network.models import Network
+from ocsinventory_backend.ocs_framework.logmanager import DynamicLogLevelManager
 
 
 class Command(BaseCommand):
@@ -68,14 +69,16 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         """Must be implemented, defines the logic behind the command"""
 
+        # initialize dynamic logger
+        log_manager = DynamicLogLevelManager()
+        
         # logger initialization
         logger = logging.getLogger("mgmt.management.commands")
         logger.debug(f"Command arguments: {options}")
 
         # only set log level if explicitly provided in args
         if options["loglevel"]:
-            log_level = getattr(logging, options["loglevel"])
-            logger.setLevel(log_level)
+            log_manager.set_level_for_logger("mgmt.management.commands", options["loglevel"])
             logger.debug(f"Log level overridden to: {options['loglevel']}")
         else:
             logger.debug("Using log level from server")
