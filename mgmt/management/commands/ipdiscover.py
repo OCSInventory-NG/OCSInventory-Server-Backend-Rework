@@ -78,7 +78,8 @@ class Command(BaseCommand):
 
         # only set log level if explicitly provided in args
         if options["loglevel"]:
-            log_manager.set_level_for_logger("mgmt.management.commands", options["loglevel"])
+            log_manager.set_level_for_logger("mgmt.management.commands",
+                                             options["loglevel"])
             logger.debug(f"Log level overridden to: {options['loglevel']}")
         else:
             logger.debug("Using log level from server")
