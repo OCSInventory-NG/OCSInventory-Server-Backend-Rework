@@ -178,6 +178,7 @@ LOGGING = {
         "mgmt.management.commands": {
             "handlers": ["ocs_management"],
             "level": "INFO",
+            "propagate": False,
         },
     },
 }
