@@ -45,12 +45,26 @@ class Command(BaseCommand):
         # import ipd scan arguments from csv file
         parser.add_argument('--file', type=str,
                             help='Scan multiple networks by importing a csv file')
-        # logging level
-        parser.add_argument('--debug', action='store_true',
-                            help='Set logging level to debug')
+        # make loglevel optional
+        parser.add_argument('--loglevel', type=str, choices=['CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG'],
+                            help='Override logging level from server')
 
     def handle(self, *args, **options):
         """Must be implemented, defines the logic behind the command"""
+
+        # logger initialization
+        logger = logging.getLogger('mgmt.management.commands')
+        logger.debug(f"Command arguments: {options}")
+        
+        # only set log level if explicitly provided in args
+        if options['loglevel']:
+            log_level = getattr(logging, options['loglevel'])
+            logger.setLevel(log_level)
+            logger.debug(f"Log level overridden to: {options['loglevel']}")
+        else:
+            logger.debug("Using log level from settings.py")
+        
+        logger.info("Starting ipdiscover scan!")
 
         def from_file(file):
             """Import targeted subnets from CSV file
@@ -58,24 +72,33 @@ class Command(BaseCommand):
             Args:
                 file ([str]): path to CSV file
             """
+            logger.debug(f"Reading CSV file: {file}")
             static_fields = ['network', 'nettag', 'name', 'description']
             imported_fields = []
-            with open(file, newline='', encoding='utf-8') as f:
-                reader = csv.reader(f)
-                for row in reader:
-                    # get fields from file
-                    if 'network' in row:
-                        for field in row:
-                            imported_fields += [field]
-                            options[field] = dict()
-                    else:
-                        network = row[0]
-                        for field in imported_fields:
-                            options[field][network] = row[imported_fields.index(field)]
+            try:
+                with open(file, newline='', encoding='utf-8') as f:
+                    reader = csv.reader(f)
+                    for row in reader:
+                        if 'network' in row:
+                            logger.debug(f"Found header row: {row}")
+                            for field in row:
+                                imported_fields += [field]
+                                options[field] = dict()
+                        else:
+                            logger.debug(f"Processing network row: {row}")
+                            network = row[0]
+                            for field in imported_fields:
+                                options[field][network] = row[imported_fields.index(field)]
 
-            if not set(static_fields) == set(imported_fields):
-                logger.info("Please check that all required fields are present in the "
-                            "csv file (network,nettag,name,description)")
+                if not set(static_fields) == set(imported_fields):
+                    missing_fields = set(static_fields) - set(imported_fields)
+                    logger.error(f"Missing required fields in CSV: {missing_fields}")
+                    exit()
+            except FileNotFoundError:
+                logger.error(f"CSV file not found: {file}")
+                exit()
+            except Exception as e:
+                logger.error(f"Error reading CSV file: {str(e)}")
                 exit()
 
         def ipd_list():
@@ -105,13 +128,15 @@ class Command(BaseCommand):
                 Args:
                     net ([str]): e.g. 172.18.26.0/24
                 """
-                ping_cmd = ['fping', '-g',  '--quiet',  '-a', str(net)]
+                logger.debug(f"Starting fping scan for network: {net}")
+                ping_cmd = ['fping', '-g', '--quiet', '-a', str(net)]                
                 process = subprocess.Popen(ping_cmd, stdout=subprocess.PIPE,
                                            stderr=subprocess.PIPE, encoding='utf-8')
                 output = process.stdout.read()
                 results = output.split()
-                logger.info("IpDiscover scan found " + str(len(results))
-                            + " hosts for subnet " + net)
+                
+                logger.debug(f"Fping scan completed. Raw output: {output}")
+                logger.info(f"IpDiscover scan found {len(results)} hosts for subnet {net}")
                 return results
 
             def nmap_scan(net):
@@ -121,22 +146,31 @@ class Command(BaseCommand):
                 Args:
                     net ([str]): e.g. 172.18.26.0/24
                 """
+                logger.debug(f"Starting nmap scan for network: {net}")
                 nm = nmap.PortScanner()
-                results = nm.scan(hosts=net, arguments='-sP')
-
+                
                 try:
-                    nb_hosts = results['nmap']['scanstats']['uphosts']
-                    logger.info("IpDiscover scan found "
-                                + nb_hosts
-                                + " hosts for subnet " + net)
-                    results = results['scan']
-                except TypeError:
-                    logger.debug("Nmap output is empty")
+                    results = nm.scan(hosts=net, arguments='-sP')
+                    
+                    try:
+                        nb_hosts = results['nmap']['scanstats']['uphosts']
+                        logger.debug(f"Nmap scan results: {results}")
+                        logger.info(f"IpDiscover scan found {nb_hosts} hosts for subnet {net}")
+                        results = results['scan']
+                    except TypeError:
+                        logger.warning("Nmap output is empty")
+                        results = {}
+                except Exception as e:
+                    logger.error(f"Nmap scan failed: {str(e)}")
+                    results = {}
+                
                 return results
 
             def insert_netdevices(subnet, network_id):
+                logger.debug(f"Inserting/updating netdevices for subnet: {subnet['nettag']}")
                 for netdevice in subnet["netdevices"]:
                     if netdevice['ip'] is not None:
+                        logger.debug(f"Processing netdevice: IP={netdevice['ip']}, MAC={netdevice['mac']}")
                         # check if netdevice exists in db
                         existing_devices = Netdevice.objects.all()
                         if existing_devices.filter(ip=netdevice["ip"],
@@ -161,13 +195,13 @@ class Command(BaseCommand):
                     subnets ([dict]): dict of subnets w/ netdevices discovered by either
                      nmap or fping scan
                 """
+                logger.debug(f"Processing {len(subnets)} subnets for database insertion")
                 for subnet in subnets:
+                    logger.debug(f"Processing subnet: {subnet['nettag']}")
                     # check if subnet exists in db
                     existing_sub = Network.objects.all()
                     if existing_sub.filter(nettag=subnet["nettag"]).exists():
-                        logger.debug("Subnet " + subnet["nettag"] +
-                                     " already exists in database, " +
-                                     "updating ..")
+                        logger.debug(f"Subnet {subnet['nettag']} already exists in database, updating..")
                         # update subnet
                         try:
                             subnet_obj = existing_sub.get(nettag=subnet["nettag"])
@@ -180,13 +214,11 @@ class Command(BaseCommand):
                             subnet_obj.nettag = subnet["nettag"]
                             subnet_obj.mask = subnet["mask"]
                             subnet_obj.save()
-                            logger.debug("Subnet " + subnet["nettag"]
-                                         + " updated in database")
+                            logger.debug(f"Subnet {subnet['nettag']} updated in database")
                             # also update netdevices
                             insert_netdevices(subnet, subnet_obj)
                         except Exception as e:
-                            logger.error("Error while updating subnet "
-                                         + subnet["nettag"] + e)
+                            logger.error(f"Error while updating subnet {subnet['nettag']}: {str(e)}")
                     else:
                         # create new subnet
                         try:
@@ -196,13 +228,11 @@ class Command(BaseCommand):
                                                             description=subnet["description"],
                                                             mask=subnet["mask"],
                                                             nettag=subnet["nettag"])
-                            logger.debug("Subnet " + subnet["nettag"]
-                                         + " created in database")
+                            logger.debug(f"Subnet {subnet['nettag']} created in database")
                             # create new netdevices
                             insert_netdevices(subnet, subnet_obj)
                         except Exception as e:
-                            logger.error("Error while creating subnet "
-                                         + subnet["nettag"] + e)
+                            logger.error(f"Error while creating subnet {subnet['nettag']}: {str(e)}")
 
             if os.geteuid() != 0:
                 logger.info("Running this command as unprivileged user will not provide"
@@ -283,17 +313,15 @@ class Command(BaseCommand):
 
         # IPD MAIN PROCESS
 
-        # logger initialization
-        logger = logging.getLogger('ipdiscover')
-        logger.info("Starting ipdiscover scan ! ")
-        if options['debug']:
-            logger.setLevel(logging.DEBUG)
-        else:
-            logger.setLevel(logging.INFO)
-
         if options['network']:
             try:
                 subnet = options['network'][0]
+                logger.debug(f"Scanning network: {subnet}")
+                logger.debug(f"Scan type: {options['scantype'][0] if options['scantype'] else 'Not specified'}")
+                logger.debug(f"Network tag: {options['nettag'][0] if options['nettag'] else 'Not specified'}")
+                logger.debug(f"Network name: {options['name'][0] if options['name'] else 'Not specified'}")
+                logger.debug(f"Network description: {options['description'][0] if options['description'] else 'Not specified'}")
+                
                 # building dicts for this subnet
                 network, nettag, name, description = {}, {}, {}, {}
                 # assign key to dict
@@ -310,11 +338,11 @@ class Command(BaseCommand):
                                 description)
                 logger.info('IpDiscover scan ran successfully.')
             except CommandError as e:
-                logger.info("IpDiscover failed : " + str(e.__cause__))
+                logger.error(f"IpDiscover failed: {str(e.__cause__)}")
 
         elif options['file']:
-            logger.info("Please be aware that importing a file " +
-                        " will overwrite any existing value.")
+            logger.info(f"Importing networks from file: {options['file']}")
+            logger.debug(f"Scan type for imported networks: {options['scantype'][0] if options['scantype'] else 'Not specified'}")
             try:
                 from_file(options['file'])
                 ipd_scan_subnet(options['scantype'], options['network'],
@@ -322,9 +350,10 @@ class Command(BaseCommand):
                                 options['description'])
                 logger.info("IpDiscover scan ran successfully.")
             except CommandError as e:
-                logger.info("IpDiscover failed : " + str(e.__cause__))
+                logger.error(f"IpDiscover failed: {str(e.__cause__)}")
 
         elif options['list']:
+            logger.debug("Listing all discovered networks")
             output = "Already discovered subnets : \n"
             for subnet in ipd_list():
                 nettag = subnet['nettag']
