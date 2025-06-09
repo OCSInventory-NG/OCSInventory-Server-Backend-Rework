@@ -78,7 +78,7 @@ class Command(BaseCommand):
             logger.setLevel(log_level)
             logger.debug(f"Log level overridden to: {options['loglevel']}")
         else:
-            logger.debug("Using log level from settings.py")
+            logger.debug("Using log level from server")
 
         logger.info("Starting ipdiscover scan!")
 
