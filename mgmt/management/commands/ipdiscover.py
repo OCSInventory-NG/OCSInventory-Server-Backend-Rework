@@ -74,7 +74,6 @@ class Command(BaseCommand):
 
         # logger initialization
         logger = logging.getLogger("mgmt.management.commands")
-        logger.debug(f"Command arguments: {options}")
 
         # only set log level if explicitly provided in args
         if options["loglevel"]:
@@ -86,6 +85,7 @@ class Command(BaseCommand):
             logger.debug("Using log level from server")
 
         logger.info("Starting ipdiscover scan!")
+        logger.debug(f"Command arguments: {options}")
 
         def from_file(file):
             """Import targeted subnets from CSV file
