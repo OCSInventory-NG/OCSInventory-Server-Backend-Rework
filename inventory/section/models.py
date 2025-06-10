@@ -41,7 +41,7 @@ class Section(models.Model):
     retrieval_output = models.CharField(
         max_length=4, choices=RETRIEVAL_OUTPUT, default="JSON"
     )
-    target = models.CharField(max_length=255)
+    target = models.TextField()
     template = models.ForeignKey(
         Template, related_name="sections", on_delete=models.CASCADE, default=1
     )
