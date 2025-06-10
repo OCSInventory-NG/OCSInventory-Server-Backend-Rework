@@ -29,7 +29,7 @@ class Command(BaseCommand):
 
         # initialize dynamic logger
         log_manager = DynamicLogLevelManager()
-        
+
         # logger initialization
         logger = logging.getLogger('mgmt.management.commands')
 
@@ -51,11 +51,16 @@ class Command(BaseCommand):
             logger.debug(f"History updated for task {task.name}: {comment}")
 
         tasks = Scheduler.objects.filter(active=True)
+        logger.info(f"Found {tasks.count()} active tasks to process")
+        for task in tasks:
+            logger.debug(f"Task: {task.name} - {task.description}")
         # round current time to the nearest hour to avoid minute/second mismatches
         now = datetime.now().replace(minute=0, second=0, microsecond=0, tzinfo=self.utc)
+        exact_now = datetime.now(tz=self.utc)
         logger.debug(f"Current time rounded to hour: {now}")
 
         for task in tasks:
+            logger.info(f"Processing task: {task.name}")
             #  minimum intervals between runs
             min_intervals = {
                 "hourly": timedelta(hours=1),
@@ -77,34 +82,41 @@ class Command(BaseCommand):
             ):
                 should_run = True
                 logger.debug(f"Task {task.name} scheduled for current hour")
+            else:
+                logger.debug(f"Skipping task {task.name}"
+                             f" - not scheduled for current hour")
 
             # check minimum interval since last execution
             if should_run and task.last_execution:
                 last_exec = task.last_execution.replace(tzinfo=self.utc)
                 if now - last_exec < min_intervals[task.recurrence]:
                     should_run = False
-                    logger.debug(f"Skipping task"
-                                 f" {task.name} - minimum interval not met")
+                    logger.debug(f"Skipping task {task.name}"
+                                 f" - minimum interval not met")
 
             if should_run:
                 try:
                     logger.info(f"Starting task {task.name}")
                     # start history
-                    updateHistory(task, f"Starting task {task.name}", 0)
+                    updateHistory(task, f"Starting task {task.name} at {exact_now}", 0)
 
                     # import and execute task
                     task_class = module_loading.import_string(self.library + task.name)
-                    task_class.execute(task_class)
+                    task_instance = task_class()
+                    task_instance.execute()
 
                     task.last_execution = now
                     task.save()
 
                     logger.info(f"Task {task.name} completed successfully")
                     # completion history
-                    updateHistory(task, f"Task {task.name} finished successfully", 1)
+                    updateHistory(task,
+                                  f"Task {task.name} finished successfully"
+                                  f" at {exact_now}",
+                                  1)
 
                 except Exception as e:
-                    error_msg = f"Task {task.name} failed: {str(e)}"
+                    error_msg = f"Task {task.name} failed at {exact_now}: {str(e)}"
                     logger.error(error_msg, exc_info=True)
                     updateHistory(task, error_msg, 2)
 
