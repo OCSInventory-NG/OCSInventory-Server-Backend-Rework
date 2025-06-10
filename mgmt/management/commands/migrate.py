@@ -2,23 +2,47 @@ from django.apps import apps
 from django.contrib.auth.management import create_permissions
 from django.contrib.auth.models import Group, Permission
 from django.core.management.commands.migrate import Command as MigrateCommand
+import logging
+from ocsinventory_backend.ocs_framework.logmanager import DynamicLogLevelManager
+
 
 
 class Command(MigrateCommand):
+    def add_arguments(self, parser):
+        super().add_arguments(parser)
+        parser.add_argument('--loglevel', type=str,
+                            choices=['CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG'],
+                            help='Override logging level from server')
+
     def handle(self, *args, **options):
-        print("\nRunning standard migrations.")
+        # initialize dynamic log manager first
+        log_manager = DynamicLogLevelManager()
+
+        # logger initialization
+        logger = logging.getLogger('mgmt.management.commands')
+        logger.debug(f"Command arguments: {options}")
+
+        # only set log level if explicitly provided in args
+        if options['loglevel']:
+            log_manager.set_level_for_logger("mgmt.management.commands",
+                                             options['loglevel'])
+            logger.debug(f"Log level overridden to: {options['loglevel']}")
+        else:
+            logger.debug("Using log level from server")
+
+        logger.info("Running standard migrations")
         super().handle(*args, **options)
 
-        print("\nCreating default permissions.")
+        logger.info("Creating default permissions")
         for app_config in apps.get_app_configs():
             app_config.models_module = True
             create_permissions(app_config, verbosity=2)
             app_config.models_module = None
 
-        print("\nAssigning permissions to groups.")
+        logger.info("Assigning permissions to groups")
         self.assign_group_permissions()
 
-        print("\nFinished all migrations and permission setup.\n")
+        logger.info("Finished all migrations and permission setup")
 
     def get_group_configs(self):
         return {
@@ -43,15 +67,16 @@ class Command(MigrateCommand):
 
     def assign_group_permissions(self):
         """Assign group permissions"""
+        logger = logging.getLogger('mgmt.management.commands')
         group_configs = self.get_group_configs()
 
         for group_name, config in group_configs.items():
             try:
                 group = Group.objects.get(name=group_name)
             except Group.DoesNotExist:
-                print(
-                    f"""Group '{group_name}' does not exist.
-                       Please run migrations first."""
+                logger.error(
+                    f"Group '{group_name}' does not exist. "
+                    "Please run migrations first."
                 )
                 continue
 
@@ -65,17 +90,17 @@ class Command(MigrateCommand):
             # applying changes
             if permissions_to_add:
                 group.permissions.add(*permissions_to_add)
-                print(
-                    f"""Added {len(permissions_to_add)}
-                       permissions to '{group_name}'"""
+                logger.info(
+                    f"Added {len(permissions_to_add)} "
+                    f"permissions to '{group_name}'"
                 )
 
             if permissions_to_remove:
                 group.permissions.remove(*permissions_to_remove)
-                print(
-                    f"""Removed {len(permissions_to_remove)}
-                       permissions from '{group_name}'"""
+                logger.info(
+                    f"Removed {len(permissions_to_remove)} "
+                    f"permissions from '{group_name}'"
                 )
 
             if not permissions_to_add and not permissions_to_remove:
-                print(f"No changes needed for group '{group_name}'")
+                logger.debug(f"No changes needed for group '{group_name}'")
