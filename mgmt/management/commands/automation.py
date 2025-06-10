@@ -1,5 +1,6 @@
-from datetime import datetime, timedelta
 import logging
+from datetime import datetime, timedelta
+
 import pytz
 from automation.history.models import History
 from automation.scheduler.models import Scheduler
@@ -20,9 +21,12 @@ class Command(BaseCommand):
     utc = pytz.UTC
 
     def add_arguments(self, parser):
-        parser.add_argument('--loglevel', type=str,
-                            choices=['CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG'],
-                            help='Override logging level from server')
+        parser.add_argument(
+            "--loglevel",
+            type=str,
+            choices=["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"],
+            help="Override logging level from server",
+        )
 
     def handle(self, *args, **options):
         """Execute all Tasks"""
@@ -31,12 +35,13 @@ class Command(BaseCommand):
         log_manager = DynamicLogLevelManager()
 
         # logger initialization
-        logger = logging.getLogger('mgmt.management.commands')
+        logger = logging.getLogger("mgmt.management.commands")
 
         # only set log level if explicitly provided in args
-        if options['loglevel']:
-            log_manager.set_level_for_logger("mgmt.management.commands",
-                                             options['loglevel'])
+        if options["loglevel"]:
+            log_manager.set_level_for_logger(
+                "mgmt.management.commands", options["loglevel"]
+            )
             logger.debug(f"Log level overridden to: {options['loglevel']}")
         else:
             logger.debug("Using log level from server")
@@ -83,16 +88,18 @@ class Command(BaseCommand):
                 should_run = True
                 logger.debug(f"Task {task.name} scheduled for current hour")
             else:
-                logger.debug(f"Skipping task {task.name}"
-                             f" - not scheduled for current hour")
+                logger.debug(
+                    f"Skipping task {task.name}" f" - not scheduled for current hour"
+                )
 
             # check minimum interval since last execution
             if should_run and task.last_execution:
                 last_exec = task.last_execution.replace(tzinfo=self.utc)
                 if now - last_exec < min_intervals[task.recurrence]:
                     should_run = False
-                    logger.debug(f"Skipping task {task.name}"
-                                 f" - minimum interval not met")
+                    logger.debug(
+                        f"Skipping task {task.name}" f" - minimum interval not met"
+                    )
 
             if should_run:
                 try:
@@ -110,10 +117,11 @@ class Command(BaseCommand):
 
                     logger.info(f"Task {task.name} completed successfully")
                     # completion history
-                    updateHistory(task,
-                                  f"Task {task.name} finished successfully"
-                                  f" at {exact_now}",
-                                  1)
+                    updateHistory(
+                        task,
+                        f"Task {task.name} finished successfully" f" at {exact_now}",
+                        1,
+                    )
 
                 except Exception as e:
                     error_msg = f"Task {task.name} failed at {exact_now}: {str(e)}"

@@ -1,10 +1,10 @@
 import logging
 from datetime import date, timedelta
-from django.db import DatabaseError
 
 from asset.log.models import Log
 from automation.tasks.abstractTask import AbstractTask
 from config.models import Config
+from django.db import DatabaseError
 
 logger = logging.getLogger("mgmt.management.commands.PurgeAgentLog")
 
@@ -30,7 +30,8 @@ class PurgeAgentLog(AbstractTask):
             else:
                 logger.warning(
                     "Task skipped - no valid interval found. Make sure"
-                    " agent logs purge interval is set in server configuration.")
+                    " agent logs purge interval is set in server configuration."
+                )
         except Exception as e:
             logger.error(f"Critical error in PurgeAgentLog task: {e}", exc_info=True)
             raise

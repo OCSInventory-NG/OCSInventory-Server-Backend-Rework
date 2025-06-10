@@ -1,8 +1,8 @@
 import logging
-from django.db import DatabaseError
 
 from asset.asset_group.models import AssetGroup
 from automation.tasks.abstractTask import AbstractTask
+from django.db import DatabaseError
 from search.views import SearchView
 
 logger = logging.getLogger("mgmt.management.commands.DynaGroups")
@@ -33,19 +33,23 @@ class DynaGroups(AbstractTask):
 
             for index, group in enumerate(dyna, 1):
                 try:
-                    logger.debug(f"Processing group {index}/{total_groups}:"
-                                 f" {group.name}")
+                    logger.debug(
+                        f"Processing group {index}/{total_groups}:" f" {group.name}"
+                    )
                     search = group.search
                     assets = self.run_search_query(search)
                     self.update_assets_list(group, assets)
                     processed += 1
                 except Exception as e:
                     failed += 1
-                    logger.error(f"Failed to process group {group.name}: {e}",
-                                 exc_info=True)
+                    logger.error(
+                        f"Failed to process group {group.name}: {e}", exc_info=True
+                    )
 
-            logger.info(f"DynaGroups task completed: {processed} succeeded,"
-                        f" {failed} failed out of {total_groups} total groups")
+            logger.info(
+                f"DynaGroups task completed: {processed} succeeded,"
+                f" {failed} failed out of {total_groups} total groups"
+            )
         except Exception as e:
             logger.error(f"Critical error in DynaGroups task: {e}", exc_info=True)
             raise
@@ -61,12 +65,14 @@ class DynaGroups(AbstractTask):
                 logger.warning("No dynamic groups found in the database")
             return dyna
         except DatabaseError as e:
-            logger.error(f"Database error while fetching dynamic groups: {e}",
-                         exc_info=True)
+            logger.error(
+                f"Database error while fetching dynamic groups: {e}", exc_info=True
+            )
             raise
         except Exception as e:
-            logger.error(f"Unexpected error while fetching dynamic groups: {e}",
-                         exc_info=True)
+            logger.error(
+                f"Unexpected error while fetching dynamic groups: {e}", exc_info=True
+            )
             raise
 
     def run_search_query(self, search):
@@ -82,12 +88,14 @@ class DynaGroups(AbstractTask):
             assets = assets.values_list("id", flat=True)
             return assets
         except DatabaseError as e:
-            logger.error(f"Database error while running search query: {e}",
-                         exc_info=True)
+            logger.error(
+                f"Database error while running search query: {e}", exc_info=True
+            )
             return []
         except Exception as e:
-            logger.error(f"Unexpected error while running search query: {e}",
-                         exc_info=True)
+            logger.error(
+                f"Unexpected error while running search query: {e}", exc_info=True
+            )
             return []
 
     def update_assets_list(self, group, assets):
@@ -96,18 +104,22 @@ class DynaGroups(AbstractTask):
         """
         try:
             asset_count = len(assets)
-            logger.debug(f"Updating assets list for group {group.name}"
-                         f" with {asset_count} assets")
+            logger.debug(
+                f"Updating assets list for group {group.name}"
+                f" with {asset_count} assets"
+            )
             group.assets.set(assets)
             group.save()
             logger.info(f"Successfully updated assets list for group {group.name}")
         except DatabaseError as e:
             logger.error(
                 f"Database error updating assets list for group {group.name}: {e}",
-                exc_info=True)
+                exc_info=True,
+            )
             raise
         except Exception as e:
             logger.error(
                 f"Unexpected error updating assets list for group {group.name}: {e}",
-                exc_info=True)
+                exc_info=True,
+            )
             raise

@@ -1,10 +1,10 @@
 import logging
-from django.db import DatabaseError
 
 from accountinfo.views import AccountinfoDataViewSet
 from asset.inventory_base.models import InventoryBase
 from automation.tasks.abstractTask import AbstractTask
 from config.models import Config
+from django.db import DatabaseError
 
 logger = logging.getLogger("mgmt.management.commands.AccountInfoGeneration")
 
@@ -27,11 +27,14 @@ class AccountInfoGeneration(AbstractTask):
                 logger.debug(f"Found {assets.count()} assets to process")
                 self.generate_accountinfo(assets)
             else:
-                logger.warning("Task skipped - accountinfo generation"
-                               " not enabled in automation mode")
+                logger.warning(
+                    "Task skipped - accountinfo generation"
+                    " not enabled in automation mode"
+                )
         except Exception as e:
-            logger.error(f"Critical error in AccountInfoGeneration task: {e}",
-                         exc_info=True)
+            logger.error(
+                f"Critical error in AccountInfoGeneration task: {e}", exc_info=True
+            )
             raise
 
     def config_check(self):
@@ -44,8 +47,9 @@ class AccountInfoGeneration(AbstractTask):
                 logger.error("No server config found")
                 return False
 
-            logger.debug("Checking server configuration for"
-                         " accountinfo generation settings")
+            logger.debug(
+                "Checking server configuration for" " accountinfo generation settings"
+            )
             for item in server_conf.value:
                 if item["name"] == "accountinfo_generation":
                     mode = item["value"]
@@ -101,16 +105,21 @@ class AccountInfoGeneration(AbstractTask):
                     logger.error(
                         f"Database error generating accountinfo"
                         f" for asset {asset.id}: {e}",
-                        exc_info=True)
+                        exc_info=True,
+                    )
                 except Exception as e:
                     failed += 1
                     logger.error(
                         f"Error generating accountinfo for asset {asset.id}: {e}",
-                        exc_info=True)
+                        exc_info=True,
+                    )
 
-            logger.info(f"Accountinfo generation completed: {processed} succeeded,"
-                        f" {failed} failed out of {total_assets} total assets")
+            logger.info(
+                f"Accountinfo generation completed: {processed} succeeded,"
+                f" {failed} failed out of {total_assets} total assets"
+            )
         except Exception as e:
-            logger.error(f"Critical error in accountinfo generation process: {e}",
-                         exc_info=True)
+            logger.error(
+                f"Critical error in accountinfo generation process: {e}", exc_info=True
+            )
             raise

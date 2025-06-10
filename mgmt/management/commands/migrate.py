@@ -1,31 +1,35 @@
+import logging
+
 from django.apps import apps
 from django.contrib.auth.management import create_permissions
 from django.contrib.auth.models import Group, Permission
 from django.core.management.commands.migrate import Command as MigrateCommand
-import logging
 from ocsinventory_backend.ocs_framework.logmanager import DynamicLogLevelManager
-
 
 
 class Command(MigrateCommand):
     def add_arguments(self, parser):
         super().add_arguments(parser)
-        parser.add_argument('--loglevel', type=str,
-                            choices=['CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG'],
-                            help='Override logging level from server')
+        parser.add_argument(
+            "--loglevel",
+            type=str,
+            choices=["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"],
+            help="Override logging level from server",
+        )
 
     def handle(self, *args, **options):
         # initialize dynamic log manager first
         log_manager = DynamicLogLevelManager()
 
         # logger initialization
-        logger = logging.getLogger('mgmt.management.commands')
+        logger = logging.getLogger("mgmt.management.commands")
         logger.debug(f"Command arguments: {options}")
 
         # only set log level if explicitly provided in args
-        if options['loglevel']:
-            log_manager.set_level_for_logger("mgmt.management.commands",
-                                             options['loglevel'])
+        if options["loglevel"]:
+            log_manager.set_level_for_logger(
+                "mgmt.management.commands", options["loglevel"]
+            )
             logger.debug(f"Log level overridden to: {options['loglevel']}")
         else:
             logger.debug("Using log level from server")
@@ -67,7 +71,7 @@ class Command(MigrateCommand):
 
     def assign_group_permissions(self):
         """Assign group permissions"""
-        logger = logging.getLogger('mgmt.management.commands')
+        logger = logging.getLogger("mgmt.management.commands")
         group_configs = self.get_group_configs()
 
         for group_name, config in group_configs.items():
@@ -91,8 +95,7 @@ class Command(MigrateCommand):
             if permissions_to_add:
                 group.permissions.add(*permissions_to_add)
                 logger.info(
-                    f"Added {len(permissions_to_add)} "
-                    f"permissions to '{group_name}'"
+                    f"Added {len(permissions_to_add)} " f"permissions to '{group_name}'"
                 )
 
             if permissions_to_remove:
