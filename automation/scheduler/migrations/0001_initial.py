@@ -13,7 +13,7 @@ def create_default_automations(apps, schema_editor):
         active=True,
         recurrence="daily",
         last_execution=None,
-        hour=None,
+        hour=1,
         day_of_week=None,
         day_of_month=None,
     )
@@ -24,7 +24,7 @@ def create_default_automations(apps, schema_editor):
         active=True,
         recurrence="daily",
         last_execution=None,
-        hour=None,
+        hour=1,
         day_of_week=None,
         day_of_month=None,
     )
@@ -35,7 +35,7 @@ def create_default_automations(apps, schema_editor):
         active=True,
         recurrence="daily",
         last_execution=None,
-        hour=None,
+        hour=1,
         day_of_week=None,
         day_of_month=None,
     )
