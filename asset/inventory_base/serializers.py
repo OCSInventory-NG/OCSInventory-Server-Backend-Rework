@@ -26,6 +26,7 @@ class InventoryBaseSerializer(ExpandableFieldsMixin, ModelSerializer):
             "srcip",
             "srcmac",
             "domain",
+            "agent",
             "template",
             "last_update",
             "is_template_forced",

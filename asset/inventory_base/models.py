@@ -36,6 +36,7 @@ class InventoryBase(models.Model):
     srcip = models.CharField(max_length=255, blank=True)
     srcmac = models.CharField(max_length=255, blank=True)
     domain = models.CharField(max_length=255, blank=True)
+    agent = models.CharField(max_length=255, blank=True)
     template = models.ForeignKey(
         Template, on_delete=models.CASCADE, blank=True, null=True
     )
