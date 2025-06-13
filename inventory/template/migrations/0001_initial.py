@@ -25,6 +25,11 @@ def create_default_templates(apps, schema_editor):
             "os": "WIN",
             "is_protected": True,
         },
+        {
+            "name": "SNMP Generic",
+            "os": "SNMP",
+            "is_protected": True,
+        },
     ]
 
     Template = apps.get_model("template", "Template")
@@ -64,6 +69,7 @@ class Migration(migrations.Migration):
                             ("LIN", "Linux"),
                             ("MAC", "Mac"),
                             ("WIN", "Windows"),
+                            ("SNMP", "SNMP"),
                         ],
                         default="WIN",
                         max_length=3,
