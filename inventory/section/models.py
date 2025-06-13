@@ -11,8 +11,8 @@ class Section(models.Model):
 
     The model will contain the following info
     - Name
-    - Retrival method
-    - Retrival output
+    - Retrieval method
+    - Retrieval output
     - Template link
     - Last update (Read Only)
     """
@@ -41,7 +41,7 @@ class Section(models.Model):
     retrieval_output = models.CharField(
         max_length=4, choices=RETRIEVAL_OUTPUT, default="JSON"
     )
-    target = models.CharField(max_length=255)
+    target = models.TextField()
     template = models.ForeignKey(
         Template, related_name="sections", on_delete=models.CASCADE, default=1
     )
