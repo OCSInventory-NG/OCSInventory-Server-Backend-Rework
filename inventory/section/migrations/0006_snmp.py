@@ -4,9 +4,9 @@ from django.db import migrations
 def create_snmp_sections(apps, schema_editor):
     Section = apps.get_model("section", "Section")
     Template = apps.get_model("template", "Template")
-    
+
     template = Template.objects.get(os="SNMP")
-    
+
     sections = [
         {
             "name": "SYSTEM",
@@ -33,7 +33,7 @@ def create_snmp_sections(apps, schema_editor):
             "options": {"need_format": False},
         },
     ]
-    
+
     for section in sections:
         Section.objects.create(**section)
 
@@ -45,4 +45,4 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunPython(create_snmp_sections),
-    ] 
+    ]

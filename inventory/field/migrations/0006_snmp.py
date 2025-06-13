@@ -5,9 +5,9 @@ def create_snmp_fields(apps, schema_editor):
     Field = apps.get_model("field", "Field")
     Section = apps.get_model("section", "Section")
     Template = apps.get_model("template", "Template")
-    
+
     template = Template.objects.get(os="SNMP")
-    
+
     fields = [
         # SYSTEM section fields
         {
@@ -134,17 +134,14 @@ def create_snmp_fields(apps, schema_editor):
             "options": None,
         },
     ]
-    
+
     for field in fields:
         Field.objects.create(**field)
 
 
 class Migration(migrations.Migration):
-    dependencies = [
-        ("section", "0006_snmp"),
-        ("field", "0005_windows")
-    ]
+    dependencies = [("section", "0006_snmp"), ("field", "0005_windows")]
 
     operations = [
         migrations.RunPython(create_snmp_fields),
-    ] 
+    ]
