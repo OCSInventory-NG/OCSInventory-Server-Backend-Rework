@@ -44,10 +44,17 @@ class Command(BaseCommand):
             # for non-hourly tasks, check if we're within the scheduled hour
             if task.recurrence == "hourly":
                 should_run = True
-            elif task.hour.hour == now.hour and task.hour.minute == now.minute and (
-                task.recurrence == "daily"
-                or (task.recurrence == "weekly" and task.day_of_week == now.weekday())
-                or (task.recurrence == "monthly" and task.day_of_month == now.day)
+            elif (
+                task.hour.hour == now.hour
+                and task.hour.minute == now.minute
+                and (
+                    task.recurrence == "daily"
+                    or (
+                        task.recurrence == "weekly"
+                        and task.day_of_week == now.weekday()
+                    )
+                    or (task.recurrence == "monthly" and task.day_of_month == now.day)
+                )
             ):
                 should_run = True
 
