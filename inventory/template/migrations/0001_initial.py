@@ -72,7 +72,7 @@ class Migration(migrations.Migration):
                             ("SNMP", "SNMP"),
                         ],
                         default="WIN",
-                        max_length=3,
+                        max_length=4,
                     ),
                 ),
                 ("last_update", models.DateTimeField(auto_now=True)),
