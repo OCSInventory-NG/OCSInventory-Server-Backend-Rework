@@ -14,6 +14,4 @@ class NetgroupSerializer(ExpandableFieldsMixin, ModelSerializer):
 
         model = Netgroup
         fields = ["id", "name", "description"]
-        expandable_fields = {
-            "networks": NetworkSerializer
-        }
+        expandable_fields = {"networks": NetworkSerializer}
