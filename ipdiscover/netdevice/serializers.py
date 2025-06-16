@@ -1,4 +1,5 @@
 from ipdiscover.netdevice.models import Netdevice
+from ipdiscover.network.serializers import NetworkSerializer
 from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
 from rest_framework.serializers import ModelSerializer
 
@@ -16,4 +17,7 @@ class NetdeviceSerializer(ExpandableFieldsMixin, ModelSerializer):
         extra_kwargs = {
             "network": {"required": False},
             "last_seen": {"read_only": True},
+        }
+        expandable_fields = {
+            "network": NetworkSerializer,
         }
