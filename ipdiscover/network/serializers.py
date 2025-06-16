@@ -31,13 +31,7 @@ class NetworkSerializer(ExpandableFieldsMixin, ModelSerializer):
             "last_update": {"read_only": True},
         }
 
-        expandable_fields = {
-            "netdevices": {
-                "serializer": "ipdiscover.netdevice.serializers.NetdeviceSerializer",
-                "many": True,
-                "required": False,
-            }
-        }
+        expandable_fields = {}
 
     def create(self, validated_data):
         """Override create to allow nested creation of fields"""
