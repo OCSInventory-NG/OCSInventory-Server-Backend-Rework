@@ -69,7 +69,7 @@ class Migration(migrations.Migration):
                             ("LIN", "Linux"),
                             ("MAC", "Mac"),
                             ("WIN", "Windows"),
-                            ("SNMP", "SNMP"),
+                            ("SNMP", "Snmp"),
                         ],
                         default="WIN",
                         max_length=4,
