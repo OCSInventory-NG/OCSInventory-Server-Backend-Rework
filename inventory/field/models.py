@@ -12,7 +12,7 @@ class Field(models.Model):
 
     The model will contain the following info
     - Name
-    - Retrival value
+    - Retrieval value
 
     Some explanation on the retrieval value :
     - Depending on the retrieval output, the value is diffrent
@@ -39,7 +39,7 @@ class Field(models.Model):
     name = models.CharField(max_length=50)
     retrieval_value = models.CharField(max_length=255)
     override_target = models.BooleanField(default=False, null=True)
-    new_target = models.CharField(max_length=255, null=True)
+    new_target = models.TextField(null=True)
     retrieval_method = models.CharField(
         max_length=4, choices=RETRIEVAL_CHOICES, null=True
     )

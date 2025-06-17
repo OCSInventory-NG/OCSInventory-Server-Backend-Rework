@@ -53,7 +53,7 @@ class Migration(migrations.Migration):
                         max_length=4,
                     ),
                 ),
-                ("target", models.CharField(max_length=255)),
+                ("target", models.TextField()),
                 ("options", models.JSONField(null=True)),
                 (
                     "template",

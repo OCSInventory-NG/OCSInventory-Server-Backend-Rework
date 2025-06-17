@@ -2,9 +2,6 @@ import logging
 import zlib
 
 import xmltodict
-from django.core.exceptions import ObjectDoesNotExist
-from inventory.template.models import Template
-from rest_framework.response import Response
 from rest_framework_xml.parsers import XMLParser
 
 
@@ -82,17 +79,10 @@ class LegacyXMLParser(XMLParser):
 
             template_data["domain"] = self.get_nested(request_data, ["HARDWARE", "DNS"])
 
-            try:
-                template_data["template"] = Template.objects.get(os="LEG").id
-            except ObjectDoesNotExist:
-                self.LOGGER.error("Legacy template not found")
-                return Response({"error": "Legacy template not found"}, status=404)
-            except Exception as e:
-                self.LOGGER.error(f"Error while retrieving legacy template: {e}")
-                return Response(
-                    {"error": f"Error while retrieving legacy template: {e}"},
-                    status=500,
-                )
+            # user agent is stored in http header
+            template_data["agent"] = parser_context.get("request").META.get(
+                "HTTP_USER_AGENT", "Empty"
+            )
 
             # Transforming the section to a list if it is a dictionary
             template_inventory = {}
