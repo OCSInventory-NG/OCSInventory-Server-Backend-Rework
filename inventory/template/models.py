@@ -18,7 +18,7 @@ class Template(models.Model):
         ("LIN", "Linux"),
         ("MAC", "Mac"),
         ("WIN", "Windows"),
-        ("SNMP", "Snmp"),
+        ("SNMP", "SNMP"),
     )
 
     name = models.CharField(max_length=50)
