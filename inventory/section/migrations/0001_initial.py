@@ -34,7 +34,10 @@ class Migration(migrations.Migration):
                             ("BASH", "Bash command"),
                             ("PW", "Powershell command"),
                             ("CMD", "Cmd command"),
-                            ("SNMP_WALK", "Walk the SNMP tree starting from a specific OID"),
+                            (
+                                "SNMP_WALK",
+                                "Walk the SNMP tree starting from a specific OID",
+                            ),
                             ("SNMP_GET", "Get a specific OID"),
                         ],
                         default="FILE",
