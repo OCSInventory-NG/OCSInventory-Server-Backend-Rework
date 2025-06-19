@@ -74,10 +74,7 @@ def create_osname_rules_with_actions(apps, schema_editor):
             "description": "Assign SNMP template",
             "trigger": "inventory_received",
             "enabled": True,
-            "logic": {
-                "==": [{"var": "osname"}, "SNMP"],
-                "case_sensitive": False
-            },
+            "logic": {"==": [{"var": "osname"}, "SNMP"], "case_sensitive": False},
             "actions": [
                 {
                     "description": "Update template for SNMP",
