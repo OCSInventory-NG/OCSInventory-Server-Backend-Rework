@@ -18,6 +18,7 @@ def create_default_categories(apps, schema_editor):
                 "GROUPS",
                 "OPERATING_SYSTEM",
                 "USERS",
+                "SYSTEM"
             ],
         },
         {
@@ -51,7 +52,13 @@ def create_default_categories(apps, schema_editor):
             "name": "Networks",
             "description": "Default tab for network sections",
             "is_protected": True,
-            "inventory_sections": ["ETHERNET", "NETWORKS", "WI_FI"],
+            "inventory_sections": [
+                "ETHERNET",
+                "NETWORKS",
+                "WI_FI",
+                "INTERFACES",
+                "IP"
+            ],
         },
         {
             "name": "Devices",
