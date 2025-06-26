@@ -1,4 +1,5 @@
 from automation.history.models import History
+from automation.scheduler.serializers import SchedulerSerializer
 from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
 from rest_framework.serializers import ModelSerializer
 
@@ -13,3 +14,6 @@ class HistorySerializer(ExpandableFieldsMixin, ModelSerializer):
 
         model = History
         fields = ["id", "scheduler", "date", "status", "comment"]
+        expandable_fields = {
+            "scheduler": SchedulerSerializer,
+        }

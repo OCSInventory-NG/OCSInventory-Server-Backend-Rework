@@ -34,9 +34,14 @@ class Migration(migrations.Migration):
                             ("BASH", "Bash command"),
                             ("PW", "Powershell command"),
                             ("CMD", "Cmd command"),
+                            (
+                                "SNMP_WALK",
+                                "Walk the SNMP tree starting from a specific OID",
+                            ),
+                            ("SNMP_GET", "Get a specific OID"),
                         ],
                         default="FILE",
-                        max_length=4,
+                        max_length=10,
                     ),
                 ),
                 (
@@ -53,7 +58,7 @@ class Migration(migrations.Migration):
                         max_length=4,
                     ),
                 ),
-                ("target", models.CharField(max_length=255)),
+                ("target", models.TextField()),
                 ("options", models.JSONField(null=True)),
                 (
                     "template",
