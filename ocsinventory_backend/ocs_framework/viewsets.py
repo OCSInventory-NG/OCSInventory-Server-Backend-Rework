@@ -56,8 +56,7 @@ class OCSViewSet(viewsets.ModelViewSet):
             )
 
         return Response(
-            {"success": "200", "data": serializer.data},
-            status=status.HTTP_200_OK
+            {"success": "200", "data": serializer.data}, status=status.HTTP_200_OK
         )
 
     def get_reconciliation_filter(self, elem):
