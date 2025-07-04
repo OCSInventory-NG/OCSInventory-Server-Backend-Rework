@@ -17,7 +17,7 @@ def create_redhat_linux_sections(apps, schema_editor):
             "name": "REPOSITORY",
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
-            "target": 'LANG=C dnf -v repolist',
+            "target": "LANG=C dnf -v repolist",
             "options": {"separator": "Repo-name"},
             "template": apps.get_model("template", "Template").objects.get(os="RPM"),
         },

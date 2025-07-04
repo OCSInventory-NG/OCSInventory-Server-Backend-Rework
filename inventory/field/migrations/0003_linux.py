@@ -1068,7 +1068,7 @@ def create_default_linux_fields(apps, schema_editor):
             "section": "VIRTUAL MACHINES",
         },
     ]
-    
+
     Template = apps.get_model("template", "Template")
     Section = apps.get_model("section", "Section")
     Field = apps.get_model("field", "Field")

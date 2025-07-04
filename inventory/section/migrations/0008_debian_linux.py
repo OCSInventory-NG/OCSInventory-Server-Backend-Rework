@@ -17,7 +17,7 @@ def create_debian_linux_sections(apps, schema_editor):
             "name": "REPOSITORY",
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
-            "target": 'apt-cache policy | grep -iE "http(s)?://" | awk \'{print $2, $3}\' | sort -u',
+            "target": "apt-cache policy | grep -iE \"http(s)?://\" | awk '{print $2, $3}' | sort -u",
             "options": {"multiple": True},
             "template": apps.get_model("template", "Template").objects.get(os="DEB"),
         },
