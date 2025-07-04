@@ -21,7 +21,7 @@ class Network(models.Model):
 
     nettag = models.CharField(max_length=128, unique=True, default="DefaultNettag")
     name = models.CharField(max_length=128)
-    description = models.TextField(max_length=1024)
+    description = models.TextField(max_length=1024, blank=True)
     location = models.CharField(max_length=128, null=True)
     netid = models.GenericIPAddressField()
     mask = models.GenericIPAddressField()
