@@ -57,8 +57,7 @@ class Command(BaseCommand):
 
         tasks = Scheduler.objects.filter(active=True)
         logger.info(f"Found {tasks.count()} active tasks to process")
-        for task in tasks:
-            logger.debug(f"Task: {task.name} - {task.description}")
+
         # rounded to the minute
         now = datetime.now(tz=self.utc).replace(second=0, microsecond=0)
         exact_now = datetime.now(tz=self.utc)
@@ -107,11 +106,9 @@ class Command(BaseCommand):
                 )
             ):
                 scheduled_time_match = True
-                logger.debug(f"Task {task.name} scheduled for current hour")
+                logger.debug(f"Task {task.name} scheduled")
             else:
-                logger.debug(
-                    f"Skipping task {task.name} - not scheduled for current hour"
-                )
+                logger.debug(f"Task {task.name} not scheduled")
 
             # check minimum interval since last execution
             interval_passed = False
@@ -131,8 +128,10 @@ class Command(BaseCommand):
                 interval_passed = True
 
             # scheduled time matches OR interval has passed
-            if scheduled_time_match or interval_passed:
-                should_run = True
+            if task.recurrence == "hourly":
+                should_run = interval_passed
+            else:
+                should_run = scheduled_time_match or interval_passed
 
             if should_run:
                 try:
