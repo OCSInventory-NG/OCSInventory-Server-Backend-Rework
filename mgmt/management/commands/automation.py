@@ -79,7 +79,8 @@ class Command(BaseCommand):
             if task.hour is not None:
                 logger.debug(
                     f"Task {task.name}: now={now}, task.hour={task.hour}, "
-                    f"task.hour.hour={task.hour.hour}, task.hour.minute={task.hour.minute}, "
+                    f"task.hour.hour={task.hour.hour}, "
+                    f"task.hour.minute={task.hour.minute}, "
                     f"exact_now={exact_now}, last_execution={task.last_execution}"
                 )
             else:
@@ -116,7 +117,8 @@ class Command(BaseCommand):
                 last_exec = task.last_execution.replace(tzinfo=self.utc)
                 interval = now - last_exec
                 logger.debug(
-                    f"Task {task.name} interval since last execution: {interval}, required: {min_intervals[task.recurrence]}"
+                    f"Task {task.name} interval since last execution: {interval},"
+                    f" required: {min_intervals[task.recurrence]}"
                 )
                 if interval >= min_intervals[task.recurrence]:
                     interval_passed = True
