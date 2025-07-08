@@ -122,9 +122,7 @@ class Command(BaseCommand):
                 )
                 if interval >= min_intervals[task.recurrence]:
                     interval_passed = True
-                    logger.debug(
-                        f"Task {task.name} interval has passed, will run"
-                    )
+                    logger.debug(f"Task {task.name} interval has passed, will run")
             else:
                 # never executed before
                 interval_passed = True
