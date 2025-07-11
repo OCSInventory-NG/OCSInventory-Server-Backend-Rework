@@ -1,9 +1,10 @@
 import logging
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
+
 from automation.tasks.abstractTask import AbstractTask
-from deployment.package.models import Package
 from config.models import Config
+from dateutil.relativedelta import relativedelta
+from deployment.package.models import Package
 from django.db import DatabaseError
 
 logger = logging.getLogger("mgmt.management.commands.PurgePackages")
@@ -14,6 +15,7 @@ class PurgePackages(AbstractTask):
     Automation task to purge old packages from the database.
     The age threshold is configurable in the server config (in months).
     """
+
     def config_check(self):
         """
         Retrieve the package purge age (in months) from the config.
@@ -74,15 +76,16 @@ class PurgePackages(AbstractTask):
             for pkg in packages:
                 logger.debug(
                     "Purging package: id=%s, name=%s, created_at=%s",
-                    pkg.id, pkg.name, pkg.date_created
+                    pkg.id,
+                    pkg.name,
+                    pkg.date_created,
                 )
                 try:
                     pkg.delete()
                     logger.info(f"Successfully purged package id={pkg.id}")
                 except Exception as del_exc:
                     logger.error(
-                        f"Failed to purge package id={pkg.id}: {del_exc}",
-                        exc_info=True
+                        f"Failed to purge package id={pkg.id}: {del_exc}", exc_info=True
                     )
             logger.info("PurgePackages task completed successfully.")
         except Exception as e:

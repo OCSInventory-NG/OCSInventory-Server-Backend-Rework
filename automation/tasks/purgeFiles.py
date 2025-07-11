@@ -1,10 +1,11 @@
 import logging
-from automation.tasks.abstractTask import AbstractTask
 import os
-from filemanager.models import FileManager
-from django.conf import settings
 import shutil
 import uuid
+
+from automation.tasks.abstractTask import AbstractTask
+from django.conf import settings
+from filemanager.models import FileManager
 
 logger = logging.getLogger("mgmt.management.commands.PurgeFiles")
 
@@ -31,13 +32,13 @@ class PurgeFiles(AbstractTask):
             if count_orphaned_db == 0:
                 logger.warning("No orphaned FileManager entries found to purge.")
             else:
-                logger.info(f"Found {count_orphaned_db} "
-                            f"orphaned FileManager entries to purge.")
+                logger.info(
+                    f"Found {count_orphaned_db} "
+                    f"orphaned FileManager entries to purge."
+                )
             for f in orphaned_files:
                 logger.debug(
-                    "Orphaned file: id=%s, name=%s, "
-                    "path=%s, "
-                    "created_at=%s",
+                    "Orphaned file: id=%s, name=%s, " "path=%s, " "created_at=%s",
                     f.id,
                     f.name,
                     f.file.name,
@@ -50,7 +51,7 @@ class PurgeFiles(AbstractTask):
                 except Exception as del_exc:
                     logger.error(
                         f"Failed to purge orphaned file id={f.id}: {del_exc}",
-                        exc_info=True
+                        exc_info=True,
                     )
 
             # purge orphaned uuid directories on disk (no DB entry)
@@ -61,30 +62,32 @@ class PurgeFiles(AbstractTask):
                 try:
                     uuid_obj = uuid.UUID(uuid_str)
                 except Exception as e:
-                    logger.error(f"Error while iterating over media directories: {e}",
-                                 exc_info=True)
+                    logger.error(
+                        f"Error while iterating over media directories: {e}",
+                        exc_info=True,
+                    )
                     continue
                 if not FileManager.objects.filter(uuid=uuid_obj).exists():
                     try:
                         shutil.rmtree(uuid_path)
                         logger.debug(
-                            "Purged orphaned file directory "
-                            "(no DB entry): %s",
+                            "Purged orphaned file directory " "(no DB entry): %s",
                             uuid_path,
                         )
                         count_orphaned_disk += 1
                     except Exception as e:
                         logger.error(
-                            "Failed to purge orphaned file directory "
-                            "%s: %s",
+                            "Failed to purge orphaned file directory " "%s: %s",
                             uuid_path,
                             e,
                         )
             if count_orphaned_disk == 0:
                 logger.warning("No orphaned file directories found to purge on disk.")
             else:
-                logger.info(f"Purged {count_orphaned_disk} "
-                            f"orphaned file directories from disk.")
+                logger.info(
+                    f"Purged {count_orphaned_disk} "
+                    f"orphaned file directories from disk."
+                )
 
             logger.info("PurgeFiles task completed successfully.")
         except Exception as e:

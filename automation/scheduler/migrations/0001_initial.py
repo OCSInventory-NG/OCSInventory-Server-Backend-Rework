@@ -42,7 +42,7 @@ def create_default_automations(apps, schema_editor):
 
     Scheduler.objects.create(
         name="purgeFiles.PurgeFiles",
-        description="Purge orphaned files", 
+        description="Purge orphaned files",
         active=True,
         recurrence="monthly",
         last_execution=None,
@@ -53,7 +53,7 @@ def create_default_automations(apps, schema_editor):
 
     Scheduler.objects.create(
         name="purgePackages.PurgePackages",
-        description="Purge old packages", 
+        description="Purge old packages",
         active=True,
         recurrence="monthly",
         last_execution=None,

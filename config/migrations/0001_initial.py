@@ -111,7 +111,6 @@ def create_base_config(apps, schema_editor):
                     "type": "number input",
                     "unit": "months",
                 },
-
             ],
         },
         {
