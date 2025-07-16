@@ -17,6 +17,6 @@ class Scheduler(models.Model):
         max_length=7, choices=RECURRENCE_CHOICES, default="daily"
     )
     last_execution = models.DateTimeField(null=True)
-    hour = models.IntegerField(null=True, blank=True)
+    hour = models.TimeField(null=True, blank=True)
     day_of_week = models.IntegerField(null=True, blank=True)
     day_of_month = models.IntegerField(null=True, blank=True)
