@@ -4,7 +4,7 @@ from django.db import migrations
 
 
 def create_default_linux_fields(apps, schema_editor):
-    os_types = ["RPM", "DEB"]
+    os_types = ["RHEL", "DEB"]
 
     fields = [
         {
