@@ -11,8 +11,13 @@ def create_default_templates(apps, schema_editor):
             "is_protected": True,
         },
         {
-            "name": "Linux",
-            "os": "LIN",
+            "name": "Linux (Debian based)",
+            "os": "DEB",
+            "is_protected": True,
+        },
+        {
+            "name": "Linux (RHEL based)",
+            "os": "RHEL",
             "is_protected": True,
         },
         {
@@ -66,7 +71,8 @@ class Migration(migrations.Migration):
                     models.CharField(
                         choices=[
                             ("LEG", "Legacy"),
-                            ("LIN", "Linux"),
+                            ("DEB", "Linux (Debian based)"),
+                            ("RHEL", "Linux (RHEL based)"),
                             ("MAC", "Mac"),
                             ("WIN", "Windows"),
                             ("SNMP", "SNMP"),

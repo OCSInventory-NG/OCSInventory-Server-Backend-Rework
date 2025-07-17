@@ -15,7 +15,7 @@ def create_redhat_linux_fields(apps, schema_editor):
             "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
-                template=apps.get_model("template", "Template").objects.get(os="RPM"),
+                template=apps.get_model("template", "Template").objects.get(os="RHEL"),
             ),
         },
         {
@@ -28,7 +28,7 @@ def create_redhat_linux_fields(apps, schema_editor):
             "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
-                template=apps.get_model("template", "Template").objects.get(os="RPM"),
+                template=apps.get_model("template", "Template").objects.get(os="RHEL"),
             ),
         },
         {
@@ -41,7 +41,7 @@ def create_redhat_linux_fields(apps, schema_editor):
             "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
-                template=apps.get_model("template", "Template").objects.get(os="RPM"),
+                template=apps.get_model("template", "Template").objects.get(os="RHEL"),
             ),
         },
         {
@@ -54,7 +54,7 @@ def create_redhat_linux_fields(apps, schema_editor):
             "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
-                template=apps.get_model("template", "Template").objects.get(os="RPM"),
+                template=apps.get_model("template", "Template").objects.get(os="RHEL"),
             ),
         },
         {
@@ -67,7 +67,7 @@ def create_redhat_linux_fields(apps, schema_editor):
             "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
-                template=apps.get_model("template", "Template").objects.get(os="RPM"),
+                template=apps.get_model("template", "Template").objects.get(os="RHEL"),
             ),
         },
         {
@@ -80,7 +80,7 @@ def create_redhat_linux_fields(apps, schema_editor):
             "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
-                template=apps.get_model("template", "Template").objects.get(os="RPM"),
+                template=apps.get_model("template", "Template").objects.get(os="RHEL"),
             ),
         },
         {
@@ -93,7 +93,7 @@ def create_redhat_linux_fields(apps, schema_editor):
             "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
-                template=apps.get_model("template", "Template").objects.get(os="RPM"),
+                template=apps.get_model("template", "Template").objects.get(os="RHEL"),
             ),
         },
         {
@@ -106,7 +106,7 @@ def create_redhat_linux_fields(apps, schema_editor):
             "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
-                template=apps.get_model("template", "Template").objects.get(os="RPM"),
+                template=apps.get_model("template", "Template").objects.get(os="RHEL"),
             ),
         },
         {
@@ -119,7 +119,7 @@ def create_redhat_linux_fields(apps, schema_editor):
             "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
-                template=apps.get_model("template", "Template").objects.get(os="RPM"),
+                template=apps.get_model("template", "Template").objects.get(os="RHEL"),
             ),
         },
         {
@@ -132,7 +132,7 @@ def create_redhat_linux_fields(apps, schema_editor):
             "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
-                template=apps.get_model("template", "Template").objects.get(os="RPM"),
+                template=apps.get_model("template", "Template").objects.get(os="RHEL"),
             ),
         },
         {
@@ -145,7 +145,7 @@ def create_redhat_linux_fields(apps, schema_editor):
             "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="REPOSITORY",
-                template=apps.get_model("template", "Template").objects.get(os="RPM"),
+                template=apps.get_model("template", "Template").objects.get(os="RHEL"),
             ),
         },
         {
@@ -158,7 +158,7 @@ def create_redhat_linux_fields(apps, schema_editor):
             "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="REPOSITORY",
-                template=apps.get_model("template", "Template").objects.get(os="RPM"),
+                template=apps.get_model("template", "Template").objects.get(os="RHEL"),
             ),
         },
         {
@@ -171,7 +171,7 @@ def create_redhat_linux_fields(apps, schema_editor):
             "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
-                template=apps.get_model("template", "Template").objects.get(os="RPM"),
+                template=apps.get_model("template", "Template").objects.get(os="RHEL"),
             ),
         },
         {
@@ -184,7 +184,7 @@ def create_redhat_linux_fields(apps, schema_editor):
             "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
-                template=apps.get_model("template", "Template").objects.get(os="RPM"),
+                template=apps.get_model("template", "Template").objects.get(os="RHEL"),
             ),
         },
         {
@@ -197,7 +197,7 @@ def create_redhat_linux_fields(apps, schema_editor):
             "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
-                template=apps.get_model("template", "Template").objects.get(os="RPM"),
+                template=apps.get_model("template", "Template").objects.get(os="RHEL"),
             ),
         },
         {
@@ -210,7 +210,7 @@ def create_redhat_linux_fields(apps, schema_editor):
             "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
-                template=apps.get_model("template", "Template").objects.get(os="RPM"),
+                template=apps.get_model("template", "Template").objects.get(os="RHEL"),
             ),
         },
         {
@@ -223,7 +223,7 @@ def create_redhat_linux_fields(apps, schema_editor):
             "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
-                template=apps.get_model("template", "Template").objects.get(os="RPM"),
+                template=apps.get_model("template", "Template").objects.get(os="RHEL"),
             ),
         },
         {
@@ -236,7 +236,7 @@ def create_redhat_linux_fields(apps, schema_editor):
             "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
-                template=apps.get_model("template", "Template").objects.get(os="RPM"),
+                template=apps.get_model("template", "Template").objects.get(os="RHEL"),
             ),
         },
         {
@@ -249,7 +249,7 @@ def create_redhat_linux_fields(apps, schema_editor):
             "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
-                template=apps.get_model("template", "Template").objects.get(os="RPM"),
+                template=apps.get_model("template", "Template").objects.get(os="RHEL"),
             ),
         },
         {
@@ -262,7 +262,7 @@ def create_redhat_linux_fields(apps, schema_editor):
             "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
-                template=apps.get_model("template", "Template").objects.get(os="RPM"),
+                template=apps.get_model("template", "Template").objects.get(os="RHEL"),
             ),
         },
         {
@@ -275,7 +275,7 @@ def create_redhat_linux_fields(apps, schema_editor):
             "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
-                template=apps.get_model("template", "Template").objects.get(os="RPM"),
+                template=apps.get_model("template", "Template").objects.get(os="RHEL"),
             ),
         },
         {
@@ -288,7 +288,7 @@ def create_redhat_linux_fields(apps, schema_editor):
             "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
-                template=apps.get_model("template", "Template").objects.get(os="RPM"),
+                template=apps.get_model("template", "Template").objects.get(os="RHEL"),
             ),
         },
     ]
