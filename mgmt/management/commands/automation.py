@@ -30,7 +30,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "--force",
             type=str,
-            help="Force execution of specific automation task(s), comma-separated"
+            help="Force execution of specific automation task(s), comma-separated",
         )
 
     def handle(self, *args, **options):
@@ -63,8 +63,9 @@ class Command(BaseCommand):
         # get forced tasks
         force_tasks = []
         if options.get("force"):
-            force_tasks = [name.strip() for name in options["force"].split(",")
-                           if name.strip()]
+            force_tasks = [
+                name.strip() for name in options["force"].split(",") if name.strip()
+            ]
             logger.info(f"Forcing execution of tasks: {force_tasks}")
 
         if force_tasks:
@@ -96,7 +97,8 @@ class Command(BaseCommand):
             if force_tasks:
                 should_run = True
                 logger.info(
-                    f"Task {task.name} is being forced to run (schedule ignored)")
+                    f"Task {task.name} is being forced to run (schedule ignored)"
+                )
             else:
                 # log task.hour safely
                 if task.hour is not None:
@@ -126,8 +128,10 @@ class Command(BaseCommand):
                             task.recurrence == "weekly"
                             and task.day_of_week == now.weekday()
                         )
-                        or (task.recurrence == "monthly"
-                            and task.day_of_month == now.day)
+                        or (
+                            task.recurrence == "monthly"
+                            and task.day_of_month == now.day
+                        )
                     )
                 ):
                     scheduled_time_match = True
