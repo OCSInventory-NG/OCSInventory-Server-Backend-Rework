@@ -51,6 +51,7 @@ def create_snmp_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
+            "section": Section.objects.get(name="SYSTEM", template=template),
             "options": None
         },
         # INTERFACES section fields
