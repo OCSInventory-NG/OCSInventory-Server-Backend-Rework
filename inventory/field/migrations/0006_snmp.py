@@ -52,7 +52,7 @@ def create_snmp_fields(apps, schema_editor):
             "retrieval_method": None,
             "retrieval_output": None,
             "section": Section.objects.get(name="SYSTEM", template=template),
-            "options": None
+            "options": None,
         },
         # INTERFACES section fields
         {
@@ -154,8 +154,8 @@ def create_snmp_fields(apps, schema_editor):
             "retrieval_method": None,
             "retrieval_output": None,
             "section": Section.objects.get(name="HARDWARE", template=template),
-            "options": None
-        }
+            "options": None,
+        },
     ]
 
     for field in fields:
