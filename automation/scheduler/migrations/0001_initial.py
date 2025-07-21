@@ -13,7 +13,7 @@ def create_default_automations(apps, schema_editor):
         active=True,
         recurrence="daily",
         last_execution=None,
-        hour=1,
+        hour="01:00",
         day_of_week=None,
         day_of_month=None,
     )
@@ -24,7 +24,7 @@ def create_default_automations(apps, schema_editor):
         active=True,
         recurrence="daily",
         last_execution=None,
-        hour=1,
+        hour="01:00",
         day_of_week=None,
         day_of_month=None,
     )
@@ -35,7 +35,7 @@ def create_default_automations(apps, schema_editor):
         active=True,
         recurrence="daily",
         last_execution=None,
-        hour=1,
+        hour="01:00",
         day_of_week=None,
         day_of_month=None,
     )
@@ -77,7 +77,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ("last_execution", models.DateTimeField(null=True)),
-                ("hour", models.IntegerField(blank=True, null=True)),
+                ("hour", models.TimeField(blank=True, null=True)),
                 ("day_of_week", models.IntegerField(blank=True, null=True)),
                 ("day_of_month", models.IntegerField(blank=True, null=True)),
             ],
