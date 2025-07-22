@@ -27,6 +27,11 @@ class Command(BaseCommand):
             choices=["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"],
             help="Override logging level from server",
         )
+        parser.add_argument(
+            "--force",
+            type=str,
+            help="Force execution of specific automation task(s), comma-separated",
+        )
 
     def handle(self, *args, **options):
         """Execute all Tasks"""
@@ -55,7 +60,20 @@ class Command(BaseCommand):
             h.save()
             logger.debug(f"History updated for task {task.name}: {comment}")
 
-        tasks = Scheduler.objects.filter(active=True)
+        # get forced tasks
+        force_tasks = []
+        if options.get("force"):
+            force_tasks = [
+                name.strip() for name in options["force"].split(",") if name.strip()
+            ]
+            logger.info(f"Forcing execution of tasks: {force_tasks}")
+
+        if force_tasks:
+            tasks = Scheduler.objects.filter(name__in=force_tasks, active=True)
+            if not tasks:
+                logger.warning(f"No active tasks found matching: {force_tasks}")
+        else:
+            tasks = Scheduler.objects.filter(active=True)
         logger.info(f"Found {tasks.count()} active tasks to process")
 
         # rounded to the minute
@@ -75,63 +93,73 @@ class Command(BaseCommand):
 
             should_run = False
 
-            # log task.hour safely
-            if task.hour is not None:
-                logger.debug(
-                    f"Task {task.name}: now={now}, task.hour={task.hour}, "
-                    f"task.hour.hour={task.hour.hour}, "
-                    f"task.hour.minute={task.hour.minute}, "
-                    f"exact_now={exact_now}, last_execution={task.last_execution}"
+            # do not check schedule if forced
+            if force_tasks:
+                should_run = True
+                logger.info(
+                    f"Task {task.name} is being forced to run (schedule ignored)"
                 )
             else:
-                logger.debug(
-                    f"Task {task.name}: now={now}, task.hour=None, "
-                    f"exact_now={exact_now}, last_execution={task.last_execution}"
-                )
-
-            scheduled_time_match = False
-            if task.recurrence == "hourly":
-                scheduled_time_match = True
-                logger.debug(f"Task {task.name} is hourly, will run")
-            elif (
-                task.hour
-                and task.hour.hour == now.hour
-                and task.hour.minute == now.minute
-                and (
-                    task.recurrence == "daily"
-                    or (
-                        task.recurrence == "weekly"
-                        and task.day_of_week == now.weekday()
+                # log task.hour safely
+                if task.hour is not None:
+                    logger.debug(
+                        f"Task {task.name}: now={now}, task.hour={task.hour}, "
+                        f"task.hour.hour={task.hour.hour}, "
+                        f"task.hour.minute={task.hour.minute}, "
+                        f"exact_now={exact_now}, last_execution={task.last_execution}"
                     )
-                    or (task.recurrence == "monthly" and task.day_of_month == now.day)
-                )
-            ):
-                scheduled_time_match = True
-                logger.debug(f"Task {task.name} scheduled")
-            else:
-                logger.debug(f"Task {task.name} not scheduled")
+                else:
+                    logger.debug(
+                        f"Task {task.name}: now={now}, task.hour=None, "
+                        f"exact_now={exact_now}, last_execution={task.last_execution}"
+                    )
 
-            # check minimum interval since last execution
-            interval_passed = False
-            if task.last_execution:
-                last_exec = task.last_execution.replace(tzinfo=self.utc)
-                interval = now - last_exec
-                logger.debug(
-                    f"Task {task.name} interval since last execution: {interval},"
-                    f" required: {min_intervals[task.recurrence]}"
-                )
-                if interval >= min_intervals[task.recurrence]:
+                scheduled_time_match = False
+                if task.recurrence == "hourly":
+                    scheduled_time_match = True
+                    logger.debug(f"Task {task.name} is hourly, will run")
+                elif (
+                    task.hour
+                    and task.hour.hour == now.hour
+                    and task.hour.minute == now.minute
+                    and (
+                        task.recurrence == "daily"
+                        or (
+                            task.recurrence == "weekly"
+                            and task.day_of_week == now.weekday()
+                        )
+                        or (
+                            task.recurrence == "monthly"
+                            and task.day_of_month == now.day
+                        )
+                    )
+                ):
+                    scheduled_time_match = True
+                    logger.debug(f"Task {task.name} scheduled")
+                else:
+                    logger.debug(f"Task {task.name} not scheduled")
+
+                # check minimum interval since last execution
+                interval_passed = False
+                if task.last_execution:
+                    last_exec = task.last_execution.replace(tzinfo=self.utc)
+                    interval = now - last_exec
+                    logger.debug(
+                        f"Task {task.name} interval since last execution: {interval},"
+                        f" required: {min_intervals[task.recurrence]}"
+                    )
+                    if interval >= min_intervals[task.recurrence]:
+                        interval_passed = True
+                        logger.debug(f"Task {task.name} interval has passed, will run")
+                else:
+                    # never executed before
                     interval_passed = True
-                    logger.debug(f"Task {task.name} interval has passed, will run")
-            else:
-                # never executed before
-                interval_passed = True
 
-            # scheduled time matches OR interval has passed
-            if task.recurrence == "hourly":
-                should_run = interval_passed
-            else:
-                should_run = scheduled_time_match or interval_passed
+                # scheduled time matches OR interval has passed
+                if task.recurrence == "hourly":
+                    should_run = interval_passed
+                else:
+                    should_run = scheduled_time_match or interval_passed
 
             if should_run:
                 try:
