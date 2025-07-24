@@ -14,7 +14,6 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-from ocsinventory_backend.ocs_framework.viewsets import ApiCheckViewSet
 from accountinfo.routers import AccountinfoRouter
 from asset.agent_config.routers import AgentConfigRouter
 from asset.asset_group.routers import AssetGroupRouter
@@ -51,6 +50,7 @@ from ipdiscover.netdevice.routers import NetdeviceRouter
 from ipdiscover.netgroup.routers import NetgroupRouter
 from ipdiscover.network.routers import NetworkRouter
 from ocsinventory_backend import settings
+from ocsinventory_backend.ocs_framework.viewsets import ApiCheckViewSet
 
 # Import dedicated routers and provide different endpoint
 from permission.routers import PermissionRouter
