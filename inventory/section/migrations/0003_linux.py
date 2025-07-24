@@ -96,7 +96,7 @@ def create_default_linux_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
             "target": "dmidecode -t slot",
-            "options": {"separator": "Name:"},
+            "options": {"separator": "System Slot Information"},
         },
         {
             "name": "SOUNDS",
