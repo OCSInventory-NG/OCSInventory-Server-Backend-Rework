@@ -1,9 +1,9 @@
 import logging
-from django.db.models import Count
 
 from asset.inventory_base.models import InventoryBase
 from automation.tasks.abstractTask import AbstractTask
 from django.db import DatabaseError
+from django.db.models import Count
 
 logger = logging.getLogger("mgmt.management.commands.MergeLegacy")
 
@@ -22,9 +22,7 @@ class MergeLegacy(AbstractTask):
             logger.info("Starting MergeLegacy task")
             self.cleanup_legacy_assets()
         except Exception as e:
-            logger.error(
-                f"Critical error in MergeLegacy task: {e}", exc_info=True
-            )
+            logger.error(f"Critical error in MergeLegacy task: {e}", exc_info=True)
             raise
 
     def cleanup_legacy_assets(self):
@@ -33,9 +31,11 @@ class MergeLegacy(AbstractTask):
         """
         try:
             # get names with multiple assets
-            duplicate_names = InventoryBase.objects.values('name').annotate(
-                count=Count('id')
-            ).filter(count__gt=1)
+            duplicate_names = (
+                InventoryBase.objects.values("name")
+                .annotate(count=Count("id"))
+                .filter(count__gt=1)
+            )
 
             total_duplicate_names = duplicate_names.count()
             logger.info(f"Found {total_duplicate_names} name(s) with multiple assets")
@@ -46,12 +46,12 @@ class MergeLegacy(AbstractTask):
 
             for name_data in duplicate_names:
                 try:
-                    name = name_data['name']
+                    name = name_data["name"]
                     assets = InventoryBase.objects.filter(name=name)
 
                     # split
-                    legacy_assets = [a for a in assets if 'OCS-NG' in a.agent]
-                    rework_assets = [a for a in assets if 'OCS-NG' not in a.agent]
+                    legacy_assets = [a for a in assets if "OCS-NG" in a.agent]
+                    rework_assets = [a for a in assets if "OCS-NG" not in a.agent]
 
                     # clean up if we have both legacy and new assets for the same name
                     if legacy_assets and rework_assets:
