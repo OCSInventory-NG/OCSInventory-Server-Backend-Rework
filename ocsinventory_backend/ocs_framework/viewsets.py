@@ -11,7 +11,7 @@ class ApiCheckViewSet(viewsets.ModelViewSet):
     permission_classes = []
 
     def api_check(self, request, *args, **kwargs):
-        return Response({"message": "API is reachable",}, status=status.HTTP_200_OK)
+        return Response({"message": "API is online!",}, status=status.HTTP_200_OK)
     
 class OCSViewSet(viewsets.ModelViewSet):
     """
