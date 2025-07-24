@@ -109,7 +109,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrieval_value": "SystemManufacturer\s*:\\r*(.*)",
+            "retrieval_value": "DMI\\s+type\\s+1,.*?\\n(?:.*\\n)*?\\s*Manufacturer:\\s*(.+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -119,7 +119,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "MODEL",
-            "retrieval_value": "SystemModel\s*:\\r*(.*)",
+            "retrieval_value": "DMI\\s+type\\s+1,.*?\\n(?:.*\\n)*?\\s*Product Name:\\s*(.+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -129,7 +129,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "SERIAL NUMBER",
-            "retrieval_value": "SystemSerialNumber\s*:\\r*(.*)",
+            "retrieval_value": "DMI\\s+type\\s+1,.*?\\n(?:.*\\n)*?\\s*Serial Number:\\s*(.+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -139,7 +139,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrieval_value": "ChassisType\s*:\\r*(.*)",
+            "retrieval_value": "DMI\\s+type\\s+3,.*?\\n(?:.*\\n)*?\\s*Type:\\s*(.+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -149,7 +149,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "BIOS MANUFACTURER",
-            "retrieval_value": "BiosManufacturer\s*:\\r*(.*)",
+            "retrieval_value": "DMI\\s+type\\s+0,.*?\\n(?:.*\\n)*?\\s*Vendor:\\s*(.+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -159,7 +159,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "BIOS VERSION",
-            "retrieval_value": "BiosVersion\s*:\\r*(.*)",
+            "retrieval_value": "DMI\\s+type\\s+0,.*?\\n(?:.*\\n)*?\\s*Version:\\s*(.+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -169,7 +169,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "BIOS DATE",
-            "retrieval_value": "BiosDate\s*:\\r*(.*)",
+            "retrieval_value": "DMI\\s+type\\s+0,.*?\\n(?:.*\\n)*?\\s*Release Date:\\s*(.+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -179,7 +179,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "ASSET TAG",
-            "retrieval_value": "AssetTag\s*:\\r*(.*)",
+            "retrieval_value": "DMI\\s+type\\s+(2|3),.*?\\n(?:.*\\n)*?\\s*Asset Tag:\\s*(.+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -189,7 +189,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "MOTHERBOARD MANUFACTURER",
-            "retrieval_value": "MotherboardManufacturer\s*:\\r*(.*)",
+            "retrieval_value": "DMI\\s+type\\s+2,.*?\\n(?:.*\\n)*?\\s*Manufacturer:\\s*(.+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -199,7 +199,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "MOTHERBOARD MODEL",
-            "retrieval_value": "MotherboardModel\s*:\\r*(.*)",
+            "retrieval_value": "DMI\\s+type\\s+2,.*?\\n(?:.*\\n)*?\\s*Product Name:\\s*(.+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -209,7 +209,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "MOTHERBOARD SERIAL NUMBER",
-            "retrieval_value": "MotherboardSerialNumber\s*:\\r*(.*)",
+            "retrieval_value": "DMI\\s+type\\s+2,.*?\\n(?:.*\\n)*?\\s*Serial Number:\\s*(.+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
