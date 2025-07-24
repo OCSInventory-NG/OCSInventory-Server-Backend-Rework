@@ -4,8 +4,15 @@ from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets
 from rest_framework.response import Response
+from rest_framework.routers import DefaultRouter
 
 
+class ApiCheckViewSet(viewsets.ModelViewSet):
+    permission_classes = []
+
+    def api_check(self, request, *args, **kwargs):
+        return Response({"message": "API is reachable",}, status=status.HTTP_200_OK)
+    
 class OCSViewSet(viewsets.ModelViewSet):
     """
     This class will define the general view behavior for the framework

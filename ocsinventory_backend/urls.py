@@ -14,6 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
+from ocsinventory_backend.ocs_framework.viewsets import ApiCheckViewSet
 from accountinfo.routers import AccountinfoRouter
 from asset.agent_config.routers import AgentConfigRouter
 from asset.asset_group.routers import AssetGroupRouter
@@ -201,6 +202,7 @@ fileManagerRouter = fileManagerRouter.defineRoutes(defaultRouter)
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     path(r"", include(defaultRouter.urls)),
+    path("api-check/", ApiCheckViewSet.as_view({"get": "api_check"}), name="api_check"),
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
     path("api-auth/token", obtain_auth_token, name="api_token_auth"),
     path("asset/collection/", CollectionView.as_view(), name="asset_collection"),
