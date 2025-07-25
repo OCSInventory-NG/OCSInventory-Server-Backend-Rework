@@ -4,192 +4,153 @@ from django.db import migrations
 
 
 def create_default_linux_sections(apps, schema_editor):
+    os_types = ["RHEL", "DEB"]
+
     sections = [
-        {
-            "name": "AUDIO",
-            "retrieval_method": "BASH",
-            "retrieval_output": "REGX",
-            "target": "lspci",
-            "template": apps.get_model("template", "Template").objects.get(os="LIN"),
-            "options": {"multiple": True},
-        },
         {
             "name": "BATTERIES",
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
-            "target": "sudo dmidecode -t 22 -q",
-            "template": apps.get_model("template", "Template").objects.get(os="LIN"),
-            "options": None,
+            "target": "upower -i $(upower -e | grep BAT)",
+            "options": {"separator": "native-path:"},
+        },
+        {
+            "name": "BIOS",
+            "retrieval_method": "BASH",
+            "retrieval_output": "REGX",
+            "target": "dmidecode",
+            "options": {},
         },
         {
             "name": "CONTROLLERS",
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
-            "target": "lspci -nn",
-            "template": apps.get_model("template", "Template").objects.get(os="LIN"),
-            "options": {"multiple": True},
+            "target": "lspci -nnvmm",
+            "options": {"separator": "Slot:"},
         },
         {
             "name": "CPUS",
             "retrieval_method": "BASH",
-            "retrieval_output": "JSON",
-            "target": "lscpu",
-            "template": apps.get_model("template", "Template").objects.get(os="LIN"),
-            "options": None,
+            "retrieval_output": "REGX",
+            "target": "LANG=C lscpu && dmidecode -t processor",
+            "options": {},
         },
         {
-            "name": "CURRENT_USER",
+            "name": "DRIVES",
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
-            "target": "who",
-            "template": apps.get_model("template", "Template").objects.get(os="LIN"),
-            "options": None,
-        },
-        {
-            "name": "ETHERNET",
-            "retrieval_method": "BASH",
-            "retrieval_output": "REGX",
-            "target": "/sbin/ifconfig -a",
-            "template": apps.get_model("template", "Template").objects.get(os="LIN"),
-            "options": {"multiple": True, "separator": "collisions \\d"},
-        },
-        {
-            "name": "GRAPHIC/DISPLAY",
-            "retrieval_method": "BASH",
-            "retrieval_output": "REGX",
-            "target": "sudo lshw -class display",
-            "template": apps.get_model("template", "Template").objects.get(os="LIN"),
-            "options": {"multiple": True, "separator": ".*display"},
-        },
-        {
-            "name": "GROUPS",
-            "retrieval_method": "BASH",
-            "retrieval_output": "REGX",
-            "target": "cat /etc/group",
-            "template": apps.get_model("template", "Template").objects.get(os="LIN"),
-            "options": {"multiple": True},
-        },
-        {
-            "name": "HARDWARE",
-            "retrieval_method": "BASH",
-            "retrieval_output": "PTXT",
-            "target": "echo BIOS",
-            "template": apps.get_model("template", "Template").objects.get(os="LIN"),
-            "options": None,
+            "target": "df -TP | awk 'NR==1{next} {printf \"Filesystem: %s\\nType: %s\\n1K-blocks: %s\\nAvailable: %s\\nUse%%: %s\\nMounted: %s\\nSize_MB: %.2f\\nAvail_MB: %.2f\\n---\\n\", $1, $2, $3, $5, $6, $7, $3/1024, $5/1024}'",
+            "options": {"separator": "---"},
         },
         {
             "name": "INPUTS",
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
-            "target": "cat /proc/bus/input/devices",
-            "template": apps.get_model("template", "Template").objects.get(os="LIN"),
-            "options": {"multiple": True, "separator": "^$"},
+            "target": 'awk -v RS=\'\' \'{ match($0, /Bus=([0-9a-fA-F]+)/, b); bus_hex = sprintf ("0x%02x", strtonum("0x" b[1])); bus = (bus_hex=="0x01")?"PCI" : (bus_hex=="0x02")?"ISAPNP" : (bus_hex=="0x03")?"USB" : (bus_hex=="0x04")?"HIL" : (bus_hex=="0x05")?"Bluetooth" : (bus_hex=="0x06")?"Virtual" : (bus_hex=="0x10")?"ISA" : (bus_hex=="0x11")?"i8042" : (bus_hex=="0x12")?"XT Keyboard" : (bus_hex=="0x13")?"RS232" : (bus_hex=="0x14")?"Gameport" : (bus_hex=="0x15")?"Parallel Port" : (bus_hex=="0x16")?"Amiga" : (bus_hex=="0x17")?"ADB (Apple Desktop Bus)" : (bus_hex=="0x18")?"I2C" : (bus_hex=="0x19")?"Host" : (bus_hex=="0x1A")?"GSC" : (bus_hex=="0x1B")?"Atari" : (bus_hex=="0x1C")?"SPI" : (bus_hex=="0x1D")?"RMI" : (bus_hex=="0x1E")?"CEC" : (bus_hex=="0x1F")?"Intel ISHTP" : (bus_hex=="0x20")?"AMD SFH" : "Unknown ("bus_hex")"; print "Type: " bus; print "Bus: " b[1]; match($0, /Vendor=([0-9a-fA-F]+)/, v); vendor = tolower(v[1]); print "Vendor: " vendor; match($0, /Product=([0-9a-fA-F]+)/, p); product = tolower(p[1]); print "Product: " product; if (vendor != "") { cmd = "grep -i \\x27^" vendor "  \\x27 /usr/share/hwdata/usb.ids | head -n1 | cut -c7-"; manufacturer = ""; cmd | getline manufacturer; close(cmd); print "Manufacturer: " manufacturer; if (vendor != "" && product != "") { cmd = "awk \\x27/^" vendor "  /{flag=1; next} /^[^[:space:]]/{flag=0} flag && /^[[:space:]]+" product "  /{print substr($0, index($0, \\x27" product "\\x27) + 5); exit}\\x27 /usr/share/hwdata/usb.ids"; description = ""; cmd | getline description; close(cmd); print "Description: " description; } match($0, /Name="([^"]+)"/, n); if (n[1] != "") print "Caption: " n[1]; match($0, /Sysfs=([^ \\n]+)/, s); if (s[1] != "") print "Interface: " s[1]; print "---"; } }\' /proc/bus/input/devices',
+            "options": {"separator": "---"},
+        },
+        {
+            "name": "LOCAL GROUPS",
+            "retrieval_method": "BASH",
+            "retrieval_output": "REGX",
+            "target": "cat /etc/group",
+            "options": {"multiple": True},
+        },
+        {
+            "name": "LOCAL USERS",
+            "retrieval_method": "BASH",
+            "retrieval_output": "REGX",
+            "target": "cat /etc/passwd",
+            "options": {"multiple": True},
         },
         {
             "name": "MEMORIES",
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
-            "target": "sudo dmidecode -t 17 -q",
-            "template": apps.get_model("template", "Template").objects.get(os="LIN"),
-            "options": {"multiple": True, "separator": "^$"},
+            "target": "dmidecode -t 17 -q",
+            "options": {"separator": "Memory Device"},
         },
         {
-            "name": "NETWORKS",
-            "retrieval_method": "BASH",
-            "retrieval_output": "PTXT",
-            "target": "echo HARDWARE",
-            "template": apps.get_model("template", "Template").objects.get(os="LIN"),
-            "options": None,
-        },
-        {
-            "name": "OPERATING_SYSTEM",
+            "name": "MONITORS",
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
-            "target": "hostnamectl",
-            "template": apps.get_model("template", "Template").objects.get(os="LIN"),
-            "options": {"multiple": True, "separator": "Hardware Model:.*"},
-        },
-        {
-            "name": "PACKAGES",
-            "retrieval_method": "BASH",
-            "retrieval_output": "REGX",
-            "target": "apt-cache policy",
-            "template": apps.get_model("template", "Template").objects.get(os="LIN"),
-            "options": {"multiple": True},
+            "target": 'for f in /sys/class/drm/*/edid; do [ -f "$f" ] || continue; echo "Screen: $(basename "$(dirname "$f")")"; cat "$f" | parse-edid 2>&1 | sed -nE \'s/.*week ([0-9]+) of ([0-9]+).*/Manufactured week\/year: \\1\/\\2/p; t; p\'; serial=$(hexdump -v -e \'1/1 "%02x"\' "$f" | cut -c25-32); [ -n "$serial" ] && echo "Serial number: $((0x$serial))"; echo "---"; done',
+            "options": {"separator": "---"},
         },
         {
             "name": "PORTS",
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
-            "target": "sudo dmidecode -t 8 -q",
-            "template": apps.get_model("template", "Template").objects.get(os="LIN"),
-            "options": {"multiple": True, "separator": "^$"},
+            "target": "dmidecode -t connector",
+            "options": {"multiple": True},
         },
         {
             "name": "PRINTERS",
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
-            "target": "sudo lpstat -l -e",
-            "template": apps.get_model("template", "Template").objects.get(os="LIN"),
-            "options": {"multiple": True},
+            "target": 'for name in $(lpstat -p 2>/dev/null | awk \'{print $2}\'); do description=$(lpstat -l -p "$name" | grep "Description" | cut -d: -f2- | sed \'s/^ *//\'); port=$(lpstat -v "$name" | awk -F\': \' \'{print $2}\'); driver=$(lpoptions -p "$name" | grep "printer-make-and-model" | cut -d"\'" -f2); echo "Name: $name"; echo "Description: $description"; echo "Port: $port"; echo "Driver: $driver"; echo "---"; done',
+            "options": {"separator": "---"},
         },
         {
             "name": "SLOTS",
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
-            "target": "sudo dmidecode -t 9 -q",
-            "template": apps.get_model("template", "Template").objects.get(os="LIN"),
-            "options": {"multiple": True, "separator": "^$"},
+            "target": "dmidecode -t slot",
+            "options": {"separator": "System Slot Information"},
         },
         {
-            "name": "SOFTWARES",
+            "name": "SOUNDS",
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
-            "target": "dpkg-query --show --showformat=\\'\\${binary:Package}---\\${Architecture}---\\${Version}---\\${Installed-Size}---\\${Homepage}\\n\\'",
-            "template": apps.get_model("template", "Template").objects.get(os="LIN"),
-            "options": {"multiple": True},
+            "target": "lspci -nn | grep -i audio | cut -d ' ' -f1 | xargs -I{} lspci -vmm -s {}",
+            "options": {"separator": "Slot:"},
         },
         {
             "name": "STORAGES",
             "retrieval_method": "BASH",
-            "retrieval_output": "TBLE",
-            "target": "df -TP",
-            "template": apps.get_model("template", "Template").objects.get(os="LIN"),
-            "options": {"use_index": False},
+            "retrieval_output": "REGX",
+            "target": 'for storage in $(lsblk -dno NAME,TYPE | awk \'$2=="disk"{print $1}\'); do echo "Name: $storage"; read type size rota tran < <(lsblk -dnro TYPE,SIZE,ROTA,TRAN "/dev/$storage"); rota_int=$(echo "$rota" | tr -d "[:space:]"); description="$([ $rota_int -eq 0 ] && echo SSD || echo HDD) - $tran"; echo -e "Type: $type\\nDiskSize: $size\\nDescription: $description"; smartctl_info=$(smartctl -i "/dev/$storage" 2>/dev/null); echo "$smartctl_info" | grep -E "Model Number|Serial Number|Firmware Version" | sed -e \'s/Model Number:/Model:/\' -e \'s/Serial Number:/SerialNumber:/\' -e \'s/Firmware Version:/Firmware:/\'; pci_line=$(echo "$smartctl_info" | grep "PCI Vendor/Subsystem ID"); if [[ -n "$pci_line" ]]; then pci_id=$(echo "$pci_line" | grep -Po \'0x[0-9a-fA-F]+\'); vendor_id=${pci_id#0x}; if [[ -f /usr/share/hwdata/pci.ids ]]; then manufacturer=$(grep -i "^$vendor_id " /usr/share/hwdata/pci.ids | head -n1 | cut -f2- -d\' \'); echo "Manufacturer: $manufacturer"; fi; fi; echo "---"; done',
+            "options": {"separator": "---"},
         },
         {
-            "name": "USB",
+            "name": "USB DEVICES",
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
-            "target": "lsusb",
-            "template": apps.get_model("template", "Template").objects.get(os="LIN"),
-            "options": {"multiple": True},
+            "target": "lsusb -v",
+            "options": {"separator": "\\nBus"},
         },
         {
-            "name": "USERS",
+            "name": "VIDEOS",
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
-            "target": "cat /etc/passwd",
-            "template": apps.get_model("template", "Template").objects.get(os="LIN"),
-            "options": {"multiple": True},
+            "target": 'videos=($(lspci | grep -iE \'graphics|vga|video|display\' | cut -d \' \' -f1)); for slot in "${videos[@]}"; do info=$(lspci -vmm -s "$slot"); chipset=$(echo "$info" | grep \'^Class:\' | cut -f2-); vendor=$(echo "$info" | grep \'^Vendor:\' | cut -f2-); device=$(echo "$info" | grep \'^Device:\' | cut -f2-); name="$vendor $device"; memory=0; while IFS= read -r line; do if [[ $line =~ Memory.*\\(.*-bit,\\ prefetchable\\)\\ \\[size=([0-9]+)([GMK])\\] ]]; then size=${BASH_REMATCH[1]}; unit=${BASH_REMATCH[2]}; case $unit in G) bytes=$(( size * 1024 * 1024 * 1024 )) ;; M) bytes=$(( size * 1024 * 1024 )) ;; K) bytes=$(( size * 1024 )) ;; esac; memory=$(( memory + bytes )); fi; done < <(lspci -v -s "$slot" 2>/dev/null); memory_mb=$(( (memory + 524288) / 1048576 )); echo "Chipset: $chipset"; echo "Name: $name"; echo "Memory: ${memory_mb} MB"; echo "---"; done',
+            "options": {"separator": "---"},
         },
         {
-            "name": "WI_FI",
+            "name": "VIRTUAL MACHINES",
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
-            "target": "nmcli connection show",
-            "template": apps.get_model("template", "Template").objects.get(os="LIN"),
+            "target": "(for u in $(cut -d: -f1 /etc/passwd); do sudo -u $u bash -c 'VBoxManage list vms; virsh --connect qemu:///session list --all --name'; done; virsh --connect qemu:///system list --all --name) 2>/dev/null | grep -v '^$'",
             "options": {"multiple": True},
         },
     ]
 
+    Template = apps.get_model("template", "Template")
     Section = apps.get_model("section", "Section")
 
-    for section in sections:
+    for os_type in os_types:
         try:
-            Section.objects.create(**section)
+            template = Template.objects.get(os=os_type)
         except Exception as e:
             print(e)
+            continue
+        for section in sections:
+            section_data = section.copy()
+            section_data["template"] = template
+            try:
+                Section.objects.create(**section_data)
+            except Exception as e:
+                print(e)
 
 
 class Migration(migrations.Migration):
