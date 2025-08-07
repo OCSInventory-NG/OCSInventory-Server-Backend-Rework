@@ -101,3 +101,18 @@ class InventoryBaseSerializer(ExpandableFieldsMixin, ModelSerializer):
 
         representation["accountinfo"] = account_data
         return representation
+
+    def validate(self, attrs):
+        """
+        Validate the template field to ensure it has not changed
+        when updating an existing InventoryBase instance.
+        """
+
+        old_template = getattr(self.instance, 'template').id
+        new_template = attrs.get('template', old_template).id
+
+        if old_template != new_template:
+            # TODO: Trouver un moyen de faire correspondre les ids des sections avec les ids des templates
+            pass
+
+        return attrs
