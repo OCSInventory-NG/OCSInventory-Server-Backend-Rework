@@ -113,16 +113,16 @@ class InventoryBaseSerializer(ExpandableFieldsMixin, ModelSerializer):
 
         if instance.template is None:
             return super().update(instance, validated_data)
-        
+
         old_template = instance.template
-        
-        if validated_data.get('template', old_template) is None:
+
+        if validated_data.get("template", old_template) is None:
             return super().update(instance, validated_data)
-            
-        new_template = validated_data.get('template', old_template).id
+
+        new_template = validated_data.get("template", old_template).id
 
         if old_template != new_template:
-            old_id = getattr(self.instance, 'id')
+            old_id = getattr(self.instance, "id")
             section = InventorySection.objects.filter(base=old_id)
             if section.exists():
                 section.delete()
