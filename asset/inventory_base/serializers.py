@@ -111,18 +111,19 @@ class InventoryBaseSerializer(ExpandableFieldsMixin, ModelSerializer):
         with the new template settings.
         """
 
-        old_template = None
-        new_template = None
+        if instance.template is None:
+            return super().update(instance, validated_data)
+        
+        if validated_data.get('template', old_template) is None:
+            return super().update(instance, validated_data)
+            
+        old_template = instance.template
+        new_template = validated_data.get('template', old_template).id
 
-        if instance.template is not None:
-            old_template = instance.template
-        if validated_data.get('template', old_template) is not None:
-            new_template = validated_data.get('template', old_template).id
-
-        if old_template is not None and new_template is not None:
-            if old_template != new_template:
-                old_id = getattr(self.instance, 'id')
-                section = InventorySection.objects.filter(base=old_id)
-                if section.exists():
-                    section.delete()
+        if old_template != new_template:
+            old_id = getattr(self.instance, 'id')
+            section = InventorySection.objects.filter(base=old_id)
+            if section.exists():
+                section.delete()
+                
         return super().update(instance, validated_data)
