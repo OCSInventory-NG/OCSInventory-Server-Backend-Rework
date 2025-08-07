@@ -1,6 +1,7 @@
 from accountinfo.models import AccountinfoConfig, AccountinfoData, AccountinfoValue
 from accountinfo.serializers import AccountinfoDataSerializer
 from asset.inventory_base.models import InventoryBase
+from asset.inventory_section.models import InventorySection
 from inventory.template.serializers import TemplateSerializer
 from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
 from rest_framework.serializers import ModelSerializer
@@ -102,18 +103,26 @@ class InventoryBaseSerializer(ExpandableFieldsMixin, ModelSerializer):
         representation["accountinfo"] = account_data
         return representation
 
-    def validate(self, attrs):
+    def update(self, instance, validated_data):
         """
-        Validate fileds before saving the instance.
-        If the template is changed, we need to ensure that the sections
-        associated with the old template are correctly deleted.
+        Update the InventoryBase instance.
+        If the template is changed, delete the associated InventorySection.
+        This is necessary to ensure that the sections are recreated
+        with the new template settings.
         """
 
-        old_template = getattr(self.instance, 'template').id
-        new_template = attrs.get('template', old_template).id
+        old_template = None
+        new_template = None
 
-        if old_template != new_template:
-            # TODO: Trouver un moyen de faire correspondre les ids des sections avec les ids des templates
-            pass
+        if instance.template is not None:
+            old_template = instance.template
+        if validated_data.get('template', old_template) is not None:
+            new_template = validated_data.get('template', old_template).id
 
-        return attrs
+        if old_template is not None and new_template is not None:
+            if old_template != new_template:
+                old_id = getattr(self.instance, 'id')
+                section = InventorySection.objects.filter(base=old_id)
+                if section.exists():
+                    section.delete()
+        return super().update(instance, validated_data)
