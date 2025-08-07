@@ -104,8 +104,9 @@ class InventoryBaseSerializer(ExpandableFieldsMixin, ModelSerializer):
 
     def validate(self, attrs):
         """
-        Validate the template field to ensure it has not changed
-        when updating an existing InventoryBase instance.
+        Validate fileds before saving the instance.
+        If the template is changed, we need to ensure that the sections
+        associated with the old template are correctly deleted.
         """
 
         old_template = getattr(self.instance, 'template').id
