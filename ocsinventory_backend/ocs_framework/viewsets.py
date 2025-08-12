@@ -2,7 +2,7 @@ import logging
 
 from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import status, viewsets
+from rest_framework import filters, status, viewsets
 from rest_framework.response import Response
 
 
@@ -27,13 +27,17 @@ class OCSViewSet(viewsets.ModelViewSet):
     """
 
     # Set default filter
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
 
     # Filter on all by default
     filterset_fields = "__all__"
 
     # This is the default reconciliation id for objets, can overrided
     reconciliation_field = "id"
+
+    ordering_fields = "__all__"
+    # default ordering
+    ordering = ["id"]
 
     logger = logging.getLogger("OCSViewSet")
 
