@@ -19,26 +19,45 @@ def create_osname_rules_with_actions(apps, schema_editor):
                     "description": "Update template for Windows",
                     "action": "set",
                     "field": "template",
-                    "value": 4,
+                    "value": 5,
                 }
             ],
         },
         {
-            "description": "Assign Linux template",
+            "description": "Assign Linux (Debian based) template",
             "trigger": "inventory_received",
             "enabled": True,
             "logic": {
                 "regex": [
                     {"var": "osname"},
-                    "(?i)(Ubuntu|Debian|Redhat|Centos|Alma|Rocky)",
+                    "(?i)(Ubuntu|Debian)",
                 ]
             },
             "actions": [
                 {
-                    "description": "Update template for Linux",
+                    "description": "Update template for Linux (Debian based)",
                     "action": "set",
                     "field": "template",
                     "value": 2,
+                }
+            ],
+        },
+        {
+            "description": "Assign Linux (RHEL based) template",
+            "trigger": "inventory_received",
+            "enabled": True,
+            "logic": {
+                "regex": [
+                    {"var": "osname"},
+                    "(?i)(Redhat|Centos|Alma|Rocky)",
+                ]
+            },
+            "actions": [
+                {
+                    "description": "Update template for Linux (RHEL based)",
+                    "action": "set",
+                    "field": "template",
+                    "value": 3,
                 }
             ],
         },
@@ -52,7 +71,7 @@ def create_osname_rules_with_actions(apps, schema_editor):
                     "description": "Update template for Mac",
                     "action": "set",
                     "field": "template",
-                    "value": 3,
+                    "value": 4,
                 }
             ],
         },
@@ -80,7 +99,7 @@ def create_osname_rules_with_actions(apps, schema_editor):
                     "description": "Update template for SNMP",
                     "action": "set",
                     "field": "template",
-                    "value": 5,
+                    "value": 6,
                 }
             ],
         },

@@ -211,6 +211,7 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.DjangoModelPermissions",
     ],
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
+    "DATETIME_FORMAT": "%Y-%m-%dT%H:%M:%S%z",
 }
 
 # CORS Allow all during dev

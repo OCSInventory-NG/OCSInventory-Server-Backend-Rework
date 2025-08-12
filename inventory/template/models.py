@@ -15,7 +15,8 @@ class Template(models.Model):
 
     OS_CHOICES = (
         ("LEG", "Legacy"),
-        ("LIN", "Linux"),
+        ("DEB", "Linux (Debian based)"),
+        ("RHEL", "Linux (RHEL based)"),
         ("MAC", "Mac"),
         ("WIN", "Windows"),
         ("SNMP", "SNMP"),
