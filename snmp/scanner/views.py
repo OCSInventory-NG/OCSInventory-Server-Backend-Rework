@@ -2,7 +2,7 @@ from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
 from snmp.scanner.models import SnmpScanner
 from snmp.scanner.serializers import SnmpScannerSerializer
-
+from rest_framework import filters
 
 class SnmpScannerViewSet(viewsets.OCSViewSet):
     """
@@ -13,7 +13,9 @@ class SnmpScannerViewSet(viewsets.OCSViewSet):
     """
 
     # Set default filter
-    filter_backends = []
+    filter_backends = [filters.OrderingFilter]
+    
+    ordering = ["identifier"]
 
     # Need to be authenticated to consult
     permission_classes = [DefaultModelPermissions]
