@@ -97,6 +97,20 @@ def create_base_config(apps, schema_editor):
                     "type": "number input",
                     "unit": "days",
                 },
+                {
+                    "name": "purge_deployment_package",
+                    "description": "Enable deployment package purge",
+                    "value": False,
+                    "type": "switch",
+                    "unit": "",
+                },
+                {
+                    "name": "purge_deployment_package_max_age",
+                    "description": "Interval in months for purging deployment packages",
+                    "value": 3,
+                    "type": "number input",
+                    "unit": "months",
+                },
             ],
         },
         {
