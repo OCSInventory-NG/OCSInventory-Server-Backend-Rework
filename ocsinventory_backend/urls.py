@@ -50,6 +50,7 @@ from ipdiscover.netdevice.routers import NetdeviceRouter
 from ipdiscover.netgroup.routers import NetgroupRouter
 from ipdiscover.network.routers import NetworkRouter
 from ocsinventory_backend import settings
+from ocsinventory_backend.ocs_framework.viewsets import ApiCheckViewSet
 
 # Import dedicated routers and provide different endpoint
 from permission.routers import PermissionRouter
@@ -201,6 +202,7 @@ fileManagerRouter = fileManagerRouter.defineRoutes(defaultRouter)
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     path(r"", include(defaultRouter.urls)),
+    path("api-check/", ApiCheckViewSet.as_view({"get": "api_check"}), name="api_check"),
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
     path("api-auth/token", obtain_auth_token, name="api_token_auth"),
     path("asset/collection/", CollectionView.as_view(), name="asset_collection"),

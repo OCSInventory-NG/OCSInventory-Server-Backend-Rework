@@ -39,6 +39,17 @@ def create_default_automations(apps, schema_editor):
         day_of_week=None,
         day_of_month=None,
     )
+    
+    Scheduler.objects.create(
+        name="mergeLegacy.MergeLegacy",
+        description="Merge Legacy Assets",
+        active=True,
+        recurrence="monthly",
+        last_execution=None,
+        hour=None,
+        day_of_week=None,
+        day_of_month=1,
+    )
 
     Scheduler.objects.create(
         name="purgeFiles.PurgeFiles",

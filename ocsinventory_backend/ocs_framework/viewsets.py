@@ -6,6 +6,18 @@ from rest_framework import status, viewsets
 from rest_framework.response import Response
 
 
+class ApiCheckViewSet(viewsets.ModelViewSet):
+    permission_classes = []
+
+    def api_check(self, request, *args, **kwargs):
+        return Response(
+            {
+                "message": "API is online!",
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
 class OCSViewSet(viewsets.ModelViewSet):
     """
     This class will define the general view behavior for the framework
