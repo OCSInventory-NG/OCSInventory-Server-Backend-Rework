@@ -415,7 +415,7 @@ class CollectionView(APIView):
                 {"error": f"Error retrieving asset: {reconciliation_info}"},
                 status=500,
             )
-        
+
         if data["template"] is not None and asset_instance.template_id is not None:
             if int(data["template"]) != asset_instance.template_id:
                 section = InventorySection.objects.filter(base=asset_instance.id)
