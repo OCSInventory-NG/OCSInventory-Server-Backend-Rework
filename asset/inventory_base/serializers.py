@@ -102,29 +102,3 @@ class InventoryBaseSerializer(ExpandableFieldsMixin, ModelSerializer):
 
         representation["accountinfo"] = account_data
         return representation
-
-    def update(self, instance, validated_data):
-        """
-        Update the InventoryBase instance.
-        If the template is changed, delete the associated InventorySection.
-        This is necessary to ensure that the sections are recreated
-        with the new template settings.
-        """
-
-        if instance.template is None:
-            return super().update(instance, validated_data)
-
-        old_template = instance.template
-
-        if validated_data.get("template", old_template) is None:
-            return super().update(instance, validated_data)
-
-        new_template = validated_data.get("template", old_template).id
-
-        if old_template != new_template:
-            old_id = getattr(self.instance, "id")
-            section = InventorySection.objects.filter(base=old_id)
-            if section.exists():
-                section.delete()
-
-        return super().update(instance, validated_data)

@@ -376,6 +376,7 @@ class CollectionView(APIView):
             Response object
         """
         data = request.data
+        # get reconciliation info for logging
         reconciliation_info = self.format_reconciliation_info(data)
         device_id = f"{data.get('name', 'unknown')} {reconciliation_info}"
 
@@ -415,6 +416,15 @@ class CollectionView(APIView):
                 {"error": f"Error retrieving asset: {reconciliation_info}"},
                 status=500,
             )
+        
+        if data["template"] is not None and asset_instance.template_id is not None:
+            if int(data["template"]) != asset_instance.template_id:
+                section = InventorySection.objects.filter(base=asset_instance.id)
+                if section.exists():
+                    section.delete()
+                    
+        del data["template"]
+
         try:
             # update asset
             asset_serializer = InventoryBaseSerializer(asset_instance, data=data)
