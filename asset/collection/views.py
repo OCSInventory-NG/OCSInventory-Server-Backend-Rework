@@ -376,7 +376,6 @@ class CollectionView(APIView):
             Response object
         """
         data = request.data
-        # get reconciliation info for logging
         reconciliation_info = self.format_reconciliation_info(data)
         device_id = f"{data.get('name', 'unknown')} {reconciliation_info}"
 
@@ -422,7 +421,7 @@ class CollectionView(APIView):
                 section = InventorySection.objects.filter(base=asset_instance.id)
                 if section.exists():
                     section.delete()
-                    
+
         del data["template"]
 
         try:
