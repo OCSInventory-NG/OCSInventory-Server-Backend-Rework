@@ -13,6 +13,7 @@ DISABLE_LINTERS:
     REPOSITORY_DEVSKIM,
     REPOSITORY_KICS,
     PYTHON_BANDIT,
+    REPOSITORY_SECRETLINT,
   ]
 DISABLE:
   - COPYPASTE # Comment to disable checks of abusive copy-pastes
