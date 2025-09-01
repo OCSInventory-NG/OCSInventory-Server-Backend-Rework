@@ -5,15 +5,15 @@ Rework of the OCS Inventory project server
 # Getting started
 
 
-Install basics requirements using pip
+Install basic requirements using pip
 
 ```bash
 pip install -r requirements.txt
 ```
 
-In the case, python ldap bring an error check the following link : <https://www.python-ldap.org/en/python-ldap-3.4.3/installing.html>
+In case python-ldap brings an error, check the following link : <https://www.python-ldap.org/en/python-ldap-3.4.3/installing.html>
 
-Depending on the database system you plan a using
+Depending on the database system you plan to use:
 
 ```bash
 pip install -r requirements_psql.txt # For postgresql
@@ -26,9 +26,9 @@ Copy the `.env-sample` to `.env` :
 cp .env-sample .env
 ```
 
-Note : database and user creation won't be describe in this readme, please refer to your database system documentation
+Note : database and user creation won't be described in this readme, please refer to your database system documentation
 
-Using your favorite editor to edit the file with the correct database connection info :
+Using your favorite editor, edit the file with the correct database connection info :
 
 ```bash
 DEBUG=False
