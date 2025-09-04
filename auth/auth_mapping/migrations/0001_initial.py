@@ -55,7 +55,7 @@ def add_auth_methods(apps, schema_editor):
                         "TOKEN_ENDPOINT": "https://auth.provider.org/protocol/openid-connect/token",
                         "USERINFO_ENDPOINT": "https://auth.provider.org/protocol/openid-connect/userinfo",
                         "CLIENT_ID": "test-openid",
-                        "CLIENT_SECRET": "gkljdhdjhqsdgfhhqzuihrghudhfg",
+                        "CLIENT_SECRET": "",
                         "SCOPES": "profile openid",
                         "PROXY": "",
                         "CERTIFICATE": "",
