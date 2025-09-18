@@ -32,6 +32,14 @@ def create_snmp_sections(apps, schema_editor):
             "template": template,
             "options": {"need_format": False},
         },
+        {
+            "name": "HARDWARE",
+            "retrieval_method": "SNMP_WALK",
+            "retrieval_output": "JSON",
+            "target": "SNMP",
+            "template": template,
+            "options": {"need_format": False},
+        },
     ]
 
     for section in sections:
