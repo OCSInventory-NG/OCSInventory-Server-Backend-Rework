@@ -107,7 +107,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("section", "0005_windows"),
+        ("section", "0008_debian_linux"),
     ]
 
     operations = [
