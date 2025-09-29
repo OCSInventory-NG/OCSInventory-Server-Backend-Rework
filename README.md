@@ -17,7 +17,7 @@ Depending on the database system you plan to use:
 
 ```bash
 pip install -r requirements_psql.txt # For postgresql
-pip install -r requirements_psql.txt # For mysql 
+pip install -r requirements_mysql.txt # For mysql 
 ```
 
 Copy the `.env-sample` to `.env` :
