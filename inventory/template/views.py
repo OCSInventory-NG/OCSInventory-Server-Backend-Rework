@@ -1,7 +1,9 @@
 from inventory.template.models import Template
-from inventory.template.serializers import TemplateSerializer
+from inventory.template.serializers import TemplateExportSerializer, TemplateSerializer
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 
 class TemplateViewSet(viewsets.OCSViewSet):
@@ -18,3 +20,19 @@ class TemplateViewSet(viewsets.OCSViewSet):
     queryset = Template.objects.all()
     serializer_class = TemplateSerializer
     model = Template
+
+    @action(detail=True, methods=["get"], url_path="export")
+    def export(self, request, pk=None):
+        """
+        Export a template and its nested sections and fields, using specific
+        serializers to strip ids and fk relations
+        """
+        obj = self.get_object()
+        ser = TemplateExportSerializer(
+            obj,
+            context=self.get_serializer_context()
+        )
+        # schema version for easy compat w/ import if the format/model changes
+        payload = {"schema_version": 1, **ser.data}
+        resp = Response(payload)
+        return resp
