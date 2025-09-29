@@ -51,6 +51,7 @@ class SectionExportSerializer(ModelSerializer):
     Export serializer for Section, ids and fk relations are not included
     Nested values will always be expanded (no ExpandableFieldsMixin)
     """
+
     fields = FieldExportSerializer(many=True, read_only=False)
 
     class Meta:

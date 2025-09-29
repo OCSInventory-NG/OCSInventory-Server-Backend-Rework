@@ -28,10 +28,7 @@ class TemplateViewSet(viewsets.OCSViewSet):
         serializers to strip ids and fk relations
         """
         obj = self.get_object()
-        ser = TemplateExportSerializer(
-            obj,
-            context=self.get_serializer_context()
-        )
+        ser = TemplateExportSerializer(obj, context=self.get_serializer_context())
         # schema version for easy compat w/ import if the format/model changes
         payload = {"schema_version": 1, **ser.data}
         resp = Response(payload)

@@ -43,6 +43,7 @@ class TemplateExportSerializer(ModelSerializer):
     Export serializer for Template, ids and fk relations are not included
     Nested values will always be expanded (no ExpandableFieldsMixin)
     """
+
     sections = SectionExportSerializer(many=True, read_only=False)
 
     class Meta:

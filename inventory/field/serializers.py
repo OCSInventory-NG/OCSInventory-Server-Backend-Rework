@@ -89,5 +89,12 @@ class FieldExportSerializer(ModelSerializer):
 
     class Meta:
         model = Field
-        fields = ["name", "retrieval_value", "override_target", "new_target",
-                  "retrieval_method", "retrieval_output", "options"]
+        fields = [
+            "name",
+            "retrieval_value",
+            "override_target",
+            "new_target",
+            "retrieval_method",
+            "retrieval_output",
+            "options",
+        ]
