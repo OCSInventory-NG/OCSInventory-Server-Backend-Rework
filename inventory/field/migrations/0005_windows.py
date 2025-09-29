@@ -1450,7 +1450,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "FILE NAME",
-            "retrieval_value": "DisplayIcon",
+            "retrieval_value": "ExecutableName",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1515,7 +1515,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MAJOR VERSION",
-            "retrieval_value": "Major",
+            "retrieval_value": "VersionMajor",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1528,7 +1528,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MINOR VERSION",
-            "retrieval_value": "Minor",
+            "retrieval_value": "VersionMinor",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
