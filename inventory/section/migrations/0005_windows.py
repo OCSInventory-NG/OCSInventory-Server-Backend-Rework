@@ -10,7 +10,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": "Get-CimInstance -ClassName Win32_Battery | ForEach-Object {$battery = $_; $staticData = Get-WmiObject -Namespace root/wmi -ClassName BatteryStaticData | Where-Object {$_.UniqueID -eq $battery.DeviceID}; [PSCustomObject]@{Chemistry = switch ($_.Chemistry) {1 {'Other'}; 2 {'Unknown'}; 3 {'Lead Acid'}; 4 {'Nickel Cadmium'}; 5 {'Nickel Metal Hydride'}; 6 {'Lithium-ion'}; 7 {'Zinc air'}; 8 {'Lithium Polymer'}}; Description = $_.Description; DesignCapacityWh = [math]::Round($_.DesignCapacity / 1000, 2); DesignVoltageV = [math]::Round($_.DesignVoltage / 1000, 2); EstimatedChargeRemaining = $_.EstimatedChargeRemaining; ManufacturerName = $staticData.ManufacturerName; Name = $_.Name; SerialNumber = $staticData.SerialNumber; Status = $_.Status}} | ConvertTo-Json",
-            "options": {},
+            "options": {"submap": None},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
@@ -18,7 +18,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": "[PSCustomObject]@{SystemManufacturer = (Get-CimInstance -ClassName Win32_ComputerSystem).Manufacturer; SystemModel = (Get-CimInstance -ClassName Win32_ComputerSystem).Model; EnclosureSerialNumber = (Get-CimInstance -ClassName Win32_SystemEnclosure).SerialNumber; EnclosureChassisTypes = switch ((Get-CimInstance -ClassName Win32_SystemEnclosure).ChassisTypes) {1 {'Other'}; 2 {'Unknown'}; 3 {'Desktop'}; 4 {'Low Profile Desktop'}; 5 {'Pizza Box'}; 6 {'Mini Tower'}; 7 {'Tower'}; 8 {'Portable'}; 9 {'Laptop'}; 10 {'Notebook'}; 11 {'Hand Held'}; 12 {'Docking Station'}; 13 {'All in One'}; 14 {'Sub Notebook'}; 15 {'Space-Saving'}; 16 {'Lunch Box'}; 17 {'Main System Chassis'}; 18 {'Expansion Chassis'}; 19 {'SubChassis'}; 20 {'Bus Expansion Chassis'}; 21 {'Peripheral Chassis'}; 22 {'Storage Chassis'}; 23 {'Rack Mount Chassis'}; 24 {'Sealed-Case PC'}; 30 {'Tablet'}; 31 {'Convertible'}; 32 {'Detachable'}}; BiosManufacturer = (Get-CimInstance -ClassName Win32_Bios).Manufacturer; BiosVersion = (Get-CimInstance -ClassName Win32_Bios).SMBIOSBIOSVersion; BiosReleaseDate = (Get-CimInstance -ClassName Win32_Bios).ReleaseDate.ToString('dd/MM/yyyy HH:mm:ss'); BBoardManufacturer = (Get-CimInstance -ClassName Win32_BaseBoard).Manufacturer; BBoardModel = (Get-CimInstance -ClassName Win32_BaseBoard).Model; BBoardSerialNumber = (Get-CimInstance -ClassName Win32_BaseBoard).SerialNumber; EnclosureAssetTag = (Get-CimInstance -ClassName Win32_SystemEnclosure).SMBIOSAssetTag} | ConvertTo-Json",
-            "options": {},
+            "options": {"submap": None},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
@@ -26,7 +26,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": "$controllers = @{'Win32_IDEController' = 'IDE'; 'Win32_SCSIController' = 'SCSI'; 'Win32_USBController' = 'USB'; 'Win32_InfraredDevice' = 'Infrared'; 'Win32_1394Controller' = '1394'; 'Win32_PCMCIAController' = 'PCMCIA'}; $controllers.Keys | ForEach-Object { $type = $controllers[$_]; Get-CimInstance -ClassName $_ | ForEach-Object {[PSCustomObject]@{Type = $type; Manufacturer = $_.Manufacturer; Name = $_.Name; Caption = $_.Caption; Description = $_.Description; Version = $_.HardwareVersion}}} | ConvertTo-Json",
-            "options": {},
+            "options": {"submap": None},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
@@ -34,7 +34,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": "Get-CimInstance -ClassName Win32_Processor | Select-Object *, @{Name = 'ArchitectureDecoded'; Expression = {switch ($_.Architecture) {0 {'x86'}; 1 {'MIPS'}; 2 {'Alpha'}; 3 {'PowerPC'}; 5 {'ARM'}; 6 {'ia64 Itanium'}; 9 {'x64'}; 12 {'ARM64'}}}} | ConvertTo-Json",
-            "options": {},
+            "options": {"submap": None},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
@@ -42,7 +42,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": "Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object *, @{Name = 'Type'; Expression = {switch ($_.MediaType) {0 {'Format is unknown'} 1 {'5-Inch Floppy Disk'} 2 {'3-Inch Floppy Disk'} 3 {'3-Inch Floppy Disk'} 4 {'3-Inch Floppy Disk'} 5 {'3-Inch Floppy Disk'} 6 {'5-Inch Floppy Disk'} 7 {'5-Inch Floppy Disk'} 8 {'5-Inch Floppy Disk'} 9 {'5-Inch Floppy Disk'} 10 {'5-Inch Floppy Disk'} 11 {'Removable media other than floppy'} 12 {'Fixed hard disk media'} 13 {'3-Inch Floppy Disk'} 14 {'3-Inch Floppy Disk'} 15 {'5-Inch Floppy Disk'} 16 {'5-Inch Floppy Disk'} 17 {'3-Inch Floppy Disk'} 18 {'3-Inch Floppy Disk'} 19 {'5-Inch Floppy Disk'} 20 {'3-Inch Floppy Disk'} 21 {'3-Inch Floppy Disk'} 22 {'8-Inch Floppy Disk'}}}}, @{Name = 'FreeSpaceMiB'; Expression = {[math]::Round($_.FreeSpace / 1MB, 2)}}, @{Name = 'SizeMiB'; Expression = {[math]::Round($_.Size / 1MB, 2)}}, @{Name = 'UsedPercent'; Expression = {[math]::Round((($_.Size - $_.FreeSpace) / $_.Size) * 100, 2)}} | ConvertTo-Json",
-            "options": {},
+            "options": {"submap": None},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
@@ -50,7 +50,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": "@(@{Class = 'Win32_Keyboard'; Type = 'Keyboard'}, @{Class = 'Win32_PointingDevice'; Type = 'Pointing Device'}, @{Class = 'Win32_PnPSignedDriver'; Type = 'PnP Signed Driver'; Filter = \"DeviceClass = 'SMARTCARDREADER'\"}) | ForEach-Object {$class = $_.Class; $type = $_.Type; $filter = $_.Filter; $instances = if ($filter) {Get-CimInstance -ClassName $class -Filter $filter} else {Get-CimInstance -ClassName $class}; $instances | ForEach-Object {[PSCustomObject]@{Type = $type; Manufacturer = $_.Manufacturer; Caption = $_.Caption; Description = $_.Description; Interface = switch ($_.DeviceInterface) {1 {'Other'}; 2 {'Unknown'}; 3 {'Serial'}; 4 {'PS/2'}; 5 {'Infrared'}; 6 {'HP-HIL'}; 7 {'Bus mouse'}; 8 {'ADB (Apple Desktop Bus)'}; 160 {'Bus mouse DB-9'}; 161 {'Bus mouse micro-DIN'}; 162 {'USB'}}}}} | ConvertTo-Json",
-            "options": {},
+            "options": {"submap": None},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
@@ -58,7 +58,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": "Get-CimInstance -ClassName Win32_Group | ConvertTo-Json",
-            "options": {},
+            "options": {"submap": None},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
@@ -66,7 +66,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": "Get-CimInstance -ClassName Win32_UserAccount | ConvertTo-Json",
-            "options": {},
+            "options": {"submap": None},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
@@ -74,7 +74,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": "Get-CimInstance -ClassName Win32_PhysicalMemory | ForEach-Object {$memoryArray = Get-CimInstance -ClassName Win32_PhysicalMemoryArray; [PSCustomObject]@{Caption = $_.Caption; BankLabel = $_.BankLabel; CapacityMiB = [math]::Round($_.Capacity / 1MB, 2); Use = switch ($memoryArray.Use) {0 {'Reserved'}; 1 {'Other'}; 2 {'Unknown'}; 3 {'System memory'}; 4 {'Video memory'}; 5 {'Flash memory'}; 6 {'Non-volatile RAM'}; 7 {'Cache memory'}}; MemoryType = switch ($_.MemoryType) {0 {'Unknown'}; 1 {'Other'}; 2 {'DRAM'}; 3 {'Synchronous DRAM'}; 4 {'Cache DRAM'}; 5 {'EDO'}; 6 {'EDRAM'}; 7 {'VRAM'}; 8 {'SRAM'}; 9 {'RAM'}; 10 {'ROM'}; 11 {'Flash'}; 12 {'EEPROM'}; 13 {'FEPROM'}; 14 {'EPROM'}; 15 {'CDRAM'}; 16 {'3DRAM'}; 17 {'SDRAM'}; 18 {'SGRAM'}; 19 {'RDRAM'}; 20 {'DDR'}; 21 {'DDR2'}; 22 {'DDR2 FB-DIMM'}; 24 {'DDR3'}; 25 {'FBD2'}; 26 {'DDR4'}}; Speed = $_.Speed; SlotNumber = $_.DeviceLocator; SerialNumber = $_.SerialNumber}} | ConvertTo-Json",
-            "options": {},
+            "options": {"submap": None},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
@@ -82,7 +82,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": 'Get-CimInstance -Namespace root/wmi -ClassName WmiMonitorID | ForEach-Object {$monitorParams = Get-CimInstance -Namespace root/wmi -ClassName WmiMonitorBasicDisplayParams; [PSCustomObject]@{Manufacturer = [System.Text.Encoding]::ASCII.GetString($_.ManufacturerName).TrimEnd("`0"); InstanceName = $_.InstanceName; ManufacturedOn = "$($_.WeekOfManufacture)/$($_.YearOfManufacture)"; Type = switch ($monitorParams.VideoInputType) {0 {\'Analog\'}; 1 {\'Digital\'}}; SerialNumber = [System.Text.Encoding]::ASCII.GetString($_.SerialNumberID).TrimEnd("`0"); Active = $_.Active}} | ConvertTo-Json',
-            "options": {},
+            "options": {"submap": None},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
@@ -90,7 +90,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": "Get-NetAdapter | ForEach-Object { $adapter = $_; $wmiAdapter = Get-CimInstance -Class Win32_NetworkAdapter | Where-Object { $_.NetConnectionID -eq $adapter.Name }; $config = Get-CimInstance -Class Win32_NetworkAdapterConfiguration | Where-Object { $_.Index -eq $wmiAdapter.DeviceID }; [PSCustomObject]@{ Name = $adapter.Name; Description = $adapter.InterfaceDescription; Type = $adapter.ifAlias; Speed = $adapter.LinkSpeed; MTU = $adapter.MtuSize; MACAddress = $adapter.MacAddress; Status = $adapter.Status; IPAddress = $config.IPAddress; NetMask = $config.IPSubnet; Gateway = $config.DefaultIPGateway; NetworkNumber = if ($config.IPAddress -and $config.IPSubnet) { [System.Net.IPAddress]::new([byte[]](0..3 | ForEach-Object { [System.Net.IPAddress]::Parse($config.IPAddress[0]).GetAddressBytes()[$_] -band [System.Net.IPAddress]::Parse($config.IPSubnet[0]).GetAddressBytes()[$_] })).ToString() } else { $null }; DHCPServer = $config.DHCPServer } } | ConvertTo-Json",
-            "options": {},
+            "options": {"submap": None},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
@@ -98,7 +98,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": "$ports = @{'Win32_PortConnector' = ''; 'Win32_SerialPort' = 'Serial'; 'Win32_ParallelPort' = 'Parallel'}; $ports.Keys | ForEach-Object {$type = $ports[$_]; Get-CimInstance -ClassName $_ | ForEach-Object {[PSCustomObject]@{Type = if ($type) {$type} else {switch ($_.PortType) {0 {'None'}; 1 {'Parallel Port XT/AT Compatible'}; 2 {'Parallel Port PS/2'}; 3 {'Parallel Port ECP'}; 4 {'Parallel Port EPP'}; 5 {'Parallel Port ECP/EPP'}; 6 {'Serial Port XT/AT Compatible'}; 7 {'Serial Port 16450 Compatible'}; 8 {'Serial Port 16550 Compatible'}; 9 {'Serial Port 16550A Compatible'}; 10 {'SCSI Port'}; 11 {'MIDI Port'}; 12 {'Joy Stick Port'}; 13 {'Keyboard Port'}; 14 {'Mouse Port'}; 15 {'SSA SCSI'}; 16 {'USB'}; 17 {'FireWire (IEEE P1394)'}; 18 {'PCMCIA Type II'}; 19 {'PCMCIA Type II'}; 20 {'PCMCIA Type III'}; 21 {'Cardbus'}; 22 {'Access Bus Port'}; 23 {'SCSI II'}; 24 {'SCSI Wide'}; 25 {'PC-98'}; 26 {'PC-98-Hireso'}; 27 {'PC-H98'}; 28 {'Video Port'}; 29 {'Audio Port'}; 30 {'Modem Port'}; 31 {'Network Port'}; 32 {'8251 Compatible'}; 33 {'8251 FIFO Compatible'}}}; Name = if ($_.ExternalReferenceDesignator) {$_.ExternalReferenceDesignator} else {$_.Name}; Caption = $_.Caption; Description = $_.Description}}} | ConvertTo-Json",
-            "options": {},
+            "options": {"submap": None},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
@@ -106,7 +106,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": "Get-CimInstance -ClassName Win32_Printer | Select-Object *, @{Name='Resolution'; Expression = {\"$($_.HorizontalResolution) x $($_.VerticalResolution)\"}} | ConvertTo-Json",
-            "options": {},
+            "options": {"submap": None},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
@@ -114,7 +114,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": "Get-CimInstance -ClassName Win32_SystemSlot | Select-Object *, @{Name = 'Purpose'; Expression = {switch ($_.CurrentUsage) {0 {'Reserved'}; 1 {'Other'}; 2 {'Unknown'}; 3 {'Available'}; 4 {'In Use'}}}} | ConvertTo-Json",
-            "options": {},
+            "options": {"submap": None},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
@@ -122,7 +122,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": r"""Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*, HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object { $_.DisplayName -and $_.SystemComponent -ne 1 } | Select-Object -Property *, @{Name='LanguageName';Expression={ try { if ($_.Language) { $lcid=[int]$_.Language; (New-Object System.Globalization.CultureInfo $lcid).DisplayName } else { 'Unknown' } } catch { 'Unknown' } }}, @{Name='InstallDateFormatted';Expression={ if ($_.InstallDate -match '^\d{8}$') { [datetime]::ParseExact($_.InstallDate,'yyyyMMdd',$null).ToString('yyyy/MM/dd') } else { 'Unknown' } }}, @{Name='InstallPath';Expression={ $exe=$null; $c=@($_.DisplayIcon,$_.UninstallString,$_.QuietUninstallString,$_.ModifyPath) | Where-Object { $_ -and $_.ToString().Trim() -ne '' }; foreach($s in $c){ $m=[regex]::Match($s,'(?i)(?:^|[ \t])"?(?<exe>(?:[a-z]:|\\)[^",]+?\.exe)'); if($m.Success){ $p=$m.Groups['exe'].Value.Trim('"'); $n=[System.IO.Path]::GetFileName($p); if($n -ieq 'msiexec.exe' -or $n -ieq 'rundll32.exe'){ continue }; $exe=$p; break } }; if ($_.InstallLocation) { $_.InstallLocation } elseif ($exe) { [System.IO.Path]::GetDirectoryName($exe) } else { $null } }}, @{Name='ExecutableName';Expression={ $exe=$null; $c=@($_.DisplayIcon,$_.UninstallString,$_.QuietUninstallString,$_.ModifyPath) | Where-Object { $_ -and $_.ToString().Trim() -ne '' }; foreach($s in $c){ $m=[regex]::Match($s,'(?i)(?:^|[ \t])"?(?<exe>(?:[a-z]:|\\)[^",]+?\.exe)'); if($m.Success){ $p=$m.Groups['exe'].Value.Trim('"'); $n=[System.IO.Path]::GetFileName($p); if($n -ieq 'msiexec.exe' -or $n -ieq 'rundll32.exe'){ continue }; $exe=$p; break } }; if($exe){ [System.IO.Path]::GetFileName($exe) } else { $null } }} -ExcludeProperty PSProvider, PSDrive | ConvertTo-Json -Depth 4""",
-            "options": {},
+            "options": {"submap": None},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
@@ -130,7 +130,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": "Get-CimInstance -ClassName Win32_SoundDevice | ConvertTo-Json",
-            "options": {},
+            "options": {"submap": None},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
@@ -138,7 +138,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": "$storages = @('Win32_DiskDrive', 'Win32_CDROMDrive', 'Win32_TapeDrive'); $storages | ForEach-Object {Get-CimInstance -ClassName $_ | ForEach-Object {[PSCustomObject]@{Manufacturer = $_.Manufacturer; Name = $_.Name; Model = $_.Model; Description = $_.Description; Type = $_.MediaType; Size = [math]::Round($_.Size / 1MB, 2); SerialNumber = $_.SerialNumber; Firmware = if ($_.FirmwareRevision) {$_.FirmwareRevision} else {$_.RevisionLevel}}}} | ConvertTo-Json",
-            "options": {},
+            "options": {"submap": None},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
@@ -146,7 +146,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": "Get-WmiObject Win32_PnPEntity | Where-Object { $_.PNPDeviceID -like 'USB*' } | ConvertTo-Json",
-            "options": {},
+            "options": {"submap": None},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
@@ -154,7 +154,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": "Get-CimInstance -ClassName Win32_VideoController | Select-Object *, @{Name='AdapterRAMMiB'; Expression = {[math]::Round($_.AdapterRAM / 1MB, 2)}}, @{Name='Resolution'; Expression = {\"$($_.CurrentHorizontalResolution) x $($_.CurrentVerticalResolution)\"}} | ConvertTo-Json",
-            "options": {},
+            "options": {"submap": None},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
         {
@@ -162,7 +162,7 @@ def create_default_windows_sections(apps, schema_editor):
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
             "target": "",
-            "options": {},
+            "options": {"submap": None},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
     ]

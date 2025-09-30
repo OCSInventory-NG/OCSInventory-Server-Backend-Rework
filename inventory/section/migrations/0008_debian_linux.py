@@ -10,7 +10,7 @@ def create_debian_linux_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
             "target": 'for dev in $(ls /sys/class/net); do [[ -d "/sys/class/net/$dev/wireless" ]] && type="wifi" || { [[ "$dev" == lo ]] && type="loopback" || type="ethernet"; }; speed_raw=$(cat "/sys/class/net/$dev/speed" 2>/dev/null || echo 0); mtu=$(cat /sys/class/net/$dev/mtu); mac_addr=$(cat /sys/class/net/$dev/address); state=$(cat /sys/class/net/$dev/operstate); gw=$(ip route show default | grep "dev $dev" | awk \'{print $3}\'); ip6_cidr=$(ip -6 -o addr show dev "$dev" | awk \'{print $4}\'); gw6=$(ip -6 route show default | grep "dev $dev" | awk \'{print $3}\'); echo "Description: $dev"; echo "Type: $type"; if [[ "$speed_raw" == "-1" ]]; then echo "Speed: -1"; elif [[ "$speed_raw" -ge 1000 ]]; then echo "Speed: $((speed_raw / 1000)) Gbps"; else echo "Speed: ${speed_raw} Mbps"; fi; echo "MTU: $mtu"; echo "MACAddress: $mac_addr"; echo "Status: $state"; ip4_cidr=$(nmcli -g IP4.ADDRESS device show "$dev"); ip="${ip4_cidr%%/*}"; prefix="${ip4_cidr#*/}"; echo "IPAddress: $ip"; if [[ -n "$prefix" && "$prefix" =~ ^[0-9]+$ ]]; then mask=$(( 0xFFFFFFFF << (32 - prefix) & 0xFFFFFFFF )); netmask="$(( (mask >> 24) & 0xFF )).$(( (mask >> 16) & 0xFF )).$(( (mask >> 8) & 0xFF )).$(( mask & 0xFF ))"; echo "Netmask: $netmask"; fi; echo "Gateway: $gw"; if [[ -n "$ip" && -n "$prefix" ]]; then IFS=\'.\' read -r i1 i2 i3 i4 <<< "$ip"; ip_bin=$(( (i1 << 24) + (i2 << 16) + (i3 << 8) + i4 )); mask_bin=$(( 0xFFFFFFFF << (32 - prefix) & 0xFFFFFFFF )); net_bin=$(( ip_bin & mask_bin )); net_ip=$(printf "%d.%d.%d.%d" $(( (net_bin >> 24) & 0xFF )) $(( (net_bin >> 16) & 0xFF )) $(( (net_bin >> 8) & 0xFF )) $(( net_bin & 0xFF ))); echo "NetworkNumber: $net_ip"; else echo "NetworkNumber: "; fi; echo "---"; if [[ -n "$ip6_cidr" ]]; then ip6="${ip6_cidr%%/*}"; prefix6="${ip6_cidr#*/}"; if [[ "$prefix6" =~ ^[0-9]+$ ]]; then mask6=$(printf \'%s\\n\' $(for i in {0..7}; do bits=$(( (prefix6-16*i)>16 ? 16 : (prefix6-16*i>0 ? prefix6-16*i : 0) )); printf \'%04x:\' $(( ((1<<bits)-1) << (16-bits) )); done) | sed \'s/:$//\' | sed -E \':a;s/(^|:)0{1,4}(:0{1,4}){1,}/::/;ta\'); else mask6=""; fi; ip6_network=$(ip -6 route show dev "$dev" | head -n1 | awk \'{print $1}\'); echo "Description: $dev"; echo "Type: $type"; if [[ "$speed_raw" == "-1" ]]; then echo "Speed: -1"; elif [[ "$speed_raw" -ge 1000 ]]; then echo "Speed: $((speed_raw / 1000)) Gbps"; else echo "Speed: ${speed_raw} Mbps"; fi; echo "MTU: $mtu"; echo "MACAddress: $mac_addr"; echo "Status: $state"; echo "IPAddress: $ip6"; echo "Netmask: $mask6"; echo "Gateway: $gw6"; echo "NetworkNumber: $ip6_network"; echo "---"; fi; done',
-            "options": {"separator": "---"},
+            "options": {"separator": "---", "multiple": False},
             "template": apps.get_model("template", "Template").objects.get(os="DEB"),
         },
         {
@@ -18,7 +18,7 @@ def create_debian_linux_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
             "target": "apt-cache policy | grep -iE \"http(s)?://\" | awk '{print $2, $3}' | sort -u",
-            "options": {"multiple": True},
+            "options": {"separator": None, "multiple": True},
             "template": apps.get_model("template", "Template").objects.get(os="DEB"),
         },
         {
@@ -26,7 +26,7 @@ def create_debian_linux_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
             "target": 'dpkg -l | awk \'NR>5 {print $2}\' | while read -r pkg; do install_date=$(stat -c %y "/var/lib/dpkg/info/${pkg}.list" 2>/dev/null | cut -d. -f1 || echo "unknown"); dpkg -s "$pkg" 2>/dev/null | awk -v pkg="$pkg" -v id="$install_date" \'BEGIN {name=pkg;publisher="";version="";comments="";size_kb=0;arch="";from="deb";major="";minor=""} /^Homepage[[:space:]]*:/ {publisher=substr($0,index($0,":")+2)} /^Version[[:space:]]*:/ {version=substr($0,index($0,":")+2); if(match(version,/^[0-9]+(\\.[0-9]+)*/)){vernum=substr(version,RSTART,RLENGTH); split(vernum, parts, "."); major=parts[1]; if(length(parts)>1) minor=parts[2]} } /^Description[[:space:]]*:/ && !d {comments=substr($0,index($0,":")+2); d=1} /^Installed-Size[[:space:]]*:/ {size_kb=substr($0,index($0,":")+2)} /^Architecture[[:space:]]*:/ {arch=substr($0,index($0,":")+2)} END {size=size_kb*1024; printf("Name: %s\\nPublisher: %s\\nVersion: %s\\nComments: %s\\nFileSize: %d\\nInstallDate: %s\\nFrom: %s\\nArchitecture: %s\\n", name, publisher, version, comments, size, id, from, arch); if(major!="") printf("Major: %s\\n", major); if(minor!="") printf("Minor: %s\\n", minor); printf("---\\n") }\'; done',
-            "options": {"separator": "---"},
+            "options": {"separator": "---", "multiple": False},
             "template": apps.get_model("template", "Template").objects.get(os="DEB"),
         },
     ]
