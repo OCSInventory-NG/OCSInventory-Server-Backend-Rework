@@ -625,8 +625,22 @@ class CollectionView(APIView):
                         new_fields.append(new_field)
 
             # bulk create sections and fields
-            InventorySection.objects.bulk_create(new_sections)
-            InventoryField.objects.bulk_create(new_fields)
+            try:
+                InventorySection.objects.bulk_create(new_sections)
+                InventoryField.objects.bulk_create(new_fields)
+            except Exception as exc:
+                self.LOGGER.error(
+                    "Error while bulk creating sections and fields: %s",
+                    exc,
+                    extra={"classname": __name__},
+                )
+                return Response(
+                    {
+                        "error": "Error while bulk creating sections and fields",
+                        "details": str(exc),
+                    },
+                    status=500,
+                )
 
         if errors:
             self.LOGGER.warning(
