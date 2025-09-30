@@ -18,4 +18,4 @@ class InventoryField(models.Model):
                                           related_name='fields',
                                           on_delete=models.CASCADE)
     template_field = models.ForeignKey(Field, on_delete=models.CASCADE)
-    value = models.CharField(max_length=255, blank=True, null=True)
+    value = models.TextField(blank=True, null=True)
