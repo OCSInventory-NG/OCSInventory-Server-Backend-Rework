@@ -331,8 +331,22 @@ class CollectionView(APIView):
                         )
 
             # bulk create sections and fields
-            InventorySection.objects.bulk_create(sections_to_create)
-            InventoryField.objects.bulk_create(fields_to_create)
+            try:
+                InventorySection.objects.bulk_create(sections_to_create)
+                InventoryField.objects.bulk_create(fields_to_create)
+            except Exception as exc:
+                self.LOGGER.error(
+                    "Error while bulk creating sections and fields: %s",
+                    exc,
+                    extra={"classname": __name__},
+                )
+                return Response(
+                    {
+                        "error": "Error while bulk creating sections and fields",
+                        "details": str(exc),
+                    },
+                    status=500,
+                )
 
         if errors:
             self.LOGGER.warning(
@@ -479,8 +493,22 @@ class CollectionView(APIView):
                         )
 
             # bulk create sections and fields
-            InventorySection.objects.bulk_create(sections_to_create)
-            InventoryField.objects.bulk_create(fields_to_create)
+            try:
+                InventorySection.objects.bulk_create(sections_to_create)
+                InventoryField.objects.bulk_create(fields_to_create)
+            except Exception as exc:
+                self.LOGGER.error(
+                    "Error while bulk creating sections and fields: %s",
+                    exc,
+                    extra={"classname": __name__},
+                )
+                return Response(
+                    {
+                        "error": "Error while bulk creating sections and fields",
+                        "details": str(exc),
+                    },
+                    status=500,
+                )
         if errors:
             self.LOGGER.warning(
                 f"Device {device_id} updated with errors: {errors}",
