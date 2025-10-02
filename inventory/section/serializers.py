@@ -56,4 +56,11 @@ class SectionExportSerializer(ModelSerializer):
 
     class Meta:
         model = Section
-        fields = ["name", "retrieval_method", "retrieval_output", "target", "fields", "options"]
+        fields = [
+            "name",
+            "retrieval_method",
+            "retrieval_output",
+            "target",
+            "fields",
+            "options",
+        ]
