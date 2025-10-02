@@ -58,7 +58,7 @@ class OCSViewSet(viewsets.ModelViewSet):
                 for id in request.data["ids"]:
                     instance = self.model.objects.get(id=id)
                     self.perform_destroy(instance)
-                return Response(status=status.HTTP_200_OK)
+                return Response(status=status.HTTP_204_NO_CONTENT)
             else:
                 serializer = self.get_serializer(
                     data=request.data, many=isinstance(request.data, list)
