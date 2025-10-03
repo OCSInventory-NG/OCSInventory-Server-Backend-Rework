@@ -1,4 +1,4 @@
-from inventory.section.serializers import SectionSerializer
+from inventory.section.serializers import SectionExportSerializer, SectionSerializer
 from inventory.template.models import Template
 from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
 from rest_framework.serializers import ModelSerializer
@@ -36,3 +36,16 @@ class TemplateSerializer(ExpandableFieldsMixin, ModelSerializer):
             parent = super().create(validated_data)
 
         return parent
+
+
+class TemplateExportSerializer(ModelSerializer):
+    """
+    Export serializer for Template, ids and fk relations are not included
+    Nested values will always be expanded (no ExpandableFieldsMixin)
+    """
+
+    sections = SectionExportSerializer(many=True, read_only=False)
+
+    class Meta:
+        model = Template
+        fields = ["name", "os", "is_protected", "sections"]

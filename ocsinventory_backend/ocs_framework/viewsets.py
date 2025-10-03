@@ -216,9 +216,8 @@ class ExpandableFieldsMixin:
 
         # track depth
         current_depth = self.context.get("expand_depth", 0)
-        # Limit recursion depth if needed (e.g., max_depth=1 or 2)
-        # You might want to make max_depth configurable
-        max_depth = 1  # Example: Allow only one level of expansion
+        # Limit recursion depth if needed
+        max_depth = 1
         if current_depth >= max_depth:
             return representation
 
@@ -257,23 +256,15 @@ class ExpandableFieldsMixin:
                             representation[field] = serializer_class(
                                 field_obj, context=new_context
                             ).data
-                        # Optional: Handle other field types if necessary
-
                 except Exception as e:
                     # Handle cases where getattr fails
                     # or field doesn't exist as expected
-                    # Log the error or handle appropriately
                     self.logger.error(f"Error expanding field '{field}': {e}")
-                    # Decide whether to keep the default representation
-                    # or remove/set to null
                     if field in representation:
-                        del representation[field]  # Or set to None, or keep default PK
+                        del representation[field]
 
             else:
                 # Handle non-expanded fields (represent as PKs)
-                # This part might be redundant if the default
-                # representation already does this
-                # but explicit handling can be clearer.
                 try:
                     field_obj = getattr(instance, field, None)
                     if field_obj is not None:
@@ -284,11 +275,10 @@ class ExpandableFieldsMixin:
                                 representation[field] = [
                                     item.pk for item in field_obj.all()
                                 ]
-                            else:  # Should not happen for M2M/O2M, but defensive check
+                            else:
                                 representation[field] = []
                         elif model_field.many_to_one or model_field.one_to_one:
                             representation[field] = field_obj.pk
-                        # else: keep original representation value if not a relation
 
                 except Exception as e:
                     self.logger.error(f"Error getting PK for field '{field}': {e}")

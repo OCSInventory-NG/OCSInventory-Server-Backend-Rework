@@ -1,4 +1,4 @@
-from inventory.field.serializers import FieldSerializer
+from inventory.field.serializers import FieldExportSerializer, FieldSerializer
 from inventory.section.models import Section
 from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
 from rest_framework.serializers import ModelSerializer
@@ -44,3 +44,23 @@ class SectionSerializer(ExpandableFieldsMixin, ModelSerializer):
             parent = super().create(validated_data)
 
         return parent
+
+
+class SectionExportSerializer(ModelSerializer):
+    """
+    Export serializer for Section, ids and fk relations are not included
+    Nested values will always be expanded (no ExpandableFieldsMixin)
+    """
+
+    fields = FieldExportSerializer(many=True, read_only=False)
+
+    class Meta:
+        model = Section
+        fields = [
+            "name",
+            "retrieval_method",
+            "retrieval_output",
+            "target",
+            "fields",
+            "options",
+        ]

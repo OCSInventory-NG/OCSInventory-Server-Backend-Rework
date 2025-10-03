@@ -80,3 +80,21 @@ class FieldSerializer(ExpandableFieldsMixin, ModelSerializer):
         # custom validation
         validated_data = self.custom_validate(validated_data)
         return super().update(instance, validated_data)
+
+
+class FieldExportSerializer(ModelSerializer):
+    """
+    Export serializer for Field, ids and fk relations are not included
+    """
+
+    class Meta:
+        model = Field
+        fields = [
+            "name",
+            "retrieval_value",
+            "override_target",
+            "new_target",
+            "retrieval_method",
+            "retrieval_output",
+            "options",
+        ]
