@@ -9,7 +9,7 @@ echo "================================================="
 echo ""
 
 if [[ ! -w "/usr/share/ocsinventory-backend/.env" ]]; then
-	echo "Your user doesn't have sufficient rights to allow the configuration of OCS Inventory Backend."
+	echo "You do not have sufficient permissions to configure the OCS Inventory Backend."
 	exit 1
 fi
 
@@ -25,53 +25,53 @@ echo ""
 echo "[1] PostgreSQL"
 echo "[2] MySQL | MariaDB"
 echo ""
-read -r -p "Database engine [1|2]: " db_engine
+read -r -p "Choose the database engine [1|2]: " db_engine
 
 case $db_engine in
 1)
 	sed -i "s/DB_ENGINE=.*/DB_ENGINE='django.db.backends.postgresql'/" /usr/share/ocsinventory-backend/.env
-	echo "Database engine configured for PostgreSQL"
-	echo "Try to install PostgreSQL python library"
+	echo "Database engine configured for PostgreSQL."
+	echo "Attempting to install the PostgreSQL Python library."
 	source /usr/lib/ocsinventory-backend/venv/bin/activate
 	pip3 install -r /usr/share/ocsinventory-backend/requirements_psql.txt
 	deactivate
 	;;
 2)
 	sed -i "s/DB_ENGINE=.*/DB_ENGINE='django.db.backends.mysql'/" /usr/share/ocsinventory-backend/.env
-	echo "Database engine configured for MySQL or MariaDB"
-	echo "Try to install MySQL/Mariadb python library"
+	echo "Database engine configured for MySQL or MariaDB."
+	echo "Attempting to install the MySQL/MariaDB Python library."
 	source /usr/lib/ocsinventory-backend/venv/bin/activate
 	pip3 install -r /usr/share/ocsinventory-backend/requirements_mysql.txt
 	deactivate
 	;;
 *)
-	echo "Invalid option, aborted configuration !"
+	echo "Invalid option, configuration aborted!"
 	exit 1
 	;;
 esac
 
-read -r -p "Which host is running database server ?: " db_host
+read -r -p "Enter the database server host: " db_host
 sed -i "s/DB_HOST=.*/DB_HOST='$db_host'/" /usr/share/ocsinventory-backend/.env
 
-read -r -p "On which port is running database server ?: " db_port
+read -r -p "Enter the database server port: " db_port
 sed -i "s/DB_PORT=.*/DB_PORT='$db_port'/" /usr/share/ocsinventory-backend/.env
 
-read -r -p "What is the database name ?: " db_name
+read -r -p "Enter the database name: " db_name
 sed -i "s/DB_NAME=.*/DB_NAME='$db_name'/" /usr/share/ocsinventory-backend/.env
 
-read -r -p "What is the database user name ?: " db_user
+read -r -p "Enter the database username: " db_user
 sed -i "s/DB_USER=.*/DB_USER='$db_user'/" /usr/share/ocsinventory-backend/.env
 
-read -r -p "What is the database user password ?: " db_password
+read -r -p "Enter the database user password: " db_password
 sed -i "s/DB_PASSWORD=.*/DB_PASSWORD='$db_password'/" /usr/share/ocsinventory-backend/.env
 
-echo "Configuration completed !"
-echo "Now, running database migrations..."
+echo "Configuration completed!"
+echo "Running database migrations now..."
 
 source /usr/lib/ocsinventory-backend/venv/bin/activate
 
 if python3 /usr/share/ocsinventory-backend/manage.py migrate >/tmp/ocsinventory-backend-configuration.log 2>&1; then
-	echo "Database migrations successfully applied !"
+	echo "Database migrations applied successfully!"
 	deactivate
 else
 	echo "Error during database migrations, please check /tmp/ocsinventory-backend-configuration.log for more information."
@@ -98,7 +98,7 @@ else
 fi
 
 echo ""
-echo "For more information, look at /tmp/ocsinventory-backend-configuration.log for the database migrations logs."
+echo "For more information, refer to /tmp/ocsinventory-backend-configuration.log for the database migration logs."
 
 echo ""
 echo "==========================================================="
