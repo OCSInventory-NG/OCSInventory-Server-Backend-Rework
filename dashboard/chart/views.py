@@ -216,8 +216,10 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
                 count = data.filter(template__os="WIN").count()
                 contacted = contacted_data.filter(template__os="WIN").count()
             if "LIN" == os_template:
-                count = data.filter(template__os="LIN").count()
-                contacted = contacted_data.filter(template__os="LIN").count()
+                count = data.filter(template__os__in=["DEB", "RHEL"]).count()
+                contacted = contacted_data.filter(
+                    template__os__in=["DEB", "RHEL"]
+                ).count()
             if "MAC" == os_template:
                 count = data.filter(template__os="MAC").count()
                 contacted = contacted_data.filter(template__os="MAC").count()
@@ -350,7 +352,7 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
         """
         try:
             windows = data.filter(template__os="WIN").count()
-            linux = data.filter(template__os="LIN").count()
+            linux = data.filter(template__os__in=["DEB", "RHEL"]).count()
             macos = data.filter(template__os="MAC").count()
             snmp = data.filter(template__os="SNMP").count()
 
