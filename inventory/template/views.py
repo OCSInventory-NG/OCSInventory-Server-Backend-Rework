@@ -29,7 +29,9 @@ class TemplateViewSet(viewsets.OCSViewSet):
         """
         obj = self.get_object()
         ser = TemplateExportSerializer(obj, context=self.get_serializer_context())
+        data = dict(ser.data)
+        data["is_protected"] = False
         # schema version for easy compat w/ import if the format/model changes
-        payload = {"schema_version": 1, **ser.data}
+        payload = {"schema_version": 1, **data}
         resp = Response(payload)
         return resp
