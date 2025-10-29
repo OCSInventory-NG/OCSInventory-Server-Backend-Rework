@@ -1,5 +1,6 @@
 from django.contrib.auth.models import Group, User
 from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
+from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
 
@@ -7,6 +8,16 @@ class UserSerializer(ExpandableFieldsMixin, ModelSerializer):
     """
     This serialize class provide the API representation
     """
+    last_login_method = serializers.SerializerMethodField(read_only=True)
+    last_login_backend = serializers.SerializerMethodField(read_only=True)
+
+    def get_last_login_method(self, obj):
+        prof = getattr(obj, "auth_profile", None)
+        return getattr(prof, "last_login_method", None) if prof else None
+
+    def get_last_login_backend(self, obj):
+        prof = getattr(obj, "auth_profile", None)
+        return getattr(prof, "last_login_backend", None) if prof else None
 
     class Meta:
         """Define the linked model and the fields registered in the API"""
@@ -22,6 +33,8 @@ class UserSerializer(ExpandableFieldsMixin, ModelSerializer):
             "is_superuser",
             "groups",
             "user_permissions",
+            "last_login_method",
+            "last_login_backend",
         ]
         extra_kwargs = {"password": {"write_only": True}}
         expandable_fields = {}
