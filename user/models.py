@@ -14,6 +14,7 @@ class UserAuthProfile(models.Model):
     """
     User profile storing authentication metadata.
     """
+
     METHOD_CHOICES = [
         ("OIDC", "OIDC"),
         ("CAS", "CAS"),
@@ -21,8 +22,12 @@ class UserAuthProfile(models.Model):
         ("LOCAL", "LOCAL"),
         ("UNKNOWN", "UNKNOWN"),
     ]
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="auth_profile")
-    last_login_method = models.CharField(max_length=16, choices=METHOD_CHOICES, default="UNKNOWN")
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="auth_profile"
+    )
+    last_login_method = models.CharField(
+        max_length=16, choices=METHOD_CHOICES, default="UNKNOWN"
+    )
     last_login_backend = models.CharField(max_length=255, blank=True, null=True)
     last_login_at = models.DateTimeField(blank=True, null=True)
 
@@ -58,14 +63,18 @@ def user_login_handler(sender, user, request, **kwargs):
     - Attach a transient attribute on `user` so rules can read it
     - Run rule engine on 'user_login'
     """
-    backend_path = getattr(user, "backend", None) or getattr(getattr(request, "session", {}), "_auth_user_backend", None)
+    backend_path = getattr(user, "backend", None) or getattr(
+        getattr(request, "session", {}), "_auth_user_backend", None
+    )
     method, backend_path = _infer_method_from_backend_path(backend_path)
 
     profile, _ = UserAuthProfile.objects.get_or_create(user=user)
     profile.last_login_method = method
     profile.last_login_backend = backend_path
     profile.last_login_at = timezone.now()
-    profile.save(update_fields=["last_login_method", "last_login_backend", "last_login_at"])
+    profile.save(
+        update_fields=["last_login_method", "last_login_backend", "last_login_at"]
+    )
 
     setattr(user, "login_method", method)
 

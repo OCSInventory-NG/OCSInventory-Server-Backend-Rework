@@ -8,6 +8,7 @@ class UserSerializer(ExpandableFieldsMixin, ModelSerializer):
     """
     This serialize class provide the API representation
     """
+
     last_login_method = serializers.SerializerMethodField(read_only=True)
     last_login_backend = serializers.SerializerMethodField(read_only=True)
 
