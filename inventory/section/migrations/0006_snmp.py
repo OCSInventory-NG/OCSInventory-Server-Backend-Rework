@@ -14,7 +14,7 @@ def create_snmp_sections(apps, schema_editor):
             "retrieval_output": "JSON",
             "target": "SNMP",
             "template": template,
-            "options": {"need_format": False},
+            "options": {"multiple": False},
         },
         {
             "name": "INTERFACES",
@@ -22,7 +22,7 @@ def create_snmp_sections(apps, schema_editor):
             "retrieval_output": "JSON",
             "target": "SNMP",
             "template": template,
-            "options": {"need_format": False},
+            "options": {"multiple": False},
         },
         {
             "name": "IP",
@@ -30,7 +30,7 @@ def create_snmp_sections(apps, schema_editor):
             "retrieval_output": "JSON",
             "target": "SNMP",
             "template": template,
-            "options": {"need_format": False},
+            "options": {"multiple": False},
         },
         {
             "name": "HARDWARE",
@@ -38,7 +38,7 @@ def create_snmp_sections(apps, schema_editor):
             "retrieval_output": "JSON",
             "target": "SNMP",
             "template": template,
-            "options": {"need_format": False},
+            "options": {"multiple": False},
         },
     ]
 
