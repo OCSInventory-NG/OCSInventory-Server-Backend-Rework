@@ -106,7 +106,7 @@ def create_base_config(apps, schema_editor):
                 },
                 {
                     "name": "purge_deployment_package_max_age",
-                    "description": "Interval in months for purging deployment packages",
+                    "description": "Max age of deployment packages to purge",
                     "value": 3,
                     "type": "number input",
                     "unit": "months",
