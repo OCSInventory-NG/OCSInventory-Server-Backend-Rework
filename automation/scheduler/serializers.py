@@ -22,4 +22,5 @@ class SchedulerSerializer(ExpandableFieldsMixin, ModelSerializer):
             "hour",
             "day_of_week",
             "day_of_month",
+            "is_protected",
         ]
