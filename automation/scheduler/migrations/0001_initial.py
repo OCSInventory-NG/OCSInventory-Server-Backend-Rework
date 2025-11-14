@@ -73,6 +73,17 @@ def create_default_automations(apps, schema_editor):
         day_of_month=1,
     )
 
+    Scheduler.objects.create(
+        name="ipdiscoverScan.IpDiscoverScan",
+        description="Scan networks for devices with IpDiscover",
+        active=True,
+        recurrence="weekly",
+        last_execution=None,
+        hour="02:00",
+        day_of_week=5,
+        day_of_month=None,
+    )
+
 
 class Migration(migrations.Migration):
 
