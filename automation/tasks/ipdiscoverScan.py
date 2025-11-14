@@ -41,9 +41,7 @@ class IpDiscoverScan(AbstractTask):
             # read configuration
             config = self.get_config()
             if not config:
-                logger.warning(
-                    "IpDiscover configuration not found or disabled"
-                )
+                logger.warning("IpDiscover configuration not found or disabled")
                 return
 
             scantype = config.get("scantype", "nmap")
@@ -73,8 +71,7 @@ class IpDiscoverScan(AbstractTask):
                         "nettag", network_data.get("network", "unknown")
                     )
                     logger.debug(
-                        f"Processing network {index}/{total_networks}:"
-                        f" {nettag}"
+                        f"Processing network {index}/{total_networks}:" f" {nettag}"
                     )
                     self.scan_network_data(network_data)
                     processed += 1
@@ -90,9 +87,7 @@ class IpDiscoverScan(AbstractTask):
                 f" {failed} failed out of {total_networks} total networks"
             )
         except Exception as e:
-            logger.error(
-                f"Critical error in IpDiscover task: {e}", exc_info=True
-            )
+            logger.error(f"Critical error in IpDiscover task: {e}", exc_info=True)
             raise
 
     def get_config(self):
@@ -123,14 +118,10 @@ class IpDiscoverScan(AbstractTask):
             logger.debug(f"IpDiscover configuration: {config_dict}")
             return config_dict
         except DatabaseError as e:
-            logger.error(
-                f"Database error while fetching config: {e}", exc_info=True
-            )
+            logger.error(f"Database error while fetching config: {e}", exc_info=True)
             return None
         except Exception as e:
-            logger.error(
-                f"Unexpected error while fetching config: {e}", exc_info=True
-            )
+            logger.error(f"Unexpected error while fetching config: {e}", exc_info=True)
             return None
 
     def check_privileges(self):
@@ -243,9 +234,7 @@ class IpDiscoverScan(AbstractTask):
 
             if not set(static_fields) == set(imported_fields):
                 missing_fields = set(static_fields) - set(imported_fields)
-                logger.error(
-                    f"Missing required fields in CSV: {missing_fields}"
-                )
+                logger.error(f"Missing required fields in CSV: {missing_fields}")
                 return []
 
             # convert dict structure to list of network data
@@ -274,23 +263,18 @@ class IpDiscoverScan(AbstractTask):
                     networks.append(network_data)
                 except Exception as e:
                     logger.error(
-                        f"Error processing network {network_cidr}"
-                        f" from CSV: {e}",
+                        f"Error processing network {network_cidr}" f" from CSV: {e}",
                         exc_info=True,
                     )
 
-            logger.info(
-                f"Successfully parsed {len(networks)} networks from CSV"
-            )
+            logger.info(f"Successfully parsed {len(networks)} networks from CSV")
             return networks
 
         except FileNotFoundError:
             logger.error(f"CSV file not found: {file_path}")
             return []
         except Exception as e:
-            logger.error(
-                f"Error reading CSV file: {str(e)}", exc_info=True
-            )
+            logger.error(f"Error reading CSV file: {str(e)}", exc_info=True)
             return []
 
     def cidr_to_network_data(self, cidr):
@@ -358,9 +342,7 @@ class IpDiscoverScan(AbstractTask):
 
             return network_list
         except DatabaseError as e:
-            logger.error(
-                f"Database error while fetching networks: {e}", exc_info=True
-            )
+            logger.error(f"Database error while fetching networks: {e}", exc_info=True)
             return []
         except Exception as e:
             logger.error(
@@ -374,9 +356,7 @@ class IpDiscoverScan(AbstractTask):
         """
         try:
             cidr = network_data["network"]
-            logger.debug(
-                f"Scanning network {network_data['nettag']} with CIDR: {cidr}"
-            )
+            logger.debug(f"Scanning network {network_data['nettag']} with CIDR: {cidr}")
 
             # prepare subnet data structure
             subnet_data = {
@@ -389,10 +369,7 @@ class IpDiscoverScan(AbstractTask):
             }
 
             # perform scan
-            if (
-                self.default_scantype == "fping"
-                or self.default_scantype == "ping"
-            ):
+            if self.default_scantype == "fping" or self.default_scantype == "ping":
                 logger.debug(f"Scanning subnet {cidr} with fping ..")
                 result = self.fping_scan(cidr)
                 for device in result:
@@ -428,13 +405,9 @@ class IpDiscoverScan(AbstractTask):
             # insert/update subnet and netdevices
             self.insert_subnet([subnet_data])
 
-            logger.info(
-                f"Successfully scanned network {network_data['nettag']}"
-            )
+            logger.info(f"Successfully scanned network {network_data['nettag']}")
         except Exception as e:
-            logger.error(
-                f"Error scanning network: {e}", exc_info=True
-            )
+            logger.error(f"Error scanning network: {e}", exc_info=True)
             raise
 
     def network_to_cidr(self, network):
@@ -463,7 +436,7 @@ class IpDiscoverScan(AbstractTask):
 
     def fping_scan(self, net):
         """Scan devices present on specific subnet and return their ip
-         addresses if alive
+        addresses if alive
         """
         logger.debug(f"Starting fping scan for network: {net}")
         ping_cmd = ["fping", "-g", "--quiet", "-a", str(net)]
@@ -477,14 +450,12 @@ class IpDiscoverScan(AbstractTask):
         results = output.split()
 
         logger.debug(f"Fping scan completed. Raw output: {output}")
-        logger.info(
-            f"IpDiscover scan found {len(results)}" f" hosts for subnet {net}"
-        )
+        logger.info(f"IpDiscover scan found {len(results)}" f" hosts for subnet {net}")
         return results
 
     def nmap_scan(self, net):
         """Scan devices present on specific submet and return their ip
-         addresses and mac addresses if available
+        addresses and mac addresses if available
         """
         logger.debug(f"Starting nmap scan for network: {net}")
         nm = nmap.PortScanner()
@@ -496,8 +467,7 @@ class IpDiscoverScan(AbstractTask):
                 nb_hosts = results["nmap"]["scanstats"]["uphosts"]
                 logger.debug(f"Nmap scan results: {results}")
                 logger.info(
-                    f"IpDiscover scan found {nb_hosts}"
-                    f" hosts for subnet {net}"
+                    f"IpDiscover scan found {nb_hosts}" f" hosts for subnet {net}"
                 )
                 results = results["scan"]
             except TypeError:
@@ -541,11 +511,8 @@ class IpDiscoverScan(AbstractTask):
                     )
 
     def insert_subnet(self, subnets):
-        """Insert subnets and related netdevices into database
-        """
-        logger.debug(
-            f"Processing {len(subnets)} subnets" f" for database insertion"
-        )
+        """Insert subnets and related netdevices into database"""
+        logger.debug(f"Processing {len(subnets)} subnets" f" for database insertion")
         for subnet in subnets:
             logger.debug(f"Processing subnet: {subnet['nettag']}")
             # check if subnet exists in db
@@ -567,15 +534,12 @@ class IpDiscoverScan(AbstractTask):
                     subnet_obj.nettag = subnet["nettag"]
                     subnet_obj.mask = subnet["mask"]
                     subnet_obj.save()
-                    logger.debug(
-                        f"Subnet {subnet['nettag']}" f" updated in database"
-                    )
+                    logger.debug(f"Subnet {subnet['nettag']}" f" updated in database")
                     # also update netdevices
                     self.insert_netdevices(subnet, subnet_obj)
                 except Exception as e:
                     logger.error(
-                        f"Error while updating subnet"
-                        f" {subnet['nettag']}: {str(e)}"
+                        f"Error while updating subnet" f" {subnet['nettag']}: {str(e)}"
                     )
             else:
                 # create new subnet
@@ -587,13 +551,10 @@ class IpDiscoverScan(AbstractTask):
                         mask=subnet["mask"],
                         nettag=subnet["nettag"],
                     )
-                    logger.debug(
-                        f"Subnet {subnet['nettag']}" f" created in database"
-                    )
+                    logger.debug(f"Subnet {subnet['nettag']}" f" created in database")
                     # create new netdevices
                     self.insert_netdevices(subnet, subnet_obj)
                 except Exception as e:
                     logger.error(
-                        f"Error while creating subnet"
-                        f" {subnet['nettag']}: {str(e)}"
+                        f"Error while creating subnet" f" {subnet['nettag']}: {str(e)}"
                     )
