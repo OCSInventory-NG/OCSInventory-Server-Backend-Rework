@@ -37,7 +37,7 @@ class Field(models.Model):
     )
 
     name = models.CharField(max_length=50)
-    retrieval_value = models.CharField(max_length=255, null=True)
+    retrieval_value = models.CharField(max_length=255, null=True, blank=True)
     override_target = models.BooleanField(default=False, null=True)
     new_target = models.TextField(null=True)
     retrieval_method = models.CharField(
