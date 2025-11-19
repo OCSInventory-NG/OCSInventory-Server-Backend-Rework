@@ -20,3 +20,4 @@ class Scheduler(models.Model):
     hour = models.TimeField(null=True, blank=True)
     day_of_week = models.IntegerField(null=True, blank=True)
     day_of_month = models.IntegerField(null=True, blank=True)
+    is_protected = models.BooleanField(default=False)

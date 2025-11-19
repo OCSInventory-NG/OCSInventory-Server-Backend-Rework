@@ -16,6 +16,7 @@ def create_default_automations(apps, schema_editor):
         hour="01:00",
         day_of_week=None,
         day_of_month=None,
+        is_protected=True,
     )
 
     Scheduler.objects.create(
@@ -27,6 +28,7 @@ def create_default_automations(apps, schema_editor):
         hour="01:00",
         day_of_week=None,
         day_of_month=None,
+        is_protected=True,
     )
 
     Scheduler.objects.create(
@@ -38,6 +40,7 @@ def create_default_automations(apps, schema_editor):
         hour="01:00",
         day_of_week=None,
         day_of_month=None,
+        is_protected=True,
     )
 
     Scheduler.objects.create(
@@ -49,6 +52,7 @@ def create_default_automations(apps, schema_editor):
         hour=None,
         day_of_week=None,
         day_of_month=1,
+        is_protected=True,
     )
 
     Scheduler.objects.create(
@@ -60,6 +64,7 @@ def create_default_automations(apps, schema_editor):
         hour=None,
         day_of_week=None,
         day_of_month=1,
+        is_protected=True,
     )
 
     Scheduler.objects.create(
@@ -71,6 +76,7 @@ def create_default_automations(apps, schema_editor):
         hour=None,
         day_of_week=None,
         day_of_month=1,
+        is_protected=True,
     )
 
 
@@ -113,6 +119,7 @@ class Migration(migrations.Migration):
                 ("hour", models.TimeField(blank=True, null=True)),
                 ("day_of_week", models.IntegerField(blank=True, null=True)),
                 ("day_of_month", models.IntegerField(blank=True, null=True)),
+                ("is_protected", models.BooleanField(default=False)),
             ],
         ),
         migrations.RunPython(create_default_automations),
