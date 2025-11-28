@@ -25,7 +25,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -38,7 +38,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -51,7 +51,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": "ioreg -rn AppleSmartBattery",
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -64,7 +64,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": "ioreg -rn AppleSmartBattery",
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -77,7 +77,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": "pmset -g batt | head -n1",
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -90,7 +90,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -103,7 +103,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -116,7 +116,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -129,7 +129,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": "pmset -g batt | head -n1",
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BATTERIES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -142,7 +142,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -155,7 +155,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -181,7 +181,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -194,7 +194,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": 'echo "Apple Inc."',
             "retrieval_method": "BASH",
             "retrieval_output": "PTXT",
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -207,7 +207,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -233,7 +233,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -246,7 +246,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -259,7 +259,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -272,7 +272,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="BIOS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -285,7 +285,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -298,7 +298,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -311,7 +311,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -324,7 +324,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -337,7 +337,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -350,7 +350,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CONTROLLERS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -363,7 +363,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": "uname -m",
             "retrieval_method": "BASH",
             "retrieval_output": "PTXT",
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -376,7 +376,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": "sysctl -n hw.physicalcpu",
             "retrieval_method": "BASH",
             "retrieval_output": "PTXT",
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -389,7 +389,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": "getconf LONG_BIT",
             "retrieval_method": "BASH",
             "retrieval_output": "PTXT",
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -402,7 +402,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": "sysctl -n hw.cpufrequency",
             "retrieval_method": "BASH",
             "retrieval_output": "PTXT",
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -415,7 +415,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": "getconf LONG_BIT",
             "retrieval_method": "BASH",
             "retrieval_output": "PTXT",
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -428,7 +428,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": "sysctl -n hw.cpufrequency_max",
             "retrieval_method": "BASH",
             "retrieval_output": "PTXT",
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -441,7 +441,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": "sysctl -n hw.l2cachesize",
             "retrieval_method": "BASH",
             "retrieval_output": "PTXT",
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -454,7 +454,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": "sysctl -n hw.logicalcpu",
             "retrieval_method": "BASH",
             "retrieval_output": "PTXT",
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -467,7 +467,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": '( sysctl -n machdep.cpu.vendor 2>/dev/null || echo "Apple" )',
             "retrieval_method": "BASH",
             "retrieval_output": "PTXT",
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -480,7 +480,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -493,7 +493,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -506,7 +506,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -519,7 +519,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="CPUS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -532,7 +532,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="DRIVES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -545,7 +545,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="DRIVES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -558,7 +558,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="DRIVES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -571,7 +571,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="DRIVES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -584,7 +584,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="DRIVES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -597,7 +597,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="DRIVES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -610,7 +610,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="INPUTS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -623,7 +623,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="INPUTS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -636,7 +636,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="INPUTS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -649,7 +649,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="INPUTS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -662,7 +662,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="INPUTS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -675,7 +675,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="LOCAL GROUPS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -688,7 +688,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="LOCAL GROUPS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -701,7 +701,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="LOCAL GROUPS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -714,7 +714,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="LOCAL USERS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -727,7 +727,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="LOCAL USERS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -740,7 +740,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="LOCAL USERS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -753,7 +753,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="LOCAL USERS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -766,7 +766,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="LOCAL USERS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -779,7 +779,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="LOCAL USERS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -792,7 +792,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -805,7 +805,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -818,7 +818,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -831,7 +831,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -844,7 +844,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -857,7 +857,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -870,7 +870,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -883,7 +883,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="MEMORIES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -896,7 +896,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="MONITORS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -909,7 +909,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="MONITORS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -922,7 +922,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="MONITORS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -935,7 +935,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="MONITORS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -948,7 +948,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="MONITORS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -961,7 +961,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -974,7 +974,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -987,7 +987,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1000,7 +1000,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1013,7 +1013,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1026,7 +1026,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1039,7 +1039,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1052,7 +1052,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1065,7 +1065,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1078,7 +1078,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="NETWORKS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1091,7 +1091,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="PORTS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1104,7 +1104,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="PORTS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1117,7 +1117,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="PORTS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1130,7 +1130,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="PORTS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1143,7 +1143,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1156,7 +1156,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1169,7 +1169,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1182,7 +1182,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="PRINTERS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1195,7 +1195,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="REPOSITORY",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1208,7 +1208,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="REPOSITORY",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1221,7 +1221,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1234,7 +1234,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1247,7 +1247,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1260,7 +1260,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SLOTS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1273,7 +1273,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1286,7 +1286,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1299,7 +1299,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1312,7 +1312,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1325,7 +1325,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1338,7 +1338,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1351,7 +1351,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1364,7 +1364,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1377,7 +1377,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1390,7 +1390,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOFTWARES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1403,7 +1403,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOUNDS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1416,7 +1416,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOUNDS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1429,7 +1429,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="SOUNDS",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1442,7 +1442,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1455,7 +1455,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1468,7 +1468,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1481,7 +1481,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1494,7 +1494,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1507,7 +1507,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1520,7 +1520,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1533,7 +1533,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="STORAGES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1546,7 +1546,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="USB DEVICES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1559,7 +1559,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="USB DEVICES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1572,7 +1572,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="USB DEVICES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1585,7 +1585,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="USB DEVICES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
@@ -1598,7 +1598,7 @@ def create_default_macos_fields(apps, schema_editor):
             "new_target": None,
             "retrieval_method": None,
             "retrieval_output": None,
-            "options": None,
+            "options": {},
             "section": apps.get_model("section", "Section").objects.get(
                 name="USB DEVICES",
                 template=apps.get_model("template", "Template").objects.get(os="MAC"),
