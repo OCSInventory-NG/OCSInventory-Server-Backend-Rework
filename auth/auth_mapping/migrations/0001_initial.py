@@ -58,7 +58,6 @@ def add_auth_methods(apps, schema_editor):
                         "ALLOW_UNSECURED_JWT": False,
                         "JWKS_ENDPOINT": "https://auth.provider.org/protocol/openid-connect/certs",
                         "AUTO_REDIRECT": True,
-                        "ALLOW_UNSECURE_JWT": True,
                         "VERIFY_SSL": False,
                     },
                     "mappings": [
