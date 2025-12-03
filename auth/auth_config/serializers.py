@@ -1,8 +1,8 @@
 from importlib import import_module
 
+from auth.auth_mapping.models import AuthMapping
 from auth.auth_mapping.serializers import AuthMappingSerializer
 from auth.auth_method.models import AuthMethod
-from auth.auth_mapping.models import AuthMapping
 from django.db.models import F
 from ocsinventory_backend import settings
 from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
@@ -199,10 +199,7 @@ class AuthConfigSerializer(ExpandableFieldsMixin, ModelSerializer):
 
         # Create nested AuthMapping items manually (correct for ForeignKey)
         for mapping in mappings_data:
-            AuthMapping.objects.create(
-                auth_config=parent,
-                **mapping
-            )
+            AuthMapping.objects.create(auth_config=parent, **mapping)
 
         return parent
 
