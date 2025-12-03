@@ -2,6 +2,7 @@ from importlib import import_module
 
 from auth.auth_mapping.serializers import AuthMappingSerializer
 from auth.auth_method.models import AuthMethod
+from auth.auth_mapping.models import AuthMapping
 from django.db.models import F
 from ocsinventory_backend import settings
 from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
