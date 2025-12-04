@@ -5,7 +5,6 @@ from automation.rule.serializers import (
     RuleSerializer,
     TriggerSerializer,
 )
-from django.apps import apps
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
 from rest_framework import status
@@ -64,7 +63,7 @@ class TriggerViewSet(viewsets.OCSViewSet):
         },
         "netdevice_received": {
             "accountinfo.accountinfoconfig": [],
-        }
+        },
     }
 
     def list(self, request, *args, **kwargs):

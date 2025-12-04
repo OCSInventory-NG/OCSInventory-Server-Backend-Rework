@@ -1,11 +1,10 @@
-import ldap
 import logging
 
-from django_auth_ldap.backend import LDAPBackend
-from django_auth_ldap.config import LDAPSearch
-
+import ldap
 from auth.auth_config.models import AuthConfig
 from auth.auth_mapping.models import AuthMapping
+from django_auth_ldap.backend import LDAPBackend
+from django_auth_ldap.config import LDAPSearch
 
 
 class CustomLDAPBackend(LDAPBackend):
@@ -19,12 +18,13 @@ class CustomLDAPBackend(LDAPBackend):
     def __init__(self):
         super(CustomLDAPBackend, self).__init__()
         # get all LDAP config from database
-        self.configs = AuthConfig.objects.filter(auth_method__name="LDAP",
-                                                 enabled=True).order_by("priority")
+        self.configs = AuthConfig.objects.filter(
+            auth_method__name="LDAP", enabled=True
+        ).order_by("priority")
         # and mappings
-        self.mappings = AuthMapping.objects.filter(auth_config__enabled=True,
-                                                   auth_config__auth_method__name="LDAP"
-                                                   )
+        self.mappings = AuthMapping.objects.filter(
+            auth_config__enabled=True, auth_config__auth_method__name="LDAP"
+        )
 
     def authenticate(self, request, username=None, password=None, **kwargs):
         try:
@@ -33,24 +33,23 @@ class CustomLDAPBackend(LDAPBackend):
                 self.settings.SERVER_URI = config.config["SERVER_URI"]
                 self.settings.BIND_DN = config.config["BIND_DN"]
                 self.settings.BIND_PASSWORD = config.config["BIND_PASSWORD"]
-                self.settings.MIRROR_GROUPS = config.config['MIRROR_GROUPS']
+                self.settings.MIRROR_GROUPS = config.config["MIRROR_GROUPS"]
 
                 self.settings.USER_SEARCH = LDAPSearch(
-                    config.config['BASE_DN'],
+                    config.config["BASE_DN"],
                     ldap.SCOPE_SUBTREE,
-                    f"({config.config['USER_LOGIN_FIELD']}=%(user)s)"
+                    f"({config.config['USER_LOGIN_FIELD']}=%(user)s)",
                 )
 
                 self.defineMapping(config)
-                ldap.set_option(ldap.OPT_PROTOCOL_VERSION,
-                                config.config['PROTOCOL_VERSION'])
+                ldap.set_option(
+                    ldap.OPT_PROTOCOL_VERSION, config.config["PROTOCOL_VERSION"]
+                )
 
                 # attempt authentication
-                user = super(CustomLDAPBackend,
-                             self).authenticate(request,
-                                                username=username,
-                                                password=password,
-                                                **kwargs)
+                user = super(CustomLDAPBackend, self).authenticate(
+                    request, username=username, password=password, **kwargs
+                )
 
                 if user:
                     metadata = self._build_metadata(user)
@@ -67,13 +66,11 @@ class CustomLDAPBackend(LDAPBackend):
 
     def defineMapping(self, config):
         for mapping in self.mappings:
-            self.settings.USER_ATTR_MAP[
-                mapping.internal_field] = mapping.external_field
+            self.settings.USER_ATTR_MAP[mapping.internal_field] = mapping.external_field
 
         # if empty mapping is defined, inform user
         if len(self.settings.USER_ATTR_MAP) == 0:
-            self.logger.info(
-                f"LDAP config {config.id} has no mapping defined")
+            self.logger.info(f"LDAP config {config.id} has no mapping defined")
 
     @staticmethod
     def get_config_fields():
@@ -81,8 +78,15 @@ class CustomLDAPBackend(LDAPBackend):
         Return the list of fields to be used in the 'config' field of the
         AuthConfig model.
         """
-        return ['SERVER_URI', 'BIND_DN', 'BIND_PASSWORD', 'BASE_DN',
-                'USER_LOGIN_FIELD', 'PROTOCOL_VERSION', 'MIRROR_GROUPS']
+        return [
+            "SERVER_URI",
+            "BIND_DN",
+            "BIND_PASSWORD",
+            "BASE_DN",
+            "USER_LOGIN_FIELD",
+            "PROTOCOL_VERSION",
+            "MIRROR_GROUPS",
+        ]
 
     def _build_metadata(self, user):
         metadata = {}
@@ -100,7 +104,11 @@ class CustomLDAPBackend(LDAPBackend):
 
         metadata["dn"] = ldap_user.dn
         metadata["memberOf"] = [
-            entry.decode("utf-8", errors="ignore") if isinstance(entry, bytes) else entry
+            (
+                entry.decode("utf-8", errors="ignore")
+                if isinstance(entry, bytes)
+                else entry
+            )
             for entry in sanitized_attrs.get("memberOf", [])
         ]
         metadata["attributes"] = sanitized_attrs

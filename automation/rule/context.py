@@ -2,7 +2,6 @@ import logging
 from copy import deepcopy
 from typing import Dict
 
-
 LOGGER = logging.getLogger(__name__)
 
 FIELD_STRING = {"type": "string"}
