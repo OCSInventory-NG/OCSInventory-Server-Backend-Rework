@@ -27,6 +27,7 @@ class CustomCASBackend(CASBackend):
         # TODO: get the first enabled config for now but figure out
         # how to handle multiple configs (or prevent it)
         cas_config = self.configs[0]
+        self.current_config = cas_config
         login_url = cas_config.config['SERVER_URL'] + cas_config.config['LOGIN_ROUTE']
         logout_url = cas_config.config['SERVER_URL'] + cas_config.config['LOGOUT_ROUTE']
 
@@ -60,6 +61,18 @@ class CustomCASBackend(CASBackend):
         user = super().authenticate(request=request, ticket=ticket, service=service)
 
         if user is not None:
+            attributes = {}
+            if request:
+                attributes = request.session.get("attributes", {}) or {}
+            metadata = {
+                "authenticationMethod": attributes.get("authenticationMethod"),
+                "attributes": attributes,
+            }
+            user._auth_context_data = {
+                "auth_method": self.current_config.auth_method,
+                "auth_config": self.current_config,
+                "metadata": metadata,
+            }
             return user
 
         # no match found
