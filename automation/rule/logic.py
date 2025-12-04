@@ -1,6 +1,7 @@
 import logging
 
 from accountinfo.models import AccountinfoData
+from automation.rule.context import get_resolver_for_trigger
 from automation.rule.jsonlogic import jsonLogic
 from automation.rule.models import Rule
 from django.contrib.contenttypes.models import ContentType
@@ -34,7 +35,8 @@ class Logic:
 
         for rule in rules:
             try:
-                result = jsonLogic(rule.logic, self.instance.__dict__)
+                context = self.build_context()
+                result = jsonLogic(rule.logic, context)
                 if result:
                     self.execute_actions(rule)
             except Exception as e:
@@ -123,6 +125,20 @@ class Logic:
             instance.save()
         except Exception as e:
             self.LOGGER.error(f"Error updating field: {e}")
+
+    def build_context(self):
+        """Return the data dictionary passed to JSON Logic."""
+        try:
+            resolver = get_resolver_for_trigger(self.trigger)
+            context = resolver.build(self.instance)
+            return context
+        except Exception as exc:
+            self.LOGGER.error(
+                "Failed building context for trigger %s: %s", self.trigger, exc
+            )
+            data = getattr(self.instance, "__dict__", {}).copy()
+            data.pop("_state", None)
+            return data
 
     @staticmethod
     def convert_value(instance, field_name, value):
