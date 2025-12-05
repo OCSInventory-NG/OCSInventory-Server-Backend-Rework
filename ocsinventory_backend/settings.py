@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     "inventory.section.apps.SectionConfig",
     "inventory.field.apps.FieldConfig",
     "inventory.category.apps.CategoryConfig",
+    "inventory.software.apps.SoftwareConfig",
     "ipdiscover.netdevice.apps.NetdeviceConfig",
     "ipdiscover.network.apps.NetworkConfig",
     "ipdiscover.netgroup.apps.NetgroupConfig",
