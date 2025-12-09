@@ -4,30 +4,88 @@ from inventory.section.models import Section
 from inventory.template.models import Template
 
 
-SOFTWARE_FIELD_CHOICES = (
-    ("name", "Name"),
-    ("major_version", "Major version"),
-    ("minor_version", "Minor version"),
-    ("patch_version", "Patch version"),
-    ("publisher", "Publisher"),
-    ("language", "Language"),
-    ("size", "Size"),
-    ("install_date", "Install date"),
-    ("install_location", "Install location"),
+SOFTWARE_FIELD_KEYS = (
+    "name",
+    "publisher",
+    "version",
+    "major_version",
+    "minor_version",
+    "patch_version",
 )
 
 
-class SoftwareFieldMapping(models.Model):
-    """Map fixed software fields to template specific inventory fields"""
+class SoftwareMapping(models.Model):
+    """map software fields to template fields"""
 
     template = models.ForeignKey(
-        Template, related_name="software_field_mappings", on_delete=models.CASCADE
-    )
-    template_section = models.ForeignKey(Section,
+        Template,
         related_name="software_mappings",
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
-    template_field = models.ForeignKey(
-        Field, related_name="software_mappings", on_delete=models.CASCADE
+    section = models.ForeignKey(
+        Section,
+        related_name="software_mappings",
+        on_delete=models.CASCADE,
     )
-    field_name = models.CharField(max_length=64, choices=SOFTWARE_FIELD_CHOICES)
+    name = models.ForeignKey(
+        Field,
+        related_name="software_name_mappings",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
+    publisher = models.ForeignKey(
+        Field,
+        related_name="software_publisher_mappings",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
+    version = models.ForeignKey(
+        Field,
+        related_name="software_version_mappings",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
+    major_version = models.ForeignKey(
+        Field,
+        related_name="software_major_version_mappings",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
+    minor_version = models.ForeignKey(
+        Field,
+        related_name="software_minor_version_mappings",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
+    patch_version = models.ForeignKey(
+        Field,
+        related_name="software_patch_version_mappings",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
+
+
+class SoftwareDictionary(models.Model):
+    """Aggregate which assets have a specific software signature"""
+
+    name = models.TextField(blank=True, null=True)
+    publisher = models.TextField(blank=True, null=True)
+    version = models.CharField(max_length=128, blank=True, null=True)
+    major_version = models.CharField(max_length=64, blank=True, null=True)
+    minor_version = models.CharField(max_length=64, blank=True, null=True)
+    patch_version = models.CharField(max_length=64, blank=True, null=True)
+    assets = models.JSONField(default=list, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["name"]),
+            models.Index(fields=["publisher"]),
+            models.Index(fields=["version"]),
+        ]

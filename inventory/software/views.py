@@ -1,14 +1,45 @@
-from inventory.software.models import SoftwareFieldMapping
-from inventory.software.serializers import SoftwareFieldMappingSerializer
+from inventory.software.models import SoftwareDictionary, SoftwareMapping
+from inventory.software.serializers import (
+    SoftwareDictionarySerializer,
+    SoftwareMappingSerializer,
+)
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
 
 
-class SoftwareFieldMappingViewSet(viewsets.OCSViewSet):
+class SoftwareMappingViewSet(viewsets.OCSViewSet):
     permission_classes = [DefaultModelPermissions]
 
-    queryset = SoftwareFieldMapping.objects.all()
-    serializer_class = SoftwareFieldMappingSerializer
-    model = SoftwareFieldMapping
+    queryset = SoftwareMapping.objects.all()
+    serializer_class = SoftwareMappingSerializer
+    model = SoftwareMapping
 
-    filterset_fields = ["id", "template", "template_section", "template_field", "field_key",]
+    filterset_fields = [
+        "id",
+        "template",
+        "section",
+        "name",
+        "publisher",
+        "version",
+        "major_version",
+        "minor_version",
+        "patch_version",
+    ]
+
+
+class SoftwareDictionaryViewSet(viewsets.OCSViewSet):
+    permission_classes = [DefaultModelPermissions]
+
+    queryset = SoftwareDictionary.objects.all()
+    serializer_class = SoftwareDictionarySerializer
+    model = SoftwareDictionary
+
+    filterset_fields = [
+        "id",
+        "name",
+        "publisher",
+        "version",
+        "major_version",
+        "minor_version",
+        "patch_version",
+    ]

@@ -1,4 +1,7 @@
-from inventory.software.views import SoftwareFieldMappingViewSet
+from inventory.software.views import (
+    SoftwareDictionaryViewSet,
+    SoftwareMappingViewSet,
+)
 
 
 class SoftwareRouter:
@@ -6,5 +9,8 @@ class SoftwareRouter:
 
     @staticmethod
     def defineRoutes(defaultRouter):
-        defaultRouter.register(r"software_field_mappings", SoftwareFieldMappingViewSet)
+        defaultRouter.register(r"software_mapping", SoftwareMappingViewSet)
+        defaultRouter.register(
+            r"software_dictionary", SoftwareDictionaryViewSet
+        )
         return defaultRouter
