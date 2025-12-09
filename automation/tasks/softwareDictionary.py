@@ -13,6 +13,12 @@ class SoftwareDictionary(AbstractTask):
     """
 
     def execute(self):
+        if not SoftwareDictionaryService.should_refresh_on_automation():
+            logger.info(
+                "Software dictionary set to refresh during collection; skipping automation run"
+            )
+            return
+
         logger.info("Starting SoftwareDictionary automation task")
         SoftwareDictionaryService.rebuild()
         logger.info("SoftwareDictionary automation task completed")

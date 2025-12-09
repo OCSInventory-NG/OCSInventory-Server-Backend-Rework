@@ -706,7 +706,10 @@ class CollectionView(APIView):
         )
 
     def _refresh_software_dictionary(self, asset_instance):
-        if not asset_instance:
+        if (
+            not asset_instance
+            or not SoftwareDictionaryService.should_refresh_on_collection()
+        ):
             return
         try:
             SoftwareDictionaryService.refresh_asset(asset_instance)

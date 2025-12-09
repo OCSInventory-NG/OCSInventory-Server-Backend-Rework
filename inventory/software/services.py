@@ -3,6 +3,7 @@ from typing import Dict, Iterable, List, Optional
 
 from asset.inventory_base.models import InventoryBase
 from asset.inventory_section.models import InventorySection
+from config.models import Config
 from inventory.software.models import SoftwareDictionary, SoftwareMapping
 from django.db import transaction
 
@@ -11,6 +12,10 @@ logger = logging.getLogger(__name__)
 
 class SoftwareDictionaryService:
     """Helper utilities to keep the SoftwareDictionary table in sync."""
+
+    MODE_AUTOMATION = "automation"
+    MODE_COLLECTION = "collection"
+    CONFIG_KEY = "software_dictionary_generation"
 
     @classmethod
     def rebuild(cls, asset_ids: Optional[Iterable[int]] = None) -> None:
@@ -151,3 +156,29 @@ class SoftwareDictionaryService:
                 assets.append(asset_id)
                 obj.assets = assets
                 obj.save(update_fields=["assets", "updated_at"])
+
+    @classmethod
+    def get_generation_mode(cls) -> str:
+        """Return the configured generation mode (collection/automation)."""
+        server_conf = Config.objects.filter(name="server").values_list(
+            "value", flat=True
+        ).first()
+        if not server_conf:
+            return cls.MODE_COLLECTION
+
+        for item in server_conf:
+            if item.get("name") == cls.CONFIG_KEY:
+                value = str(item.get("value", "")).strip().lower()
+                if value in (cls.MODE_AUTOMATION, cls.MODE_COLLECTION):
+                    return value
+                break
+
+        return cls.MODE_COLLECTION
+
+    @classmethod
+    def should_refresh_on_collection(cls) -> bool:
+        return cls.get_generation_mode() == cls.MODE_COLLECTION
+
+    @classmethod
+    def should_refresh_on_automation(cls) -> bool:
+        return cls.get_generation_mode() == cls.MODE_AUTOMATION
