@@ -84,6 +84,14 @@ def create_base_config(apps, schema_editor):
                     "options": ["agent", "automation"],
                 },
                 {
+                    "name": "software_dictionary_generation",
+                    "description": "Select when the software dictionary is refreshed",
+                    "value": "inventory",
+                    "type": "select",
+                    "unit": "",
+                    "options": ["inventory", "automation"],
+                },
+                {
                     "name": "purge_agent_log",
                     "description": "Enable log agent purge",
                     "value": False,

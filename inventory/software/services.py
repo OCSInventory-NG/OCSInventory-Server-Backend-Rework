@@ -14,7 +14,7 @@ class SoftwareDictionaryService:
     """Helper utilities to keep the SoftwareDictionary table in sync."""
 
     MODE_AUTOMATION = "automation"
-    MODE_COLLECTION = "collection"
+    MODE_INVENTORY = "inventory"
     CONFIG_KEY = "software_dictionary_generation"
 
     @classmethod
@@ -159,25 +159,25 @@ class SoftwareDictionaryService:
 
     @classmethod
     def get_generation_mode(cls) -> str:
-        """Return the configured generation mode (collection/automation)."""
+        """Return the configured generation mode (inventory/automation)."""
         server_conf = Config.objects.filter(name="server").values_list(
             "value", flat=True
         ).first()
         if not server_conf:
-            return cls.MODE_COLLECTION
+            return cls.MODE_INVENTORY
 
         for item in server_conf:
             if item.get("name") == cls.CONFIG_KEY:
                 value = str(item.get("value", "")).strip().lower()
-                if value in (cls.MODE_AUTOMATION, cls.MODE_COLLECTION):
+                if value in (cls.MODE_AUTOMATION, cls.MODE_INVENTORY):
                     return value
                 break
 
-        return cls.MODE_COLLECTION
+        return cls.MODE_INVENTORY
 
     @classmethod
-    def should_refresh_on_collection(cls) -> bool:
-        return cls.get_generation_mode() == cls.MODE_COLLECTION
+    def should_refresh_on_inventory(cls) -> bool:
+        return cls.get_generation_mode() == cls.MODE_INVENTORY
 
     @classmethod
     def should_refresh_on_automation(cls) -> bool:
