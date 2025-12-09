@@ -9,6 +9,7 @@ from asset.inventory_section.models import InventorySection
 from config.models import Config
 from inventory.field.models import Field
 from inventory.section.models import Section
+from inventory.software.services import SoftwareDictionaryService
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -366,6 +367,8 @@ class CollectionView(APIView):
                 extra={"classname": __name__},
             )
 
+        self._refresh_software_dictionary(asset_instance)
+
         # successful creation response
         return Response(
             {"message": "Inventory created successfully", "id": asset_instance.id},
@@ -526,6 +529,8 @@ class CollectionView(APIView):
                 f"Successfully updated inventory for device: {device_id}",
                 extra={"classname": __name__},
             )
+
+        self._refresh_software_dictionary(asset_instance)
 
         return Response(
             {"message": "Inventory updated successfully", "id": asset_instance.id},
@@ -690,6 +695,8 @@ class CollectionView(APIView):
                 extra={"classname": __name__},
             )
 
+        self._refresh_software_dictionary(asset_instance)
+
         return Response(
             {
                 "message": "Asset and inventory updated successfully",
@@ -697,3 +704,16 @@ class CollectionView(APIView):
             },
             status=200,
         )
+
+    def _refresh_software_dictionary(self, asset_instance):
+        if not asset_instance:
+            return
+        try:
+            SoftwareDictionaryService.refresh_asset(asset_instance)
+        except Exception as exc:
+            self.LOGGER.exception(
+                "Failed to refresh software dictionary for asset %s: %s",
+                getattr(asset_instance, "id", "unknown"),
+                exc,
+                extra={"classname": __name__},
+            )
