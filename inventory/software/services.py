@@ -68,7 +68,7 @@ class SoftwareDictionaryService:
                 cls._remove_asset_from_dictionary(asset_id)
 
             for entry in entries:
-                cls._upsert_entry(entry, asset_id)
+                cls._upsert_entry(entry, asset)
 
     @classmethod
     def _build_entries_for_asset(cls, asset: InventoryBase) -> List[Dict]:
@@ -135,27 +135,26 @@ class SoftwareDictionaryService:
     @classmethod
     def _remove_asset_from_dictionary(cls, asset_id: int) -> None:
         """Remove the asset id from every dictionary row."""
-        entries = SoftwareDictionary.objects.filter(assets__contains=[asset_id])
-        for entry in entries:
-            assets = entry.assets or []
-            assets = [item for item in assets if item != asset_id]
-            if assets:
-                entry.assets = assets
-                entry.save(update_fields=["assets", "updated_at"])
-            else:
-                entry.delete()
+        if not asset_id:
+            return
+
+        affected_ids = list(
+            SoftwareDictionary.objects.filter(assets__id=asset_id).values_list(
+                "id", flat=True
+            )
+        )
+        through_model = SoftwareDictionary.assets.through
+        through_model.objects.filter(inventorybase_id=asset_id).delete()
+
+        if affected_ids:
+            SoftwareDictionary.objects.filter(
+                id__in=affected_ids, assets__isnull=True
+            ).delete()
 
     @classmethod
-    def _upsert_entry(cls, entry: Dict, asset_id: int) -> None:
-        obj, created = SoftwareDictionary.objects.get_or_create(
-            **entry, defaults={"assets": [asset_id]}
-        )
-        if not created:
-            assets = obj.assets or []
-            if asset_id not in assets:
-                assets.append(asset_id)
-                obj.assets = assets
-                obj.save(update_fields=["assets", "updated_at"])
+    def _upsert_entry(cls, entry: Dict, asset: InventoryBase) -> None:
+        obj, _ = SoftwareDictionary.objects.get_or_create(**entry)
+        obj.assets.add(asset)
 
     @classmethod
     def get_generation_mode(cls) -> str:

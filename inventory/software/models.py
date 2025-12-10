@@ -1,4 +1,5 @@
 from django.db import models
+from asset.inventory_base.models import InventoryBase
 from inventory.field.models import Field
 from inventory.section.models import Section
 from inventory.template.models import Template
@@ -80,7 +81,11 @@ class SoftwareDictionary(models.Model):
     major_version = models.CharField(max_length=64, blank=True, null=True)
     minor_version = models.CharField(max_length=64, blank=True, null=True)
     patch_version = models.CharField(max_length=64, blank=True, null=True)
-    assets = models.JSONField(default=list, blank=True)
+    assets = models.ManyToManyField(
+        InventoryBase,
+        related_name="software_dictionary_entries",
+        blank=True,
+    )
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
