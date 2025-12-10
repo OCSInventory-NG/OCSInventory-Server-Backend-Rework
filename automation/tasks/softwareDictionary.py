@@ -3,7 +3,6 @@ import logging
 from automation.tasks.abstractTask import AbstractTask
 from inventory.software.services import SoftwareDictionaryService
 
-
 logger = logging.getLogger("automation.tasks.SoftwareDictionary")
 
 

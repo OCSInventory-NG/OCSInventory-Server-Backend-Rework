@@ -4,9 +4,9 @@ from typing import Dict, Iterable, List, Optional, Tuple
 from asset.inventory_base.models import InventoryBase
 from asset.inventory_section.models import InventorySection
 from config.models import Config
-from inventory.software.models import SoftwareDictionary, SoftwareMapping
 from django.db import transaction
 from django.db.models.functions import Now
+from inventory.software.models import SoftwareDictionary, SoftwareMapping
 
 logger = logging.getLogger(__name__)
 
@@ -48,12 +48,12 @@ class SoftwareDictionaryService:
                 logger.exception(
                     "Failed to refresh software dictionary for asset %s", asset.id
                 )
-        logger.info("Software dictionary rebuild completed (%s assets processed)", processed)
+        logger.info(
+            "Software dictionary rebuild completed (%s assets processed)", processed
+        )
 
     @classmethod
-    def refresh_asset(
-        cls, asset: InventoryBase, cleanup_existing: bool = True
-    ) -> None:
+    def refresh_asset(cls, asset: InventoryBase, cleanup_existing: bool = True) -> None:
         """
         Recompute software entries for a single asset.
 
@@ -67,10 +67,7 @@ class SoftwareDictionaryService:
         asset_id = asset.id
         entries = cls._build_entries_for_asset(asset)
 
-        new_entries = {
-            cls._signature_from_dict(entry): entry
-            for entry in entries
-        }
+        new_entries = {cls._signature_from_dict(entry): entry for entry in entries}
         existing_entries = cls._get_existing_entries(asset)
 
         keys_to_add = set(new_entries.keys()) - set(existing_entries.keys())
@@ -162,17 +159,14 @@ class SoftwareDictionaryService:
         cls, asset: InventoryBase
     ) -> Dict[Tuple, SoftwareDictionary]:
         """Return a mapping of signature -> existing entry"""
-        entries = (
-            asset.software_dictionary_entries.all()
-            .only(
-                "id",
-                "name",
-                "publisher",
-                "version",
-                "major_version",
-                "minor_version",
-                "patch_version",
-            )
+        entries = asset.software_dictionary_entries.all().only(
+            "id",
+            "name",
+            "publisher",
+            "version",
+            "major_version",
+            "minor_version",
+            "patch_version",
         )
         return {cls._signature_from_entry(entry): entry for entry in entries}
 
@@ -248,9 +242,9 @@ class SoftwareDictionaryService:
     @classmethod
     def get_generation_mode(cls) -> str:
         """Return the configured generation mode (inventory/automation)."""
-        server_conf = Config.objects.filter(name="server").values_list(
-            "value", flat=True
-        ).first()
+        server_conf = (
+            Config.objects.filter(name="server").values_list("value", flat=True).first()
+        )
         if not server_conf:
             return cls.MODE_INVENTORY
 

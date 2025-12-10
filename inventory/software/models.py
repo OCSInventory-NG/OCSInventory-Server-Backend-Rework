@@ -1,5 +1,5 @@
-from django.db import models
 from asset.inventory_base.models import InventoryBase
+from django.db import models
 from inventory.field.models import Field
 from inventory.section.models import Section
 from inventory.template.models import Template
