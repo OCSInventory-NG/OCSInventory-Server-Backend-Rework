@@ -1,11 +1,12 @@
 import logging
-from typing import Dict, Iterable, List, Optional
+from typing import Dict, Iterable, List, Optional, Tuple
 
 from asset.inventory_base.models import InventoryBase
 from asset.inventory_section.models import InventorySection
 from config.models import Config
 from inventory.software.models import SoftwareDictionary, SoftwareMapping
 from django.db import transaction
+from django.db.models.functions import Now
 
 logger = logging.getLogger(__name__)
 
@@ -38,13 +39,16 @@ class SoftwareDictionaryService:
             SoftwareDictionary.objects.all().delete()
             cleanup_existing = False
 
+        processed = 0
         for asset in queryset.iterator():
             try:
                 cls.refresh_asset(asset, cleanup_existing=cleanup_existing)
+                processed += 1
             except Exception:
                 logger.exception(
                     "Failed to refresh software dictionary for asset %s", asset.id
                 )
+        logger.info("Software dictionary rebuild completed (%s assets processed)", processed)
 
     @classmethod
     def refresh_asset(
@@ -63,12 +67,33 @@ class SoftwareDictionaryService:
         asset_id = asset.id
         entries = cls._build_entries_for_asset(asset)
 
-        with transaction.atomic():
-            if cleanup_existing:
-                cls._remove_asset_from_dictionary(asset_id)
+        new_entries = {
+            cls._signature_from_dict(entry): entry
+            for entry in entries
+        }
+        existing_entries = cls._get_existing_entries(asset)
 
-            for entry in entries:
-                cls._upsert_entry(entry, asset)
+        keys_to_add = set(new_entries.keys()) - set(existing_entries.keys())
+        keys_to_remove = set(existing_entries.keys()) - set(new_entries.keys())
+
+        with transaction.atomic():
+            if keys_to_remove:
+                cls._detach_asset_entries(
+                    asset_id, [existing_entries[key].id for key in keys_to_remove]
+                )
+
+            if keys_to_add:
+                cls._attach_asset_entries(
+                    asset, [new_entries[key] for key in keys_to_add]
+                )
+
+        logger.debug(
+            "Asset %s software dictionary updated: %s extracted, %s added, %s removed",
+            asset_id,
+            len(entries),
+            len(keys_to_add),
+            len(keys_to_remove),
+        )
 
     @classmethod
     def _build_entries_for_asset(cls, asset: InventoryBase) -> List[Dict]:
@@ -133,28 +158,92 @@ class SoftwareDictionaryService:
         return cleaned or None
 
     @classmethod
-    def _remove_asset_from_dictionary(cls, asset_id: int) -> None:
-        """Remove the asset id from every dictionary row."""
-        if not asset_id:
-            return
-
-        affected_ids = list(
-            SoftwareDictionary.objects.filter(assets__id=asset_id).values_list(
-                "id", flat=True
+    def _get_existing_entries(
+        cls, asset: InventoryBase
+    ) -> Dict[Tuple, SoftwareDictionary]:
+        """Return a mapping of signature -> existing entry"""
+        entries = (
+            asset.software_dictionary_entries.all()
+            .only(
+                "id",
+                "name",
+                "publisher",
+                "version",
+                "major_version",
+                "minor_version",
+                "patch_version",
             )
         )
-        through_model = SoftwareDictionary.assets.through
-        through_model.objects.filter(inventorybase_id=asset_id).delete()
+        return {cls._signature_from_entry(entry): entry for entry in entries}
 
-        if affected_ids:
-            SoftwareDictionary.objects.filter(
-                id__in=affected_ids, assets__isnull=True
-            ).delete()
+    @staticmethod
+    def _signature_from_entry(entry: SoftwareDictionary) -> Tuple:
+        return (
+            entry.name,
+            entry.publisher,
+            entry.version,
+            entry.major_version,
+            entry.minor_version,
+            entry.patch_version,
+        )
+
+    @staticmethod
+    def _signature_from_dict(entry: Dict) -> Tuple:
+        return (
+            entry.get("name"),
+            entry.get("publisher"),
+            entry.get("version"),
+            entry.get("major_version"),
+            entry.get("minor_version"),
+            entry.get("patch_version"),
+        )
 
     @classmethod
-    def _upsert_entry(cls, entry: Dict, asset: InventoryBase) -> None:
-        obj, _ = SoftwareDictionary.objects.get_or_create(**entry)
-        obj.assets.add(asset)
+    def _detach_asset_entries(cls, asset_id: int, entry_ids: List[int]) -> None:
+        """Detach an asset from a subset of dictionary entries"""
+        if not entry_ids:
+            return
+
+        through_model = SoftwareDictionary.assets.through
+        through_model.objects.filter(
+            softwaredictionary_id__in=entry_ids,
+            inventorybase_id=asset_id,
+        ).delete()
+
+        empty_ids = list(
+            SoftwareDictionary.objects.filter(
+                id__in=entry_ids, assets__isnull=True
+            ).values_list("id", flat=True)
+        )
+        remaining_ids = set(entry_ids) - set(empty_ids)
+
+        if remaining_ids:
+            SoftwareDictionary.objects.filter(id__in=remaining_ids).update(
+                updated_at=Now()
+            )
+
+        if empty_ids:
+            SoftwareDictionary.objects.filter(id__in=empty_ids).delete()
+
+    @classmethod
+    def _attach_asset_entries(cls, asset: InventoryBase, entries: List[Dict]) -> None:
+        """Attach an asset to the provided dictionary entries"""
+        created_count = 0
+        for entry in entries:
+            obj, created = SoftwareDictionary.objects.get_or_create(**entry)
+            obj.assets.add(asset)
+            if not created:
+                SoftwareDictionary.objects.filter(id=obj.id).update(updated_at=Now())
+            else:
+                created_count += 1
+
+        if entries:
+            logger.debug(
+                "Linked asset %s to %s dictionary entries (%s newly created)",
+                asset.id,
+                len(entries),
+                created_count,
+            )
 
     @classmethod
     def get_generation_mode(cls) -> str:
