@@ -15,7 +15,8 @@ class SoftwareDictionary(AbstractTask):
     def execute(self):
         if not SoftwareDictionaryService.should_refresh_on_automation():
             logger.info(
-                "Software dictionary set to refresh during inventory collection; skipping automation run"
+                "Software dictionary set to refresh during inventory "
+                "collection; skipping automation run"
             )
             return
 

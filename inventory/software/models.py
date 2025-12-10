@@ -5,16 +5,6 @@ from inventory.section.models import Section
 from inventory.template.models import Template
 
 
-SOFTWARE_FIELD_KEYS = (
-    "name",
-    "publisher",
-    "version",
-    "major_version",
-    "minor_version",
-    "patch_version",
-)
-
-
 class SoftwareMapping(models.Model):
     """map software fields to template fields"""
 
