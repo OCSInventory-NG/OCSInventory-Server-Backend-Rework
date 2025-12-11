@@ -9,37 +9,37 @@ from django.db import DatabaseError
 logger = logging.getLogger("mgmt.management.commands.AccountInfoGeneration")
 
 
-class AccountInfoGeneration(AbstractTask):
+class AdminDataGeneration(AbstractTask):
     """
-    Task to create missing AccountinfoData entries for assets. This task
+    Task to create missing admin data entries for assets. This task
     is intended to be run using the automation/scheduler module.
     """
 
     def execute(self):
         """
-        Find all assets without AccountinfoData and create entries for them
+        Find all assets without admin data and create entries for them
         """
         try:
-            logger.info("Starting AccountInfoGeneration task")
+            logger.info("Starting AdminDataGeneration task")
             if self.config_check():
-                logger.debug("Accountinfo generation is enabled in automation mode")
+                logger.debug("Admin data generation is enabled in automation mode")
                 assets = self.get_assets()
                 logger.debug(f"Found {assets.count()} assets to process")
                 self.generate_accountinfo(assets)
             else:
                 logger.warning(
-                    "Task skipped - accountinfo generation"
+                    "Task skipped - admin data generation"
                     " not enabled in automation mode"
                 )
         except Exception as e:
             logger.error(
-                f"Critical error in AccountInfoGeneration task: {e}", exc_info=True
+                f"Critical error in AdminDataGeneration task: {e}", exc_info=True
             )
             raise
 
     def config_check(self):
         """
-        Check if accountinfo generation is set to automation mode
+        Check if admin data generation is set to automation mode
         """
         try:
             server_conf = Config.objects.filter(name="server").first()
@@ -48,15 +48,15 @@ class AccountInfoGeneration(AbstractTask):
                 return False
 
             logger.debug(
-                "Checking server configuration for" " accountinfo generation settings"
+                "Checking server configuration for" " admin data generation settings"
             )
             for item in server_conf.value:
-                if item["name"] == "accountinfo_generation":
+                if item["name"] == "admin_data_generation":
                     mode = item["value"]
-                    logger.debug(f"Accountinfo generation mode: {mode}")
+                    logger.debug(f"Admin data generation mode: {mode}")
                     return mode == "automation"
 
-            logger.error("accountinfo_generation not found in config")
+            logger.error("admin_data_generation not found in config")
             return False
         except DatabaseError as e:
             logger.error(f"Database error while checking config: {e}", exc_info=True)
@@ -67,10 +67,10 @@ class AccountInfoGeneration(AbstractTask):
 
     def get_assets(self):
         """
-        Get all assets that need accountinfo generation
+        Get all assets that need admin data generation
         """
         try:
-            logger.debug("Fetching all assets for accountinfo generation")
+            logger.debug("Fetching all assets for admin data generation")
             assets = InventoryBase.objects.all()
             if not assets.exists():
                 logger.warning("No assets found in the database")
@@ -84,11 +84,11 @@ class AccountInfoGeneration(AbstractTask):
 
     def generate_accountinfo(self, assets):
         """
-        Generate accountinfo for the given assets
+        Generate admin data for the given assets
         """
         try:
             total_assets = assets.count()
-            logger.info(f"Starting accountinfo generation for {total_assets} assets")
+            logger.info(f"Starting admin data generation for {total_assets} assets")
             processed = 0
             failed = 0
 
@@ -103,23 +103,23 @@ class AccountInfoGeneration(AbstractTask):
                 except DatabaseError as e:
                     failed += 1
                     logger.error(
-                        f"Database error generating accountinfo"
+                        f"Database error generating admin data"
                         f" for asset {asset.id}: {e}",
                         exc_info=True,
                     )
                 except Exception as e:
                     failed += 1
                     logger.error(
-                        f"Error generating accountinfo for asset {asset.id}: {e}",
+                        f"Error generating admin data for asset {asset.id}: {e}",
                         exc_info=True,
                     )
 
             logger.info(
-                f"Accountinfo generation completed: {processed} succeeded,"
+                f"Admin data generation completed: {processed} succeeded,"
                 f" {failed} failed out of {total_assets} total assets"
             )
         except Exception as e:
             logger.error(
-                f"Critical error in accountinfo generation process: {e}", exc_info=True
+                f"Critical error in admin data generation process: {e}", exc_info=True
             )
             raise

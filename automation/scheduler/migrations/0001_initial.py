@@ -9,7 +9,7 @@ def create_default_automations(apps, schema_editor):
 
     Scheduler.objects.create(
         name="dynaGroups.DynaGroups",
-        description="Dynamic Groups Generation",
+        description="Dynamic groups generation",
         active=True,
         recurrence="daily",
         last_execution=None,
@@ -20,8 +20,8 @@ def create_default_automations(apps, schema_editor):
     )
 
     Scheduler.objects.create(
-        name="accountinfoGeneration.AccountInfoGeneration",
-        description="Account Info Generation",
+        name="adminDataGeneration.AdminDataGeneration",
+        description="Administrative data generation",
         active=True,
         recurrence="daily",
         last_execution=None,
@@ -33,7 +33,7 @@ def create_default_automations(apps, schema_editor):
 
     Scheduler.objects.create(
         name="purgeAgentLog.PurgeAgentLog",
-        description="Log Agent Purge",
+        description="Purge agent logs",
         active=True,
         recurrence="daily",
         last_execution=None,
@@ -45,7 +45,7 @@ def create_default_automations(apps, schema_editor):
 
     Scheduler.objects.create(
         name="mergeLegacy.MergeLegacy",
-        description="Merge Legacy Assets",
+        description="Merge legacy assets",
         active=True,
         recurrence="monthly",
         last_execution=None,
