@@ -79,12 +79,11 @@ class NetworkSerializer(ExpandableFieldsMixin, ModelSerializer):
             netdevices = validated_data.pop("netdevices")
             for device in netdevices:
                 try:
-                    netdevice = Netdevice.objects.get(ip=device["ip"], network=instance)
-                    netdevice.netname = device.get("netname", netdevice.netname)
-                    netdevice.mac = device.get("mac", netdevice.mac)
+                    netdevice = Netdevice.objects.get(ip=device.ip, network=instance)
+                    netdevice.netname = device.netname
+                    netdevice.mac = device.mac
                     netdevice.save()
                 except Netdevice.DoesNotExist:
                     device["network"] = instance
                     netdevice = Netdevice.objects.create(**device)
-
         return instance
