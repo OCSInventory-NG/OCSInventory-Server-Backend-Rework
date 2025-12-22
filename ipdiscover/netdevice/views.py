@@ -21,4 +21,4 @@ class NetdeviceViewSet(viewsets.OCSViewSet):
     model = Netdevice
     filter_backends = [SearchFilter, OrderingFilter]
     search_fields = ["ip", "netname", "mac", "last_seen"]
-    ordering_fields = ["ip", "netname", "mac", "network", "last_seen"]
+    ordering_fields = ["id", "ip", "netname", "mac", "network", "last_seen"]

@@ -34,6 +34,7 @@ class InventoryBaseViewSet(viewsets.OCSViewSet):
         "last_update",
     ]
     ordering_fields = [
+        "id",
         "name",
         "description",
         "serial",
