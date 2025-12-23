@@ -3,13 +3,14 @@ from accountinfo.serializers import AccountinfoDataSerializer
 from asset.inventory_base.models import InventoryBase
 from inventory.template.serializers import TemplateSerializer
 from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, SerializerMethodField
 
 
 class InventoryBaseSerializer(ExpandableFieldsMixin, ModelSerializer):
     """
     Serializer class for Base
     """
+    matched = SerializerMethodField()
 
     class Meta:
         """Define the linked model and the fields registered in the API"""
@@ -30,6 +31,7 @@ class InventoryBaseSerializer(ExpandableFieldsMixin, ModelSerializer):
             "template",
             "last_update",
             "is_template_forced",
+            "matched",
         ]
 
         expandable_fields = {
@@ -37,6 +39,10 @@ class InventoryBaseSerializer(ExpandableFieldsMixin, ModelSerializer):
         }
         extra_kwargs = {"last_update": {"read_only": True}}
         http_method_names = ["get", "post", "patch", "delete"]
+
+    def get_matched(self, obj):
+        match_map = self.context.get("match_map", {})
+        return match_map.get(obj.pk, {})
 
     def to_representation(self, instance):
         """
