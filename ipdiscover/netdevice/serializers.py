@@ -1,9 +1,9 @@
+from accountinfo.models import AccountinfoConfig, AccountinfoData, AccountinfoValue
+from accountinfo.serializers import AccountinfoDataSerializer
 from ipdiscover.netdevice.models import Netdevice
 from ipdiscover.network.serializers import NetworkSerializer
 from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
 from rest_framework.serializers import ModelSerializer
-from accountinfo.models import AccountinfoConfig, AccountinfoData, AccountinfoValue
-from accountinfo.serializers import AccountinfoDataSerializer
 
 
 class NetdeviceSerializer(ExpandableFieldsMixin, ModelSerializer):
