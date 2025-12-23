@@ -10,6 +10,7 @@ class InventoryBaseSerializer(ExpandableFieldsMixin, ModelSerializer):
     """
     Serializer class for Base
     """
+
     matched = SerializerMethodField()
 
     class Meta:

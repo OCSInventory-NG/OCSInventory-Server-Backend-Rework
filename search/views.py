@@ -1,4 +1,5 @@
 import logging
+from collections import defaultdict
 
 from accountinfo.models import AccountinfoData
 from asset.inventory_base.models import InventoryBase
@@ -6,11 +7,8 @@ from asset.inventory_base.serializers import InventoryBaseSerializer
 from asset.inventory_field.models import InventoryField
 from asset.inventory_section.models import InventorySection
 from asset.log.models import Log
-from collections import defaultdict
 from deployment.result.models import Result
-from django.core import serializers
 from django.db.models import Q
-from django.http import HttpResponse
 from inventory.field.models import Field
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
@@ -46,7 +44,7 @@ class SearchView(APIView):
         "results": "asset",
         "logs": "asset",
         "snmpscanner": "assets",
-        "inventory_sections": "base"
+        "inventory_sections": "base",
     }
 
     def process_search(self, data):
@@ -243,13 +241,19 @@ class SearchView(APIView):
 
         return rel_q
 
-
     def _build_match_map(self, inventory_ids, rel_q):
         """
         Returns {inventory_id: {"results":[...], "logs":[...], ...}}
         by making one query per relation (no N+1).
         """
-        match_map = defaultdict(lambda: {"results": [], "logs": [], "snmpscanner": [], "inventory_sections": []})
+        match_map = defaultdict(
+            lambda: {
+                "results": [],
+                "logs": [],
+                "snmpscanner": [],
+                "inventory_sections": [],
+            }
+        )
 
         for related, q in rel_q.items():
             model = self.RELATED_MODELS.get(related)
@@ -269,7 +273,9 @@ class SearchView(APIView):
                     if related == "inventory_sections":
                         fieldrow = {}
 
-                        qsf = InventoryField.objects.filter(inventory_section=row.get("id"))
+                        qsf = InventoryField.objects.filter(
+                            inventory_section=row.get("id")
+                        )
                         fvalues = list(qsf.values("template_field_id", "value"))
 
                         field_ids = [f["template_field_id"] for f in fvalues]
