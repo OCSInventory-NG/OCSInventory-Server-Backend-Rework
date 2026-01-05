@@ -2,7 +2,7 @@ from asset.inventory_base.models import InventoryBase
 from asset.inventory_base.serializers import InventoryBaseSerializer
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
-from rest_framework.filters import OrderingFilter, SearchFilter
+from rest_framework.filters import OrderingFilter
 
 
 class InventoryBaseViewSet(viewsets.OCSViewSet):
@@ -19,7 +19,7 @@ class InventoryBaseViewSet(viewsets.OCSViewSet):
     queryset = InventoryBase.objects.all()
     serializer_class = InventoryBaseSerializer
     model = InventoryBase
-    filter_backends = [SearchFilter, OrderingFilter]
+    
     search_fields = [
         "name",
         "description",
