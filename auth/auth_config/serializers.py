@@ -1,5 +1,6 @@
 from importlib import import_module
 
+from auth.auth_mapping.models import AuthMapping
 from auth.auth_mapping.serializers import AuthMappingSerializer
 from auth.auth_method.models import AuthMethod
 from django.db.models import F
@@ -191,16 +192,14 @@ class AuthConfigSerializer(ExpandableFieldsMixin, ModelSerializer):
         # custom validation
         validated_data = self.custom_validate(validated_data)
 
-        if "mappings" in validated_data.keys():
-            # If mappings are present
-            mappings = validated_data.pop("mappings")
-            parent = super().create(validated_data)
+        mappings_data = validated_data.pop("mappings", [])
 
-            for mapping in mappings:
-                mapping["auth_config"] = parent
-            self.fields["mappings"].create(mappings)
-        else:
-            parent = super().create(validated_data)
+        # Create the AuthConfig first
+        parent = super().create(validated_data)
+
+        # Create nested AuthMapping items manually (correct for ForeignKey)
+        for mapping in mappings_data:
+            AuthMapping.objects.create(auth_config=parent, **mapping)
 
         return parent
 
