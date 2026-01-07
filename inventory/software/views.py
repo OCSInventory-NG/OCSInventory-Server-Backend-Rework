@@ -5,6 +5,7 @@ from inventory.software.serializers import (
 )
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
+from rest_framework.filters import OrderingFilter, SearchFilter
 
 
 class SoftwareMappingViewSet(viewsets.OCSViewSet):
@@ -33,7 +34,24 @@ class SoftwareDictionaryViewSet(viewsets.OCSViewSet):
     queryset = SoftwareDictionary.objects.all()
     serializer_class = SoftwareDictionarySerializer
     model = SoftwareDictionary
-
+    filter_backends = [SearchFilter, OrderingFilter]
+    search_fields = [
+        "name",
+        "publisher",
+        "version",
+        "major_version",
+        "minor_version",
+        "patch_version",
+    ]
+    ordering_fields = [
+        "id",
+        "name",
+        "publisher",
+        "version",
+        "major_version",
+        "minor_version",
+        "patch_version",
+    ]
     filterset_fields = [
         "id",
         "name",
