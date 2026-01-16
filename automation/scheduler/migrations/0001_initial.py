@@ -78,7 +78,7 @@ def create_default_automations(apps, schema_editor):
         day_of_month=1,
         is_protected=True,
     )
-    
+
     Scheduler.objects.create(
         name="ipdiscoverScan.IpDiscoverScan",
         description="Scan networks for devices with IpDiscover",
