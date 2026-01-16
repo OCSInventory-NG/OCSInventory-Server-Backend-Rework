@@ -10,6 +10,7 @@ from asset.log.models import Log
 from deployment.result.models import Result
 from django.db.models import Q
 from inventory.field.models import Field
+from inventory.software.models import SoftwareDictionary
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
 from rest_framework.response import Response
@@ -38,6 +39,7 @@ class SearchView(APIView):
         "logs": Log,
         "snmpscanner": SnmpScanner,
         "inventory_sections": InventorySection,
+        "software_dictionary_entries": SoftwareDictionary,
     }
 
     RELATED_MODEL_FK = {
@@ -45,6 +47,7 @@ class SearchView(APIView):
         "logs": "asset",
         "snmpscanner": "assets",
         "inventory_sections": "base",
+        "software_dictionary_entries": "assets",
     }
 
     def process_search(self, data):
@@ -252,8 +255,14 @@ class SearchView(APIView):
                 "logs": [],
                 "snmpscanner": [],
                 "inventory_sections": [],
+                "software_dictionary_entries": [],
             }
         )
+
+        manyToMany = [
+            "snmpscanner",
+            "software_dictionary_entries"
+        ]
 
         for related, q in rel_q.items():
             model = self.RELATED_MODELS.get(related)
@@ -261,35 +270,49 @@ class SearchView(APIView):
                 continue
 
             fk = self.RELATED_MODEL_FK.get(related)
-            qs = model.objects.filter(
-                **{f"{fk}_id__in": inventory_ids},
-            ).filter(q)
+            if related in manyToMany:
+                qs = model.objects.filter(
+                    **{f"{fk}__in": inventory_ids},
+                ).filter(q)
 
-            values = list(qs.values())
-
-            for row in values:
-                inv_id = row.get(f"{fk}_id")
-                if inv_id is not None:
-                    if related == "inventory_sections":
-                        fieldrow = {}
-
-                        qsf = InventoryField.objects.filter(
-                            inventory_section=row.get("id")
-                        )
-                        fvalues = list(qsf.values("template_field_id", "value"))
-
-                        field_ids = [f["template_field_id"] for f in fvalues]
-                        fields = Field.objects.in_bulk(field_ids)
-
-                        for frow in fvalues:
-                            field = fields.get(frow["template_field_id"])
-                            if not field:
-                                continue
-
-                            fieldrow[field.name] = frow.get("value")
-                        match_map[inv_id][related].append(fieldrow)
-                    else:
+                for obj in qs:
+                    related_ids = getattr(obj, fk).values_list('id', flat=True)
+                    related_ids = [rid for rid in related_ids if rid in inventory_ids]
+                    
+                    row = {field.name: getattr(obj, field.name) for field in model._meta.fields}
+                    
+                    for inv_id in related_ids:
                         match_map[inv_id][related].append(row)
+            else:
+                qs = model.objects.filter(
+                    **{f"{fk}_id__in": inventory_ids},
+                ).filter(q)
+
+                values = list(qs.values())
+
+                for row in values:
+                    inv_id = row.get(f"{fk}_id")
+                    if inv_id is not None:
+                        if related == "inventory_sections":
+                            fieldrow = {}
+
+                            qsf = InventoryField.objects.filter(
+                                inventory_section=row.get("id")
+                            )
+                            fvalues = list(qsf.values("template_field_id", "value"))
+
+                            field_ids = [f["template_field_id"] for f in fvalues]
+                            fields = Field.objects.in_bulk(field_ids)
+
+                            for frow in fvalues:
+                                field = fields.get(frow["template_field_id"])
+                                if not field:
+                                    continue
+
+                                fieldrow[field.name] = frow.get("value")
+                            match_map[inv_id][related].append(fieldrow)
+                        else:
+                            match_map[inv_id][related].append(row)
 
         return match_map
 
