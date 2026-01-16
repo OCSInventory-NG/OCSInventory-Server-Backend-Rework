@@ -88,6 +88,7 @@ def create_default_automations(apps, schema_editor):
         hour="02:00",
         day_of_week=5,
         day_of_month=None,
+        is_protected=True,
     )
 
     Scheduler.objects.create(
