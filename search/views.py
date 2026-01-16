@@ -259,10 +259,7 @@ class SearchView(APIView):
             }
         )
 
-        manyToMany = [
-            "snmpscanner",
-            "software_dictionary_entries"
-        ]
+        manyToMany = ["snmpscanner", "software_dictionary_entries"]
 
         for related, q in rel_q.items():
             model = self.RELATED_MODELS.get(related)
@@ -276,11 +273,14 @@ class SearchView(APIView):
                 ).filter(q)
 
                 for obj in qs:
-                    related_ids = getattr(obj, fk).values_list('id', flat=True)
+                    related_ids = getattr(obj, fk).values_list("id", flat=True)
                     related_ids = [rid for rid in related_ids if rid in inventory_ids]
-                    
-                    row = {field.name: getattr(obj, field.name) for field in model._meta.fields}
-                    
+
+                    row = {
+                        field.name: getattr(obj, field.name)
+                        for field in model._meta.fields
+                    }
+
                     for inv_id in related_ids:
                         match_map[inv_id][related].append(row)
             else:
