@@ -88,6 +88,19 @@ def create_default_automations(apps, schema_editor):
         hour="02:00",
         day_of_week=5,
         day_of_month=None,
+        is_protected=True,
+    )
+
+    Scheduler.objects.create(
+        name="softwareDictionary.SoftwareDictionary",
+        description="Synchronize software dictionary entries",
+        active=True,
+        recurrence="daily",
+        last_execution=None,
+        hour="02:00",
+        day_of_week=None,
+        day_of_month=None,
+        is_protected=True,
     )
 
 
