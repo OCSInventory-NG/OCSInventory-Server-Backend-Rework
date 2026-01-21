@@ -17,7 +17,11 @@ class AgentConfigViewSet(viewsets.OCSViewSet):
     # Need to have permissions to consult
     permission_classes = [DefaultModelPermissions]
     queryset = Config.objects.all()
+    serializer_class = ConfigSerializer
+    filterset_fields = ["name"]
+
     allowed_methods = ["GET"]
+
 
     def list(self, request, *args, **kwargs):
         queryset = self.queryset.filter(name__in=["agent", "deployment"])

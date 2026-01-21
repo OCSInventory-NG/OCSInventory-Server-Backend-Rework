@@ -3,8 +3,9 @@ from automation.rule.serializers import ActionSerializer, RuleSerializer
 from django.apps import apps
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
-from rest_framework import status
+from rest_framework import serializers, status
 from rest_framework.response import Response
+from api_docs import extend_schema, inline_serializer, OpenApiTypes
 
 
 class RuleViewSet(viewsets.OCSViewSet):
@@ -62,6 +63,17 @@ class TriggerViewSet(viewsets.OCSViewSet):
         }
     }
 
+    @extend_schema(responses={
+        200: inline_serializer(
+            name='TriggerResponse',
+            fields={
+                'trigger': serializers.CharField(),
+                'model_name': serializers.CharField(),
+                'action_targets': serializers.ListField(),
+            },
+            many=True,
+        )
+    })
     def list(self, request, *args, **kwargs):
         """List all the triggers and the related models"""
         trigger_data = []

@@ -36,6 +36,7 @@ class CollectionView(APIView):
     """
 
     permission_classes = []
+    serializer_class = InventoryBaseSerializer
 
     LOGGER = logging.getLogger(__name__)
 
@@ -252,6 +253,7 @@ class CollectionView(APIView):
         try:
             asset_serializer = InventoryBaseSerializer(data=data)
             if asset_serializer.is_valid(raise_exception=True):
+                template_inventory = asset_serializer.validated_data.pop("template_inventory")
                 asset_instance = asset_serializer.save()
                 templateId = (
                     asset_instance.template_id if asset_instance.template else None
@@ -295,8 +297,8 @@ class CollectionView(APIView):
         }
 
         # handle template inventory if present
-        if "template_inventory" in data:
-            sections_array = data.pop("template_inventory")
+        if template_inventory:
+            sections_array = template_inventory
 
             sections_to_create = []
             fields_to_create = []
@@ -436,6 +438,7 @@ class CollectionView(APIView):
             # update asset
             asset_serializer = InventoryBaseSerializer(asset_instance, data=data)
             if asset_serializer.is_valid(raise_exception=True):
+                template_inventory = asset_serializer.validated_data.pop("template_inventory")
                 asset_instance = asset_serializer.save()
         except ValidationError as ve:
             self.LOGGER.error(
@@ -456,8 +459,8 @@ class CollectionView(APIView):
         }
 
         # handle template inventory if present
-        if "template_inventory" in data:
-            sections_array = data.pop("template_inventory")
+        if template_inventory:
+            sections_array = template_inventory
 
             # delete existing sections and fields
             InventorySection.objects.filter(base=asset_instance).delete()
@@ -595,6 +598,7 @@ class CollectionView(APIView):
             # update asset
             asset_serializer = InventoryBaseSerializer(asset_instance, data=data)
             if asset_serializer.is_valid(raise_exception=True):
+                template_inventory = asset_serializer.validated_data.pop("template_inventory")
                 asset_instance = asset_serializer.save()
         except ValidationError as ve:
             self.LOGGER.error(
@@ -617,8 +621,8 @@ class CollectionView(APIView):
             for section in section_objs
         }
 
-        if "template_inventory" in data:
-            sections_array = data.pop("template_inventory")
+        if template_inventory:
+            sections_array = template_inventory
 
             new_sections = []
             new_fields = []
