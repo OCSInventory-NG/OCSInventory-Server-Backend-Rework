@@ -6,11 +6,11 @@ from ipdiscover.netdevice.models import Netdevice
 from ipdiscover.network.models import Network
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
-from rest_framework import status
+from rest_framework import serializers, status
 from rest_framework.decorators import action
 from rest_framework.exceptions import APIException
 from rest_framework.response import Response
-
+from api_docs import extend_schema, inline_serializer, OpenApiTypes
 
 class DashboardChartViewSet(viewsets.OCSViewSet):
     """
@@ -18,10 +18,38 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
     """
 
     permission_classes = [DefaultModelPermissions]
-    allowed_methods = ["get"]
     queryset = InventoryBase.objects.all()
     serializer_class = None
 
+    allowed_methods = ["GET"]
+
+    TOTAL_RESPONSE_SCHEMA = inline_serializer(
+        name='TotalResponse',
+        fields={
+            'total': serializers.IntegerField(),
+            'contacted': serializers.IntegerField(),
+        }
+    )
+
+    COUNT_RESPONSE_SCHEMA = inline_serializer(
+        name='CountResponse',
+        fields={
+            'total': serializers.IntegerField(),
+        }
+    )
+
+    @extend_schema(responses={
+        200: inline_serializer(
+            name='ChartDefinition',
+            fields={
+                'category': serializers.CharField(),
+                'name': serializers.CharField(),
+                'description': serializers.CharField(),
+                'charttype': serializers.CharField(),
+            },
+            many=True
+        )
+    })
     def list(self, request):
         """
         Return the list of available charts.
@@ -97,6 +125,7 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
 
         return Response(data, status=status.HTTP_200_OK)
 
+    @extend_schema(responses={200: TOTAL_RESPONSE_SCHEMA})
     @action(detail=False, methods=["get"], url_path="total_ALL")
     def return_total_all(self, request):
         try:
@@ -109,6 +138,7 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
                 {"error": msg}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
+    @extend_schema(responses={200: TOTAL_RESPONSE_SCHEMA})
     @action(detail=False, methods=["get"], url_path="total_WIN")
     def return_total_win(self, request):
         try:
@@ -121,6 +151,7 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
                 {"error": msg}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
+    @extend_schema(responses={200: TOTAL_RESPONSE_SCHEMA})
     @action(detail=False, methods=["get"], url_path="total_LIN")
     def return_total_lin(self, request):
         try:
@@ -133,6 +164,7 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
                 {"error": msg}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
+    @extend_schema(responses={200: TOTAL_RESPONSE_SCHEMA})
     @action(detail=False, methods=["get"], url_path="total_MAC")
     def return_total_mac(self, request):
         try:
@@ -145,6 +177,7 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
                 {"error": msg}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
+    @extend_schema(responses={200: TOTAL_RESPONSE_SCHEMA})
     @action(detail=False, methods=["get"], url_path="total_LEG")
     def return_total_leg(self, request):
         try:
@@ -157,6 +190,7 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
                 {"error": msg}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
+    @extend_schema(responses={200: TOTAL_RESPONSE_SCHEMA})
     @action(detail=False, methods=["get"], url_path="total_SNMP")
     def return_total_snmp(self, request):
         try:
@@ -169,6 +203,7 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
                 {"error": msg}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
+    @extend_schema(responses={200: COUNT_RESPONSE_SCHEMA})
     @action(detail=False, methods=["get"], url_path="nb_netdevices")
     def return_nb_netdevices(self, request):
         try:
@@ -182,6 +217,7 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
                 {"error": msg}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
+    @extend_schema(responses={200: COUNT_RESPONSE_SCHEMA})
     @action(detail=False, methods=["get"], url_path="nb_networks")
     def return_nb_networks(self, request):
         try:
@@ -195,6 +231,7 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
                 {"error": msg}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
+    @extend_schema(responses={200: TOTAL_RESPONSE_SCHEMA})
     def get_total(self, os_template):
         """
         Return the total count of devices per OS family
@@ -240,6 +277,15 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
                 {"error": msg}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
+    @extend_schema(responses={
+        200: inline_serializer(
+            name='OsCountResponse',
+            fields={
+                'options': serializers.DictField(),
+                'series': serializers.ListField(child=serializers.IntegerField())
+            }
+        )
+    })
     @action(detail=False, methods=["get"], url_path="oscount")
     def get_os(self, request):
         """
@@ -269,6 +315,15 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
                 {"error": msg}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
+    @extend_schema(responses={
+        200: inline_serializer(
+            name='LastContactedCountResponse',
+            fields={
+                'options': serializers.DictField(),
+                'series': serializers.ListField()
+            }
+        )
+    })
     @action(detail=False, methods=["get"], url_path="lastcontacted")
     def get_last_contacted(self, request):
         """
@@ -312,6 +367,15 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
                 {"error": msg}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
+    @extend_schema(responses={
+        200: inline_serializer(
+            name='DevicesPerNetworkCountResponse',
+            fields={
+                'options': serializers.DictField(),
+                'series': serializers.ListField()
+            }
+        )
+    })
     @action(detail=False, methods=["get"], url_path="networks")
     def get_devices_per_network(self, request):
         """

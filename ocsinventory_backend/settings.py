@@ -81,6 +81,7 @@ INSTALLED_APPS = [
     "search.apps.SearchConfig",
     "django_cas_ng",
     "filemanager.apps.FileManagerConfig",
+    "drf_spectacular",
 ]
 
 MIDDLEWARE = [
@@ -213,6 +214,7 @@ REST_FRAMEWORK = {
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
     "DATETIME_FORMAT": "%Y-%m-%dT%H:%M:%S%z",
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 # CORS Allow all during dev
@@ -297,4 +299,33 @@ OCS_CUSTOM_AUTH_BACKENDS = {
     "CAS": "auth.auth_backend.cas_backend.CustomCASBackend",
     "LDAP": "auth.auth_backend.ldap_backend.CustomLDAPBackend",
     "OIDC": "auth.auth_backend.oidc_backend.CustomOIDCBackend",
+}
+
+# Schema settings
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'OCS Inventory API',
+    'DESCRIPTION': 'Description détaillée',
+    'VERSION': '1.0.0',
+    'COMPONENT_SPLIT_REQUEST': True,
+
+    'SERVERS': [
+        {
+            'url': '{protocol}://{host}:{port}',
+            'variables': {
+                'protocol': {
+                    'default': 'http',
+                    'enum': ['http', 'https'],
+                    'description': 'Protocole'
+                },
+                'host': {
+                    'default': 'localhost',
+                    'description': 'Adresse IP ou Nom de domaine'
+                },
+                'port': {
+                    'default': '8000',
+                    'description': 'Port du serveur'
+                },
+            }
+        }
+    ],
 }

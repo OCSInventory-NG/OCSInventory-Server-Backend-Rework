@@ -26,6 +26,7 @@ class LegacyView(APIView):
     """
 
     permission_classes = []
+    serializer_class = InventoryBaseSerializer
 
     LOGGER = logging.getLogger(__name__)
 

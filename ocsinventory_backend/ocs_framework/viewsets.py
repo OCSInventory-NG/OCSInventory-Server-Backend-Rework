@@ -4,11 +4,12 @@ from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, status, viewsets
 from rest_framework.response import Response
-
+from api_docs import extend_schema, OpenApiTypes
 
 class ApiCheckViewSet(viewsets.ModelViewSet):
     permission_classes = []
 
+    @extend_schema(request=None, responses={200: OpenApiTypes.OBJECT})
     def api_check(self, request, *args, **kwargs):
         return Response(
             {
