@@ -1358,6 +1358,19 @@ def create_default_macos_fields(apps, schema_editor):
             ),
         },
         {
+            "name": "PATCH",
+            "retrieval_value": "Version:\\s+\\d+\\.\\d+\\.(\\d+)",
+            "override_target": False,
+            "new_target": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
+            "options": {},
+            "section": apps.get_model("section", "Section").objects.get(
+                name="SOFTWARES",
+                template=apps.get_model("template", "Template").objects.get(os="MAC"),
+            ),
+        },
+        {
             "name": "NAME",
             "retrieval_value": "\\n[ \\t]{4}(?![ \\t])([^:\\n]+):",
             "override_target": False,
