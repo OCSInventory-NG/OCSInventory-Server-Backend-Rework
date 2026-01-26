@@ -137,7 +137,7 @@ def create_redhat_linux_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrieval_value": "Repo-name\s*:\s*(.*)",
+            "retrieval_value": "name",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -150,7 +150,7 @@ def create_redhat_linux_fields(apps, schema_editor):
         },
         {
             "name": "BASE URL",
-            "retrieval_value": "Repo-baseurl\s*:\s*([^\s]+)",
+            "retrieval_value": "base_url",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
