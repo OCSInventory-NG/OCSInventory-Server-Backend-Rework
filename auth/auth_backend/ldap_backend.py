@@ -1,7 +1,9 @@
+import logging
+
+import ldap
+from django.contrib.auth.models import Group
 from django_auth_ldap.backend import LDAPBackend
 from django_auth_ldap.config import LDAPSearch
-import ldap
-import logging
 
 from auth.auth_config.models import AuthConfig
 from auth.auth_mapping.models import AuthMapping
@@ -32,7 +34,9 @@ class CustomLDAPBackend(LDAPBackend):
                 self.settings.SERVER_URI = config.config["SERVER_URI"]
                 self.settings.BIND_DN = config.config["BIND_DN"]
                 self.settings.BIND_PASSWORD = config.config["BIND_PASSWORD"]
-                self.settings.MIRROR_GROUPS = config.config['MIRROR_GROUPS']
+                mirror_groups_enabled = bool(config.config.get("MIRROR_GROUPS"))
+                # we mirror groups from memberOf
+                self.settings.MIRROR_GROUPS = False
 
                 self.settings.USER_SEARCH = LDAPSearch(
                     config.config['BASE_DN'],
@@ -52,6 +56,8 @@ class CustomLDAPBackend(LDAPBackend):
                                                 **kwargs)
 
                 if user:
+                    if mirror_groups_enabled:
+                        self._mirror_memberof_groups(user)
                     return user
 
         except Exception as e:
@@ -76,3 +82,88 @@ class CustomLDAPBackend(LDAPBackend):
         """
         return ['SERVER_URI', 'BIND_DN', 'BIND_PASSWORD', 'BASE_DN',
                 'USER_LOGIN_FIELD', 'PROTOCOL_VERSION', 'MIRROR_GROUPS']
+
+    def _mirror_memberof_groups(self, user):
+        ldap_user = getattr(user, "ldap_user", None)
+        if ldap_user is None:
+            self.logger.warning(
+                "LDAP user data not available for %s; skipping group mirroring",
+                user.get_username(),
+            )
+            return
+
+        attrs = getattr(ldap_user, "attrs", None)
+        if attrs is None:
+            self.logger.warning(
+                "LDAP attributes not available for %s; skipping group mirroring",
+                user.get_username(),
+            )
+            return
+
+        found, member_of = self._get_memberof_attr(attrs)
+        if not found:
+            return
+
+        if not member_of:
+            user.groups.clear()
+            return
+
+        group_names = self._memberof_to_group_names(member_of)
+        if not group_names:
+            user.groups.clear()
+            return
+
+        groups = self._get_or_create_groups(group_names)
+        user.groups.set(groups)
+
+    @staticmethod
+    def _get_memberof_attr(attrs):
+        if "memberOf" in attrs:
+            return True, attrs.get("memberOf")
+        for key, value in attrs.items():
+            if isinstance(key, bytes):
+                key = key.decode("utf-8", errors="ignore")
+            if str(key).lower() == "memberof":
+                return True, value
+        return False, None
+
+    @staticmethod
+    def _memberof_to_group_names(member_of):
+        if isinstance(member_of, (bytes, str)):
+            values = [member_of]
+        else:
+            values = list(member_of)
+
+        group_names = set()
+        for value in values:
+            name = CustomLDAPBackend._group_name_from_memberof(value)
+            if name:
+                group_names.add(name)
+
+        return sorted(group_names)
+
+    @staticmethod
+    def _group_name_from_memberof(value):
+        if isinstance(value, bytes):
+            value = value.decode("utf-8", errors="ignore")
+        value = str(value).strip()
+        if not value:
+            return None
+
+        if "=" in value:
+            try:
+                parts = ldap.dn.explode_dn(value, notypes=1)
+            except ldap.LDAPError:
+                return None
+            if parts:
+                return parts[0].strip()
+
+        return value
+
+    @staticmethod
+    def _get_or_create_groups(group_names):
+        groups = []
+        for name in group_names:
+            group, _ = Group.objects.get_or_create(name=name)
+            groups.append(group)
+        return groups
