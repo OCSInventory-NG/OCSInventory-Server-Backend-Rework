@@ -42,8 +42,7 @@ class AccountinfoConfig(models.Model):
 
         constraints = [
             models.UniqueConstraint(
-                fields=["name", "datatarget"],
-                name="unique_accountinfo"
+                fields=["name", "datatarget"], name="unique_accountinfo"
             )
         ]
 
