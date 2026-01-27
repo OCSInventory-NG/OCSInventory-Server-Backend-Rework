@@ -28,7 +28,7 @@ class AccountinfoConfig(models.Model):
         ("IPDISCOVER", "IPDiscover"),
     )
 
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100)
     description = models.CharField(max_length=512)
 
     datatype = models.CharField(max_length=10, choices=ACC_TYPE_CHOICES, default="TEXT")
@@ -36,6 +36,16 @@ class AccountinfoConfig(models.Model):
     datatarget = models.CharField(
         max_length=10, choices=ACC_TARGET_CHOICES, default="ASSET"
     )
+
+    class Meta:
+        """Define unique constraints"""
+
+        constraints = [
+            models.UniqueConstraint(
+                fields=["name", "datatarget"],
+                name="unique_accountinfo"
+            )
+        ]
 
     def delete(self, *args, **kwargs):
         """Override delete to reflect the change in accountdata"""
