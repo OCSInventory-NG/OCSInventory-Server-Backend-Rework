@@ -121,5 +121,4 @@ class CustomOIDCBackend(OIDCAuthenticationBackend):
         """
         return ['AUTHORIZATION_ENDPOINT', 'TOKEN_ENDPOINT', 'USERINFO_ENDPOINT',
                 'JWKS_ENDPOINT', 'CLIENT_ID', 'CLIENT_SECRET', 'SIGN_ALGO', 'SCOPES',
-                'VERIFY_SSL', 'PROXY', 'ALLOW_UNSECURE_JWT', 'CERTIFICATE',
-                'AUTO_REDIRECT']
+                'PROXY', 'AUTO_REDIRECT']
