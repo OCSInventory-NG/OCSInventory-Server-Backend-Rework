@@ -29,6 +29,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG")
+FRONTEND_REDIRECT = os.getenv("FRONTEND_REDIRECT")
 
 ALLOWED_HOSTS = ["*"]
 
