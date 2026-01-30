@@ -1514,7 +1514,7 @@ def create_default_windows_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "MAJOR VERSION",
+            "name": "MAJOR",
             "retrieval_value": "VersionMajor",
             "override_target": False,
             "new_target": None,
@@ -1527,8 +1527,21 @@ def create_default_windows_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "MINOR VERSION",
+            "name": "MINOR",
             "retrieval_value": "VersionMinor",
+            "override_target": False,
+            "new_target": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
+            "options": {},
+            "section": apps.get_model("section", "Section").objects.get(
+                name="SOFTWARES",
+                template=apps.get_model("template", "Template").objects.get(os="WIN"),
+            ),
+        },
+        {
+            "name": "PATCH",
+            "retrieval_value": "VersionPatch",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,

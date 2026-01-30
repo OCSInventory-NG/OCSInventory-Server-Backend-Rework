@@ -291,6 +291,19 @@ def create_debian_linux_fields(apps, schema_editor):
                 template=apps.get_model("template", "Template").objects.get(os="DEB"),
             ),
         },
+        {
+            "name": "PATCH",
+            "retrieval_value": "Patch:\\r*(.*)",
+            "override_target": False,
+            "new_target": None,
+            "retrieval_method": None,
+            "retrieval_output": None,
+            "options": {},
+            "section": apps.get_model("section", "Section").objects.get(
+                name="SOFTWARES",
+                template=apps.get_model("template", "Template").objects.get(os="DEB"),
+            ),
+        },
     ]
 
     Field = apps.get_model("field", "Field")
