@@ -1,14 +1,16 @@
 import logging
 from typing import Any
-from urllib.parse import quote, urlencode
+from urllib.parse import parse_qsl, quote, urlencode, urlsplit, urlunsplit
 
 from auth.auth_backend.cas_backend import CustomCASBackend
 from auth.auth_backend.oidc_backend import CustomOIDCBackend
 from auth.auth_config.models import AuthConfig
 from auth.auth_method.models import AuthMethod
+from django.conf import settings
 from django.contrib.auth import login
 from django.contrib.auth.signals import user_logged_in
 from django.http import HttpResponseRedirect, JsonResponse
+from django.urls import reverse
 from django.views import View
 from rest_framework.authtoken.models import Token
 
@@ -46,6 +48,18 @@ class BaseAuthView(View):
 
         elif len(self.auth_methods) == 0:
             self.logger.debug("No SSO authentication method enabled")
+
+    def _build_frontend_redirect(self, token=None):
+        frontend_redirect = settings.FRONTEND_REDIRECT
+        if not frontend_redirect:
+            return None
+        parts = urlsplit(frontend_redirect)
+        fragment = parts.fragment
+        if token:
+            fragment_params = dict(parse_qsl(fragment, keep_blank_values=True))
+            fragment_params["token_authentication"] = token
+            fragment = urlencode(fragment_params)
+        return urlunsplit((parts.scheme, parts.netloc, parts.path, parts.query, fragment))
 
     def get(self, request, *args, **kwargs):
         """
@@ -92,23 +106,20 @@ class LoginView(BaseAuthView):
             self.current_auth_config.config["SERVER_URL"]
             + self.current_auth_config.config["LOGIN_ROUTE"]
         )
-
-        # we are not passing the service url bc redirection needs to happen on the
-        # frontend
-        redirect_url = cas_login_url + "?service="
+        service_url = request.build_absolute_uri(reverse("callback"))
+        redirect_url = cas_login_url + "?service=" + service_url
 
         return redirect_url
 
     def oidc_login(self, request):
         """Redirect to OIDC login page"""
+        redirect_uri = request.build_absolute_uri(reverse("callback"))
         params = {
             "response_type": "code",
             "client_id": self.current_auth_config.config["CLIENT_ID"],
             "state": None,
             "scope": self.current_auth_config.config["SCOPES"],
-            # we are not passing the service url bc redirection needs to happen on the
-            # frontend
-            "redirect_uri": "",
+            "redirect_uri": redirect_uri,
         }
         query = urlencode(params, quote_via=quote)
 
@@ -149,16 +160,22 @@ class CallbackView(BaseAuthView):
             # sending the user_logged_in signal manually
             user_logged_in.send(sender=user.__class__, request=request, user=user)
             # Include the token in the response
+            redirect_url = self._build_frontend_redirect(token.key)
+            if redirect_url:
+                return HttpResponseRedirect(redirect_url)
             return JsonResponse({"token_authentication": token.key})
 
         else:
+            redirect_url = self._build_frontend_redirect()
+            if redirect_url:
+                return HttpResponseRedirect(redirect_url)
             return HttpResponseRedirect("/")
 
     def oidc_callback(self, request):
         """Handle OIDC callback requests"""
         customOIDCBackend = CustomOIDCBackend()
+        user = None
         user = customOIDCBackend.authenticate(request)
-
         if user is not None:
             login(request, user)
             # Generate a token for the user
@@ -166,7 +183,13 @@ class CallbackView(BaseAuthView):
             # sending the user_logged_in signal manually
             user_logged_in.send(sender=user.__class__, request=request, user=user)
             # Include the token in the response
+            redirect_url = self._build_frontend_redirect(token.key)
+            if redirect_url:
+                return HttpResponseRedirect(redirect_url)
             return JsonResponse({"token_authentication": token.key})
 
         else:
+            redirect_url = self._build_frontend_redirect()
+            if redirect_url:
+                return HttpResponseRedirect(redirect_url)
             return HttpResponseRedirect("/")
