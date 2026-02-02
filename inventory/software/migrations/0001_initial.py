@@ -9,9 +9,9 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('field', '0008_debian_linux'),
-        ('section', '0008_debian_linux'),
-        ('template', '0001_initial'),
+        ("field", "0008_debian_linux"),
+        ("section", "0008_debian_linux"),
+        ("template", "0001_initial"),
     ]
 
     operations = [
