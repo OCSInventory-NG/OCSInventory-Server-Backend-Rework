@@ -9,10 +9,9 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("field", "0009_alter_field_options_alter_field_retrieval_value_and_more"),
-        ("inventory_base", "0001_initial"),
-        ("section", "0009_alter_section_template"),
-        ("template", "0001_initial"),
+        ('field', '0008_debian_linux'),
+        ('section', '0008_debian_linux'),
+        ('template', '0001_initial'),
     ]
 
     operations = [
