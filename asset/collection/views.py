@@ -260,7 +260,7 @@ class CollectionView(APIView):
                 server_conf = Config.objects.filter(name="server").first()
                 accountinfo_gen = None
                 for item in server_conf.value:
-                    if item["name"] == "accountinfo_generation":
+                    if item["name"] == "admin_data_generation":
                         accountinfo_gen = item
                         break
 

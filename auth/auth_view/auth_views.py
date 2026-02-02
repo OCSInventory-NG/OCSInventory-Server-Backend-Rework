@@ -59,7 +59,9 @@ class BaseAuthView(View):
             fragment_params = dict(parse_qsl(fragment, keep_blank_values=True))
             fragment_params["token_authentication"] = token
             fragment = urlencode(fragment_params)
-        return urlunsplit((parts.scheme, parts.netloc, parts.path, parts.query, fragment))
+        return urlunsplit(
+            (parts.scheme, parts.netloc, parts.path, parts.query, fragment)
+        )
 
     def get(self, request, *args, **kwargs):
         """
