@@ -1,9 +1,9 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from ipdiscover.netdevice.models import Netdevice
 from ipdiscover.netdevice.serializers import NetdeviceSerializer
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
 from rest_framework.filters import OrderingFilter, SearchFilter
-from django_filters.rest_framework import DjangoFilterBackend
 
 
 class NetdeviceViewSet(viewsets.OCSViewSet):
