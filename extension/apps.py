@@ -15,6 +15,7 @@ class ExtensionConfig(AppConfig):
 
     def ready(self):
         from .sync import sync_extensions_from_filesystem
+
         post_migrate.connect(
             lambda **kwargs: sync_extensions_from_filesystem(),
             sender=self,

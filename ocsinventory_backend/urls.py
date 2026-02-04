@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-import os
+import sys
 
 from accountinfo.routers import AccountinfoRouter
 from asset.agent_config.routers import AgentConfigRouter
@@ -65,8 +65,6 @@ from search.views import SearchView
 from snmp.scanner.routers import SnmpScannerRouter
 from snmp.snmp_config.routers import SnmpConfigRouter
 from user.routers import UserRouter
-
-import sys
 
 # Routers provide a way of automatically determining the URL conf.
 defaultRouter = DefaultRouter()
@@ -228,19 +226,26 @@ urlpatterns = [
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
+
 def _should_skip_dynamic_extension_urls():
     # avoid DB access during certain commands
-    return any(cmd in sys.argv for cmd in ["migrate", "makemigrations", "collectstatic", "test"])
+    return any(
+        cmd in sys.argv
+        for cmd in ["migrate", "makemigrations", "collectstatic", "test"]
+    )
+
 
 if not _should_skip_dynamic_extension_urls():
     try:
-        from extension.models import Extension
         from django.db.utils import OperationalError, ProgrammingError
+        from extension.models import Extension
 
         for ext in Extension.objects.filter(enabled=True):
             app_path = f"extensions.{ext.django_app}" or f"extensions.{ext.name}"
             try:
-                urlpatterns.append(path(f"{ext.django_app}/", include(f"{app_path}.urls")))
+                urlpatterns.append(
+                    path(f"{ext.django_app}/", include(f"{app_path}.urls"))
+                )
             except ModuleNotFoundError:
                 continue
 
