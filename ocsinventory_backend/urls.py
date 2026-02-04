@@ -241,7 +241,6 @@ if not _should_skip_dynamic_extension_urls():
             app_path = f"extensions.{ext.django_app}" or f"extensions.{ext.name}"
             try:
                 urlpatterns.append(path(f"{ext.django_app}/", include(f"{app_path}.urls")))
-                print(urlpatterns)
             except ModuleNotFoundError:
                 continue
 
