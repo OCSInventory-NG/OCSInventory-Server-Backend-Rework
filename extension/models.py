@@ -11,8 +11,9 @@ class Extension(models.Model):
     - Author
     - Enabled
     """
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     description = models.CharField(max_length=255, null=True, blank=True)
-    version = models.CharField(max_length=255)
+    version = models.CharField(max_length=255, default="0.0.0")
     author = models.CharField(max_length=255, null=True, blank=True)
     enabled = models.BooleanField(default=False)
+    django_app = models.CharField(max_length=255, default="", blank=True)

@@ -11,4 +11,4 @@ class ExtensionSerializer(ExpandableFieldsMixin, ModelSerializer):
         """Define the linked model and the fields registered in the API"""
 
         model = Extension
-        fields = ["id", "name", "description", "version", "author", "enabled"]
+        fields = ["id", "name", "description", "version", "author", "enabled", "django_app"]

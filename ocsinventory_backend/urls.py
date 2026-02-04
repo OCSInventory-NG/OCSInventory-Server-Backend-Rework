@@ -64,7 +64,7 @@ from snmp.scanner.routers import SnmpScannerRouter
 from snmp.snmp_config.routers import SnmpConfigRouter
 from user.routers import UserRouter
 
-import os
+import sys
 
 # Routers provide a way of automatically determining the URL conf.
 defaultRouter = DefaultRouter()
@@ -226,8 +226,24 @@ urlpatterns = [
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-for extension in os.listdir("extensions"):
+def _should_skip_dynamic_extension_urls():
+    # avoid DB access during certain commands
+    return any(cmd in sys.argv for cmd in ["migrate", "makemigrations", "collectstatic", "test"])
+
+if not _should_skip_dynamic_extension_urls():
     try:
-        urlpatterns.append(path(f"{extension}/", include(f"extensions.{extension}.urls")))
-    except ModuleNotFoundError:
-        continue
+        from extension.models import Extension
+        from django.db.utils import OperationalError, ProgrammingError
+
+        for ext in Extension.objects.filter(enabled=True):
+            app_path = f"extensions.{ext.django_app}" or f"extensions.{ext.name}"
+            try:
+                urlpatterns.append(path(f"{ext.django_app}/", include(f"{app_path}.urls")))
+                print(urlpatterns)
+            except ModuleNotFoundError:
+                continue
+
+    except (OperationalError, ProgrammingError):
+        pass
+
+

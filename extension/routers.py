@@ -18,5 +18,5 @@ class ExtensionRouter:
         Returns:
             [DefaultRouter]: Updated router with app's dedicated routes
         """
-        defaultRouter.register(r"extension", ExtensionViewSet)
+        defaultRouter.register(r"extensions", ExtensionViewSet)
         return defaultRouter
