@@ -40,6 +40,7 @@ from django.conf.urls.static import static
 
 # Base import to get API Working
 from django.urls import include, path
+from extension.routers import ExtensionRouter
 from filemanager.routers import FileManagerRouter
 from group.routers import GroupRouter
 from inventory.category.routers import CategoryRouter
@@ -62,6 +63,8 @@ from search.views import SearchView
 from snmp.scanner.routers import SnmpScannerRouter
 from snmp.snmp_config.routers import SnmpConfigRouter
 from user.routers import UserRouter
+
+import os
 
 # Routers provide a way of automatically determining the URL conf.
 defaultRouter = DefaultRouter()
@@ -203,6 +206,10 @@ dashboardChartRouter = dashboardChartRouter.defineRoutes(defaultRouter)
 fileManagerRouter = FileManagerRouter()
 fileManagerRouter = fileManagerRouter.defineRoutes(defaultRouter)
 
+# Add Extension declaration
+extensionRouter = ExtensionRouter()
+extensionRouter = extensionRouter.defineRoutes(defaultRouter)
+
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
@@ -218,3 +225,9 @@ urlpatterns = [
     path("callback/", CallbackView.as_view(), name="callback"),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+for extension in os.listdir("extensions"):
+    try:
+        urlpatterns.append(path(f"{extension}/", include(f"extensions.{extension}.urls")))
+    except ModuleNotFoundError:
+        continue
