@@ -14,6 +14,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
+import os
+
 from accountinfo.routers import AccountinfoRouter
 from asset.agent_config.routers import AgentConfigRouter
 from asset.asset_group.routers import AssetGroupRouter
@@ -63,8 +65,6 @@ from search.views import SearchView
 from snmp.scanner.routers import SnmpScannerRouter
 from snmp.snmp_config.routers import SnmpConfigRouter
 from user.routers import UserRouter
-
-import os
 
 # Routers provide a way of automatically determining the URL conf.
 defaultRouter = DefaultRouter()
@@ -228,6 +228,8 @@ urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 for extension in os.listdir("extensions"):
     try:
-        urlpatterns.append(path(f"{extension}/", include(f"extensions.{extension}.urls")))
+        urlpatterns.append(
+            path(f"{extension}/", include(f"extensions.{extension}.urls"))
+        )
     except ModuleNotFoundError:
         continue
