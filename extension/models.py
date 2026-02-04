@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Extension(models.Model):
     """
     Extension model class definition
@@ -11,9 +12,10 @@ class Extension(models.Model):
     - Author
     - Enabled
     """
-    name = models.CharField(max_length=255, unique=True)
+
+    name = models.CharField(max_length=255)
     description = models.CharField(max_length=255, null=True, blank=True)
     version = models.CharField(max_length=255, default="0.0.0")
     author = models.CharField(max_length=255, null=True, blank=True)
     enabled = models.BooleanField(default=False)
-    django_app = models.CharField(max_length=255, default="", blank=True)
+    django_app = models.CharField(max_length=255, unique=True)

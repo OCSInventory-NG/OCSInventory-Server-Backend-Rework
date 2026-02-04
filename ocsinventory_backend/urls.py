@@ -14,6 +14,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
+import os
+
 from accountinfo.routers import AccountinfoRouter
 from asset.agent_config.routers import AgentConfigRouter
 from asset.asset_group.routers import AssetGroupRouter
@@ -245,5 +247,3 @@ if not _should_skip_dynamic_extension_urls():
 
     except (OperationalError, ProgrammingError):
         pass
-
-
