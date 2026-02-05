@@ -27,7 +27,7 @@ class ActionSerializer(ExpandableFieldsMixin, ModelSerializer):
 
     def create(self, validated_data):
         """Override create to allow nested creation of fields"""
-        if "object_slug" in validated_data.keys():
+        if "object_slug" != "null" in validated_data.keys():
             content_type = validated_data.get("object_slug")
             app, model = content_type.split(".")
             ct = ContentType.objects.get_by_natural_key(app_label=app, model=model)
