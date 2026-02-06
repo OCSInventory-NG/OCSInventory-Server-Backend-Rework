@@ -178,4 +178,3 @@ class CustomOIDCBackend(OIDCAuthenticationBackend):
             }
 
         return user
-

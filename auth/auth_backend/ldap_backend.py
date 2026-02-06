@@ -204,5 +204,3 @@ class CustomLDAPBackend(LDAPBackend):
             group, _ = Group.objects.get_or_create(name=name)
             groups.append(group)
         return groups
-
-
