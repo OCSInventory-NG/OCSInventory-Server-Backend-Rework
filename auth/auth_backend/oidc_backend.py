@@ -135,10 +135,7 @@ class CustomOIDCBackend(OIDCAuthenticationBackend):
             "CLIENT_SECRET",
             "SIGN_ALGO",
             "SCOPES",
-            "VERIFY_SSL",
             "PROXY",
-            "ALLOW_UNSECURE_JWT",
-            "CERTIFICATE",
             "AUTO_REDIRECT",
         ]
 
