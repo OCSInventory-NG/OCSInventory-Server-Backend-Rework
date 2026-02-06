@@ -53,12 +53,9 @@ def add_auth_methods(apps, schema_editor):
                         "CLIENT_SECRET": "",
                         "SCOPES": "profile openid",
                         "PROXY": "",
-                        "CERTIFICATE": "",
                         "SIGN_ALGO": "RS256",
-                        "ALLOW_UNSECURED_JWT": False,
                         "JWKS_ENDPOINT": "https://auth.provider.org/protocol/openid-connect/certs",
                         "AUTO_REDIRECT": True,
-                        "VERIFY_SSL": False,
                     },
                     "mappings": [
                         {"internal_field": "email", "external_field": "email"},

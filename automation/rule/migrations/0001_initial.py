@@ -49,7 +49,7 @@ def create_osname_rules_with_actions(apps, schema_editor):
             "logic": {
                 "regex": [
                     {"var": "osname"},
-                    "(?i)(Redhat|Centos|Alma|Rocky)",
+                    "(?i)(Redhat|Centos|Alma|Rocky|Fedora)",
                 ]
             },
             "actions": [

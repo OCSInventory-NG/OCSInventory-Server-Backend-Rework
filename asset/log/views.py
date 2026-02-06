@@ -2,6 +2,8 @@ from asset.log.models import Log
 from asset.log.serializers import LogSerializer
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
+from rest_framework.filters import OrderingFilter, SearchFilter
+
 
 class LogViewSet(viewsets.OCSViewSet):
     """
@@ -17,3 +19,6 @@ class LogViewSet(viewsets.OCSViewSet):
     queryset = Log.objects.all()
     serializer_class = LogSerializer
     model = Log
+    filter_backends = [SearchFilter, OrderingFilter]
+    search_fields = ["asset__name", "scope", "comment"]
+    ordering_fields = ["id", "asset", "timestamp", "scope", "comment"]
