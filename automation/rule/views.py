@@ -1,6 +1,10 @@
+from automation.rule.context import get_resolver_for_trigger
 from automation.rule.models import Action, Rule
-from automation.rule.serializers import ActionSerializer, RuleSerializer
-from django.apps import apps
+from automation.rule.serializers import (
+    ActionSerializer,
+    RuleSerializer,
+    TriggerSerializer,
+)
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
 from rest_framework import status
@@ -59,7 +63,7 @@ class TriggerViewSet(viewsets.OCSViewSet):
         },
         "netdevice_received": {
             "accountinfo.accountinfoconfig": [],
-        }
+        },
     }
 
     def list(self, request, *args, **kwargs):
@@ -68,12 +72,15 @@ class TriggerViewSet(viewsets.OCSViewSet):
         for trigger, _ in Rule.TRIGGER_CHOICES:
             model_name = self.model_mapping[trigger]
             targets = self.target_mapping[trigger]
+            resolver = get_resolver_for_trigger(trigger)
             trigger_data.append(
                 {
                     "trigger": trigger,
                     "model_name": model_name,
                     "action_targets": targets,
+                    "context_fields": resolver.get_schema(),
                 }
             )
 
-        return Response(trigger_data, status=status.HTTP_200_OK)
+        serializer = TriggerSerializer(trigger_data, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

@@ -1,6 +1,8 @@
+from automation.rule.context import get_resolver_for_trigger
 from automation.rule.models import Action, Rule
 from django.contrib.contenttypes.models import ContentType
 from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
+from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
 
@@ -61,3 +63,17 @@ class RuleSerializer(ExpandableFieldsMixin, ModelSerializer):
             Action.objects.create(**action_data)
 
         return rule
+
+
+class TriggerSerializer(serializers.Serializer):
+    trigger = serializers.CharField()
+    model_name = serializers.CharField()
+    action_targets = serializers.DictField(
+        child=serializers.ListField(child=serializers.CharField())
+    )
+    context_fields = serializers.SerializerMethodField()
+
+    def get_context_fields(self, obj):
+        trigger = obj.get("trigger")
+        resolver = get_resolver_for_trigger(trigger)
+        return resolver.get_schema()

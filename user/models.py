@@ -12,4 +12,4 @@ def user_login_handler(sender, user, request, **kwargs):
     """
     if not getattr(user, "processed", False):
         logic = Logic("user_login", user)
-        user = logic.process_rules()
+        logic.process_rules()

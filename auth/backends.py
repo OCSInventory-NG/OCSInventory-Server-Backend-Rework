@@ -58,6 +58,12 @@ class AuthBackend(ModelBackend):
                 request, username=username, password=password, **kwargs
             )
             if user:
+                if not hasattr(user, "_auth_context_data"):
+                    user._auth_context_data = {
+                        "auth_method": auth_method,
+                        "auth_config": None,
+                        "metadata": {"backend": auth_method.name},
+                    }
                 user_logged_in.send(sender=user.__class__, request=request, user=user)
                 return user
 

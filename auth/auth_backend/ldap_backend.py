@@ -57,6 +57,13 @@ class CustomLDAPBackend(LDAPBackend):
                 if user:
                     if mirror_groups_enabled:
                         self._mirror_memberof_groups(user)
+
+                    metadata = self._build_metadata(user)
+                    user._auth_context_data = {
+                        "auth_method": config.auth_method,
+                        "auth_config": config,
+                        "metadata": metadata,
+                    }
                     return user
 
         except Exception as e:
@@ -86,6 +93,32 @@ class CustomLDAPBackend(LDAPBackend):
             "PROTOCOL_VERSION",
             "MIRROR_GROUPS",
         ]
+
+    def _build_metadata(self, user):
+        metadata = {}
+        ldap_user = getattr(user, "ldap_user", None)
+        if not ldap_user:
+            return metadata
+
+        attrs = ldap_user.attrs or {}
+        sanitized_attrs = {}
+        for key, value in attrs.items():
+            sanitized_attrs[key] = [
+                v.decode("utf-8", errors="ignore") if isinstance(v, bytes) else v
+                for v in value
+            ]
+
+        metadata["dn"] = ldap_user.dn
+        metadata["memberOf"] = [
+            (
+                entry.decode("utf-8", errors="ignore")
+                if isinstance(entry, bytes)
+                else entry
+            )
+            for entry in sanitized_attrs.get("memberOf", [])
+        ]
+        metadata["attributes"] = sanitized_attrs
+        return metadata
 
     def _mirror_memberof_groups(self, user):
         ldap_user = getattr(user, "ldap_user", None)

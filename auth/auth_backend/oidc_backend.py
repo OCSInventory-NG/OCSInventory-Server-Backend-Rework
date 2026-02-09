@@ -4,6 +4,7 @@ from auth.auth_config.models import AuthConfig
 from auth.auth_mapping.models import AuthMapping
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core.exceptions import SuspiciousOperation
 from mozilla_django_oidc.auth import OIDCAuthenticationBackend
 
 
@@ -34,6 +35,7 @@ class CustomOIDCBackend(OIDCAuthenticationBackend):
         # TODO : get the first enabled config for now but figure out
         # how to handle multiple configs (or prevent it)
         oidc_config = self.configs[0]
+        self.current_config = oidc_config
 
         self.OIDC_OP_TOKEN_ENDPOINT = oidc_config.config["TOKEN_ENDPOINT"]
         self.OIDC_OP_USER_ENDPOINT = oidc_config.config["USERINFO_ENDPOINT"]
@@ -136,3 +138,40 @@ class CustomOIDCBackend(OIDCAuthenticationBackend):
             "PROXY",
             "AUTO_REDIRECT",
         ]
+
+    def get_or_create_user(self, access_token, id_token, payload):
+        """Override to attach auth profile metadata."""
+        user_info = self.get_userinfo(access_token, id_token, payload)
+
+        claims_verified = self.verify_claims(user_info)
+        if not claims_verified:
+            raise SuspiciousOperation("Claims verification failed")
+
+        users = self.filter_users_by_claims(user_info)
+
+        if len(users) == 1:
+            user = self.update_user(users[0], user_info)
+        elif len(users) > 1:
+            raise SuspiciousOperation("Multiple users returned")
+        elif self.get_settings("OIDC_CREATE_USER", True):
+            user = self.create_user(user_info)
+        else:
+            self.logger.debug(
+                "Login failed: No user with %s found, and OIDC_CREATE_USER is False",
+                self.describe_user_by_claims(user_info),
+            )
+            return None
+
+        if user:
+            metadata = {
+                "claims": user_info,
+                "token_payload": payload,
+                "requested_scopes": self.current_config.config.get("SCOPES"),
+            }
+            user._auth_context_data = {
+                "auth_method": self.current_config.auth_method,
+                "auth_config": self.current_config,
+                "metadata": metadata,
+            }
+
+        return user
