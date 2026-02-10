@@ -55,6 +55,7 @@ def add_auth_methods(apps, schema_editor):
                         "PROXY": "",
                         "SIGN_ALGO": "RS256",
                         "JWKS_ENDPOINT": "https://auth.provider.org/protocol/openid-connect/certs",
+                        "LOGOUT_ENDPOINT": "https://auth.provider.org/protocol/openid-connect/logout",
                         "AUTO_REDIRECT": True,
                     },
                     "mappings": [
