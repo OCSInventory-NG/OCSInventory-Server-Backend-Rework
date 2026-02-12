@@ -27,7 +27,11 @@ class OCSViewSet(viewsets.ModelViewSet):
     """
 
     # Set default filter
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter,
+    ]
 
     # Filter on all by default
     filterset_fields = "__all__"

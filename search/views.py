@@ -13,8 +13,8 @@ from inventory.field.models import Field
 from inventory.software.models import SoftwareDictionary
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
-from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView
+from rest_framework.response import Response
 from search.models import Search
 from search.serializers import SearchSerializer
 from snmp.scanner.models import SnmpScanner
