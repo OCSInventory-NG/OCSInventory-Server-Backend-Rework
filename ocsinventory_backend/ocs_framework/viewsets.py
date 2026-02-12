@@ -27,7 +27,7 @@ class OCSViewSet(viewsets.ModelViewSet):
     """
 
     # Set default filter
-    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
 
     # Filter on all by default
     filterset_fields = "__all__"
@@ -172,6 +172,11 @@ class RestrictVisibilityViewSet(OCSViewSet):
         queryset = queryset.filter(
             Q(visibility="public") | Q(user=user) | Q(groups__in=user.groups.all())
         ).distinct()
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
