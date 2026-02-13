@@ -7,7 +7,7 @@ def create_default_legacy_software_mapping(apps, schema_editor):
         name="SOFTWARES",
         template=Template,
     )
-    
+
     software_mapping = {
         "template": Template,
         "section": Section,
@@ -24,9 +24,9 @@ def create_default_legacy_software_mapping(apps, schema_editor):
             section=Section,
         ),
     }
-    
+
     SoftwareMapping = apps.get_model("software", "SoftwareMapping")
-    
+
     try:
         SoftwareMapping.objects.create(**software_mapping)
     except Exception as e:
@@ -34,11 +34,11 @@ def create_default_legacy_software_mapping(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    
+
     dependencies = [
         ("software", "0005_debian_linux"),
     ]
-    
+
     operations = [
         migrations.RunPython(create_default_legacy_software_mapping),
     ]
