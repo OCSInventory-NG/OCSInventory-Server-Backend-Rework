@@ -1,9 +1,11 @@
 import json
 from pathlib import Path
+
 from django.conf import settings
 from django.db import transaction
 
 from .models import Extension
+
 
 def _iter_manifests():
     root = Path(settings.BASE_DIR) / "extensions"
@@ -15,6 +17,7 @@ def _iter_manifests():
         manifest = ext_dir / "extension.json"
         if manifest.exists():
             yield manifest
+
 
 @transaction.atomic
 def sync_extensions_from_filesystem():
