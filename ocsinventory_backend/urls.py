@@ -14,6 +14,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
+import sys
+
 from accountinfo.routers import AccountinfoRouter
 from asset.agent_config.routers import AgentConfigRouter
 from asset.asset_group.routers import AssetGroupRouter
@@ -40,6 +42,7 @@ from django.conf.urls.static import static
 
 # Base import to get API Working
 from django.urls import include, path
+from extension.routers import ExtensionRouter
 from filemanager.routers import FileManagerRouter
 from group.routers import GroupRouter
 from inventory.category.routers import CategoryRouter
@@ -203,6 +206,10 @@ dashboardChartRouter = dashboardChartRouter.defineRoutes(defaultRouter)
 fileManagerRouter = FileManagerRouter()
 fileManagerRouter = fileManagerRouter.defineRoutes(defaultRouter)
 
+# Add Extension declaration
+extensionRouter = ExtensionRouter()
+extensionRouter = extensionRouter.defineRoutes(defaultRouter)
+
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
@@ -218,3 +225,29 @@ urlpatterns = [
     path("callback/", CallbackView.as_view(), name="callback"),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+def _should_skip_dynamic_extension_urls():
+    # avoid DB access during certain commands
+    return any(
+        cmd in sys.argv
+        for cmd in ["migrate", "makemigrations", "collectstatic", "test"]
+    )
+
+
+if not _should_skip_dynamic_extension_urls():
+    try:
+        from django.db.utils import OperationalError, ProgrammingError
+        from extension.models import Extension
+
+        for ext in Extension.objects.filter(enabled=True):
+            app_path = f"extensions.{ext.django_app}" or f"extensions.{ext.name}"
+            try:
+                urlpatterns.append(
+                    path(f"{ext.django_app}/", include(f"{app_path}.urls"))
+                )
+            except ModuleNotFoundError:
+                continue
+
+    except (OperationalError, ProgrammingError):
+        pass

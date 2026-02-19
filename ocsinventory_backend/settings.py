@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+from pathlib import Path
 
 from dotenv import load_dotenv
 
@@ -83,6 +84,7 @@ INSTALLED_APPS = [
     "search.apps.SearchConfig",
     "django_cas_ng",
     "filemanager.apps.FileManagerConfig",
+    "extension.apps.ExtensionConfig",
 ]
 
 MIDDLEWARE = [
@@ -288,6 +290,12 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
+
+# Extensions
+EXTENSIONS_DIR = Path(BASE_DIR) / "extensions"
+for extension in EXTENSIONS_DIR.iterdir():
+    if (extension / "__init__.py").exists():
+        INSTALLED_APPS.append(f"extensions.{extension.name}")
 
 # Authentication
 # Custom auth backend (specifies the backend class to use for authentication)
