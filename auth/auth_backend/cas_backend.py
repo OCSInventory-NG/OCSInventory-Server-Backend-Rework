@@ -18,67 +18,110 @@ class CustomCASBackend(CASBackend):
     logger = logging.getLogger(__name__)
 
     def __init__(self):
-        super(CustomCASBackend, self).__init__()
-        # fetch configurations and mappings
-        self.configs = AuthConfig.objects.filter(
-            auth_method__name="CAS", enabled=True
-        ).order_by("priority")
-        self.mappings = AuthMapping.objects.filter(
-            auth_config__enabled=True, auth_config__auth_method__name="CAS"
-        )
-        # TODO: get the first enabled config for now but figure out
-        # how to handle multiple configs (or prevent it)
-        cas_config = self.configs[0]
-        self.current_config = cas_config
-        login_url = cas_config.config["SERVER_URL"] + cas_config.config["LOGIN_ROUTE"]
-        logout_url = cas_config.config["SERVER_URL"] + cas_config.config["LOGOUT_ROUTE"]
+        try:
+            super(CustomCASBackend, self).__init__()
+            # fetch configurations and mappings
+            self.configs = AuthConfig.objects.filter(
+                auth_method__name="CAS", enabled=True
+            ).order_by("priority")
 
-        # update settings
-        settings.CAS_SERVER_URL = cas_config.config["SERVER_URL"]
-        settings.CAS_LOGIN_URL = login_url
-        settings.CAS_LOGOUT_URL = logout_url
-        settings.CAS_VERSION = cas_config.config["VERSION"]
-        # which field to use for reconciliation (CAS side)
-        # using the mapping for internal field username
-        # if empty mapping is defined, inform user
-        if len(self.mappings) == 0:
-            self.logger.debug(f"CAS config {cas_config.id} has no mapping defined")
-        else:
-            settings.CAS_USERNAME_ATTRIBUTE = self.mappings.get(
-                internal_field="username"
-            ).external_field
-            # build the CAS_RENAME_ATTRIBUTES from mappings
-            settings.CAS_RENAME_ATTRIBUTES = {
-                mapping.external_field: mapping.internal_field
-                for mapping in self.mappings
-            }
-            # allow attributes to be applied to the user
-            settings.CAS_APPLY_ATTRIBUTES_TO_USER = True
+            if not self.configs.exists():
+                self.logger.error("No enabled CAS configuration found")
+                return
 
-        # TODO: handle SSL verification
-        # settings.CAS_VERIFY_SSL_CERTIFICATE = True
+            self.mappings = AuthMapping.objects.filter(
+                auth_config__enabled=True, auth_config__auth_method__name="CAS"
+            )
+            # TODO: get the first enabled config for now but figure out
+            # how to handle multiple configs (or prevent it)
+            cas_config = self.configs[0]
+            self.current_config = cas_config
+            self.logger.info("Using CAS config %s", cas_config.id)
+            login_url = cas_config.config["SERVER_URL"] + cas_config.config["LOGIN_ROUTE"]
+            logout_url = cas_config.config["SERVER_URL"] + cas_config.config["LOGOUT_ROUTE"]
+
+            # update settings
+            settings.CAS_SERVER_URL = cas_config.config["SERVER_URL"]
+            settings.CAS_LOGIN_URL = login_url
+            settings.CAS_LOGOUT_URL = logout_url
+            settings.CAS_VERSION = cas_config.config["VERSION"]
+            # which field to use for reconciliation (CAS side)
+            # using the mapping for internal field username
+            # if empty mapping is defined, inform user
+            if len(self.mappings) == 0:
+                self.logger.info(
+                    "CAS config %s has no mapping defined",
+                    cas_config.id,
+                )
+            else:
+                settings.CAS_USERNAME_ATTRIBUTE = self.mappings.get(
+                    internal_field="username"
+                ).external_field
+                # build the CAS_RENAME_ATTRIBUTES from mappings
+                settings.CAS_RENAME_ATTRIBUTES = {
+                    mapping.external_field: mapping.internal_field
+                    for mapping in self.mappings
+                }
+                # allow attributes to be applied to the user
+                settings.CAS_APPLY_ATTRIBUTES_TO_USER = True
+
+                self.logger.debug(
+                    "CAS mappings loaded. Attributes to apply: %s",
+                    list(settings.CAS_RENAME_ATTRIBUTES.keys()),
+                )
+
+            # TODO: handle SSL verification
+            # settings.CAS_VERIFY_SSL_CERTIFICATE = True
+        
+        except Exception as e:
+            self.logger.exception(e)
 
     def authenticate(self, request, ticket, service):
+        self.logger.debug(
+            "CAS authentication attempt started with service '%s'",
+            service,
+        )
+
         # try to authenticate the user
-        user = super().authenticate(request=request, ticket=ticket, service=service)
+        try:
+            user = super().authenticate(request=request, ticket=ticket, service=service)
 
-        if user is not None:
-            attributes = {}
-            if request:
-                attributes = request.session.get("attributes", {}) or {}
-            metadata = {
-                "authenticationMethod": attributes.get("authenticationMethod"),
-                "attributes": attributes,
-            }
-            user._auth_context_data = {
-                "auth_method": self.current_config.auth_method,
-                "auth_config": self.current_config,
-                "metadata": metadata,
-            }
-            return user
+            if user is not None:
+                attributes = {}
+                if request:
+                    attributes = request.session.get("attributes", {}) or {}
 
-        # no match found
-        return None
+                metadata = {
+                    "authenticationMethod": attributes.get("authenticationMethod"),
+                    "attributes": attributes,
+                }
+                user._auth_context_data = {
+                    "auth_method": self.current_config.auth_method,
+                    "auth_config": self.current_config,
+                    "metadata": metadata,
+                }
+
+                self.logger.debug(
+                    "CAS authentication successed for user '%s' (ID: %s)",
+                    user.get_username(),
+                    user.pk,
+                )
+                self.logger.info(
+                    "CAS authentication succeeded for user with ID %s",
+                    user.pk,
+                )
+                return user
+
+            # no match found
+            self.logger.debug(
+                "CAS authentication failed with service %s",
+                service,
+            )
+            return None
+        
+        except Exception as e:
+            self.logger.exception(e)
+            return None
 
     @staticmethod
     def get_config_fields():
