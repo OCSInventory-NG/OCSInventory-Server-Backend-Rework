@@ -49,7 +49,7 @@ class CustomOIDCBackend(OIDCAuthenticationBackend):
             if len(self.mappings) == 0:
                 self.logger.info(
                     "OIDC config %s has no mapping defined",
-                    oidc.config.id,
+                    oidc_config.id,
                 )
 
             self.OIDC_OP_TOKEN_ENDPOINT = oidc_config.config["TOKEN_ENDPOINT"]
@@ -147,8 +147,9 @@ class CustomOIDCBackend(OIDCAuthenticationBackend):
                 # if no mapping defined, or no mapping matches the reconciliation field
                 # then we default to using the 'sub' claim
                 self.logger.info(
-                    f"No mapping found for internal field '{self.user_reconciliation_field}"
-                    "'. Defaulting to using the 'sub' claim for reconciliation."
+                    "No mapping found for internal field '%s"
+                    "'. Defaulting to using the 'sub' claim for reconciliation.",
+                    self.user_reconciliation_field,
                 )
                 reconciliation = claims.get("sub")
 
@@ -226,7 +227,8 @@ class CustomOIDCBackend(OIDCAuthenticationBackend):
                     self.logger.error("OIDC user creation failed")
             else:
                 self.logger.info(
-                    "Login failed: No user with %s found, and OIDC_CREATE_USER is False",
+                    "Login failed: No user with %s found",
+                    ", and OIDC_CREATE_USER is False",
                     self.describe_user_by_claims(user_info),
                 )
                 return None

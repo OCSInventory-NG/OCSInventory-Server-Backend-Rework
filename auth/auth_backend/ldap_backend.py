@@ -106,7 +106,8 @@ class CustomLDAPBackend(LDAPBackend):
 
                 # no match found for a config
                 self.logger.debug(
-                    "LDAP authentication failed for user '%s' with config %s on server '%s'",
+                    "LDAP authentication failed for user '%s'"
+                    " with config %s on server '%s'",
                     username,
                     config.id,
                     self.settings.SERVER_URI,
