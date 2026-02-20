@@ -65,8 +65,8 @@ class CustomLDAPBackend(LDAPBackend):
                 )
                 self.logger.debug(
                     "LDAP user search in '%s' with '%s'",
-                    config.config['BASE_DN'],
-                    config.config['USER_LOGIN_FIELD'],
+                    config.config["BASE_DN"],
+                    config.config["USER_LOGIN_FIELD"],
                 )
 
                 self.defineMapping(config)
@@ -94,8 +94,7 @@ class CustomLDAPBackend(LDAPBackend):
                         "metadata": metadata,
                     }
                     self.logger.info(
-                        "LDAP authentication succeeded for user %s",
-                        user.pk
+                        "LDAP authentication succeeded for user %s", user.pk
                     )
                     self.logger.debug(
                         "LDAP authentication successed for '%s' with ID '%s'",
@@ -233,7 +232,7 @@ class CustomLDAPBackend(LDAPBackend):
 
             groups = self._get_or_create_groups(group_names)
             user.groups.set(groups)
-        
+
         except Exception as e:
             self.logger.exception(e)
             return

@@ -37,8 +37,12 @@ class CustomCASBackend(CASBackend):
             cas_config = self.configs[0]
             self.current_config = cas_config
             self.logger.info("Using CAS config %s", cas_config.id)
-            login_url = cas_config.config["SERVER_URL"] + cas_config.config["LOGIN_ROUTE"]
-            logout_url = cas_config.config["SERVER_URL"] + cas_config.config["LOGOUT_ROUTE"]
+            login_url = (
+                cas_config.config["SERVER_URL"] + cas_config.config["LOGIN_ROUTE"]
+            )
+            logout_url = (
+                cas_config.config["SERVER_URL"] + cas_config.config["LOGOUT_ROUTE"]
+            )
 
             # update settings
             settings.CAS_SERVER_URL = cas_config.config["SERVER_URL"]
@@ -72,7 +76,7 @@ class CustomCASBackend(CASBackend):
 
             # TODO: handle SSL verification
             # settings.CAS_VERIFY_SSL_CERTIFICATE = True
-        
+
         except Exception as e:
             self.logger.exception(e)
 
@@ -118,7 +122,7 @@ class CustomCASBackend(CASBackend):
                 service,
             )
             return None
-        
+
         except Exception as e:
             self.logger.exception(e)
             return None

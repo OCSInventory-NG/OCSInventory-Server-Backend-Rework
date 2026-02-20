@@ -34,7 +34,8 @@ class CustomOIDCBackend(OIDCAuthenticationBackend):
 
             # dict mapping external fields to internal fields.
             self.field_mappings = {
-                mapping.internal_field: mapping.external_field for mapping in self.mappings
+                mapping.internal_field: mapping.external_field
+                for mapping in self.mappings
             }
 
             # TODO : get the first enabled config for now but figure out
@@ -117,7 +118,7 @@ class CustomOIDCBackend(OIDCAuthenticationBackend):
             return self.UserModel.objects.create_user(
                 **{self.user_reconciliation_field: reconciliation}, **user_data
             )
-        
+
         except Exception as e:
             self.logger.error("Failed to create user")
             self.logger.exception(e)
@@ -135,7 +136,9 @@ class CustomOIDCBackend(OIDCAuthenticationBackend):
         """
         try:
             # using user_reconciliation_field as reconciliation field
-            reconciliation_mapping = self.field_mappings.get(self.user_reconciliation_field)
+            reconciliation_mapping = self.field_mappings.get(
+                self.user_reconciliation_field
+            )
             if reconciliation_mapping:
                 # default to using the 'sub' claim if the claim is not found
                 self.logger.info(
@@ -245,9 +248,11 @@ class CustomOIDCBackend(OIDCAuthenticationBackend):
                         "auth_config": self.current_config,
                         "metadata": metadata,
                     }
-    
+
                 except Exception as e:
-                    self.logger.warning("Failed to attach metadata to authenticated user")
+                    self.logger.warning(
+                        "Failed to attach metadata to authenticated user"
+                    )
                     self.logger.exception(e)
 
             self.logger.info(
