@@ -97,7 +97,7 @@ class CustomLDAPBackend(LDAPBackend):
                         "LDAP authentication succeeded for user %s", user.pk
                     )
                     self.logger.debug(
-                        "LDAP authentication successed for '%s' with ID '%s'",
+                        "LDAP authentication succeeded for '%s' with ID '%s'",
                         username,
                         user.pk,
                     )

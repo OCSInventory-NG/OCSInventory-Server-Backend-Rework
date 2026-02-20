@@ -106,7 +106,7 @@ class CustomCASBackend(CASBackend):
                 }
 
                 self.logger.debug(
-                    "CAS authentication successed for user '%s' (ID: %s)",
+                    "CAS authentication succeeded for user '%s' (ID: %s)",
                     user.get_username(),
                     user.pk,
                 )
