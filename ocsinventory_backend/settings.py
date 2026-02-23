@@ -146,6 +146,13 @@ LOGGING = {
             "backupCount": 2,
             "formatter": "verbose",
         },
+        "ocs_auth": {
+            "class": "logging.handlers.TimedRotatingFileHandler",
+            "filename": f"{BASE_DIR}/logs/ocs_auth.log",
+            "when": "W6",
+            "backupCount": 2,
+            "formatter": "verbose",
+        },
         "ocs_collection": {
             "class": "logging.handlers.TimedRotatingFileHandler",
             "filename": f"{BASE_DIR}/logs/ocs_collection.log",
@@ -170,6 +177,11 @@ LOGGING = {
         # inventory collection  only
         "asset.collection.views": {
             "handlers": ["ocs_collection"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "auth": {
+            "handlers": ["ocs_auth"],
             "level": "INFO",
             "propagate": False,
         },
