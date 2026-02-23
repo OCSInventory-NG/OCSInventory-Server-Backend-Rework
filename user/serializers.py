@@ -1,4 +1,4 @@
-from django.contrib.auth.models import Group, User
+from django.contrib.auth.models import User
 from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
 from rest_framework.serializers import ModelSerializer
 
