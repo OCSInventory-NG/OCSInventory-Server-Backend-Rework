@@ -99,11 +99,12 @@ class LegacyView(APIView):
                         status=400,
                     )
                 except Exception as e:
-                    self.LOGGER.error("Error while updating inventory for device %s - %s: %s",
-                    data["uuid"],
-                    data["name"],
-                    e
-                )
+                    self.LOGGER.error(
+                        "Error while updating inventory for device %s - %s: %s",
+                        data["uuid"],
+                        data["name"],
+                        e,
+                    )
                     return Response(
                         {"error": f"Error while updating inventory: {e}"},
                         status=500,
@@ -203,9 +204,10 @@ class LegacyView(APIView):
                     status=200,
                 )
             else:
-                self.LOGGER.info("Creating inventory for device %s - %s",
-                data["uuid"],
-                data["name"],
+                self.LOGGER.info(
+                    "Creating inventory for device %s - %s",
+                    data["uuid"],
+                    data["name"],
                 )
 
                 try:
@@ -223,7 +225,7 @@ class LegacyView(APIView):
                         "Error while creating inventory for device %s - %s: %s",
                         data["uuid"],
                         data["name"],
-                        ve
+                        ve,
                     )
                     return Response(
                         {"error": errors},
@@ -231,11 +233,12 @@ class LegacyView(APIView):
                     )
 
                 except Exception as e:
-                    self.LOGGER.error("Error while creating inventory for device %s - %s: %s",
-                    data["uuid"],
-                    data["name"],
-                    e
-                )
+                    self.LOGGER.error(
+                        "Error while creating inventory for device %s - %s: %s",
+                        data["uuid"],
+                        data["name"],
+                        e,
+                    )
                     return Response(
                         {"error": f"Error while creating inventory: {e}"},
                         status=500,
