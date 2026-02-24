@@ -200,7 +200,7 @@ class LegacyView(APIView):
                     )
 
                 return Response(
-                    {"message": "Asset legacy and inventory updated successfully"},
+                    {"message": "Asset and inventory updated successfully"},
                     status=200,
                 )
             else:
