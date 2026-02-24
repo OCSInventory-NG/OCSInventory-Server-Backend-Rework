@@ -164,6 +164,8 @@ class LegacyView(APIView):
                     # bulk create fields
                     InventoryField.objects.bulk_create(new_fields)
 
+                self._refresh_software_dictionary(asset_instance)
+
                 if errors:
                     self.LOGGER.error(
                         "Partial update succeeded but errors were "
@@ -187,8 +189,6 @@ class LegacyView(APIView):
                         data["uuid"],
                         data["name"],
                     )
-
-                self._refresh_software_dictionary(asset_instance)
 
                 return Response(
                     {"message": "Asset's legacy and inventory updated successfully"},
@@ -278,6 +278,8 @@ class LegacyView(APIView):
                     # bulk create sections and fields
                     InventoryField.objects.bulk_create(fields_to_create)
 
+                self._refresh_software_dictionary(asset_instance)
+
                 if errors:
                     self.LOGGER.error(
                         "Encountered errors while creating legacy inventory "
@@ -302,8 +304,6 @@ class LegacyView(APIView):
                         data["uuid"],
                         data["name"],
                     )
-
-                self._refresh_software_dictionary(asset_instance)
 
                 # successful creation response
                 return Response(
