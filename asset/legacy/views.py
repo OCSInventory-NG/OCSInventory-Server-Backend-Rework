@@ -162,7 +162,8 @@ class LegacyView(APIView):
                                 field_obj = field_map.get(field_name)
                                 if not field_obj:
                                     errors.append(
-                                        f"Field {field_name} not found in section {section_name}"
+                                        f"Field {field_name} not found "
+                                        f"in section {section_name}"
                                     )
                                     continue
 
