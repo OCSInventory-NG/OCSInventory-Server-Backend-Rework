@@ -283,7 +283,8 @@ class LegacyView(APIView):
                                 field_obj = field_map.get(field_name)
                                 if not field_obj:
                                     errors.append(
-                                        f"No matching legacy field found for {field_name} in section {section_name}"
+                                        f"No matching legacy field found for {field_name}"
+                                        f" in section {section_name}"
                                     )
                                     continue
 
@@ -300,7 +301,8 @@ class LegacyView(APIView):
 
                 if errors:
                     self.LOGGER.error(
-                        "Errors encountered while creating legacy inventory for device %s - %s: %s",
+                        "Errors encountered while creating legacy inventory "
+                        "for device %s - %s: %s",
                         data["uuid"],
                         data["name"],
                         errors,
