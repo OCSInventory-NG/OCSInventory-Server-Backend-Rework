@@ -56,7 +56,7 @@ class LegacyView(APIView):
         errors = []
         try:
             self.LOGGER.info(
-                "Managing inventory for legacy device %s - %s",
+                "Managing inventory for device %s - %s",
                 data["uuid"],
                 data["name"],
             )
