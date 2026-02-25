@@ -321,14 +321,14 @@ class LegacyView(APIView):
                     )
                 else:
                     self.LOGGER.info(
-                        "Inventory created successfully for legacy device %s - %s",
+                        "Inventory created successfully for device %s - %s",
                         data["uuid"],
                         data["name"],
                     )
 
                 # successful creation response
                 return Response(
-                    {"message": "Inventory legacy created successfully"},
+                    {"message": "Asset and inventory created successfully"},
                     status=201,
                 )
         except KeyError as e:
