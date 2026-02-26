@@ -93,6 +93,20 @@ class SoftwareDictionaryService:
         )
 
     @classmethod
+    def cleanup_delete(
+        cls, asset_id: Optional[int], entry_ids: Optional[Iterable[int]]
+    ) -> None:
+        """Cleanup dictionary entries previously linked to a deleted asset"""
+        if asset_id is None or entry_ids is None:
+            return
+
+        entry_ids_list = list(entry_ids)
+        if not entry_ids_list:
+            return
+
+        cls._detach_asset_entries(asset_id, entry_ids_list)
+
+    @classmethod
     def _build_entries_for_asset(cls, asset: InventoryBase) -> List[Dict]:
         """Extract normalized software entries from an asset inventory."""
         if not asset.template_id:

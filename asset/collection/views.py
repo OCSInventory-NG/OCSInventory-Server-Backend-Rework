@@ -349,6 +349,8 @@ class CollectionView(APIView):
                     status=500,
                 )
 
+        self._refresh_software_dictionary(asset_instance)
+
         if errors:
             self.LOGGER.warning(
                 f"Device {device_id} created with errors: {errors}",
@@ -366,8 +368,6 @@ class CollectionView(APIView):
                 f"Successfully created inventory for device: {device_id}",
                 extra={"classname": __name__},
             )
-
-        self._refresh_software_dictionary(asset_instance)
 
         # successful creation response
         return Response(
@@ -512,6 +512,9 @@ class CollectionView(APIView):
                     },
                     status=500,
                 )
+
+        self._refresh_software_dictionary(asset_instance)
+
         if errors:
             self.LOGGER.warning(
                 f"Device {device_id} updated with errors: {errors}",
@@ -529,8 +532,6 @@ class CollectionView(APIView):
                 f"Successfully updated inventory for device: {device_id}",
                 extra={"classname": __name__},
             )
-
-        self._refresh_software_dictionary(asset_instance)
 
         return Response(
             {"message": "Inventory updated successfully", "id": asset_instance.id},
@@ -675,6 +676,8 @@ class CollectionView(APIView):
                     status=500,
                 )
 
+        self._refresh_software_dictionary(asset_instance)
+
         if errors:
             self.LOGGER.warning(
                 f"""Device {device_id} partially updated
@@ -694,8 +697,6 @@ class CollectionView(APIView):
                               device: {device_id}""",
                 extra={"classname": __name__},
             )
-
-        self._refresh_software_dictionary(asset_instance)
 
         return Response(
             {
