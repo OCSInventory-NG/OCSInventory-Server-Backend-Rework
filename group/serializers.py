@@ -22,9 +22,7 @@ class GroupSerializer(ExpandableFieldsMixin, ModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         protection = getattr(instance, "protection", None)
-        representation["is_protected"] = bool(
-            protection and protection.is_protected
-        )
+        representation["is_protected"] = bool(protection and protection.is_protected)
         return representation
 
     def create(self, validated_data):

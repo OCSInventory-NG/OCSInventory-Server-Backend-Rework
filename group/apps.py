@@ -13,4 +13,4 @@ class GroupConfig(AppConfig):
     name = "group"
 
     def ready(self):
-        import group.signals
+        pass
