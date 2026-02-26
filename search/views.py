@@ -13,14 +13,14 @@ from inventory.field.models import Field
 from inventory.software.models import SoftwareDictionary
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
+from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from search.models import Search
 from search.serializers import SearchSerializer
 from snmp.scanner.models import SnmpScanner
 
 
-class SearchView(APIView):
+class SearchView(GenericAPIView):
     """
     Manage multisearch feature
     This view is reachable at the /search/ endpoint
@@ -31,6 +31,7 @@ class SearchView(APIView):
     """
 
     permission_classes = []
+    serializer_class = InventoryBaseSerializer
 
     LOGGER = logging.getLogger(__name__)
 
@@ -192,7 +193,7 @@ class SearchView(APIView):
 
             query_set = InventoryBase.objects.filter(q_object).distinct("pk")
         else:
-            query_set = []
+            query_set = InventoryBase.objects.none()
 
         return query_set
 
@@ -331,12 +332,21 @@ class SearchView(APIView):
 
         try:
             qs = self.process_search(data)
-
-            inventory_ids = list(qs.values_list("id", flat=True))
+            page = self.paginate_queryset(qs)
 
             rel_q = self._extract_match_filters(data)
-            match_map = self._build_match_map(inventory_ids, rel_q)
+            if page is not None:
+                inventory_ids = [obj.pk for obj in page]
+                match_map = self._build_match_map(inventory_ids, rel_q)
+                serializer = InventoryBaseSerializer(
+                    page,
+                    many=True,
+                    context={"request": request, "match_map": match_map},
+                )
+                return self.get_paginated_response(serializer.data)
 
+            inventory_ids = list(qs.values_list("id", flat=True))
+            match_map = self._build_match_map(inventory_ids, rel_q)
             serializer = InventoryBaseSerializer(
                 qs,
                 many=True,
