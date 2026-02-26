@@ -15,5 +15,5 @@ class GroupViewSet(viewsets.OCSViewSet):
     # Need to be authenticated to consult
     permission_classes = [DefaultModelPermissions]
 
-    queryset = Group.objects.all()
+    queryset = Group.objects.select_related("protection").all()
     serializer_class = GroupSerializer

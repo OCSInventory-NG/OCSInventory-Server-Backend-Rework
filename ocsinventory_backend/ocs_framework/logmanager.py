@@ -7,10 +7,10 @@ class DynamicLogLevelManager:
     """
 
     LOGGER_MAPPING = {
-        "log_level_backend": "",
-        "log_level_django": "django",
-        "log_level_collection": "asset.collection.views",
-        "log_level_management": "mgmt.management.commands",
+        "log_level_backend": ["", "auth"],
+        "log_level_django": ["django"],
+        "log_level_collection": ["asset.collection.views"],
+        "log_level_management": ["mgmt.management.commands"],
     }
 
     def __init__(self):
@@ -28,16 +28,18 @@ class DynamicLogLevelManager:
             server_config = Config.objects.get(name="server")
             values = {item["name"]: item["value"] for item in server_config.value}
 
-            for config_key, logger_name in self.LOGGER_MAPPING.items():
+            for config_key, logger_names in self.LOGGER_MAPPING.items():
                 level_str = values.get(config_key, "DEBUG")
                 is_default = config_key not in values
-                self.set_level_for_logger(logger_name, level_str, is_default)
+                for logger_name in logger_names:
+                    self.set_level_for_logger(logger_name, level_str, is_default)
 
         except Exception as e:
             self.logger.error(f"Failed to fetch config: {e}")
             # all loggers to default value if anything goes wrong
-            for logger_name in self.LOGGER_MAPPING.values():
-                self.set_level_for_logger(logger_name, "DEBUG", True)
+            for logger_names in self.LOGGER_MAPPING.values():
+                for logger_name in logger_names:
+                    self.set_level_for_logger(logger_name, "DEBUG", True)
 
     def set_level_for_logger(
         self, logger_name: str, level_str: str, is_default: bool = False
