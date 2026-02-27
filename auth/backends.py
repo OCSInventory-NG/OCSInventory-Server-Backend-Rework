@@ -65,6 +65,9 @@ class AuthBackend(ModelBackend):
                         "metadata": {"backend": auth_method.name},
                     }
                 user_logged_in.send(sender=user.__class__, request=request, user=user)
+                self.logger.debug(
+                    f"Authentication succeeded with {auth_method.name} backend"
+                )
                 return user
 
         return None

@@ -90,7 +90,7 @@ def add_auth_methods(apps, schema_editor):
                         "LOGIN_ROUTE": "login",
                         "LOGOUT_ROUTE": "logout",
                         "VERSION": 2,
-                        "AUTO_REDIRECT": "False",
+                        "AUTO_REDIRECT": False,
                     },
                     "mappings": [
                         {"internal_field": "username", "external_field": "cas:user"},

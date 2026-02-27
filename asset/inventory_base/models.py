@@ -3,7 +3,7 @@ import logging
 from automation.rule.logic import Logic
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
-from django.db.models.signals import post_save
+from django.db.models.signals import post_delete, post_save, pre_delete
 from django.dispatch import receiver
 from inventory.template.models import Template
 
@@ -65,3 +65,30 @@ def inventory_received_handler(sender, instance, created, **kwargs):
         logger.debug(f"Running inventory_received Rules for ID {instance.id}.")
         logic = Logic("inventory_received", instance)
         instance = logic.process_rules()
+
+
+@receiver(pre_delete, sender=InventoryBase)
+def inventory_delete_capture_dictionary_entries(sender, instance, **kwargs):
+    # get links before jjango removes m2M relations during deletion
+    instance._software_dictionary_ids = list(
+        instance.software_dictionary_entries.values_list("id", flat=True)
+    )
+
+
+@receiver(post_delete, sender=InventoryBase)
+def inventory_delete_cleanup_dictionary_entries(sender, instance, **kwargs):
+    entry_ids = getattr(instance, "_software_dictionary_ids", [])
+    if not entry_ids:
+        return
+
+    logger = logging.getLogger(__name__)
+    try:
+        from inventory.software.services import SoftwareDictionaryService
+
+        SoftwareDictionaryService.cleanup_delete(instance.id, entry_ids)
+    except Exception as exc:
+        logger.exception(
+            "Failed to cleanup software dictionary after deleting asset %s: %s",
+            getattr(instance, "id", "unknown"),
+            exc,
+        )

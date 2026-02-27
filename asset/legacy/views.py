@@ -8,6 +8,7 @@ from asset.legacy.parsers import LegacyXMLParser
 from asset.legacy.renderers import LegacyXMLRenderer
 from inventory.field.models import Field
 from inventory.section.models import Section
+from inventory.software.services import SoftwareDictionaryService
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -163,6 +164,8 @@ class LegacyView(APIView):
                     # bulk create fields
                     InventoryField.objects.bulk_create(new_fields)
 
+                self._refresh_software_dictionary(asset_instance)
+
                 if errors:
                     self.LOGGER.error(
                         "Partial update succeeded but errors were "
@@ -275,6 +278,8 @@ class LegacyView(APIView):
                     # bulk create sections and fields
                     InventoryField.objects.bulk_create(fields_to_create)
 
+                self._refresh_software_dictionary(asset_instance)
+
                 if errors:
                     self.LOGGER.error(
                         "Encountered errors while creating legacy inventory "
@@ -310,4 +315,19 @@ class LegacyView(APIView):
             return Response(
                 "Can't get important data from the current inventory.",
                 status=400,
+            )
+
+    def _refresh_software_dictionary(self, asset_instance):
+        if (
+            not asset_instance
+            or not SoftwareDictionaryService.should_refresh_on_inventory()
+        ):
+            return
+        try:
+            SoftwareDictionaryService.refresh_asset(asset_instance)
+        except Exception as exc:
+            self.LOGGER.exception(
+                "Failed to refresh software dictionary for asset %s: %s",
+                getattr(asset_instance, "id", "unknown"),
+                exc,
             )

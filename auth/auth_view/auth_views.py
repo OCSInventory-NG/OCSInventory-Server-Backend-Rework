@@ -81,7 +81,6 @@ class BaseAuthView(View):
             login_view, f"{self.current_auth_config.auth_method.name.lower()}_login"
         )(request)
 
-        no_auto = int(request.GET.get("noAUTO")) if request.GET.get("noAUTO") else 0
         response = {"SSO": True, "auto_redirect": True, "redirect_url": url_redirect}
         
         if self.current_auth_method.name == "OIDC":
@@ -90,14 +89,8 @@ class BaseAuthView(View):
         # AUTO_REDIRECT is not enabled
         if self.current_auth_config.config["AUTO_REDIRECT"] == 0:
             response["auto_redirect"] = False
-            return JsonResponse(response)
 
-        else:
-            # AUTO_REDIRECT is enabled but the url contains noAUTO=1
-            if no_auto == 1:
-                response["auto_redirect"] = False
-
-            return JsonResponse(response)
+        return JsonResponse(response)
 
 
 class LoginView(BaseAuthView):
