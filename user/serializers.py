@@ -1,4 +1,4 @@
-from django.contrib.auth.models import Group, User
+from django.contrib.auth.models import User
 from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
 from rest_framework.serializers import ModelSerializer
 
@@ -48,10 +48,8 @@ class UserSerializer(ExpandableFieldsMixin, ModelSerializer):
         user.set_password(validated_data["password"])
         user.save()
 
-        if validated_data.get("groups"):
+        if validated_data.get("groups") is not None:
             user.groups.set(validated_data["groups"])
-        else:
-            user.groups.add(Group.objects.get(name="user"))
         if validated_data.get("user_permissions") is not None:
             user.user_permissions.set(validated_data["user_permissions"])
 
