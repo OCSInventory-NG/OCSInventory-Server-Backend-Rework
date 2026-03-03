@@ -7,7 +7,7 @@ def create_redhat_linux_fields(apps, schema_editor):
     fields = [
         {
             "name": "DESCRIPTION",
-            "retrieval_value": "Description:\\r*(.*)",
+            "retrieval_value": r"Description:\\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -20,7 +20,7 @@ def create_redhat_linux_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrieval_value": "Type:\\r*(.*)",
+            "retrieval_value": r"Type:\\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -33,7 +33,7 @@ def create_redhat_linux_fields(apps, schema_editor):
         },
         {
             "name": "SPEED",
-            "retrieval_value": "Speed:\\r*(.*)",
+            "retrieval_value": r"Speed:\\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -46,7 +46,7 @@ def create_redhat_linux_fields(apps, schema_editor):
         },
         {
             "name": "MTU",
-            "retrieval_value": "MTU:\\r*(.*)",
+            "retrieval_value": r"MTU:\\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -59,7 +59,7 @@ def create_redhat_linux_fields(apps, schema_editor):
         },
         {
             "name": "MAC ADDRESS",
-            "retrieval_value": "MACAddress:\\r*(.*)",
+            "retrieval_value": r"MACAddress:\\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -72,7 +72,7 @@ def create_redhat_linux_fields(apps, schema_editor):
         },
         {
             "name": "STATUS",
-            "retrieval_value": "Status:\\r*(.*)",
+            "retrieval_value": r"Status:\\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -85,7 +85,7 @@ def create_redhat_linux_fields(apps, schema_editor):
         },
         {
             "name": "IP ADDRESS",
-            "retrieval_value": "IPAddress:\\r*(.*)",
+            "retrieval_value": r"IPAddress:\\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -98,7 +98,7 @@ def create_redhat_linux_fields(apps, schema_editor):
         },
         {
             "name": "NETMASK",
-            "retrieval_value": "Netmask:\\r*(.*)",
+            "retrieval_value": r"Netmask:\\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -111,7 +111,7 @@ def create_redhat_linux_fields(apps, schema_editor):
         },
         {
             "name": "GATEWAY",
-            "retrieval_value": "Gateway:\\r*(.*)",
+            "retrieval_value": r"Gateway:\\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -124,7 +124,7 @@ def create_redhat_linux_fields(apps, schema_editor):
         },
         {
             "name": "NETWORK NUMBER",
-            "retrieval_value": "NetworkNumber:\\r*(.*)",
+            "retrieval_value": r"NetworkNumber:\\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -137,7 +137,7 @@ def create_redhat_linux_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrieval_value": "Repo-name\s*:\s*(.*)",
+            "retrieval_value": r"Repo-name\s*:\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -150,7 +150,7 @@ def create_redhat_linux_fields(apps, schema_editor):
         },
         {
             "name": "BASE URL",
-            "retrieval_value": "Repo-baseurl\s*:\s*([^\s]+)",
+            "retrieval_value": r"Repo-baseurl\s*:\s*([^\s]+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -163,7 +163,7 @@ def create_redhat_linux_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrieval_value": "Name:\\r*(.*)",
+            "retrieval_value": r"Name:\\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -176,7 +176,7 @@ def create_redhat_linux_fields(apps, schema_editor):
         },
         {
             "name": "PUBLISHER",
-            "retrieval_value": "Publisher:\\r*(.*)",
+            "retrieval_value": r"Publisher:\\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -189,7 +189,7 @@ def create_redhat_linux_fields(apps, schema_editor):
         },
         {
             "name": "VERSION",
-            "retrieval_value": "Version:\\r*(.*)",
+            "retrieval_value": r"Version:\\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -202,7 +202,7 @@ def create_redhat_linux_fields(apps, schema_editor):
         },
         {
             "name": "COMMENTS",
-            "retrieval_value": "Summary:\\r*(.*)",
+            "retrieval_value": r"Summary:\\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -215,7 +215,7 @@ def create_redhat_linux_fields(apps, schema_editor):
         },
         {
             "name": "FILE SIZE",
-            "retrieval_value": "Size:\\r*(.*)",
+            "retrieval_value": r"Size:\\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -228,7 +228,7 @@ def create_redhat_linux_fields(apps, schema_editor):
         },
         {
             "name": "INSTALLATION DATE",
-            "retrieval_value": "InstallDate:\\r*(.*)",
+            "retrieval_value": r"InstallDate:\\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -241,7 +241,7 @@ def create_redhat_linux_fields(apps, schema_editor):
         },
         {
             "name": "FROM",
-            "retrieval_value": "From:\\r*(.*)",
+            "retrieval_value": r"From:\\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -254,7 +254,7 @@ def create_redhat_linux_fields(apps, schema_editor):
         },
         {
             "name": "ARCHITECTURE",
-            "retrieval_value": "Architecture:\\r*(.*)",
+            "retrieval_value": r"Architecture:\\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -267,7 +267,7 @@ def create_redhat_linux_fields(apps, schema_editor):
         },
         {
             "name": "MAJOR",
-            "retrieval_value": "Major:\\r*(.*)",
+            "retrieval_value": r"Major:\\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -280,7 +280,7 @@ def create_redhat_linux_fields(apps, schema_editor):
         },
         {
             "name": "MINOR",
-            "retrieval_value": "Minor:\\r*(.*)",
+            "retrieval_value": r"Minor:\\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -293,7 +293,7 @@ def create_redhat_linux_fields(apps, schema_editor):
         },
         {
             "name": "PATCH",
-            "retrieval_value": "Patch:\\r*(.*)",
+            "retrieval_value": r"Patch:\\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
