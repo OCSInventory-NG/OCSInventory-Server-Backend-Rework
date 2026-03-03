@@ -17,6 +17,8 @@ class Migration(migrations.Migration):
             name='AuthConfig',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('name', models.CharField(default='Default Config Name', max_length=255)),
+                ('description', models.TextField(blank=True)),
                 ('config', models.JSONField()),
                 ('priority', models.IntegerField(blank=True, null=True)),
                 ('enabled', models.BooleanField(default=False)),

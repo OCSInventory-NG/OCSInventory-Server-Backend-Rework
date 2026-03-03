@@ -24,6 +24,8 @@ class AuthConfig(models.Model):
         on_delete=models.CASCADE,
         null=True
     )
+    name = models.CharField(max_length=255, default="Default Config Name")
+    description = models.TextField(blank=True)
     config = models.JSONField()
     priority = models.IntegerField(blank=True, null=True)
     enabled = models.BooleanField(default=False)
