@@ -74,8 +74,8 @@ def create_default_linux_sections(apps, schema_editor):
             "name": "MONITORS",
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
-            "target": 'for f in /sys/class/drm/*/edid; do [ -f "$f" ] || continue; echo "Screen: $(basename "$(dirname "$f")")"; cat "$f" | parse-edid 2>&1 | sed -nE \'s/.*week ([0-9]+) of ([0-9]+).*/Manufactured week\/year: \\1\/\\2/p; t; p\'; serial=$(hexdump -v -e \'1/1 "%02x"\' "$f" | cut -c25-32); [ -n "$serial" ] && echo "Serial number: $((0x$serial))"; echo "---"; done',
-            "options": {"separator": "---", "multiple": False},
+            "target": 'for f in /sys/class/drm/*/edid; do [ "$(cat "${f%/*}/status" 2>/dev/null)" = "connected" ] || continue; echo -e "\\n$f\\n"; vc=$(di-edid-decode "$f" 2>/dev/null | awk \'/Manufacturer:/ {print $2}\'); [ -n "$vc" ] && echo "Vendor: $(grep -m 1 "^$vc" /usr/share/hwdata/pnp.ids 2>/dev/null | cut -f2- || echo "$vc")"; di-edid-decode "$f"; echo "\\n==="; done',
+            "options": {"separator": "===", "multiple": False},
         },
         {
             "name": "PORTS",
