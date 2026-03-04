@@ -6,14 +6,6 @@ from django.db import migrations
 def create_redhat_linux_sections(apps, schema_editor):
     sections = [
         {
-            "name": "NETWORKS",
-            "retrieval_method": "BASH",
-            "retrieval_output": "REGX",
-            "target": 'for dev in $(nmcli -t -f DEVICE device); do type=$(nmcli -g GENERAL.TYPE device show "$dev"); speed_raw=$(cat "/sys/class/net/$dev/speed" 2>/dev/null || echo 0); mtu=$(nmcli -g GENERAL.MTU device show "$dev"); mac=$(nmcli -g GENERAL.HWADDR device show "$dev"); mac_addr="${mac//\\\\:/\\:}"; state=$(nmcli -g GENERAL.STATE device show "$dev"); gw=$(nmcli -g IP4.GATEWAY device show "$dev"); ip6_cidr=$(nmcli -g IP6.ADDRESS device show "$dev"); gw6=$(nmcli -g IP6.GATEWAY device show "$dev"); echo "Description: $dev"; echo "Type: $type"; if [[ "$speed_raw" == "-1" ]]; then echo "Speed: -1"; elif [[ "$speed_raw" -ge 1000 ]]; then echo "Speed: $((speed_raw / 1000)) Gbps"; else echo "Speed: ${speed_raw} Mbps"; fi; echo "MTU: $mtu"; echo "MACAddress: $mac_addr"; echo "Status: $state"; ip4_cidr=$(nmcli -g IP4.ADDRESS device show "$dev"); ip="${ip4_cidr%%/*}"; prefix="${ip4_cidr#*/}"; echo "IPAddress: $ip"; if [[ -n "$prefix" ]]; then mask=$(( 0xFFFFFFFF << (32 - prefix) & 0xFFFFFFFF )); netmask="$(( (mask >> 24) & 0xFF )).$(( (mask >> 16) & 0xFF )).$(( (mask >> 8) & 0xFF )).$(( mask & 0xFF ))"; echo "Netmask: $netmask"; fi; echo "Gateway: $gw"; if [[ -n "$ip" && -n "$prefix" ]]; then IFS=\'.\' read -r i1 i2 i3 i4 <<< "$ip"; ip_bin=$(( (i1 << 24) + (i2 << 16) + (i3 << 8) + i4 )); mask_bin=$(( 0xFFFFFFFF << (32 - prefix) & 0xFFFFFFFF )); net_bin=$(( ip_bin & mask_bin )); net_ip=$(printf "%d.%d.%d.%d" $(( (net_bin >> 24) & 0xFF )) $(( (net_bin >> 16) & 0xFF )) $(( (net_bin >> 8) & 0xFF )) $(( net_bin & 0xFF ))); echo "NetworkNumber: $net_ip"; else echo "NetworkNumber: "; fi; echo "---"; if [[ -n "$ip6_cidr" ]]; then ip6="${ip6_cidr%%/*}"; prefix6="${ip6_cidr#*/}"; mask6=$(printf \'%s\\n\' $(for i in {0..7}; do bits=$(( (prefix6-16*i)>16 ? 16 : (prefix6-16*i>0 ? prefix6-16*i : 0) )); printf \'%04x:\' $(( ((1<<bits)-1) << (16-bits) )); done) | sed \'s/:$//\' | sed -E \':a;s/(^|:)0{1,4}(:0{1,4}){1,}/::/;ta\'); ip6_network=$(ip -6 route show dev "$dev" | head -n1 | awk \'{print $1}\'); echo "Description: $dev"; echo "Type: $type"; if [[ "$speed_raw" == "-1" ]]; then echo "Speed: -1"; elif [[ "$speed_raw" -ge 1000 ]]; then echo "Speed: $((speed_raw / 1000)) Gbps"; else echo "Speed: ${speed_raw} Mbps"; fi; echo "MTU: $mtu"; echo "MACAddress: $mac_addr"; echo "Status: $state"; echo "IPAddress: $ip6"; echo "Netmask: $mask6"; echo "Gateway: $gw6"; echo "NetworkNumber: $ip6_network"; echo "---"; fi; done',
-            "options": {"separator": "---", "multiple": False},
-            "template": apps.get_model("template", "Template").objects.get(os="RHEL"),
-        },
-        {
             "name": "REPOSITORY",
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
