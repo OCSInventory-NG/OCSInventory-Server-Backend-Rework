@@ -52,5 +52,5 @@ class SoftwareDictionarySerializer(ModelSerializer):
             "patch_version",
             "assets",
             "updated_at",
-            'installation_number',
+            "installation_number",
         ]
