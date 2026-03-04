@@ -5,6 +5,7 @@ from inventory.software.serializers import (
 )
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
+from django.db.models import Count
 
 
 class SoftwareMappingViewSet(viewsets.OCSViewSet):
@@ -49,6 +50,7 @@ class SoftwareDictionaryViewSet(viewsets.OCSViewSet):
         "major_version",
         "minor_version",
         "patch_version",
+        "installation_number",
     ]
     filterset_fields = [
         "id",
@@ -59,3 +61,8 @@ class SoftwareDictionaryViewSet(viewsets.OCSViewSet):
         "minor_version",
         "patch_version",
     ]
+
+    def get_queryset(self):
+        return SoftwareDictionary.objects.annotate(
+            installation_number=Count("assets")
+        )
