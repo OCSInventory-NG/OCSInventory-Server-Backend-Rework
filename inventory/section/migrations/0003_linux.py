@@ -89,7 +89,7 @@ def create_default_linux_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
             "target": "dmidecode -t connector",
-            "options": {"separator": None, "multiple": True},
+            "options": {"separator": "Handle", "multiple": False},
         },
         {
             "name": "PRINTERS",
