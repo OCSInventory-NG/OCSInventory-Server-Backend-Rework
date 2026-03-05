@@ -205,6 +205,12 @@ class LegacyView(APIView):
                 )
             else:
                 self.LOGGER.info(
+                    Managing inventory for device %s - %s",
+                    data["uuid"],
+                    data["name"],
+                )
+                
+                self.LOGGER.info(
                     "Creating inventory for device %s - %s",
                     data["uuid"],
                     data["name"],
@@ -265,7 +271,7 @@ class LegacyView(APIView):
                         section_obj = section_objs.filter(name=section_name).first()
                         if not section_obj:
                             errors.append(
-                                f"No matching section found for {section_name}"
+                                f"Section {section_name} not found in template"
                             )
                             continue
 
@@ -287,8 +293,8 @@ class LegacyView(APIView):
                                 field_obj = field_map.get(field_name)
                                 if not field_obj:
                                     errors.append(
-                                        "No matching legacy field found for "
-                                        f"{field_name} in section {section_name}"
+                                        f"Field {field_name} not found "
+                                        f"in section {section_name}"
                                     )
                                     continue
 
