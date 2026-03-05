@@ -83,9 +83,11 @@ class BaseAuthView(View):
         )(request)
 
         response = {"SSO": True, "auto_redirect": True, "redirect_url": url_redirect}
-        
+
         if self.current_auth_method.name == "OIDC":
-            response["endpoint_logout"] = self.current_auth_config.config.get("LOGOUT_ENDPOINT")
+            response["endpoint_logout"] = self.current_auth_config.config.get(
+                "LOGOUT_ENDPOINT"
+            )
 
         # AUTO_REDIRECT is not enabled
         if self.current_auth_config.config["AUTO_REDIRECT"] == 0:
