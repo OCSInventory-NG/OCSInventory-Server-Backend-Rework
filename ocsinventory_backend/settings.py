@@ -174,6 +174,11 @@ LOGGING = {
             "level": "INFO",
             "propagate": False,
         },
+        "auth_views": {
+            "handlers": ["ocs_auth"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
         # inventory collection  only
         "asset.collection.views": {
             "handlers": ["ocs_collection"],
@@ -196,7 +201,9 @@ LOGGING = {
             "level": "INFO",
             "propagate": False,
         },
+
     },
+
 }
 
 

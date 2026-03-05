@@ -55,6 +55,7 @@ from ipdiscover.netgroup.routers import NetgroupRouter
 from ipdiscover.network.routers import NetworkRouter
 from ocsinventory_backend import settings
 from ocsinventory_backend.ocs_framework.viewsets import ApiCheckViewSet
+from auth.auth_view.auth_views import LogoutView
 
 # Import dedicated routers and provide different endpoint
 from permission.routers import PermissionRouter
@@ -223,6 +224,7 @@ urlpatterns = [
     # Authentication
     path("login/", BaseAuthView.as_view(), name="login"),
     path("callback/", CallbackView.as_view(), name="callback"),
+    path("logout/", LogoutView.as_view(), name="logout"),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
