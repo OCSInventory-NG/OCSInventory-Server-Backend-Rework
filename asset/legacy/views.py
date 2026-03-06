@@ -205,7 +205,7 @@ class LegacyView(APIView):
                 )
             else:
                 self.LOGGER.info(
-                    Managing inventory for device %s - %s",
+                    "Managing inventory for device %s - %s",
                     data["uuid"],
                     data["name"],
                 )
