@@ -16,9 +16,9 @@ def create_redhat_linux_sections(apps, schema_editor):
         {
             "name": "REPOSITORY",
             "retrieval_method": "BASH",
-            "retrieval_output": "REGX",
-            "target": "LANG=C dnf -v repolist",
-            "options": {"separator": "Repo-name", "multiple": False},
+            "retrieval_output": "JSON",
+            "target": 'LANG=C dnf repoinfo -q | awk \'BEGIN { print "[" } /^Repo.*(id|ID)/ { if (c) print " },"; c=1; sub(/^[^:]+[: \\t]+/, ""); sub(/^[ \\t]+/, ""); printf " { \\"id\\": \\"%s\\", ",$0} /^(Repo-name|Name) /{sub(/^[^:]+[: \\t]+/, ""); sub(/^[ \\t]+/, ""); printf "\\"name\\": \\"%s\\", ",$0} /^(Repo-baseurl|\\s*Base URL) /{sub(/^[^:]+[: \\t]+/, ""); sub(/^[ \\t]+/, ""); printf "\\"base_url\\": \\"%s\\"",$0} END { if (c) print " }"; print "]" }\'',
+            "options": {"submap": None},
             "template": apps.get_model("template", "Template").objects.get(os="RHEL"),
         },
         {
