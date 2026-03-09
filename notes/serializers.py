@@ -13,7 +13,16 @@ class NoteSerializer(ExpandableFieldsMixin, ModelSerializer):
         """Define the linked model and the fields registered in the API"""
 
         model = Note
-        fields = ["id", "text", "creator", "created_at", "updated_at", "object_slug", "content_type", "object_id"]
+        fields = [
+            "id",
+            "text",
+            "creator",
+            "created_at",
+            "updated_at",
+            "object_slug",
+            "content_type",
+            "object_id",
+        ]
         extra_kwargs = {"content_type": {"read_only": True}}
         expandable_fields = {}
 

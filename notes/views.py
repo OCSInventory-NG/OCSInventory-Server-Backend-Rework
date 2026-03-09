@@ -1,4 +1,3 @@
-from django.contrib.contenttypes.models import ContentType
 from notes.models import Note
 from notes.serializers import NoteSerializer
 from ocsinventory_backend.ocs_framework import viewsets
