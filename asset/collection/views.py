@@ -365,7 +365,8 @@ class CollectionView(APIView):
             )
             return Response(
                 {
-                    f"""Inventory created with errors for device {device_id}: {str(errors)}"""
+                    f"Inventory created with errors for device {device_id}: "
+                    f"{str(errors)}"
                 },
                 status=201,
             )
