@@ -56,7 +56,7 @@ class LegacyView(APIView):
         errors = []
         try:
             self.LOGGER.info(
-                "Managing inventory for device %s - %s",
+                "Managing legacy inventory for device %s - %s",
                 data["uuid"],
                 data["name"],
             )
@@ -200,16 +200,16 @@ class LegacyView(APIView):
                     )
 
                 return Response(
-                    {"message": "Asset and inventory updated successfully"},
+                    {"message": "Inventory updated successfully", "id": asset_instance.id},
                     status=200,
                 )
             else:
                 self.LOGGER.info(
-                    "Managing inventory for device %s - %s",
+                    "Managing legacy inventory for device %s - %s",
                     data["uuid"],
                     data["name"],
                 )
-                
+
                 self.LOGGER.info(
                     "Creating inventory for device %s - %s",
                     data["uuid"],
@@ -334,7 +334,7 @@ class LegacyView(APIView):
 
                 # successful creation response
                 return Response(
-                    {"message": "Asset and inventory created successfully"},
+                    {"message": "Inventory created successfully", "id": asset_instance.id},
                     status=201,
                 )
         except KeyError as e:
