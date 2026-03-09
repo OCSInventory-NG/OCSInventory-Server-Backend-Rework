@@ -246,7 +246,9 @@ class CollectionView(APIView):
 
         errors = []
         self.LOGGER.info(
-            f"Creating inventory for device: {device_id}", extra={"classname": __name__}
+            "Creating inventory for device %s",
+            device_id,
+            extra={"classname": __name__},
         )
 
         try:
@@ -271,18 +273,23 @@ class CollectionView(APIView):
                     )
         except ValidationError as ve:
             self.LOGGER.error(
-                f"""Validation error creating device
-                               {device_id}: {str(ve)}""",
+                "Error while creating inventory for device %s: %s",
+                device_id,
+                ve,
                 extra={"classname": __name__},
             )
             return Response({"error": str(ve)}, status=400)
         except Exception as e:
             self.LOGGER.error(
-                f"""Unexpected error creating device
-                               {device_id}: {str(e)}""",
+                "Error while creating inventory for device %s: %s",
+                device_id,
+                e,
                 extra={"classname": __name__},
             )
-            return Response({"error": f"Error creating asset: {e}"}, status=500)
+            return Response(
+                {"error": f"Error while creating inventory: {e}"},
+                status=500,
+            )
 
         # pre-fetch all Sections and Fields for this template
         section_objs = Section.objects.filter(template=templateId)
@@ -304,7 +311,7 @@ class CollectionView(APIView):
             for section_name, items in sections_array.items():
                 section_obj = section_objs.filter(name=section_name).first()
                 if not section_obj:
-                    errors.append(f"No matching section found for {section_name}")
+                    errors.append(f"Section {section_name} not found in template")
                     continue
 
                 field_map = section_field_map.get(section_name, {})
@@ -318,7 +325,7 @@ class CollectionView(APIView):
                         field_obj = field_map.get(field_name)
                         if not field_obj:
                             errors.append(
-                                f"No matching field found for {field_name}"
+                                f"Field {field_name} not found "
                                 f" in section {section_name}"
                             )
                             continue
@@ -352,20 +359,23 @@ class CollectionView(APIView):
         self._refresh_software_dictionary(asset_instance)
 
         if errors:
-            self.LOGGER.warning(
-                f"Device {device_id} created with errors: {errors}",
+            self.LOGGER.error(
+                "Errors encountered while creating inventory for device %s: %s",
+                device_id,
+                errors,
                 extra={"classname": __name__},
             )
             return Response(
                 {
-                    f"""Inventory created but errors were encountered while
-                      creating device {device_id}: {str(errors)}"""
+                    f"Inventory created with errors for device {device_id}: "
+                    f"{str(errors)}"
                 },
                 status=201,
             )
         else:
             self.LOGGER.info(
-                f"Successfully created inventory for device: {device_id}",
+                "Inventory created successfully for device %s",
+                device_id,
                 extra={"classname": __name__},
             )
 
@@ -413,7 +423,9 @@ class CollectionView(APIView):
 
         errors = []
         self.LOGGER.info(
-            f"Updating inventory for device: {device_id}", extra={"classname": __name__}
+            "Updating inventory for device %s",
+            device_id,
+            extra={"classname": __name__},
         )
 
         try:
@@ -439,12 +451,19 @@ class CollectionView(APIView):
                 asset_instance = asset_serializer.save()
         except ValidationError as ve:
             self.LOGGER.error(
-                f"Error updating asset: {ve}", extra={"classname": __name__}
+                "Error while updating inventory for device %s: %s",
+                device_id,
+                ve,
+                extra={"classname": __name__},
             )
             return Response({"error": str(ve)}, status=400)
         except Exception as e:
-            self.LOGGER.error(f"Error updating asset: {e}")
-            return Response({"error": f"Error updating asset: {e}"}, status=500)
+            self.LOGGER.error(
+                "Error while updating inventory for device %s: %s",
+                device_id,
+                e,
+            )
+            return Response({"error": f"Error while updating inventory: {e}"}, status=500)
 
         section_objs = Section.objects.filter(template=asset_instance.template_id)
         field_objs = Field.objects.filter(section__in=section_objs)
@@ -516,8 +535,10 @@ class CollectionView(APIView):
         self._refresh_software_dictionary(asset_instance)
 
         if errors:
-            self.LOGGER.warning(
-                f"Device {device_id} updated with errors: {errors}",
+            self.LOGGER.error(
+                "Update completed with errors for device %s: %s",
+                device_id,
+                errors,
                 extra={"classname": __name__},
             )
             return Response(
@@ -529,7 +550,8 @@ class CollectionView(APIView):
             )
         else:
             self.LOGGER.info(
-                f"Successfully updated inventory for device: {device_id}",
+                "Inventory updated successfully for device %s",
+                device_id,
                 extra={"classname": __name__},
             )
 
@@ -569,7 +591,8 @@ class CollectionView(APIView):
 
         errors = []
         self.LOGGER.info(
-            f"Performing partial update for device: {device_id}",
+            "Updating inventory for device %s",
+            device_id,
             extra={"classname": __name__},
         )
 
@@ -599,12 +622,18 @@ class CollectionView(APIView):
                 asset_instance = asset_serializer.save()
         except ValidationError as ve:
             self.LOGGER.error(
-                f"Error updating asset: {ve}", extra={"classname": __name__}
+                "Error while updating inventory for device %s: %s",
+                device_id,
+                ve,
+                extra={"classname": __name__},
             )
             return Response({"error": str(ve)}, status=400)
         except Exception as e:
             self.LOGGER.error(
-                f"Error updating asset: {e}", extra={"classname": __name__}
+                "Error while updating inventory for device %s: %s",
+                device_id,
+                e,
+                extra={"classname": __name__},
             )
             return Response({"error": f"Error updating asset: {e}"}, status=500)
 
@@ -679,28 +708,29 @@ class CollectionView(APIView):
         self._refresh_software_dictionary(asset_instance)
 
         if errors:
-            self.LOGGER.warning(
-                f"""Device {device_id} partially updated
-                                 with errors: {errors}""",
+            self.LOGGER.error(
+                "Partial update completed with errors for device %s: %s",
+                device_id,
+                errors,
                 extra={"classname": __name__},
             )
             return Response(
                 {
-                    f"""Partial update succeeded but errors were encountered
-                      while updating device {device_id}: {str(errors)}"""
+                    "Partial update completed with errors for device "
+                    f'{data["uuid"]} - {data["name"]}: {str(errors)}'
                 },
                 status=200,
             )
         else:
             self.LOGGER.info(
-                f"""Successfully completed partial update for
-                              device: {device_id}""",
+                "Inventory updated successfully for device %s",
+                device_id,
                 extra={"classname": __name__},
             )
 
         return Response(
             {
-                "message": "Asset and inventory updated successfully",
+                "message": "Inventory updated successfully",
                 "id": asset_instance.id,
             },
             status=200,
