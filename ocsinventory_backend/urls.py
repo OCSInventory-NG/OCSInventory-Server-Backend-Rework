@@ -17,6 +17,7 @@ Including another URLconf
 import sys
 
 from accountinfo.routers import AccountinfoRouter
+from notes.routers import NotesRouter
 from asset.agent_config.routers import AgentConfigRouter
 from asset.asset_group.routers import AssetGroupRouter
 from asset.collection.views import CollectionView
@@ -161,6 +162,10 @@ inventoryFieldRouter = inventoryFieldRouter.defineRoutes(defaultRouter)
 # Add accountinfo declaration
 accountinfoRouter = AccountinfoRouter()
 accountinfoRouter = accountinfoRouter.defineRoutes(defaultRouter)
+
+# Add notes declaration
+notesRouter = NotesRouter()
+notesRouter = notesRouter.defineRoutes(defaultRouter)
 
 # Add package declaration
 packageRouter = PackageRouter()
