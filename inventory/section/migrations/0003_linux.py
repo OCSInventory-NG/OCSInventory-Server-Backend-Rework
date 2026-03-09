@@ -61,7 +61,7 @@ def create_default_linux_sections(apps, schema_editor):
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
             "target": "cat /etc/passwd",
-            "options": {"serparator": None, "multiple": True},
+            "options": {"separator": None, "multiple": True},
         },
         {
             "name": "MEMORIES",
