@@ -1,3 +1,4 @@
+from django.db.models import Count
 from inventory.software.models import SoftwareDictionary, SoftwareMapping
 from inventory.software.serializers import (
     SoftwareDictionarySerializer,
@@ -49,6 +50,7 @@ class SoftwareDictionaryViewSet(viewsets.OCSViewSet):
         "major_version",
         "minor_version",
         "patch_version",
+        "installation_number",
     ]
     filterset_fields = [
         "id",
@@ -59,3 +61,6 @@ class SoftwareDictionaryViewSet(viewsets.OCSViewSet):
         "minor_version",
         "patch_version",
     ]
+
+    def get_queryset(self):
+        return SoftwareDictionary.objects.annotate(installation_number=Count("assets"))
