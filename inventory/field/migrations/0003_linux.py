@@ -689,7 +689,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrieval_value": "VendorName [\"']([^\"']*)[\"']",
+            "retrieval_value": "Vendor:\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -699,7 +699,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "CAPTION",
-            "retrieval_value": "ModelName [\"']([^\"']*)[\"']",
+            "retrieval_value": "(?:Display Product Name|Alphanumeric Data String):\s*'?([^']*)'?",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -709,7 +709,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURED ON (WEEK/YEAR)",
-            "retrieval_value": "Manufactured week\/year:\s*(.*)",
+            "retrieval_value": "Made in:\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -719,7 +719,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrieval_value": "# EDID .*\s*#\s*(.*)",
+            "retrieval_value": "(Digital display|Analog display)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -729,7 +729,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "SERIAL NUMBER",
-            "retrieval_value": "Serial number:\s*(.*)",
+            "retrieval_value": "Serial Number:\s*([0-9]+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
