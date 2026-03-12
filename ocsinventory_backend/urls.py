@@ -25,6 +25,7 @@ from asset.inventory_field.routers import InventoryFieldRouter
 from asset.inventory_section.routers import InventorySectionRouter
 from asset.legacy.views import LegacyView
 from asset.log.routers import LogRouter
+from asset.reconciliation.views import ReconciliationView
 from auth.auth_config.routers import AuthConfigRouter
 from auth.auth_mapping.routers import AuthMappingRouter
 from auth.auth_method.routers import AuthMethodRouter
@@ -219,6 +220,7 @@ urlpatterns = [
     path("api-auth/token", obtain_auth_token, name="api_token_auth"),
     path("asset/collection/", CollectionView.as_view(), name="asset_collection"),
     path("asset/legacy/", LegacyView.as_view(), name="legacy_collection"),
+    path("asset/reconciliation/", ReconciliationView.as_view(), name="asset_reconciliation"),
     path("search/", SearchView.as_view(), name="search"),
     # Authentication
     path("login/", BaseAuthView.as_view(), name="login"),
