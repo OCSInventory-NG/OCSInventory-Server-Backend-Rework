@@ -7,8 +7,7 @@ from auth.auth_backend.oidc_backend import CustomOIDCBackend
 from auth.auth_config.models import AuthConfig
 from auth.auth_method.models import AuthMethod
 from django.conf import settings
-from django.contrib.auth import login
-from django.contrib.auth import logout
+from django.contrib.auth import login, logout
 from django.contrib.auth.signals import user_logged_in
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
@@ -197,10 +196,12 @@ class CallbackView(BaseAuthView):
                 return HttpResponseRedirect(redirect_url)
             return HttpResponseRedirect("/")
 
+
 class LogoutView(BaseAuthView):
     """
     View to handle logout requests.
     """
+
     def get(self, request, *args, **kwargs):
         auth_method = request.GET.get("method")
 

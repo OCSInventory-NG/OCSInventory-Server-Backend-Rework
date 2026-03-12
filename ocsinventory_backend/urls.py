@@ -28,7 +28,7 @@ from asset.log.routers import LogRouter
 from auth.auth_config.routers import AuthConfigRouter
 from auth.auth_mapping.routers import AuthMappingRouter
 from auth.auth_method.routers import AuthMethodRouter
-from auth.auth_view.auth_views import BaseAuthView, CallbackView
+from auth.auth_view.auth_views import BaseAuthView, CallbackView, LogoutView
 from automation.history.routers import HistoryRouter
 from automation.rule.routers import RuleRouter
 from automation.scheduler.routers import SchedulerRouter
@@ -55,7 +55,6 @@ from ipdiscover.netgroup.routers import NetgroupRouter
 from ipdiscover.network.routers import NetworkRouter
 from ocsinventory_backend import settings
 from ocsinventory_backend.ocs_framework.viewsets import ApiCheckViewSet
-from auth.auth_view.auth_views import LogoutView
 
 # Import dedicated routers and provide different endpoint
 from permission.routers import PermissionRouter
