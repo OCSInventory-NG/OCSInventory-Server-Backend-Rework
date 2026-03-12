@@ -220,7 +220,11 @@ urlpatterns = [
     path("api-auth/token", obtain_auth_token, name="api_token_auth"),
     path("asset/collection/", CollectionView.as_view(), name="asset_collection"),
     path("asset/legacy/", LegacyView.as_view(), name="legacy_collection"),
-    path("asset/reconciliation/", ReconciliationView.as_view(), name="asset_reconciliation"),
+    path(
+        "asset/reconciliation/",
+        ReconciliationView.as_view(),
+        name="asset_reconciliation",
+    ),
     path("search/", SearchView.as_view(), name="search"),
     # Authentication
     path("login/", BaseAuthView.as_view(), name="login"),

@@ -36,7 +36,9 @@ class ReconciliationView(APIView):
         data = request.data
 
         try:
-            reconciliation_filter = ReconciliationService().get_reconciliation_filter(data)
+            reconciliation_filter = ReconciliationService().get_reconciliation_filter(
+                data
+            )
         except ValueError as e:
             self.LOGGER.warning(f"Reconciliation failed: {e}")
             return Response({"error": str(e)}, status=400)

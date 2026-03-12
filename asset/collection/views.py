@@ -364,7 +364,9 @@ class CollectionView(APIView):
         )
 
         try:
-            reconciliation_filter = ReconciliationService().get_reconciliation_filter(data)
+            reconciliation_filter = ReconciliationService().get_reconciliation_filter(
+                data
+            )
         except ValueError as ve:
             self.LOGGER.error("Reconciliation error: %s", ve)
             return Response({"error": str(ve)}, status=400)
@@ -398,7 +400,9 @@ class CollectionView(APIView):
                 device_id,
                 e,
             )
-            return Response({"error": f"Error while updating inventory: {e}"}, status=500)
+            return Response(
+                {"error": f"Error while updating inventory: {e}"}, status=500
+            )
 
         section_objs = Section.objects.filter(template=asset_instance.template_id)
         field_objs = Field.objects.filter(section__in=section_objs)
@@ -532,7 +536,9 @@ class CollectionView(APIView):
         )
 
         try:
-            reconciliation_filter = ReconciliationService().get_reconciliation_filter(data)
+            reconciliation_filter = ReconciliationService().get_reconciliation_filter(
+                data
+            )
         except ValueError as ve:
             self.LOGGER.error(
                 "Reconciliation error: %s", ve, extra={"classname": __name__}

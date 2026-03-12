@@ -1,8 +1,7 @@
 import logging
+from typing import Dict, Optional
 
 from config.models import Config
-from rest_framework.response import Response
-from typing import Dict, Optional
 
 
 class ReconciliationService:
