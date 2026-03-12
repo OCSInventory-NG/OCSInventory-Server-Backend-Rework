@@ -217,5 +217,7 @@ class LogoutView(BaseAuthView):
 
         frontend_redirect = getattr(settings, "FRONTEND_REDIRECT", "")
         if frontend_redirect:
-            return HttpResponseRedirect(f"{frontend_redirect.rstrip('/')}/login/?noauto")
+            return HttpResponseRedirect(
+                f"{frontend_redirect.rstrip('/')}/login/?noauto"
+            )
         return HttpResponseRedirect(reverse("login"))
