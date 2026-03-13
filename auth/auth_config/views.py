@@ -19,4 +19,11 @@ class AuthConfigViewSet(viewsets.OCSViewSet):
     serializer_class = AuthConfigSerializer
     model = AuthConfig
 
-    filterset_fields = ['id', 'name', 'description', 'auth_method', 'priority', 'enabled']
+    filterset_fields = [
+        "id",
+        "name",
+        "description",
+        "auth_method",
+        "priority",
+        "enabled",
+    ]
