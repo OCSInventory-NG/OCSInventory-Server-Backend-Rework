@@ -7,7 +7,7 @@ from auth.auth_backend.oidc_backend import CustomOIDCBackend
 from auth.auth_config.models import AuthConfig
 from auth.auth_method.models import AuthMethod
 from django.conf import settings
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.contrib.auth.signals import user_logged_in
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
@@ -83,6 +83,11 @@ class BaseAuthView(View):
 
         response = {"SSO": True, "auto_redirect": True, "redirect_url": url_redirect}
 
+        if self.current_auth_method.name == "OIDC":
+            response["endpoint_logout"] = self.current_auth_config.config.get(
+                "LOGOUT_ENDPOINT"
+            )
+
         # AUTO_REDIRECT is not enabled
         if self.current_auth_config.config["AUTO_REDIRECT"] == 0:
             response["auto_redirect"] = False
@@ -150,6 +155,7 @@ class CallbackView(BaseAuthView):
 
         if user is not None:
             login(request, user)
+            request.session["auth_method"] = "sso"
             # Generate a token for the user
             token, created = Token.objects.get_or_create(user=user)
             # sending the user_logged_in signal manually
@@ -173,6 +179,7 @@ class CallbackView(BaseAuthView):
         user = customOIDCBackend.authenticate(request)
         if user is not None:
             login(request, user)
+            request.session["auth_method"] = "sso"
             # Generate a token for the user
             token, created = Token.objects.get_or_create(user=user)
             # sending the user_logged_in signal manually
@@ -188,3 +195,28 @@ class CallbackView(BaseAuthView):
             if redirect_url:
                 return HttpResponseRedirect(redirect_url)
             return HttpResponseRedirect("/")
+
+
+class LogoutView(BaseAuthView):
+    """
+    View to handle logout requests.
+    """
+
+    def get(self, request, *args, **kwargs):
+        auth_method = request.GET.get("method")
+
+        if request.user.is_authenticated:
+            Token.objects.filter(user=request.user).delete()
+        logout(request)
+
+        if (
+            auth_method == "sso"
+            and self.current_auth_config
+            and self.current_auth_config.config.get("SLO_ENABLED", False)
+        ):
+            endpoint = self.current_auth_config.config.get("LOGOUT_ENDPOINT")
+            if endpoint:
+                return HttpResponseRedirect(endpoint)
+
+        frontend_redirect = getattr(settings, "FRONTEND_REDIRECT", "")
+        return HttpResponseRedirect(frontend_redirect + "?noauto")

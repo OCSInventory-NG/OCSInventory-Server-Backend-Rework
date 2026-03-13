@@ -55,7 +55,9 @@ def add_auth_methods(apps, schema_editor):
                         "PROXY": "",
                         "SIGN_ALGO": "RS256",
                         "JWKS_ENDPOINT": "https://auth.provider.org/protocol/openid-connect/certs",
+                        "LOGOUT_ENDPOINT": "https://auth.provider.org/protocol/openid-connect/logout",
                         "AUTO_REDIRECT": True,
+                        "SLO_ENABLED": True,
                     },
                     "mappings": [
                         {"internal_field": "email", "external_field": "email"},
@@ -90,6 +92,7 @@ def add_auth_methods(apps, schema_editor):
                         "LOGOUT_ROUTE": "logout",
                         "VERSION": 2,
                         "AUTO_REDIRECT": False,
+                        "SLO_ENABLED": False,
                     },
                     "mappings": [
                         {"internal_field": "username", "external_field": "cas:user"},
