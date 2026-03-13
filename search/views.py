@@ -74,7 +74,7 @@ class SearchView(GenericAPIView):
                 if masterindex > 0 and index == 0:
                     links[masterindex] = condition["link"]
 
-                if operator in TEXT_OPERATORS and isinstance(value, int):
+                if (operator in TEXT_OPERATORS and isinstance(value, int)) or value == "":
                     operator = "exact"
 
                 # Construction of the Q condition
