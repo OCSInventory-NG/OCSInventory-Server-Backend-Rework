@@ -207,12 +207,12 @@ class LogoutView(BaseAuthView):
 
         if request.user.is_authenticated:
             Token.objects.filter(user=request.user).delete()
-        logout(request)       
+        logout(request)
 
-        if(
-            auth_method == "sso" 
-            and self.current_auth_config 
-            and self.current_auth_config.config.get("SLO_ENABLED",False)
+        if (
+            auth_method == "sso"
+            and self.current_auth_config
+            and self.current_auth_config.config.get("SLO_ENABLED", False)
         ):
             endpoint = self.current_auth_config.config.get("LOGOUT_ENDPOINT")
             if endpoint:
