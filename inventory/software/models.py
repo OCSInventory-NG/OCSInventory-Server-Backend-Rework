@@ -1,5 +1,7 @@
 from asset.inventory_base.models import InventoryBase
 from django.db import models
+from django.db.models.signals import m2m_changed
+from django.dispatch import receiver
 from inventory.field.models import Field
 from inventory.section.models import Section
 from inventory.template.models import Template
@@ -77,6 +79,7 @@ class SoftwareDictionary(models.Model):
         blank=True,
     )
     updated_at = models.DateTimeField(auto_now=True)
+    installation_number = models.IntegerField(default=0)
 
     class Meta:
         indexes = [
@@ -84,3 +87,12 @@ class SoftwareDictionary(models.Model):
             models.Index(fields=["publisher"]),
             models.Index(fields=["version"]),
         ]
+
+@receiver(m2m_changed, sender=SoftwareDictionary.assets.through)
+def assets_changed(sender, instance, action, **kwargs):
+    """
+    Update the 'installation_number' field when assets change.
+    """
+    if action in ["post_add", "post_remove"]:
+        instance.installation_number = instance.assets.count()
+        instance.save(update_fields=['installation_number'])

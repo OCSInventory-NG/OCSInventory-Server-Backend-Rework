@@ -38,7 +38,6 @@ class SoftwareDictionarySerializer(ModelSerializer):
     """Serialize aggregated asset/software relationships"""
 
     assets = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-    installation_number = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = SoftwareDictionary

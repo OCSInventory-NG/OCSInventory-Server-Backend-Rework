@@ -41,6 +41,7 @@ class SoftwareDictionaryViewSet(viewsets.OCSViewSet):
         "major_version",
         "minor_version",
         "patch_version",
+        "installation_number",
     ]
     ordering_fields = [
         "id",
@@ -60,7 +61,5 @@ class SoftwareDictionaryViewSet(viewsets.OCSViewSet):
         "major_version",
         "minor_version",
         "patch_version",
+        "installation_number",
     ]
-
-    def get_queryset(self):
-        return SoftwareDictionary.objects.annotate(installation_number=Count("assets"))
