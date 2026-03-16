@@ -137,7 +137,7 @@ def create_debian_linux_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrieval_value": "([^\/]+$)",
+            "retrieval_value": r"([^\/]+$)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -150,7 +150,7 @@ def create_debian_linux_fields(apps, schema_editor):
         },
         {
             "name": "BASE URL",
-            "retrieval_value": "(http[^\s]+)",
+            "retrieval_value": r"(http[^\s]+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
