@@ -979,7 +979,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "INTERFACE",
-            "retrieval_value": r"bInterfaceSubClass\s*\d+\\r*(.*)",
+            "retrieval_value": r"bInterfaceSubClass\s*\d+\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -989,7 +989,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrieval_value": r"iManufacturer\s*\d+\\r*(.*)",
+            "retrieval_value": r"iManufacturer\s*\d+\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -999,7 +999,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "SERIAL NUMBER",
-            "retrieval_value": r"iSerial\s*\d+\\r*(.*)",
+            "retrieval_value": r"iSerial\s*\d+\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1009,7 +1009,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrieval_value": r"bInterfaceClass\s*\d+\\r*(.*)",
+            "retrieval_value": r"bInterfaceClass\s*\d+\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1019,7 +1019,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrieval_value": r"Name\s*:\\r*(.*)",
+            "retrieval_value": r"Name\s*:\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1029,7 +1029,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "CHIPSET",
-            "retrieval_value": r"Chipset\s*:\\r*(.*)",
+            "retrieval_value": r"Chipset\s*:\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1039,7 +1039,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "MEMORY",
-            "retrieval_value": r"Memory\s*:\\r*(.*)",
+            "retrieval_value": r"Memory\s*:\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
