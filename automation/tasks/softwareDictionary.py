@@ -20,5 +20,7 @@ class SoftwareDictionary(AbstractTask):
             return
 
         logger.info("Starting SoftwareDictionary automation task")
-        SoftwareDictionaryService.rebuild()
+
+        non_legacy_assets = InventoryBase.objects.exclude(template__os="LEG")
+        SoftwareDictionaryService.rebuild(asset_ids=[a.id for a in non_legacy_assets])
         logger.info("SoftwareDictionary automation task completed")

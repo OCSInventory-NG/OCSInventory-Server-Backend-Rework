@@ -132,19 +132,31 @@ class SoftwareDictionaryService:
                 for field in section.fields.all()
             }
 
+            version_value = cls._value_for_field(mapping.version_id, value_map)
+
+            major = cls._value_for_field(mapping.major_version_id, value_map)
+            minor = cls._value_for_field(mapping.minor_version_id, value_map)
+            patch = cls._value_for_field(mapping.patch_version_id, value_map)
+
+            if asset.template and asset.template.os == "LEG":
+                if not (major and minor and patch) and version_value:
+                    cleaned_version = cls._clean_value(version_value)
+
+                    if cleaned_version:
+                        major_int, minor_int, patch_int = cls._split_version_number(
+                            cleaned_version
+                        )
+                        major = str(major_int) if major_int is not None else None
+                        minor = str(minor_int) if minor_int is not None else None
+                        patch = str(patch_int) if patch_int is not None else None
+
             entry = {
                 "name": cls._value_for_field(mapping.name_id, value_map),
                 "publisher": cls._value_for_field(mapping.publisher_id, value_map),
-                "version": cls._value_for_field(mapping.version_id, value_map),
-                "major_version": cls._value_for_field(
-                    mapping.major_version_id, value_map
-                ),
-                "minor_version": cls._value_for_field(
-                    mapping.minor_version_id, value_map
-                ),
-                "patch_version": cls._value_for_field(
-                    mapping.patch_version_id, value_map
-                ),
+                "version": version_value,
+                "major_version": major,
+                "minor_version": minor,
+                "patch_version": patch,
             }
 
             if not entry["name"]:
@@ -167,6 +179,31 @@ class SoftwareDictionaryService:
             return None
         cleaned = str(value).strip()
         return cleaned or None
+    
+    @staticmethod
+    def _split_version_number(version: str) -> Tuple[Optional[int], Optional[int], Optional[int]]:
+        """
+        Extract major/minor/patch from a legacy version string.
+        Returns None when a component does not exist.
+        """
+
+        if not version:
+            return None, None, None
+
+        import re
+
+        match = re.match(r"^(\d+(?:\.\d+)*)", version)
+        if not match:
+            return None, None, None
+
+        numeric_part = match.group(1)
+        parts = numeric_part.split(".")
+
+        major = int(parts[0]) if len(parts) > 0 else None
+        minor = int(parts[1]) if len(parts) > 1 else None
+        patch = int(parts[2]) if len(parts) > 2 else None
+
+        return major, minor, patch
 
     @classmethod
     def _get_existing_entries(
@@ -278,3 +315,12 @@ class SoftwareDictionaryService:
     @classmethod
     def should_refresh_on_automation(cls) -> bool:
         return cls.get_generation_mode() == cls.MODE_AUTOMATION
+
+    @classmethod
+    def refresh_legacy_asset(cls, asset_ids: Optional[Iterable[int]] = None):
+        queryset = InventoryBase.objects.filter(template__os="LEG")
+        if asset_ids:
+            queryset = queryset.filter(id__in=asset_ids)
+
+        for asset in queryset.iterator():
+            cls.refresh_asset(asset)

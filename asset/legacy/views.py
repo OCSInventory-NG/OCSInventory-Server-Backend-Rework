@@ -357,7 +357,7 @@ class LegacyView(APIView):
         ):
             return
         try:
-            SoftwareDictionaryService.refresh_asset(asset_instance)
+            SoftwareDictionaryService.refresh_asset(asset_instance.id)
         except Exception as exc:
             self.LOGGER.exception(
                 "Failed to refresh software dictionary for asset %s: %s",
