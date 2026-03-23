@@ -54,6 +54,7 @@ from inventory.template.routers import TemplateRouter
 from ipdiscover.netdevice.routers import NetdeviceRouter
 from ipdiscover.netgroup.routers import NetgroupRouter
 from ipdiscover.network.routers import NetworkRouter
+from notes.routers import NotesRouter
 from ocsinventory_backend import settings
 from ocsinventory_backend.ocs_framework.viewsets import ApiCheckViewSet
 
@@ -162,6 +163,10 @@ inventoryFieldRouter = inventoryFieldRouter.defineRoutes(defaultRouter)
 # Add accountinfo declaration
 accountinfoRouter = AccountinfoRouter()
 accountinfoRouter = accountinfoRouter.defineRoutes(defaultRouter)
+
+# Add notes declaration
+notesRouter = NotesRouter()
+notesRouter = notesRouter.defineRoutes(defaultRouter)
 
 # Add package declaration
 packageRouter = PackageRouter()
