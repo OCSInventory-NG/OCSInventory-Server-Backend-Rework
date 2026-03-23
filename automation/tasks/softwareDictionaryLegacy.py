@@ -13,6 +13,13 @@ class SoftwareDictionaryLegacy(AbstractTask):
     """
 
     def execute(self):
+        if not SoftwareDictionaryService.should_refresh_on_automation():
+            logger.info(
+                "Software dictionary set to refresh during inventory "
+                "collection; skipping automation run"
+            )
+            return
+            
         logger.info("Starting SoftwareDictionaryLegacy automation task")
 
         legacy_assets = InventoryBase.objects.filter(template__os="LEG")
