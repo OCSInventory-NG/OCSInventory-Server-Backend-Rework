@@ -122,15 +122,15 @@ class Migration(migrations.Migration):
                 ("version", models.CharField(blank=True, max_length=128, null=True)),
                 (
                     "major_version",
-                    models.CharField(blank=True, max_length=64, null=True),
+                    models.IntegerField(blank=True, null=True),
                 ),
                 (
                     "minor_version",
-                    models.CharField(blank=True, max_length=64, null=True),
+                    models.IntegerField(blank=True, null=True),
                 ),
                 (
                     "patch_version",
-                    models.CharField(blank=True, max_length=64, null=True),
+                    models.IntegerField(blank=True, null=True),
                 ),
                 ("updated_at", models.DateTimeField(auto_now=True)),
                 (
