@@ -109,7 +109,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrieval_value": "DMI\\s+type\\s+1,.*?\\n(?:.*\\n)*?\\s*Manufacturer:\\s*(.+)",
+            "retrieval_value": r"DMI\s+type\s+1,.*?\n(?:.*\n)*?\s*Manufacturer:\s*(.+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -119,7 +119,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "MODEL",
-            "retrieval_value": "DMI\\s+type\\s+1,.*?\\n(?:.*\\n)*?\\s*Product Name:\\s*(.+)",
+            "retrieval_value": r"DMI\s+type\s+1,.*?\n(?:.*\n)*?\s*Product Name:\s*(.+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -129,7 +129,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "SERIAL NUMBER",
-            "retrieval_value": "DMI\\s+type\\s+1,.*?\\n(?:.*\\n)*?\\s*Serial Number:\\s*(.+)",
+            "retrieval_value": r"DMI\s+type\s+1,.*?\n(?:.*\n)*?\s*Serial Number:\s*(.+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -139,7 +139,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrieval_value": "DMI\\s+type\\s+3,.*?\\n(?:.*\\n)*?\\s*Type:\\s*(.+)",
+            "retrieval_value": r"DMI\s+type\s+3,.*?\n(?:.*\n)*?\s*Type:\s*(.+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -149,7 +149,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "BIOS MANUFACTURER",
-            "retrieval_value": "DMI\\s+type\\s+0,.*?\\n(?:.*\\n)*?\\s*Vendor:\\s*(.+)",
+            "retrieval_value": r"DMI\s+type\s+0,.*?\n(?:.*\n)*?\s*Vendor:\s*(.+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -159,7 +159,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "BIOS VERSION",
-            "retrieval_value": "DMI\\s+type\\s+0,.*?\\n(?:.*\\n)*?\\s*Version:\\s*(.+)",
+            "retrieval_value": r"DMI\s+type\s+0,.*?\n(?:.*\n)*?\s*Version:\s*(.+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -169,7 +169,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "BIOS DATE",
-            "retrieval_value": "DMI\\s+type\\s+0,.*?\\n(?:.*\\n)*?\\s*Release Date:\\s*(.+)",
+            "retrieval_value": r"DMI\s+type\s+0,.*?\n(?:.*\n)*?\s*Release Date:\s*(.+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -179,7 +179,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "ASSET TAG",
-            "retrieval_value": "DMI\\s+type\\s+(2|3),.*?\\n(?:.*\\n)*?\\s*Asset Tag:\\s*(.+)",
+            "retrieval_value": r"DMI\s+type\s+(2|3),.*?\n(?:.*\n)*?\s*Asset Tag:\s*(.+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -189,7 +189,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "MOTHERBOARD MANUFACTURER",
-            "retrieval_value": "DMI\\s+type\\s+2,.*?\\n(?:.*\\n)*?\\s*Manufacturer:\\s*(.+)",
+            "retrieval_value": r"DMI\s+type\s+2,.*?\n(?:.*\n)*?\s*Manufacturer:\s*(.+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -199,7 +199,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "MOTHERBOARD MODEL",
-            "retrieval_value": "DMI\\s+type\\s+2,.*?\\n(?:.*\\n)*?\\s*Product Name:\\s*(.+)",
+            "retrieval_value": r"DMI\s+type\s+2,.*?\n(?:.*\n)*?\s*Product Name:\s*(.+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -209,7 +209,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "MOTHERBOARD SERIAL NUMBER",
-            "retrieval_value": "DMI\\s+type\\s+2,.*?\\n(?:.*\\n)*?\\s*Serial Number:\\s*(.+)",
+            "retrieval_value": r"DMI\s+type\s+2,.*?\n(?:.*\n)*?\s*Serial Number:\s*(.+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -409,7 +409,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "DESIGNATION",
-            "retrieval_value": "Filesystem:\\r*(.*)",
+            "retrieval_value": r"Filesystem:\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -419,7 +419,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrieval_value": "Mounted:\\r*(.*)",
+            "retrieval_value": r"Mounted:\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -429,7 +429,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "FILE SYSTEM",
-            "retrieval_value": "Type:\\r*(.*)",
+            "retrieval_value": r"Type:\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -439,7 +439,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "TOTAL (MB)",
-            "retrieval_value": "Size_MB:\\r*(.*)",
+            "retrieval_value": r"Size_MB:\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -449,7 +449,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "FREE (MB)",
-            "retrieval_value": "Avail_MB:\\r*(.*)",
+            "retrieval_value": r"Avail_MB:\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -459,7 +459,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "CAPACITY",
-            "retrieval_value": "Use%:\\r*(.*)",
+            "retrieval_value": r"Use%:\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -469,7 +469,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrieval_value": "Type:\\r*(.*)",
+            "retrieval_value": r"Type:\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -479,7 +479,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrieval_value": "Manufacturer:\\r*(.*)",
+            "retrieval_value": r"Manufacturer:\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -489,7 +489,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "CAPTION",
-            "retrieval_value": "Caption:\\r*(.*)",
+            "retrieval_value": r"Caption:\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -499,7 +499,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrieval_value": "Description:\\r*(.*)",
+            "retrieval_value": r"Description:\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -509,7 +509,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "INTERFACE",
-            "retrieval_value": "Interface:\\r*(.*)",
+            "retrieval_value": r"Interface:\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -519,7 +519,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "GROUP ID",
-            "retrieval_value": "^[^:]+:[^:]*:([0-9]+)",
+            "retrieval_value": r"^[^:]+:[^:]*:([0-9]+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -529,7 +529,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "MEMBER",
-            "retrieval_value": "^[^:]+:[^:]*:[0-9]+:([^\n]*)$",
+            "retrieval_value": r"^[^:]+:[^:]*:[0-9]+:([^\n]*)$",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -539,7 +539,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrieval_value": "^([^:]+)",
+            "retrieval_value": r"^([^:]+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -549,7 +549,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "USER ID",
-            "retrieval_value": "^[^:]+:[^:]*:([0-9]+)",
+            "retrieval_value": r"^[^:]+:[^:]*:([0-9]+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -559,7 +559,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "GROUP ID",
-            "retrieval_value": "^[^:]+:[^:]*:[0-9]+:([0-9]+)",
+            "retrieval_value": r"^[^:]+:[^:]*:[0-9]+:([0-9]+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -569,7 +569,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrieval_value": "^([^:]+)",
+            "retrieval_value": r"^([^:]+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -579,7 +579,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "HOME",
-            "retrieval_value": "^(?:[^:]*:){5}([^:]*)",
+            "retrieval_value": r"^(?:[^:]*:){5}([^:]*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -589,7 +589,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "SHELL",
-            "retrieval_value": "^(?:[^:]*:){6}([^:\n]*)",
+            "retrieval_value": r"^(?:[^:]*:){6}([^:\n]*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -599,7 +599,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "LOGIN",
-            "retrieval_value": "^([^:]+)",
+            "retrieval_value": r"^([^:]+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -719,7 +719,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrieval_value": "(Digital display|Analog display)",
+            "retrieval_value": r"(Digital display|Analog display)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -779,7 +779,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrieval_value": "Name:\\r*(.*)",
+            "retrieval_value": r"Name:\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -789,7 +789,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "DRIVER",
-            "retrieval_value": "DRIVER:\\r*(.*)",
+            "retrieval_value": r"DRIVER:\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -799,7 +799,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "PORT",
-            "retrieval_value": "Port:\\r*(.*)",
+            "retrieval_value": r"Port:\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -809,7 +809,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrieval_value": "Description:\\r*(.*)",
+            "retrieval_value": r"Description:\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -889,7 +889,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrieval_value": "Manufacturer:\\r*(.*)",
+            "retrieval_value": r"Manufacturer:\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -899,7 +899,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrieval_value": "Name:\\r*(.*)",
+            "retrieval_value": r"Name:\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -909,7 +909,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "MODEL",
-            "retrieval_value": "Model:\\r*(.*)",
+            "retrieval_value": r"Model:\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -919,7 +919,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrieval_value": "Description:\\r*(.*)",
+            "retrieval_value": r"Description:\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -929,7 +929,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrieval_value": "Type:\\r*(.*)",
+            "retrieval_value": r"Type:\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -939,7 +939,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "DISK SIZE",
-            "retrieval_value": "DiskSize:\\r*(.*)",
+            "retrieval_value": r"DiskSize:\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -949,7 +949,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "SERIAL NUMBER",
-            "retrieval_value": "SerialNumber:\\r*(.*)",
+            "retrieval_value": r"SerialNumber:\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -959,7 +959,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "FIRMWARE",
-            "retrieval_value": "Firmware:\\r*(.*)",
+            "retrieval_value": r"Firmware:\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -969,7 +969,7 @@ def create_default_linux_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrieval_value": r"iProduct\s*\d+\\r*(.*)",
+            "retrieval_value": r"iProduct\s*\d+\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
