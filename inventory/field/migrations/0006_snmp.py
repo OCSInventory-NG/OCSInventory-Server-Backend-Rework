@@ -13,7 +13,7 @@ def create_snmp_fields(apps, schema_editor):
         {
             "name": "Location",
             "order": 1,
-            "retrieval_value": "1.3.6.1.2.1.1.6.0",
+            "retrieval_value": r"1.3.6.1.2.1.1.6.0",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -24,7 +24,7 @@ def create_snmp_fields(apps, schema_editor):
         {
             "name": "Contact",
             "order": 2,
-            "retrieval_value": "1.3.6.1.2.1.1.4.0",
+            "retrieval_value": r"1.3.6.1.2.1.1.4.0",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -35,7 +35,7 @@ def create_snmp_fields(apps, schema_editor):
         {
             "name": "Uptime",
             "order": 3,
-            "retrieval_value": "1.3.6.1.2.1.1.3.0",
+            "retrieval_value": r"1.3.6.1.2.1.1.3.0",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -46,7 +46,7 @@ def create_snmp_fields(apps, schema_editor):
         {
             "name": "Boot path",
             "order": 4,
-            "retrieval_value": "1.3.6.1.2.1.25.1.4.0",
+            "retrieval_value": r"1.3.6.1.2.1.25.1.4.0",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -58,7 +58,7 @@ def create_snmp_fields(apps, schema_editor):
         {
             "name": "Interface Name",
             "order": 1,
-            "retrieval_value": "1.3.6.1.2.1.2.2.1.2",
+            "retrieval_value": r"1.3.6.1.2.1.2.2.1.2",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -69,7 +69,7 @@ def create_snmp_fields(apps, schema_editor):
         {
             "name": "MAC Address",
             "order": 2,
-            "retrieval_value": "1.3.6.1.2.1.2.2.1.6",
+            "retrieval_value": r"1.3.6.1.2.1.2.2.1.6",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -80,7 +80,7 @@ def create_snmp_fields(apps, schema_editor):
         {
             "name": "Speed",
             "order": 3,
-            "retrieval_value": "1.3.6.1.2.1.2.2.1.5",
+            "retrieval_value": r"1.3.6.1.2.1.2.2.1.5",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -91,7 +91,7 @@ def create_snmp_fields(apps, schema_editor):
         {
             "name": "Status",
             "order": 4,
-            "retrieval_value": "1.3.6.1.2.1.2.2.1.8",
+            "retrieval_value": r"1.3.6.1.2.1.2.2.1.8",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -102,7 +102,7 @@ def create_snmp_fields(apps, schema_editor):
         {
             "name": "InErrors",
             "order": 5,
-            "retrieval_value": "1.3.6.1.2.1.2.2.1.14",
+            "retrieval_value": r"1.3.6.1.2.1.2.2.1.14",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -113,7 +113,7 @@ def create_snmp_fields(apps, schema_editor):
         {
             "name": "OutErrors",
             "order": 6,
-            "retrieval_value": "1.3.6.1.2.1.2.2.1.20",
+            "retrieval_value": r"1.3.6.1.2.1.2.2.1.20",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -125,7 +125,7 @@ def create_snmp_fields(apps, schema_editor):
         {
             "name": "IP",
             "order": 1,
-            "retrieval_value": "1.3.6.1.2.1.4.20.1.1",
+            "retrieval_value": r"1.3.6.1.2.1.4.20.1.1",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -136,7 +136,7 @@ def create_snmp_fields(apps, schema_editor):
         {
             "name": "Netmask",
             "order": 2,
-            "retrieval_value": "1.3.6.1.2.1.4.20.1.3",
+            "retrieval_value": r"1.3.6.1.2.1.4.20.1.3",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -148,7 +148,7 @@ def create_snmp_fields(apps, schema_editor):
         {
             "name": "Device name",
             "order": 1,
-            "retrieval_value": "1.3.6.1.2.1.25.3.2.1.3",
+            "retrieval_value": r"1.3.6.1.2.1.25.3.2.1.3",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
