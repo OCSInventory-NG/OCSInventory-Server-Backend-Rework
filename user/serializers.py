@@ -99,7 +99,6 @@ class MyAccountSerializer(UserSerializer):
             "first_name",
             "last_name",
             "password",
-            "is_staff",
             "groups",
             "user_permissions",
         ]
