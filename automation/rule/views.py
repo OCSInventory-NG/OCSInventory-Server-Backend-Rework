@@ -35,6 +35,16 @@ class ActionViewSet(viewsets.OCSViewSet):
     queryset = Action.objects.all()
     serializer_class = ActionSerializer
     model = Action
+    filterset_fields = [
+        "id",
+        "rule",
+        "action",
+        "description",
+        "content_type",
+        "object_id",
+        "object_slug",
+        "field",
+    ]
 
 
 class TriggerViewSet(viewsets.OCSViewSet):
