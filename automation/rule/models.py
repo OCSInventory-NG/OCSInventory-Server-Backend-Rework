@@ -35,4 +35,4 @@ class Action(models.Model):
     object_slug = models.CharField(null=True, max_length=100)
 
     field = models.CharField(max_length=255)
-    value = models.CharField(max_length=255)
+    value = models.JSONField()
