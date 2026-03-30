@@ -1,7 +1,7 @@
 from ipdiscover.netgroup.models import Netgroup
 from ipdiscover.netgroup.serializers import NetgroupSerializer
-from permission.permissions import DefaultModelPermissions
 from ocsinventory_backend.ocs_framework import viewsets
+from permission.permissions import DefaultModelPermissions
 
 
 class NetgroupViewSet(viewsets.OCSViewSet):

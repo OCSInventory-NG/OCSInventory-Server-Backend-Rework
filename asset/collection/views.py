@@ -172,10 +172,8 @@ class CollectionView(APIView):
                 extra={"classname": __name__},
             )
             return Response(
-                {
-                    "message": f"""Device creation rejected due
-                              to blacklist: {message}"""
-                },
+                {"message": f"""Device creation rejected due
+                              to blacklist: {message}"""},
                 status=403,
             )
 
@@ -349,10 +347,8 @@ class CollectionView(APIView):
                 extra={"classname": __name__},
             )
             return Response(
-                {
-                    "message": f"""Device update rejected due
-                              to blacklist: {message}"""
-                },
+                {"message": f"""Device update rejected due
+                              to blacklist: {message}"""},
                 status=403,
             )
 
@@ -481,10 +477,8 @@ class CollectionView(APIView):
                 extra={"classname": __name__},
             )
             return Response(
-                {
-                    f"""Update succeeded but errors were encountered while
-                      updating device {device_id}: {str(errors)}"""
-                },
+                {f"""Update succeeded but errors were encountered while
+                      updating device {device_id}: {str(errors)}"""},
                 status=200,
             )
         else:
@@ -521,10 +515,8 @@ class CollectionView(APIView):
                 extra={"classname": __name__},
             )
             return Response(
-                {
-                    "message": f"""Device partial update rejected
-                              due to blacklist: {message}"""
-                },
+                {"message": f"""Device partial update rejected
+                              due to blacklist: {message}"""},
                 status=403,
             )
 
