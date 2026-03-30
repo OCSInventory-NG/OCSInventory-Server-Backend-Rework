@@ -4,17 +4,33 @@
 APPLY_FIXES: all # all, none, or list of linter keys
 DEFAULT_BRANCH: dev # Usually master or main
 # ENABLE: # If you use ENABLE variable, all other languages/formats/tooling-formats will be disabled by default
-# ENABLE_LINTERS: # If you use ENABLE_LINTERS variable, all other linters will be disabled by default
+ENABLE_LINTERS: # If you use ENABLE_LINTERS variable, all other linters will be disabled by default
+  - YAML_PRETTIER
+  - YAML_YAMLLINT
+  - YAML_V8R
+  - REPOSITORY_CHECKOV
+  - REPOSITORY_TRIVY
+  - REPOSITORY_TRIVY_SBOM
+  - REPOSITORY_TRUFFLEHOG
+  - ACTION_ACTIONLINT
+  - REPOSITORY_DUSTILOCK
+  - REPOSITORY_GITLEAKS
+  - REPOSITORY_SYFT
+  - REPOSITORY_KINGFISHER
+  - REPOSITORY_GIT_DIFF
+  - REPOSITORY_GRYPE
+  - PYTHON_BLACK
+  - PYTHON_ISORT
+  - PYTHON_RUFF
+  - PYTHON_FLAKE8
 DISABLE_LINTERS:
-  [
-    PYTHON_MYPY,
-    PYTHON_PYLINT,
-    PYTHON_PYRIGHT,
-    REPOSITORY_DEVSKIM,
-    REPOSITORY_KICS,
-    PYTHON_BANDIT,
-    REPOSITORY_SECRETLINT,
-  ]
+  - PYTHON_MYPY,
+  - PYTHON_PYLINT,
+  - PYTHON_PYRIGHT,
+  - REPOSITORY_DEVSKIM,
+  - REPOSITORY_KICS,
+  - PYTHON_BANDIT,
+  - REPOSITORY_SECRETLINT,
 DISABLE:
   - COPYPASTE # Comment to disable checks of abusive copy-pastes
   - SPELL # Comment to disable checks of spelling mistakes # - SPELL # Uncomment to disable checks of spelling mistakes
