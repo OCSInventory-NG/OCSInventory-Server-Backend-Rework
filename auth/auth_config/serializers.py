@@ -23,6 +23,8 @@ class AuthConfigSerializer(ExpandableFieldsMixin, ModelSerializer):
         model = AuthConfig
         fields = [
             "id",
+            "name",
+            "description",
             "auth_method",
             "enabled",
             "priority",

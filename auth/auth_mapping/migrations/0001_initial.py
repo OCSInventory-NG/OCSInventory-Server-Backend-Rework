@@ -22,6 +22,7 @@ def add_auth_methods(apps, schema_editor):
             "priority": 2,
             "configs": [
                 {
+                    "name": "LDAP Default Config",
                     "enabled": True,
                     "priority": 1,
                     "config": {
@@ -43,6 +44,7 @@ def add_auth_methods(apps, schema_editor):
             "priority": None,
             "configs": [
                 {
+                    "name": "OIDC Default Config",
                     "enabled": True,
                     "priority": None,
                     "config": {
@@ -84,6 +86,7 @@ def add_auth_methods(apps, schema_editor):
             "priority": None,
             "configs": [
                 {
+                    "name": "CAS Default Config",
                     "enabled": True,
                     "priority": None,
                     "config": {
@@ -124,6 +127,7 @@ def add_auth_methods(apps, schema_editor):
             try:
                 auth_config, created = AuthConfig.objects.get_or_create(
                     auth_method=auth_method,
+                    name=config_data["name"],
                     enabled=config_data["enabled"],
                     priority=config_data["priority"],
                     config=config_data["config"],

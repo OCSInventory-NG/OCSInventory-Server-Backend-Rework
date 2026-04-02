@@ -59,7 +59,6 @@ class MyAccountViewSet(viewsets.OCSViewSet):
             "email": getattr(user, "email", ""),
             "first_name": getattr(user, "first_name", ""),
             "last_name": getattr(user, "last_name", ""),
-            "is_staff": getattr(user, "is_staff", False),
             "is_superuser": getattr(user, "is_superuser", False),
             "groups": refined_groups,
             "full_permissions": refined_permissions,

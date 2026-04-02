@@ -6623,7 +6623,7 @@
       "method": "POST",
       "body": {
         "mimeType": "application/json",
-        "text": "{\n\t\"username\":\"user.name\",\n\t\"email\":\"user.name@development.com\",\n\t\"first_name\":\"USER\",\n\t\"last_name\":\"NAME\",\n\t\"password\":\"password\",\n\t\"groups\":[],\n\t\"is_staff\":false,\n\t\"is_superuser\":false\n}"
+        "text": "{\n\t\"username\":\"user.name\",\n\t\"email\":\"user.name@development.com\",\n\t\"first_name\":\"USER\",\n\t\"last_name\":\"NAME\",\n\t\"password\":\"password\",\n\t\"groups\":[],\n\t\"is_superuser\":false\n}"
       },
       "parameters": [],
       "headers": [
