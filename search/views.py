@@ -261,6 +261,7 @@ class SearchView(GenericAPIView):
                 "software_dictionary_entries": [],
             }
         )
+        seen_matches = defaultdict(lambda: defaultdict(set))
 
         manyToMany = ["snmpscanner", "software_dictionary_entries"]
 
@@ -273,7 +274,7 @@ class SearchView(GenericAPIView):
             if related in manyToMany:
                 qs = model.objects.filter(
                     **{f"{fk}__in": inventory_ids},
-                ).filter(q)
+                ).filter(q).distinct()
 
                 for obj in qs:
                     related_ids = getattr(obj, fk).values_list("id", flat=True)
@@ -285,6 +286,11 @@ class SearchView(GenericAPIView):
                     }
 
                     for inv_id in related_ids:
+                        row_id = row.get("id")
+                        if row_id is not None and row_id in seen_matches[inv_id][related]:
+                            continue
+                        if row_id is not None:
+                            seen_matches[inv_id][related].add(row_id)
                         match_map[inv_id][related].append(row)
             else:
                 qs = model.objects.filter(
