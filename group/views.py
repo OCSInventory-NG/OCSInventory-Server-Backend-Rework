@@ -17,3 +17,4 @@ class GroupViewSet(viewsets.OCSViewSet):
 
     queryset = Group.objects.select_related("protection").all()
     serializer_class = GroupSerializer
+    model = Group

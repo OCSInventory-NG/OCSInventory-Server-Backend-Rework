@@ -6,6 +6,7 @@ from asset.inventory_base.models import InventoryBase
 from asset.inventory_base.serializers import InventoryBaseSerializer
 from asset.inventory_field.models import InventoryField
 from asset.inventory_section.models import InventorySection
+from asset.services import ReconciliationService
 from config.models import Config
 from inventory.field.models import Field
 from inventory.section.models import Section
@@ -144,72 +145,6 @@ class CollectionView(APIView):
 
         return False, None
 
-    def get_reconciliation_fields(self):
-        """
-        Get the fields used for reconciliation from the server configuration
-
-        Possible values are:
-         - "uuid"
-         - "uuid, name"
-         - "uuid, srcmac"
-         Default is "uuid"
-        """
-        try:
-            config = Config.objects.get(name="server")
-            for item in config.value:
-                if item.get("name") == "duplicate_reconciliation":
-                    selection = item.get("value", "uuid")
-                    if selection == "uuid, name":
-                        fields = ["uuid", "name"]
-                    elif selection == "uuid, srcmac":
-                        fields = ["uuid", "srcmac"]
-                    else:
-                        # default or "uuid"
-                        fields = ["uuid"]
-                    self.LOGGER.debug(
-                        f"Reconciliation fields configured as: {fields}",
-                        extra={"classname": __name__},
-                    )
-                    return fields
-            fields = ["uuid"]
-            self.LOGGER.debug(
-                f"Using default reconciliation fields: {fields}",
-                extra={"classname": __name__},
-            )
-            return fields
-        except Config.DoesNotExist:
-            self.LOGGER.warning(
-                """No server configuration found, will be using uuid only as
-                  default reconciliation field""",
-                extra={"classname": __name__},
-            )
-            fields = ["uuid"]
-            self.LOGGER.debug(
-                f"Using default reconciliation fields: {fields}",
-                extra={"classname": __name__},
-            )
-            return fields
-
-    def get_reconciliation_filter(self, data):
-        """
-        Build a filter for asset lookup from the reconciliation fields (config)
-        """
-        fields = self.get_reconciliation_fields()
-        filter_dict = {}
-        for field in fields:
-            if field not in data:
-                raise ValueError(
-                    f"""Missing field '{field}'
-                                  required for reconciliation."""
-                )
-            filter_dict[field] = data[field]
-        return filter_dict
-
-    def format_reconciliation_info(self, data):
-        fields = self.get_reconciliation_fields()
-        values = [f"{field}={data.get(field, 'unknown')}" for field in fields]
-        return f"({' - '.join(values)})"
-
     def post(self, request, *args, **kwargs):
         """
         Perform creation of asset and inventory. If inventory
@@ -226,7 +161,7 @@ class CollectionView(APIView):
             Response object
         """
         data = request.data
-        reconciliation_info = self.format_reconciliation_info(data)
+        reconciliation_info = ReconciliationService().format_reconciliation_info(data)
         device_id = f"{data.get('name', 'unknown')} {reconciliation_info}"
 
         # blacklist check
@@ -237,10 +172,8 @@ class CollectionView(APIView):
                 extra={"classname": __name__},
             )
             return Response(
-                {
-                    "message": f"""Device creation rejected due
-                              to blacklist: {message}"""
-                },
+                {"message": f"""Device creation rejected due
+                              to blacklist: {message}"""},
                 status=403,
             )
 
@@ -403,7 +336,7 @@ class CollectionView(APIView):
             Response object
         """
         data = request.data
-        reconciliation_info = self.format_reconciliation_info(data)
+        reconciliation_info = ReconciliationService().format_reconciliation_info(data)
         device_id = f"{data.get('name', 'unknown')} {reconciliation_info}"
 
         # blacklist check
@@ -414,10 +347,8 @@ class CollectionView(APIView):
                 extra={"classname": __name__},
             )
             return Response(
-                {
-                    "message": f"""Device update rejected due
-                              to blacklist: {message}"""
-                },
+                {"message": f"""Device update rejected due
+                              to blacklist: {message}"""},
                 status=403,
             )
 
@@ -429,7 +360,9 @@ class CollectionView(APIView):
         )
 
         try:
-            reconciliation_filter = self.get_reconciliation_filter(data)
+            reconciliation_filter = ReconciliationService().get_reconciliation_filter(
+                data
+            )
         except ValueError as ve:
             self.LOGGER.error("Reconciliation error: %s", ve)
             return Response({"error": str(ve)}, status=400)
@@ -463,7 +396,9 @@ class CollectionView(APIView):
                 device_id,
                 e,
             )
-            return Response({"error": f"Error while updating inventory: {e}"}, status=500)
+            return Response(
+                {"error": f"Error while updating inventory: {e}"}, status=500
+            )
 
         section_objs = Section.objects.filter(template=asset_instance.template_id)
         field_objs = Field.objects.filter(section__in=section_objs)
@@ -542,10 +477,8 @@ class CollectionView(APIView):
                 extra={"classname": __name__},
             )
             return Response(
-                {
-                    f"""Update succeeded but errors were encountered while
-                      updating device {device_id}: {str(errors)}"""
-                },
+                {f"""Update succeeded but errors were encountered while
+                      updating device {device_id}: {str(errors)}"""},
                 status=200,
             )
         else:
@@ -571,7 +504,7 @@ class CollectionView(APIView):
         template_section will be created for the same asset.
         """
         data = request.data
-        reconciliation_info = self.format_reconciliation_info(data)
+        reconciliation_info = ReconciliationService().format_reconciliation_info(data)
         device_id = f"{data.get('name', 'unknown')} {reconciliation_info}"
 
         # blacklist check
@@ -582,10 +515,8 @@ class CollectionView(APIView):
                 extra={"classname": __name__},
             )
             return Response(
-                {
-                    "message": f"""Device partial update rejected
-                              due to blacklist: {message}"""
-                },
+                {"message": f"""Device partial update rejected
+                              due to blacklist: {message}"""},
                 status=403,
             )
 
@@ -597,7 +528,9 @@ class CollectionView(APIView):
         )
 
         try:
-            reconciliation_filter = self.get_reconciliation_filter(data)
+            reconciliation_filter = ReconciliationService().get_reconciliation_filter(
+                data
+            )
         except ValueError as ve:
             self.LOGGER.error(
                 "Reconciliation error: %s", ve, extra={"classname": __name__}

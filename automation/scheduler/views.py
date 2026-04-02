@@ -3,6 +3,7 @@ from automation.scheduler.serializers import SchedulerSerializer
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
 
+
 # Create your views here.
 class SchedulerViewSet(viewsets.OCSViewSet):
     """

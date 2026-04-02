@@ -74,7 +74,9 @@ class SearchView(GenericAPIView):
                 if masterindex > 0 and index == 0:
                     links[masterindex] = condition["link"]
 
-                if operator in TEXT_OPERATORS and isinstance(value, int):
+                if (
+                    operator in TEXT_OPERATORS and isinstance(value, int)
+                ) or value == "":
                     operator = "exact"
 
                 # Construction of the Q condition
@@ -318,17 +320,8 @@ class SearchView(GenericAPIView):
         return match_map
 
     def post(self, request, *args, **kwargs):
-        """
-        args:
-            request: request object
-            args: args
-            kwargs: kwargs
-
-        returns:
-            Response object
-        """
-
-        data = request.data
+        data = request.data.get("search_data", [])
+        ungroup = request.data.get("ungroup", False)
 
         try:
             qs = self.process_search(data)
@@ -338,23 +331,70 @@ class SearchView(GenericAPIView):
             if page is not None:
                 inventory_ids = [obj.pk for obj in page]
                 match_map = self._build_match_map(inventory_ids, rel_q)
-                serializer = InventoryBaseSerializer(
-                    page,
-                    many=True,
-                    context={"request": request, "match_map": match_map},
-                )
-                return self.get_paginated_response(serializer.data)
+                if ungroup:
+                    ungrouped_objects = []
+                    for obj in page:
+                        matches = match_map.get(obj.pk, {})
+                        if matches:
+                            for related, items in matches.items():
+                                for item in items:
+                                    single_match_context = {
+                                        "request": request,
+                                        "match_map": {obj.pk: {related: [item]}},
+                                    }
+                                    serializer = InventoryBaseSerializer(
+                                        obj, context=single_match_context
+                                    )
+                                    ungrouped_objects.append(serializer.data)
+                        else:
+                            serializer = InventoryBaseSerializer(
+                                obj, context={"request": request, "match_map": {}}
+                            )
+                            ungrouped_objects.append(serializer.data)
+
+                    return self.get_paginated_response(ungrouped_objects)
+                else:
+                    serializer = InventoryBaseSerializer(
+                        page,
+                        many=True,
+                        context={"request": request, "match_map": match_map},
+                    )
+                    return self.get_paginated_response(serializer.data)
 
             inventory_ids = list(qs.values_list("id", flat=True))
             match_map = self._build_match_map(inventory_ids, rel_q)
+
+            if ungroup:
+                ungrouped_objects = []
+                for obj in qs:
+                    matches = match_map.get(obj.pk, {})
+                    if matches:
+                        for related, items in matches.items():
+                            for item in items:
+                                single_match_context = {
+                                    "request": request,
+                                    "match_map": {obj.pk: {related: [item]}},
+                                }
+                                serializer = InventoryBaseSerializer(
+                                    obj, context=single_match_context
+                                )
+                                ungrouped_objects.append(serializer.data)
+                    else:
+                        serializer = InventoryBaseSerializer(
+                            obj, context={"request": request, "match_map": {}}
+                        )
+                        ungrouped_objects.append(serializer.data)
+
+                return Response(ungrouped_objects, status=200)
+
             serializer = InventoryBaseSerializer(
                 qs,
                 many=True,
                 context={"request": request, "match_map": match_map},
             )
             return Response(serializer.data, status=200)
+        # we return a 500 an error occured
         except Exception as e:
-            # we return a 500 an error occured
             self.LOGGER.error(f"Error search processing: {e}")
             return Response({"error": f"Error search processing: {e}"}, status=500)
 

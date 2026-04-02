@@ -3,6 +3,7 @@ from automation.history.serializers import HistorySerializer
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
 
+
 # Create your views here.
 class HistoryViewSet(viewsets.OCSViewSet):
     """

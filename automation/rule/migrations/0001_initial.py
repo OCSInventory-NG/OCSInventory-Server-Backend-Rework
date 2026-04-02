@@ -187,7 +187,7 @@ class Migration(migrations.Migration):
                 ("object_id", models.PositiveIntegerField(blank=True, null=True)),
                 ("object_slug", models.CharField(max_length=100, null=True)),
                 ("field", models.CharField(max_length=255)),
-                ("value", models.CharField(max_length=255)),
+                ("value", models.JSONField()),
                 (
                     "content_type",
                     models.ForeignKey(
