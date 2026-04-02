@@ -99,7 +99,13 @@ class MyAccountSerializer(UserSerializer):
             "first_name",
             "last_name",
             "password",
+            'is_superuser',
             "groups",
             "user_permissions",
         ]
-        extra_kwargs = {"password": {"write_only": True}}
+        extra_kwargs = {
+            "password": {"write_only": True},
+            "is_superuser": {"read_only": True},
+            "groups": {"read_only": True},
+            "user_permissions": {"read_only": True},
+        }
