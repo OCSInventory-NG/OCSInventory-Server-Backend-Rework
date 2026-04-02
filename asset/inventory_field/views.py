@@ -1,7 +1,7 @@
-from permission.permissions import DefaultModelPermissions
-from ocsinventory_backend.ocs_framework import viewsets
 from asset.inventory_field.models import InventoryField
 from asset.inventory_field.serializers import InventoryFieldSerializer
+from ocsinventory_backend.ocs_framework import viewsets
+from permission.permissions import DefaultModelPermissions
 
 
 class InventoryFieldViewSet(viewsets.OCSViewSet):
@@ -19,4 +19,4 @@ class InventoryFieldViewSet(viewsets.OCSViewSet):
     serializer_class = InventoryFieldSerializer
     model = InventoryField
 
-    filterset_fields = ['id', 'inventory_section', 'template_field', 'value']
+    filterset_fields = ["id", "inventory_section", "template_field", "value"]

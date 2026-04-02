@@ -22,6 +22,6 @@ class DefaultModelPermissions(permissions.DjangoModelPermissions):
 
     def has_permission(self, request, view):
         # allow OPTIONS requests if user is authenticated
-        if request._request.method == 'OPTIONS' and request.user.is_authenticated:
+        if request._request.method == "OPTIONS" and request.user.is_authenticated:
             return True
         return super().has_permission(request, view)

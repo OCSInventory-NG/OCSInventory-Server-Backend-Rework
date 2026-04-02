@@ -7,18 +7,30 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='AuthMethod',
+            name="AuthMethod",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255, unique=True)),
-                ('auth_type', models.CharField(choices=[('SSO', 'SSO'), ('OTHER', 'OTHER')], max_length=255)),
-                ('priority', models.IntegerField(blank=True, null=True)),
-                ('enabled', models.BooleanField(default=False)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255, unique=True)),
+                (
+                    "auth_type",
+                    models.CharField(
+                        choices=[("SSO", "SSO"), ("OTHER", "OTHER")], max_length=255
+                    ),
+                ),
+                ("priority", models.IntegerField(blank=True, null=True)),
+                ("enabled", models.BooleanField(default=False)),
             ],
         ),
     ]

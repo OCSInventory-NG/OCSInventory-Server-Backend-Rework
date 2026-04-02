@@ -1,5 +1,6 @@
-from django.db import models
 from automation.scheduler.models import Scheduler
+from django.db import models
+
 
 # Create your models here.
 class History(models.Model):
