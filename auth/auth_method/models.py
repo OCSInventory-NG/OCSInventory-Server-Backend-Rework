@@ -14,8 +14,8 @@ class AuthMethod(models.Model):
 
     # define the choices for the type field
     TYPE_CHOICES = [
-        ('SSO', 'SSO'),  # applies to CAS and OIDC at the moment
-        ('OTHER', 'OTHER'),
+        ("SSO", "SSO"),  # applies to CAS and OIDC at the moment
+        ("OTHER", "OTHER"),
     ]
 
     name = models.CharField(max_length=255, unique=True)

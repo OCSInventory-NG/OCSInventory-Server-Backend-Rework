@@ -65,10 +65,8 @@ class ReconciliationService:
         filter_dict = {}
         for field in fields:
             if field not in data:
-                raise ValueError(
-                    f"""Missing field '{field}'
-                                  required for reconciliation."""
-                )
+                raise ValueError(f"""Missing field '{field}'
+                                  required for reconciliation.""")
             filter_dict[field] = data[field]
         return filter_dict
 

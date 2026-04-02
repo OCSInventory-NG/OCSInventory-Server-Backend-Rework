@@ -14,5 +14,7 @@ class DashboardChartRouter:
         and return the new routes.
         """
 
-        defaultRouter.register(r"dashboard/chart", DashboardChartViewSet, basename="dashboard-chart")
+        defaultRouter.register(
+            r"dashboard/chart", DashboardChartViewSet, basename="dashboard-chart"
+        )
         return defaultRouter
