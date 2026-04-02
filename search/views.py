@@ -326,8 +326,8 @@ class SearchView(GenericAPIView):
         return match_map
 
     def post(self, request, *args, **kwargs):
-        data = request.data.get('search_data', [])
-        ungroup = request.data.get('ungroup', False)
+        data = request.data.get("search_data", [])
+        ungroup = request.data.get("ungroup", False)
 
         try:
             qs = self.process_search(data)
@@ -336,7 +336,7 @@ class SearchView(GenericAPIView):
             rel_q = self._extract_match_filters(data)
             if page is not None:
                 inventory_ids = [obj.pk for obj in page]
-                match_map = self._build_match_map(inventory_ids, rel_q)             
+                match_map = self._build_match_map(inventory_ids, rel_q)
                 if ungroup:
                     ungrouped_objects = []
                     for obj in page:
@@ -345,21 +345,19 @@ class SearchView(GenericAPIView):
                             for related, items in matches.items():
                                 for item in items:
                                     single_match_context = {
-                                        "request": request, 
-                                        "match_map": {obj.pk: {related: [item]}}
+                                        "request": request,
+                                        "match_map": {obj.pk: {related: [item]}},
                                     }
                                     serializer = InventoryBaseSerializer(
-                                        obj,
-                                        context=single_match_context
+                                        obj, context=single_match_context
                                     )
                                     ungrouped_objects.append(serializer.data)
                         else:
                             serializer = InventoryBaseSerializer(
-                                obj,
-                                context={"request": request, "match_map": {}}
+                                obj, context={"request": request, "match_map": {}}
                             )
                             ungrouped_objects.append(serializer.data)
-                    
+
                     return self.get_paginated_response(ungrouped_objects)
                 else:
                     serializer = InventoryBaseSerializer(
@@ -371,7 +369,7 @@ class SearchView(GenericAPIView):
 
             inventory_ids = list(qs.values_list("id", flat=True))
             match_map = self._build_match_map(inventory_ids, rel_q)
-            
+
             if ungroup:
                 ungrouped_objects = []
                 for obj in qs:
@@ -380,23 +378,21 @@ class SearchView(GenericAPIView):
                         for related, items in matches.items():
                             for item in items:
                                 single_match_context = {
-                                    "request": request, 
-                                    "match_map": {obj.pk: {related: [item]}}
+                                    "request": request,
+                                    "match_map": {obj.pk: {related: [item]}},
                                 }
                                 serializer = InventoryBaseSerializer(
-                                    obj,
-                                    context=single_match_context
+                                    obj, context=single_match_context
                                 )
                                 ungrouped_objects.append(serializer.data)
                     else:
                         serializer = InventoryBaseSerializer(
-                            obj,
-                            context={"request": request, "match_map": {}}
+                            obj, context={"request": request, "match_map": {}}
                         )
                         ungrouped_objects.append(serializer.data)
-                
+
                 return Response(ungrouped_objects, status=200)
-            
+
             serializer = InventoryBaseSerializer(
                 qs,
                 many=True,
