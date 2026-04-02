@@ -179,9 +179,11 @@ class SoftwareDictionaryService:
             return None
         cleaned = str(value).strip()
         return cleaned or None
-    
+
     @staticmethod
-    def _split_version_number(version: str) -> Tuple[Optional[int], Optional[int], Optional[int]]:
+    def _split_version_number(
+        version: str,
+    ) -> Tuple[Optional[int], Optional[int], Optional[int]]:
         """
         Extract major/minor/patch from a legacy version string.
         Returns None when a component does not exist.

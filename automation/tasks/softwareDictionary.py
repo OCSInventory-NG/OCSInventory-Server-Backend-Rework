@@ -1,8 +1,8 @@
 import logging
 
+from asset.inventory_base.models import InventoryBase
 from automation.tasks.abstractTask import AbstractTask
 from inventory.software.services import SoftwareDictionaryService
-from asset.inventory_base.models import InventoryBase
 
 logger = logging.getLogger("automation.tasks.SoftwareDictionary")
 
