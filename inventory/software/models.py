@@ -68,9 +68,9 @@ class SoftwareDictionary(models.Model):
     name = models.TextField(blank=True, null=True)
     publisher = models.TextField(blank=True, null=True)
     version = models.CharField(max_length=128, blank=True, null=True)
-    major_version = models.CharField(max_length=64, blank=True, null=True)
-    minor_version = models.CharField(max_length=64, blank=True, null=True)
-    patch_version = models.CharField(max_length=64, blank=True, null=True)
+    major_version = models.IntegerField(blank=True, null=True)
+    minor_version = models.IntegerField(blank=True, null=True)
+    patch_version = models.IntegerField(blank=True, null=True)
     assets = models.ManyToManyField(
         InventoryBase,
         related_name="software_dictionary_entries",

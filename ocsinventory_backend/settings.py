@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     "snmp.scanner.apps.SnmpScannerConfig",
     "snmp.snmp_config.apps.SnmpConfigConfig",
     "accountinfo.apps.AccountinfoConfig",
+    "notes.apps.NotesConfig",
     "asset.log.apps.LogConfig",
     "automation.scheduler.apps.SchedulerConfig",
     "automation.history.apps.HistoryConfig",

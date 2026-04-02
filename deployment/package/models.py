@@ -11,7 +11,7 @@ class Package(models.Model):
     - Date of creation
     - Target OS (limited by OS_CHOICES list)
     """
-    
+
     OS_CHOICES = (
         ("WIN", "Windows"),
         ("LIN", "Linux"),

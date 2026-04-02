@@ -1,25 +1,77 @@
-# Configuration file for Mega-Linter
-# See all available variables at https://oxsecurity.github.io/megalinter/configuration/ and in linters documentation
-
-APPLY_FIXES: all # all, none, or list of linter keys
-DEFAULT_BRANCH: dev # Usually master or main
-# ENABLE: # If you use ENABLE variable, all other languages/formats/tooling-formats will be disabled by default
-# ENABLE_LINTERS: # If you use ENABLE_LINTERS variable, all other linters will be disabled by default
-DISABLE_LINTERS:
-  [
-    PYTHON_MYPY,
-    PYTHON_PYLINT,
-    PYTHON_PYRIGHT,
-    REPOSITORY_DEVSKIM,
-    REPOSITORY_KICS,
-    PYTHON_BANDIT,
-    REPOSITORY_SECRETLINT,
-  ]
+---
+# Configuration file for MegaLinter
+# See all available variables at https://megalinter.io/configuration/ and in linters documentation
+APPLY_FIXES: all
+# ENABLE: # If you use ENABLE variable, all other languages/formats/tooling formats will be disabled by default
+ENABLE_LINTERS: # If you use ENABLE_LINTERS variable, all other linters will be disabled by default
+  - YAML_PRETTIER
+  - YAML_YAMLLINT
+  - YAML_V8R
+  - REPOSITORY_CHECKOV
+  - REPOSITORY_TRIVY
+  - REPOSITORY_TRIVY_SBOM
+  - ACTION_ACTIONLINT
+  - REPOSITORY_DUSTILOCK
+  - REPOSITORY_GITLEAKS
+  - REPOSITORY_SYFT
+  - REPOSITORY_KINGFISHER
+  - REPOSITORY_GIT_DIFF
+  - REPOSITORY_GRYPE
+  - PYTHON_BLACK
+  - PYTHON_ISORT
+  - PYTHON_RUFF
+  - PYTHON_FLAKE8
 DISABLE:
   - COPYPASTE # Comment to disable checks of abusive copy-pastes
   - SPELL # Comment to disable checks of spelling mistakes # - SPELL # Uncomment to disable checks of spelling mistakes
-SHOW_ELAPSED_TIME: true
-FILEIO_REPORTER: false
+DISABLE_LINTERS:
+  - PYTHON_MYPY
+  - PYTHON_PYLINT
+  - PYTHON_PYRIGHT
+  - REPOSITORY_KICS
+  - PYTHON_BANDIT
+  - REPOSITORY_SECRETLINT
+  - REPOSITORY_TRUFFLEHOG
+DISABLE_ERRORS_LINTERS:
+  - SPELL_LYCHEE
+  - YAML_YAMLLINT
+PRINT_ALL_FILES: false
 PYTHON_MYPY_FILTER_REGEX_EXCLUDE: "migrations/"
 PYTHON_FLAKE8_FILTER_REGEX_EXCLUDE: "tests.py|settings.py"
 PYTHON_BANDIT_FILTER_REGEX_EXCLUDE: "settings.py"
+FILTER_REGEX_EXCLUDE: '(\.automation/test|\.automation/generated|\.venv|\.github/workflows|docs/javascripts|docs/overrides|docs/json-schemas|flavors|clj-kondo|TEMPLATES)'
+JSON_JSONLINT_FILTER_REGEX_EXCLUDE: '(\.vscode/)'
+YAML_YAMLLINT_FILTER_REGEX_EXCLUDE: '(templates/\.mega-linter\.yml)'
+YAML_PRETTIER_FILTER_REGEX_EXCLUDE: '(templates/\.mega-linter\.yml|mkdocs\.yml)'
+YAML_V8R_FILTER_REGEX_EXCLUDE: '(descriptors|templates/\.mega-linter\.yml|\.codecov\.yml)'
+BASH_FILTER_REGEX_EXCLUDE: "(lib)"
+MARKDOWN_FILTER_REGEX_EXCLUDE: '(license\.md|docs/licenses)'
+SPELL_VALE_FILE_EXTENSIONS:
+  - .md
+SPELL_FILTER_REGEX_EXCLUDE: (valestyles|\.github|docs/licenses)
+DOCKERFILE_HADOLINT_ARGUMENTS: "--ignore DL3003 --ignore DL3007 --ignore DL3013 --ignore DL3016 --ignore DL3018 --ignore DL3028 --ignore DL3059 --ignore DL4001 --ignore DL4006 --ignore SC2015 --ignore SC2016 --ignore SC2039 --ignore SC2086 --ignore SC1091 --ignore SC3046"
+REPOSITORY_TRIVY_ARGUMENTS:
+  - "--skip-dirs"
+  - ".automation/test"
+  - "--skip-dirs"
+  - ".venv"
+  - "--skip-dirs"
+  - "github_conf"
+REPOSITORY_TRUFFLEHOG_ARGUMENTS:
+  - --exclude-paths=.trufflehogignore
+REPOSITORY_KINGFISHER_ARGUMENTS:
+  - "--exclude"
+  - ".automation/generated"
+  - "--exclude"
+  - ".automation/test"
+  - "--exclude"
+  - "docs"
+  - "--exclude"
+  - "gitleaks-default.toml"
+REPORTERS_MARKDOWN_SUMMARY_TYPE: sections
+SHOW_ELAPSED_TIME: true
+FLAVOR_SUGGESTIONS: false
+EMAIL_REPORTER: false
+FILEIO_REPORTER: false
+JSON_REPORTER: true
+GITHUB_STATUS_REPORTER: false
