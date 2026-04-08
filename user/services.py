@@ -86,3 +86,60 @@ def sync_source_groups(
         sync_effective_groups(user)
 
     return group_ids
+
+
+def upsert_group_assignment(
+    user,
+    group_id,
+    source,
+    source_content_type=None,
+    source_object_id=None,
+):
+    """Create or update one assignment row then recompute effective groups"""
+    valid_sources = {choice[0] for choice in UserGroupAssignment.SOURCE_CHOICES}
+    if source not in valid_sources:
+        raise ValueError(f"Invalid source '{source}'")
+
+    if not Group.objects.filter(id=group_id).exists():
+        raise ValueError(f"Unknown group '{group_id}'")
+
+    if source == "manual":
+        source_content_type = None
+        source_object_id = None
+
+    with transaction.atomic():
+        assignment, created = UserGroupAssignment.objects.get_or_create(
+            user=user,
+            group_id=group_id,
+            source=source,
+            defaults={
+                "source_content_type": source_content_type,
+                "source_object_id": source_object_id,
+            },
+        )
+
+        if not created and (
+            assignment.source_content_type_id != getattr(source_content_type, "id", None)
+            or assignment.source_object_id != source_object_id
+        ):
+            assignment.source_content_type = source_content_type
+            assignment.source_object_id = source_object_id
+            assignment.save(update_fields=["source_content_type", "source_object_id"])
+
+        sync_effective_groups(user)
+
+    return assignment
+
+
+def delete_group_assignment(user, assignment_id):
+    """Delete one assignment row for user then recompute effective groups"""
+    with transaction.atomic():
+        deleted_count, _ = UserGroupAssignment.objects.filter(
+            id=assignment_id,
+            user=user,
+        ).delete()
+
+        if deleted_count:
+            sync_effective_groups(user)
+
+    return deleted_count
