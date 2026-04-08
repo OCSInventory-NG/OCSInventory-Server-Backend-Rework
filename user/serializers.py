@@ -37,6 +37,14 @@ class UserGroupAssignmentSerializer(Serializer):
         if source not in valid_sources:
             raise serializers.ValidationError({"source": "Invalid source"})
 
+        if source == "manual":
+            if source_model is not None or source_object_id is not None:
+                raise serializers.ValidationError(
+                    "manual source must not define source_model/source_object_id"
+                )
+            attrs["source_content_type"] = None
+            return attrs
+
         if source_model is None or source_object_id is None:
             raise serializers.ValidationError(
                 "source_model and source_object_id are required for non-manual sources"
