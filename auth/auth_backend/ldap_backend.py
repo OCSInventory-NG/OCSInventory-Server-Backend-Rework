@@ -6,6 +6,7 @@ from auth.auth_mapping.models import AuthMapping
 from django.contrib.auth.models import Group
 from django_auth_ldap.backend import LDAPBackend
 from django_auth_ldap.config import LDAPSearch
+from user.services import sync_source_groups
 
 
 class CustomLDAPBackend(LDAPBackend):
@@ -85,7 +86,7 @@ class CustomLDAPBackend(LDAPBackend):
 
                 if user:
                     if mirror_groups_enabled:
-                        self._mirror_memberof_groups(user)
+                        self._mirror_memberof_groups(user, config)
 
                     metadata = self._build_metadata(user)
                     user._auth_context_data = {
@@ -186,8 +187,16 @@ class CustomLDAPBackend(LDAPBackend):
 
         return metadata
 
-    def _mirror_memberof_groups(self, user):
+    def _mirror_memberof_groups(self, user, config=None):
+        """Mirror LDAP memberOf values into source scoped group assignments"""
         try:
+            if config is None:
+                self.logger.warning(
+                    "LDAP config missing for %s; skipping group mirroring",
+                    user.get_username(),
+                )
+                return
+
             ldap_user = getattr(user, "ldap_user", None)
             if ldap_user is None:
                 self.logger.warning(
@@ -207,35 +216,45 @@ class CustomLDAPBackend(LDAPBackend):
             found, member_of = self._get_memberof_attr(attrs)
             if not found:
                 self.logger.warning(
-                    "No memberOf attribute found for %s; skipping group mirroring",
+                    "No memberOf attribute found for %s; keeping existing LDAP groups",
                     user.get_username(),
                 )
                 return
 
             if not member_of:
-                user.groups.clear()
+                self._sync_ldap_source_groups(user, config, [])
                 self.logger.warning(
-                    "No memberOf values found for %s;" " skipping group mirroring",
+                    "No memberOf values found for %s; syncing LDAP groups to empty",
                     user.get_username(),
                 )
                 return
 
             group_names = self._memberof_to_group_names(member_of)
             if not group_names:
-                user.groups.clear()
+                self._sync_ldap_source_groups(user, config, [])
                 self.logger.warning(
                     "No valid memberOf group names found for %s;"
-                    " skipping group mirroring",
+                    " syncing LDAP groups to empty",
                     user.get_username(),
                 )
                 return
 
             groups = self._get_or_create_groups(group_names)
-            user.groups.set(groups)
+            self._sync_ldap_source_groups(user, config, [group.id for group in groups])
 
         except Exception as e:
             self.logger.exception(e)
             return
+
+    @staticmethod
+    def _sync_ldap_source_groups(user, config, group_ids):
+        """Sync LDAP owned group assignments for one user"""
+        sync_source_groups(
+            user,
+            "ldap",
+            group_ids,
+            source_object=config,
+        )
 
     @staticmethod
     def _get_memberof_attr(attrs):
