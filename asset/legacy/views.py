@@ -203,7 +203,10 @@ class LegacyView(APIView):
                     )
 
                 return Response(
-                    {"message": "Inventory updated successfully", "id": asset_instance.id},
+                    {
+                        "message": "Inventory updated successfully",
+                        "id": asset_instance.id,
+                    },
                     status=200,
                 )
             else:
@@ -339,7 +342,10 @@ class LegacyView(APIView):
 
                 # successful creation response
                 return Response(
-                    {"message": "Inventory created successfully", "id": asset_instance.id},
+                    {
+                        "message": "Inventory created successfully",
+                        "id": asset_instance.id,
+                    },
                     status=201,
                 )
         except KeyError as e:

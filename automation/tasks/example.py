@@ -1,5 +1,6 @@
 from automation.tasks.abstractTask import AbstractTask
 
+
 class Example(AbstractTask):
 
     def execute():

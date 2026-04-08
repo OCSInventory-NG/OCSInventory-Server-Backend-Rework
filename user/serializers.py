@@ -234,7 +234,7 @@ class MyAccountSerializer(UserSerializer):
             "first_name",
             "last_name",
             "password",
-            'is_superuser',
+            "is_superuser",
             "groups",
             "group_assignments",
             "user_permissions",
