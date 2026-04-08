@@ -244,9 +244,13 @@ class SearchView(GenericAPIView):
 
             fk = self.RELATED_MODEL_FK.get(related)
             if related in manyToMany:
-                qs = model.objects.filter(
-                    **{f"{fk}__in": inventory_ids},
-                ).filter(q).distinct()
+                qs = (
+                    model.objects.filter(
+                        **{f"{fk}__in": inventory_ids},
+                    )
+                    .filter(q)
+                    .distinct()
+                )
 
                 for obj in qs:
                     related_ids = getattr(obj, fk).values_list("id", flat=True)
@@ -259,7 +263,10 @@ class SearchView(GenericAPIView):
 
                     for inv_id in related_ids:
                         row_id = row.get("id")
-                        if row_id is not None and row_id in seen_matches[inv_id][related]:
+                        if (
+                            row_id is not None
+                            and row_id in seen_matches[inv_id][related]
+                        ):
                             continue
                         if row_id is not None:
                             seen_matches[inv_id][related].add(row_id)
