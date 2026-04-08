@@ -102,6 +102,17 @@ def create_default_automations(apps, schema_editor):
         day_of_month=None,
         is_protected=True,
     )
+    Scheduler.objects.create(
+        name="softwareDictionaryLegacy.SoftwareDictionaryLegacy",
+        description="Synchronize software dictionary entries for Legacy assets",
+        active=True,
+        recurrence="daily",
+        last_execution=None,
+        hour="03:00",
+        day_of_week=None,
+        day_of_month=None,
+        is_protected=True,
+    )
 
 
 class Migration(migrations.Migration):
