@@ -1,0 +1,88 @@
+from django.contrib.auth.models import Group
+from django.contrib.contenttypes.models import ContentType
+from django.db import transaction
+
+from user.models import UserGroupAssignment
+
+
+def _normalize_group_ids(group_ids):
+    """Normalize incoming values into set of int group ids"""
+    normalized_ids = set()
+    for value in group_ids or []:
+        if value is None:
+            continue
+        if isinstance(value, Group):
+            normalized_ids.add(value.id)
+            continue
+
+        group_id = getattr(value, "id", value)
+        try:
+            normalized_ids.add(int(group_id))
+        except (TypeError, ValueError):
+            continue
+    return normalized_ids
+
+
+def _resolve_source_ref(source_object):
+    """Resolve source object into content_type, object_id pair"""
+    if source_object is None:
+        return None, None
+
+    if getattr(source_object, "pk", None) is None:
+        raise ValueError("source_object must be a persisted instance")
+
+    source_content_type = ContentType.objects.get_for_model(
+        source_object, for_concrete_model=False
+    )
+    return source_content_type, source_object.pk
+
+
+def sync_effective_groups(user):
+    """Recompute and persist effective user.groups from all assignment sources"""
+    effective_group_ids = (
+        UserGroupAssignment.objects.filter(user=user)
+        .values_list("group_id", flat=True)
+        .distinct()
+    )
+    user.groups.set(effective_group_ids)
+
+
+def sync_source_groups(
+    user,
+    source,
+    group_ids,
+    source_object=None,
+):
+    """
+    Replace one source's group assignments for the user and recompute effective
+    user.groups from all assignment sources
+    """
+    valid_sources = {choice[0] for choice in UserGroupAssignment.SOURCE_CHOICES}
+    if source not in valid_sources:
+        raise ValueError(f"Invalid source '{source}'")
+
+    normalized_ids = _normalize_group_ids(group_ids)
+    group_ids = set(
+        Group.objects.filter(id__in=normalized_ids).values_list("id", flat=True)
+    )
+    source_content_type, source_object_id = _resolve_source_ref(source_object)
+
+    with transaction.atomic():
+        UserGroupAssignment.objects.filter(user=user, source=source).delete()
+
+        assignments = [
+            UserGroupAssignment(
+                user=user,
+                group_id=group_id,
+                source=source,
+                source_content_type=source_content_type,
+                source_object_id=source_object_id,
+            )
+            for group_id in sorted(group_ids)
+        ]
+        if assignments:
+            UserGroupAssignment.objects.bulk_create(assignments)
+
+        sync_effective_groups(user)
+
+    return group_ids
