@@ -1,6 +1,5 @@
 import logging
 
-from asset.inventory_base.models import InventoryBase
 from automation.tasks.abstractTask import AbstractTask
 from inventory.software.services import SoftwareDictionaryService
 
@@ -21,8 +20,6 @@ class SoftwareDictionaryLegacy(AbstractTask):
             return
 
         logger.info("Starting SoftwareDictionaryLegacy automation task")
-
-        legacy_assets = InventoryBase.objects.filter(template__os="LEG")
-        SoftwareDictionaryService.refresh_legacy_asset([a.id for a in legacy_assets])
+        SoftwareDictionaryService.refresh_legacy_asset()
 
         logger.info("SoftwareDictionaryLegacy automation task completed")
