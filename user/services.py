@@ -1,7 +1,6 @@
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
-
 from user.models import UserGroupAssignment
 
 
@@ -119,7 +118,8 @@ def upsert_group_assignment(
         )
 
         if not created and (
-            assignment.source_content_type_id != getattr(source_content_type, "id", None)
+            assignment.source_content_type_id
+            != getattr(source_content_type, "id", None)
             or assignment.source_object_id != source_object_id
         ):
             assignment.source_content_type = source_content_type

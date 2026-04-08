@@ -141,8 +141,7 @@ class Logic:
             self.LOGGER.error(f"Error updating field: {e}")
 
     def should_buffer_group_action(self, instance, action, field):
-        """Return true when a user_login groups action must be buffered
-        """
+        """Return true when a user_login groups action must be buffered"""
         return (
             self.trigger == "user_login"
             and instance == self.instance

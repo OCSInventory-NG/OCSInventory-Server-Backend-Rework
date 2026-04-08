@@ -59,7 +59,10 @@ class Migration(migrations.Migration):
                         max_length=20,
                     ),
                 ),
-                ("source_object_id", models.PositiveBigIntegerField(blank=True, null=True)),
+                (
+                    "source_object_id",
+                    models.PositiveBigIntegerField(blank=True, null=True),
+                ),
                 ("updated_at", models.DateTimeField(auto_now=True)),
                 (
                     "group",

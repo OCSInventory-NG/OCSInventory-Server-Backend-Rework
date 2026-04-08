@@ -67,9 +67,10 @@ class UserGroupAssignmentSerializer(Serializer):
             ) from exc
 
         model_class = source_content_type.model_class()
-        if model_class is None or not model_class.objects.filter(
-            pk=source_object_id
-        ).exists():
+        if (
+            model_class is None
+            or not model_class.objects.filter(pk=source_object_id).exists()
+        ):
             raise serializers.ValidationError(
                 {"source_object_id": "Unknown source object"}
             )

@@ -9,8 +9,8 @@ from user.serializers import (
     UserGroupAssignmentSerializer,
     UserSerializer,
 )
+from user.services import delete_group_assignment as delete_group_assignment_service
 from user.services import (
-    delete_group_assignment as delete_group_assignment_service,
     upsert_group_assignment,
 )
 
@@ -61,7 +61,9 @@ class UserViewSet(viewsets.OCSViewSet):
         return Response(
             {
                 "groups": list(user.groups.values_list("id", flat=True)),
-                "group_assignments": UserSerializer.build_group_assignments_payload(user),
+                "group_assignments": UserSerializer.build_group_assignments_payload(
+                    user
+                ),
             },
             status=status.HTTP_200_OK,
         )
