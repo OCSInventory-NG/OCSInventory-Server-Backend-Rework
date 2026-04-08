@@ -132,6 +132,7 @@ class Migration(migrations.Migration):
                     "patch_version",
                     models.IntegerField(blank=True, null=True),
                 ),
+                ("installation_number", models.IntegerField(default=0)),
                 ("updated_at", models.DateTimeField(auto_now=True)),
                 (
                     "assets",
