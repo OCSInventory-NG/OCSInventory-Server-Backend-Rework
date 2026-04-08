@@ -71,6 +71,7 @@ class SoftwareDictionary(models.Model):
     major_version = models.IntegerField(blank=True, null=True)
     minor_version = models.IntegerField(blank=True, null=True)
     patch_version = models.IntegerField(blank=True, null=True)
+    installation_number = models.IntegerField(default=0)
     assets = models.ManyToManyField(
         InventoryBase,
         related_name="software_dictionary_entries",

@@ -5,6 +5,7 @@ from asset.inventory_base.models import InventoryBase
 from asset.inventory_section.models import InventorySection
 from config.models import Config
 from django.db import transaction
+from django.db.models import F
 from django.db.models.functions import Now
 from inventory.software.models import SoftwareDictionary, SoftwareMapping
 
@@ -104,7 +105,8 @@ class SoftwareDictionaryService:
         if not entry_ids_list:
             return
 
-        cls._detach_asset_entries(asset_id, entry_ids_list)
+        cls._decrement_installation_numbers(entry_ids_list)
+        cls._cleanup_empty_entries(entry_ids_list)
 
     @classmethod
     def _build_entries_for_asset(cls, asset: InventoryBase) -> List[Dict]:
@@ -213,37 +215,38 @@ class SoftwareDictionaryService:
             return
 
         through_model = SoftwareDictionary.assets.through
-        through_model.objects.filter(
+        link_qs = through_model.objects.filter(
             softwaredictionary_id__in=entry_ids,
             inventorybase_id=asset_id,
-        ).delete()
-
-        empty_ids = list(
-            SoftwareDictionary.objects.filter(
-                id__in=entry_ids, assets__isnull=True
-            ).values_list("id", flat=True)
         )
-        remaining_ids = set(entry_ids) - set(empty_ids)
+        removed_entry_ids = list(
+            link_qs.values_list("softwaredictionary_id", flat=True).distinct()
+        )
+        if not removed_entry_ids:
+            return
 
-        if remaining_ids:
-            SoftwareDictionary.objects.filter(id__in=remaining_ids).update(
-                updated_at=Now()
-            )
-
-        if empty_ids:
-            SoftwareDictionary.objects.filter(id__in=empty_ids).delete()
+        link_qs.delete()
+        cls._decrement_installation_numbers(removed_entry_ids)
+        cls._cleanup_empty_entries(removed_entry_ids)
 
     @classmethod
     def _attach_asset_entries(cls, asset: InventoryBase, entries: List[Dict]) -> None:
         """Attach an asset to the provided dictionary entries"""
+        through_model = SoftwareDictionary.assets.through
         created_count = 0
         for entry in entries:
             obj, created = SoftwareDictionary.objects.get_or_create(**entry)
-            obj.assets.add(asset)
-            if not created:
-                SoftwareDictionary.objects.filter(id=obj.id).update(updated_at=Now())
-            else:
+            if created:
                 created_count += 1
+
+            _, relation_created = through_model.objects.get_or_create(
+                softwaredictionary_id=obj.id,
+                inventorybase_id=asset.id,
+            )
+            if relation_created:
+                cls._increment_installation_numbers([obj.id])
+            else:
+                SoftwareDictionary.objects.filter(id=obj.id).update(updated_at=Now())
 
         if entries:
             logger.debug(
@@ -252,6 +255,39 @@ class SoftwareDictionaryService:
                 len(entries),
                 created_count,
             )
+
+    @classmethod
+    def _increment_installation_numbers(cls, entry_ids: Iterable[int]) -> None:
+        unique_ids = list(set(entry_ids))
+        if not unique_ids:
+            return
+        SoftwareDictionary.objects.filter(id__in=unique_ids).update(
+            installation_number=F("installation_number") + 1,
+            updated_at=Now(),
+        )
+
+    @classmethod
+    def _decrement_installation_numbers(cls, entry_ids: Iterable[int]) -> None:
+        unique_ids = list(set(entry_ids))
+        if not unique_ids:
+            return
+        SoftwareDictionary.objects.filter(
+            id__in=unique_ids,
+            installation_number__gt=0,
+        ).update(
+            installation_number=F("installation_number") - 1,
+            updated_at=Now(),
+        )
+
+    @classmethod
+    def _cleanup_empty_entries(cls, entry_ids: Iterable[int]) -> None:
+        unique_ids = list(set(entry_ids))
+        if not unique_ids:
+            return
+        SoftwareDictionary.objects.filter(
+            id__in=unique_ids,
+            assets__isnull=True,
+        ).delete()
 
     @classmethod
     def get_generation_mode(cls) -> str:
