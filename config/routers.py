@@ -1,4 +1,5 @@
 from config.views import ConfigViewSet
+from config.views import ServerInfoViewSet
 
 
 class ConfigRouter:
@@ -19,4 +20,7 @@ class ConfigRouter:
             [DefaultRouter]: Updated router with app's dedicated routes
         """
         defaultRouter.register(r"config", ConfigViewSet)
+        defaultRouter.register(
+            r"server-info", ServerInfoViewSet, basename="server_info"
+        )
         return defaultRouter
