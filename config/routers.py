@@ -1,5 +1,4 @@
-from config.views import ConfigViewSet
-from config.views import ServerInfoViewSet
+from config.views import ConfigViewSet, ServerInfoViewSet
 
 
 class ConfigRouter:

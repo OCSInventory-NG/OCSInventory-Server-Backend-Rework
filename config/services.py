@@ -38,7 +38,9 @@ class ServerInfoService:
 
     @staticmethod
     def get_authentication_types():
-        auth_methods = AuthMethod.objects.filter(enabled=True).order_by("priority", "name")
+        auth_methods = AuthMethod.objects.filter(enabled=True).order_by(
+            "priority", "name"
+        )
         return list(auth_methods.values_list("name", flat=True))
 
     @staticmethod
