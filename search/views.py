@@ -51,15 +51,28 @@ class SearchView(GenericAPIView):
         "software_dictionary_entries": "assets",
     }
 
+    SAME_ROW_RELATED_MODELS = {
+        "results",
+        "logs",
+        "snmpscanner",
+        "software_dictionary_entries",
+    }
+
+    TEXT_OPERATORS = {"icontains", "iexact", "istartswith", "iendswith"}
+
+    def _normalize_operator(self, operator, value):
+        if (operator in self.TEXT_OPERATORS and isinstance(value, int)) or value in (
+            "",
+            None,
+        ):
+            return "exact"
+        return operator
+
     def _build_condition_q(self, condition):
         field = condition["field"]
-        operator = condition["operator"]
         value = condition["value"]
         obj = condition["object"]
-        TEXT_OPERATORS = {"icontains", "iexact", "istartswith", "iendswith"}
-
-        if (operator in TEXT_OPERATORS and isinstance(value, int)) or value == "":
-            operator = "exact"
+        operator = self._normalize_operator(condition["operator"], value)
 
         # Construction of the Q condition
         if obj == "InventoryBase":
@@ -139,6 +152,63 @@ class SearchView(GenericAPIView):
 
         return condition_q
 
+    def _build_related_condition_q(self, condition):
+        field = condition["field"]
+        operator = self._normalize_operator(condition["operator"], condition["value"])
+
+        if condition["object"] == "inventory_sections":
+            q = Q(template_section__exact=condition["section"])
+            q &= Q(fields__template_field__exact=condition["field"])
+            q &= Q(**{f"fields__value__{operator}": condition["value"]})
+            return q
+
+        return Q(**{f"{field}__{operator}": condition["value"]})
+
+    def _build_condition_units(self, conditions, q_builder):
+        """
+        Group AND conditions that must target the same related row.
+
+        Example:
+        - software.name=apache2 AND software.name=apt => two units, two rows
+        - software.name=adduser AND software.version=3.118 => one unit, same row
+        """
+        units = []
+        pending = None
+
+        for condition in conditions:
+            q = q_builder(condition)
+            obj = condition["object"]
+            field = condition["field"]
+            link = condition.get("link", "AND")
+
+            can_merge = (
+                pending is not None
+                and link == "AND"
+                and obj in self.SAME_ROW_RELATED_MODELS
+                and pending["object"] == obj
+                and field not in pending["fields"]
+            )
+
+            if can_merge:
+                pending["q"] &= q
+                pending["fields"].add(field)
+                continue
+
+            if pending is not None:
+                units.append(pending)
+
+            pending = {
+                "link": link,
+                "object": obj,
+                "fields": {field},
+                "q": q,
+            }
+
+        if pending is not None:
+            units.append(pending)
+
+        return units
+
     def _combine_querysets(self, base_qs, condition_qs, link):
         if base_qs is None:
             return condition_qs
@@ -153,18 +223,18 @@ class SearchView(GenericAPIView):
 
         for and_conditions in data:
             group_qs = None
-            index = 0
 
-            for condition in and_conditions:
-                if masterindex > 0 and index == 0:
-                    links[masterindex] = condition["link"]
+            if masterindex > 0 and len(and_conditions) > 0:
+                links[masterindex] = and_conditions[0]["link"]
 
-                condition_q = self._build_condition_q(condition)
+            for unit in self._build_condition_units(
+                and_conditions, self._build_condition_q
+            ):
+                condition_q = unit["q"]
                 condition_qs = InventoryBase.objects.filter(condition_q).distinct("pk")
                 group_qs = self._combine_querysets(
-                    group_qs, condition_qs, condition.get("link", "AND")
+                    group_qs, condition_qs, unit.get("link", "AND")
                 )
-                index += 1
 
             if group_qs is not None:
                 filters.append(group_qs)
@@ -191,31 +261,20 @@ class SearchView(GenericAPIView):
         rel_q = defaultdict(Q)
 
         for and_conditions in payload:
-            for condition in and_conditions:
-                obj = condition.get("object")
-                if obj not in self.RELATED_MODELS:
+            related_conditions = [
+                condition
+                for condition in and_conditions
+                if condition.get("object") in self.RELATED_MODELS
+            ]
+
+            for unit in self._build_condition_units(
+                related_conditions, self._build_related_condition_q
+            ):
+                related = unit["object"]
+                if related not in self.RELATED_MODELS:
                     continue
 
-                related = obj
-                if related == "inventory_sections":
-                    q = Q(template_section__exact=condition["section"])
-                    q &= Q(fields__template_field__exact=condition["field"])
-                    operator = condition["operator"]
-                    value = condition["value"]
-                    TEXT_OPERATORS = {"icontains", "iexact", "istartswith", "iendswith"}
-                    if operator in TEXT_OPERATORS and isinstance(value, int):
-                        operator = "exact"
-                    q &= Q(**{f"fields__value__{operator}": value})
-                else:
-                    field = condition["field"]
-                    operator = condition["operator"]
-                    value = condition["value"]
-                    TEXT_OPERATORS = {"icontains", "iexact", "istartswith", "iendswith"}
-                    if operator in TEXT_OPERATORS and isinstance(value, int):
-                        operator = "exact"
-                    q = Q(**{f"{field}__{operator}": value})
-
-                rel_q[related] |= q
+                rel_q[related] |= unit["q"]
 
         return rel_q
 
