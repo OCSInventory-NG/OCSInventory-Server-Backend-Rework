@@ -7,7 +7,7 @@ def create_default_macos_fields(apps, schema_editor):
     fields = [
         {
             "name": "CHEMISTRY",
-            "retrieval_value": 'Chemistry"\\s*=\\s*"([^"]+)',
+            "retrieval_value": 'Chemistry"\s*=\s*"([^"]+)',
             "override_target": True,
             "new_target": "ioreg -rn AppleSmartBattery",
             "retrieval_method": "BASH",
@@ -20,7 +20,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "CYCLES",
-            "retrieval_value": "Cycle Count:\\s*([0-9]+)",
+            "retrieval_value": r"Cycle Count:\s*([0-9]+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -33,7 +33,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrieval_value": "Device Name:\\s*(.*)",
+            "retrieval_value": r"Device Name:\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -46,7 +46,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "DESIGN CAPACITY",
-            "retrieval_value": 'DesignCapacity"\\s*=\\s*([0-9]+)',
+            "retrieval_value": 'DesignCapacity"\s*=\s*([0-9]+)',
             "override_target": True,
             "new_target": "ioreg -rn AppleSmartBattery",
             "retrieval_method": "BASH",
@@ -59,7 +59,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "DESIGN VOLTAGE",
-            "retrieval_value": 'DesignVoltage"\\s*=\\s*([0-9]+)',
+            "retrieval_value": 'DesignVoltage"\s*=\s*([0-9]+)',
             "override_target": True,
             "new_target": "ioreg -rn AppleSmartBattery",
             "retrieval_method": "BASH",
@@ -72,7 +72,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "ESTIMATED CHARGE REMAINING",
-            "retrieval_value": "([0-9]{1,3})%",
+            "retrieval_value": r"([0-9]{1,3})%",
             "override_target": True,
             "new_target": "pmset -g batt | head -n1",
             "retrieval_method": "BASH",
@@ -85,7 +85,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrieval_value": "Manufacturer:\\s*(.*)",
+            "retrieval_value": r"Manufacturer:\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -98,7 +98,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrieval_value": "Device Name:\\s*(.*)",
+            "retrieval_value": r"Device Name:\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -111,7 +111,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "SERIAL NUMBER",
-            "retrieval_value": "Serial Number:\\s*(.*)",
+            "retrieval_value": r"Serial Number:\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -124,7 +124,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "STATUS",
-            "retrieval_value": ";\\s*([^;]+);",
+            "retrieval_value": r";\s*([^;]+);",
             "override_target": True,
             "new_target": "pmset -g batt | head -n1",
             "retrieval_method": "BASH",
@@ -137,7 +137,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "ASSET TAG",
-            "retrieval_value": "Asset Tag:\\s*(.+)",
+            "retrieval_value": r"Asset Tag:\s*(.+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -150,7 +150,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "BIOS DATE",
-            "retrieval_value": "^$",
+            "retrieval_value": r"^$",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -163,7 +163,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "BIOS MANUFACTURER",
-            "retrieval_value": "0",
+            "retrieval_value": r"0",
             "override_target": True,
             "new_target": 'echo "Apple Inc."',
             "retrieval_method": "BASH",
@@ -176,7 +176,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "BIOS VERSION",
-            "retrieval_value": "System Firmware Version:\\s*(.+)",
+            "retrieval_value": r"System Firmware Version:\s*(.+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -189,7 +189,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrieval_value": "0",
+            "retrieval_value": r"0",
             "override_target": True,
             "new_target": 'echo "Apple Inc."',
             "retrieval_method": "BASH",
@@ -202,7 +202,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "MODEL",
-            "retrieval_value": "Model Identifier:\\s*(.+)",
+            "retrieval_value": r"Model Identifier:\s*(.+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -215,7 +215,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "MOTHERBOARD MANUFACTURER",
-            "retrieval_value": "0",
+            "retrieval_value": r"0",
             "override_target": True,
             "new_target": 'echo "Apple Inc."',
             "retrieval_method": "BASH",
@@ -228,7 +228,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "MOTHERBOARD MODEL",
-            "retrieval_value": "Model Number:\\s*(.+)",
+            "retrieval_value": r"Model Number:\s*(.+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -241,7 +241,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "MOTHERBOARD SERIAL NUMBER",
-            "retrieval_value": "Serial Number \\(system\\):\\s*(.+)",
+            "retrieval_value": r"Serial Number \(system\):\s*(.+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -254,7 +254,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "SERIAL NUMBER",
-            "retrieval_value": "Serial Number \\(system\\):\\s*(.+)",
+            "retrieval_value": r"Serial Number \(system\):\s*(.+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -267,7 +267,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrieval_value": "Model Name:\\s*(.+)",
+            "retrieval_value": r"Model Name:\s*(.+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -280,7 +280,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "CAPTION",
-            "retrieval_value": "null",
+            "retrieval_value": r"null",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -293,7 +293,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrieval_value": "PCI Device ID:\\s*(0x[0-9a-fA-F]+)",
+            "retrieval_value": r"PCI Device ID:\s*(0x[0-9a-fA-F]+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -306,7 +306,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrieval_value": "PCI Vendor ID:\\s*(0x[0-9a-fA-F]+)",
+            "retrieval_value": r"PCI Vendor ID:\s*(0x[0-9a-fA-F]+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -319,7 +319,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrieval_value": "Host Controller Driver:\\s*(.+)",
+            "retrieval_value": r"Host Controller Driver:\s*(.+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -332,7 +332,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrieval_value": "null",
+            "retrieval_value": r"null",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -345,7 +345,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "VERSION",
-            "retrieval_value": "PCI Revision ID:\\s*(0x[0-9a-fA-F]+)",
+            "retrieval_value": r"PCI Revision ID:\s*(0x[0-9a-fA-F]+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -358,7 +358,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "ARCHITECTURE",
-            "retrieval_value": "0",
+            "retrieval_value": r"0",
             "override_target": True,
             "new_target": "uname -m",
             "retrieval_method": "BASH",
@@ -371,7 +371,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "CORES NUMBER",
-            "retrieval_value": "0",
+            "retrieval_value": r"0",
             "override_target": True,
             "new_target": "sysctl -n hw.physicalcpu",
             "retrieval_method": "BASH",
@@ -384,7 +384,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "CURRENT ADDRESS WIDTH",
-            "retrieval_value": "0",
+            "retrieval_value": r"0",
             "override_target": True,
             "new_target": "getconf LONG_BIT",
             "retrieval_method": "BASH",
@@ -397,7 +397,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "CURRENT SPEED",
-            "retrieval_value": "0",
+            "retrieval_value": r"0",
             "override_target": True,
             "new_target": "sysctl -n hw.cpufrequency",
             "retrieval_method": "BASH",
@@ -410,7 +410,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "DATA WIDTH",
-            "retrieval_value": "0",
+            "retrieval_value": r"0",
             "override_target": True,
             "new_target": "getconf LONG_BIT",
             "retrieval_method": "BASH",
@@ -423,7 +423,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "FREQUENCY",
-            "retrieval_value": "0",
+            "retrieval_value": r"0",
             "override_target": True,
             "new_target": "sysctl -n hw.cpufrequency_max",
             "retrieval_method": "BASH",
@@ -436,7 +436,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "L2 CACHE SIZE",
-            "retrieval_value": "0",
+            "retrieval_value": r"0",
             "override_target": True,
             "new_target": "sysctl -n hw.l2cachesize",
             "retrieval_method": "BASH",
@@ -449,7 +449,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "LOGICAL CPUS",
-            "retrieval_value": "0",
+            "retrieval_value": r"0",
             "override_target": True,
             "new_target": "sysctl -n hw.logicalcpu",
             "retrieval_method": "BASH",
@@ -462,7 +462,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrieval_value": "0",
+            "retrieval_value": r"0",
             "override_target": True,
             "new_target": '( sysctl -n machdep.cpu.vendor 2>/dev/null || echo "Apple" )',
             "retrieval_method": "BASH",
@@ -475,7 +475,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "SERIAL NUMBER",
-            "retrieval_value": "null",
+            "retrieval_value": r"null",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -488,7 +488,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "SOCKET TYPE",
-            "retrieval_value": "null",
+            "retrieval_value": r"null",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -501,7 +501,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrieval_value": "chip_type",
+            "retrieval_value": r"chip_type",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -514,7 +514,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "VOLTAGE",
-            "retrieval_value": "null",
+            "retrieval_value": r"null",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -527,7 +527,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "CAPACITY",
-            "retrieval_value": "CAPACITY_PCT",
+            "retrieval_value": r"CAPACITY_PCT",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -540,7 +540,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "DESIGNATION",
-            "retrieval_value": "DESIGNATION",
+            "retrieval_value": r"DESIGNATION",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -553,7 +553,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "FILE SYSTEM",
-            "retrieval_value": "FILESYSTEM",
+            "retrieval_value": r"FILESYSTEM",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -566,7 +566,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "FREE (MB)",
-            "retrieval_value": "FREE_MB",
+            "retrieval_value": r"FREE_MB",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -579,7 +579,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "TOTAL (MB)",
-            "retrieval_value": "TOTAL_MB",
+            "retrieval_value": r"TOTAL_MB",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -592,7 +592,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrieval_value": "TYPE",
+            "retrieval_value": r"TYPE",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -605,7 +605,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "CAPTION",
-            "retrieval_value": "pci_revision",
+            "retrieval_value": r"pci_revision",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -618,7 +618,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrieval_value": "_name",
+            "retrieval_value": r"_name",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -631,7 +631,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "INTERFACE",
-            "retrieval_value": "host_controller",
+            "retrieval_value": r"host_controller",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -644,7 +644,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrieval_value": "pci_vendor",
+            "retrieval_value": r"pci_vendor",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -657,7 +657,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrieval_value": "pci_device",
+            "retrieval_value": r"pci_device",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -670,7 +670,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "GROUP ID",
-            "retrieval_value": "^[^:]+:[^:]*:(-?[0-9]+)",
+            "retrieval_value": r"^[^:]+:[^:]*:(-?[0-9]+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -683,7 +683,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "MEMBER",
-            "retrieval_value": "^[^:]+:[^:]*:-?[0-9]+:(.*)$",
+            "retrieval_value": r"^[^:]+:[^:]*:-?[0-9]+:(.*)$",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -696,7 +696,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrieval_value": "^([A-Za-z_][A-Za-z0-9._-]*)",
+            "retrieval_value": r"^([A-Za-z_][A-Za-z0-9._-]*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -709,7 +709,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "GROUP ID",
-            "retrieval_value": "^[^:]+:[^:]*:[0-9]+:([0-9]+)",
+            "retrieval_value": r"^[^:]+:[^:]*:[0-9]+:([0-9]+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -722,7 +722,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "HOME",
-            "retrieval_value": "^(?:[^:]*:){5}([^:]*)",
+            "retrieval_value": r"^(?:[^:]*:){5}([^:]*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -735,7 +735,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "LOGIN",
-            "retrieval_value": "^([A-Za-z_][A-Za-z0-9._-]*)",
+            "retrieval_value": r"^([A-Za-z_][A-Za-z0-9._-]*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -748,7 +748,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrieval_value": "^([A-Za-z_][A-Za-z0-9._-]*)",
+            "retrieval_value": r"^([A-Za-z_][A-Za-z0-9._-]*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -761,7 +761,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "SHELL",
-            "retrieval_value": "^(?:[^:]*:){6}([^: ]*)$",
+            "retrieval_value": r"^(?:[^:]*:){6}([^: ]*)$",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -774,7 +774,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "USER ID",
-            "retrieval_value": "^[^:]+:[^:]*:([0-9]+)",
+            "retrieval_value": r"^[^:]+:[^:]*:([0-9]+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -787,7 +787,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "CAPACITY",
-            "retrieval_value": "SPMemoryDataType",
+            "retrieval_value": r"SPMemoryDataType",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -800,7 +800,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "CAPTION",
-            "retrieval_value": "null",
+            "retrieval_value": r"null",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -813,7 +813,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrieval_value": "dimm_manufacturer",
+            "retrieval_value": r"dimm_manufacturer",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -826,7 +826,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "PURPOSE",
-            "retrieval_value": "null",
+            "retrieval_value": r"null",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -839,7 +839,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "SERIAL NUMBER",
-            "retrieval_value": "null",
+            "retrieval_value": r"null",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -852,7 +852,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "SLOT NUMBER",
-            "retrieval_value": "null",
+            "retrieval_value": r"null",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -865,7 +865,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "SPEED",
-            "retrieval_value": "null",
+            "retrieval_value": r"null",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -878,7 +878,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrieval_value": "dimm_type",
+            "retrieval_value": r"dimm_type",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -891,7 +891,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "CAPTION",
-            "retrieval_value": "_name",
+            "retrieval_value": r"_name",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -904,7 +904,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURED ON (WEEK/YEAR)",
-            "retrieval_value": "_spdisplays_display-year",
+            "retrieval_value": r"_spdisplays_display-year",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -917,7 +917,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrieval_value": "_spdisplays_display-vendor-id",
+            "retrieval_value": r"_spdisplays_display-vendor-id",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -930,7 +930,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "SERIAL NUMBER",
-            "retrieval_value": "_spdisplays_display-serial-number",
+            "retrieval_value": r"_spdisplays_display-serial-number",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -943,7 +943,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrieval_value": "_spdisplays_resolution",
+            "retrieval_value": r"_spdisplays_resolution",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -956,7 +956,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrieval_value": "([A-Za-z0-9_.-]+):\\s*flags=",
+            "retrieval_value": r"([A-Za-z0-9_.-]+):\s*flags=",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -969,7 +969,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "GATEWAY",
-            "retrieval_value": "null",
+            "retrieval_value": r"null",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -982,7 +982,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "IP ADDRESS",
-            "retrieval_value": "\\binet\\s+([0-9.]+)\\b",
+            "retrieval_value": r"\binet\s+([0-9.]+)\b",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -995,7 +995,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "MAC ADDRESS",
-            "retrieval_value": "ether\\s+([0-9a-f:]{17})",
+            "retrieval_value": r"ether\s+([0-9a-f:]{17})",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1008,7 +1008,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "MTU",
-            "retrieval_value": "mtu\\s+([0-9]+)",
+            "retrieval_value": r"mtu\s+([0-9]+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1021,7 +1021,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "NETMASK",
-            "retrieval_value": "\\binet\\s+[0-9.]+\\s+netmask\\s+([0-9a-fx]+)",
+            "retrieval_value": r"\binet\s+[0-9.]+\s+netmask\s+([0-9a-fx]+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1034,7 +1034,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "NETWORK NUMBER",
-            "retrieval_value": "null",
+            "retrieval_value": r"null",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1047,7 +1047,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "SPEED",
-            "retrieval_value": "media:[^\\n]*\\(([0-9]+(?:G|M)|[0-9]+base[A-Za-z0-9]+)",
+            "retrieval_value": r"media:[^\n]*\(([0-9]+(?:G|M)|[0-9]+base[A-Za-z0-9]+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1060,7 +1060,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "STATUS",
-            "retrieval_value": "status:\\s*([A-Za-z-]+)",
+            "retrieval_value": r"status:\s*([A-Za-z-]+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1073,7 +1073,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrieval_value": "media:\\s*([^ \\t(]+)",
+            "retrieval_value": r"media:\s*([^ \t(]+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1086,7 +1086,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "CAPTION",
-            "retrieval_value": "null",
+            "retrieval_value": r"null",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1099,7 +1099,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrieval_value": "null",
+            "retrieval_value": r"null",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1112,7 +1112,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrieval_value": "null",
+            "retrieval_value": r"null",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1125,7 +1125,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrieval_value": "null",
+            "retrieval_value": r"null",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1138,7 +1138,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrieval_value": "Description:\\r*(.*)",
+            "retrieval_value": r"Description:\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1164,7 +1164,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrieval_value": "Name:\\r*(.*)",
+            "retrieval_value": r"Name:\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1177,7 +1177,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "PORT",
-            "retrieval_value": "Port:\\r*(.*)",
+            "retrieval_value": r"Port:\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1190,7 +1190,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrieval_value": "null",
+            "retrieval_value": r"null",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1203,7 +1203,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "BASE URL",
-            "retrieval_value": "null",
+            "retrieval_value": r"null",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1216,7 +1216,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrieval_value": "Type\\s*:\\s*(.*)",
+            "retrieval_value": r"Type\s*:\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1229,7 +1229,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "DESIGNATION",
-            "retrieval_value": "ID\\s*:\\s*(.*)",
+            "retrieval_value": r"ID\s*:\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1242,7 +1242,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrieval_value": "Designation\\s*:\\s*(.*)",
+            "retrieval_value": r"Designation\s*:\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1255,7 +1255,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "STATUS",
-            "retrieval_value": "Current Usage\\s*:\\s*(.*)",
+            "retrieval_value": r"Current Usage\s*:\s*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1268,7 +1268,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "ARCHITECTURE",
-            "retrieval_value": "Kind:\\s+(\\S.*)",
+            "retrieval_value": r"Kind:\s+(\S.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1281,7 +1281,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "COMMENTS",
-            "retrieval_value": "Get Info String:\\s+(\\S.*)",
+            "retrieval_value": r"Get Info String:\s+(\S.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1294,7 +1294,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "FILE SIZE",
-            "retrieval_value": "FileSize:\\r*(.*)",
+            "retrieval_value": r"FileSize:\r*(.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1307,7 +1307,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "FROM",
-            "retrieval_value": "null",
+            "retrieval_value": r"null",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1320,7 +1320,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "INSTALLATION DATE",
-            "retrieval_value": "Last Modified:\\s+(\\S.*)",
+            "retrieval_value": r"Last Modified:\s+(\S.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1333,7 +1333,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "MAJOR",
-            "retrieval_value": "Version:\\s+(\\d+)",
+            "retrieval_value": r"Version:\s+(\d+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1346,7 +1346,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "MINOR",
-            "retrieval_value": "Version:\\s+\\d+\\.(\\d+)",
+            "retrieval_value": r"Version:\s+\d+\.(\d+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1359,7 +1359,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "PATCH",
-            "retrieval_value": "Version:\\s+\\d+\\.\\d+\\.(\\d+)",
+            "retrieval_value": r"Version:\s+\d+\.\d+\.(\d+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1372,7 +1372,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrieval_value": "\\n[ \\t]{4}(?![ \\t])([^:\\n]+):",
+            "retrieval_value": r"\n[ \t]{4}(?![ \t])([^:\n]+):",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1385,7 +1385,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "PUBLISHER",
-            "retrieval_value": "Obtained from:\\s+(\\S.*)",
+            "retrieval_value": r"Obtained from:\s+(\S.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1398,7 +1398,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "VERSION",
-            "retrieval_value": "Version:\\s+(\\S.*)",
+            "retrieval_value": r"Version:\s+(\S.*)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1411,7 +1411,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrieval_value": "_properties",
+            "retrieval_value": r"_properties",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1424,7 +1424,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrieval_value": "coreaudio_device_manufacturer",
+            "retrieval_value": r"coreaudio_device_manufacturer",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1437,7 +1437,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrieval_value": "_name",
+            "retrieval_value": r"_name",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1450,7 +1450,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrieval_value": "mount_point",
+            "retrieval_value": r"mount_point",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1463,7 +1463,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "DISK SIZE",
-            "retrieval_value": "size_in_bytes",
+            "retrieval_value": r"size_in_bytes",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1515,7 +1515,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrieval_value": "_name",
+            "retrieval_value": r"_name",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1528,7 +1528,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "SERIAL NUMBER",
-            "retrieval_value": "volume_uuid",
+            "retrieval_value": r"volume_uuid",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1554,7 +1554,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrieval_value": "_name",
+            "retrieval_value": r"_name",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1567,7 +1567,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "INTERFACE",
-            "retrieval_value": "location_id",
+            "retrieval_value": r"location_id",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1580,7 +1580,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrieval_value": "manufacturer",
+            "retrieval_value": r"manufacturer",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1593,7 +1593,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "SERIAL NUMBER",
-            "retrieval_value": "product_id",
+            "retrieval_value": r"product_id",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1606,7 +1606,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrieval_value": "null",
+            "retrieval_value": r"null",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1619,7 +1619,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "CHIPSET",
-            "retrieval_value": "sppci_model",
+            "retrieval_value": r"sppci_model",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1631,7 +1631,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "MEMORY",
-            "retrieval_value": "null",
+            "retrieval_value": r"null",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1643,7 +1643,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrieval_value": "_name",
+            "retrieval_value": r"_name",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1655,7 +1655,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrieval_value": "null",
+            "retrieval_value": r"null",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1667,7 +1667,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "UUID",
-            "retrieval_value": "null",
+            "retrieval_value": r"null",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,

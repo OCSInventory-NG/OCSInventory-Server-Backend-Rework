@@ -7,7 +7,7 @@ def create_default_windows_fields(apps, schema_editor):
     fields = [
         {
             "name": "CHEMISTRY",
-            "retrieval_value": "Chemistry",
+            "retrieval_value": r"Chemistry",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -20,7 +20,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrieval_value": "Description",
+            "retrieval_value": r"Description",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -33,7 +33,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "DESIGN CAPACITY",
-            "retrieval_value": "DesignCapacityWh",
+            "retrieval_value": r"DesignCapacityWh",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -46,7 +46,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "DESIGN VOLTAGE",
-            "retrieval_value": "DesignVoltageV",
+            "retrieval_value": r"DesignVoltageV",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -59,7 +59,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "ESTIMATED CHARGE REMAINING",
-            "retrieval_value": "EstimatedChargeRemaining",
+            "retrieval_value": r"EstimatedChargeRemaining",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -72,7 +72,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrieval_value": "ManufacturerName",
+            "retrieval_value": r"ManufacturerName",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -85,7 +85,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrieval_value": "Name",
+            "retrieval_value": r"Name",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -98,7 +98,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "SERIAL NUMBER",
-            "retrieval_value": "SerialNumber",
+            "retrieval_value": r"SerialNumber",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -111,7 +111,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "STATUS",
-            "retrieval_value": "Status",
+            "retrieval_value": r"Status",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -124,7 +124,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrieval_value": "SystemManufacturer",
+            "retrieval_value": r"SystemManufacturer",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -137,7 +137,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MODEL",
-            "retrieval_value": "SystemModel",
+            "retrieval_value": r"SystemModel",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -150,7 +150,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "SERIAL NUMBER",
-            "retrieval_value": "EnclosureSerialNumber",
+            "retrieval_value": r"EnclosureSerialNumber",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -163,7 +163,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrieval_value": "EnclosureChassisTypes",
+            "retrieval_value": r"EnclosureChassisTypes",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -176,7 +176,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "BIOS MANUFACTURER",
-            "retrieval_value": "BiosManufacturer",
+            "retrieval_value": r"BiosManufacturer",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -189,7 +189,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "BIOS VERSION",
-            "retrieval_value": "BiosVersion",
+            "retrieval_value": r"BiosVersion",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -202,7 +202,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "BIOS DATE",
-            "retrieval_value": "BiosReleaseDate",
+            "retrieval_value": r"BiosReleaseDate",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -215,7 +215,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "ASSET TAG",
-            "retrieval_value": "EnclosureAssetTag",
+            "retrieval_value": r"EnclosureAssetTag",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -228,7 +228,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MOTHERBOARD MANUFACTURER",
-            "retrieval_value": "BBoardManufacturer",
+            "retrieval_value": r"BBoardManufacturer",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -241,7 +241,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MOTHERBOARD MODEL",
-            "retrieval_value": "BBoardModel",
+            "retrieval_value": r"BBoardModel",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -254,7 +254,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MOTHERBOARD SERIAL NUMBER",
-            "retrieval_value": "BBoardSerialNumber",
+            "retrieval_value": r"BBoardSerialNumber",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -267,7 +267,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrieval_value": "Manufacturer",
+            "retrieval_value": r"Manufacturer",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -280,7 +280,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrieval_value": "Name",
+            "retrieval_value": r"Name",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -293,7 +293,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "CAPTION",
-            "retrieval_value": "Caption",
+            "retrieval_value": r"Caption",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -306,7 +306,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrieval_value": "Description",
+            "retrieval_value": r"Description",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -319,7 +319,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "VERSION",
-            "retrieval_value": "Version",
+            "retrieval_value": r"Version",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -332,7 +332,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrieval_value": "Type",
+            "retrieval_value": r"Type",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -345,7 +345,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrieval_value": "Manufacturer",
+            "retrieval_value": r"Manufacturer",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -358,7 +358,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrieval_value": "Name",
+            "retrieval_value": r"Name",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -371,7 +371,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "SERIAL NUMBER",
-            "retrieval_value": "SerialNumber",
+            "retrieval_value": r"SerialNumber",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -384,7 +384,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "FREQUENCY",
-            "retrieval_value": "MaxClockSpeed",
+            "retrieval_value": r"MaxClockSpeed",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -397,7 +397,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "CORES NUMBER",
-            "retrieval_value": "NumberOfCores",
+            "retrieval_value": r"NumberOfCores",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -410,7 +410,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "L2 CACHE SIZE",
-            "retrieval_value": "L2CacheSize",
+            "retrieval_value": r"L2CacheSize",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -423,7 +423,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "ARCHITECTURE",
-            "retrieval_value": "ArchitectureDecoded",
+            "retrieval_value": r"ArchitectureDecoded",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -436,7 +436,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "DATA WIDTH",
-            "retrieval_value": "DataWidth",
+            "retrieval_value": r"DataWidth",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -449,7 +449,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "CURRENT ADDRESS WIDTH",
-            "retrieval_value": "AddressWidth",
+            "retrieval_value": r"AddressWidth",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -462,7 +462,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "LOGICAL CPUS",
-            "retrieval_value": "NumberOfLogicalProcessors",
+            "retrieval_value": r"NumberOfLogicalProcessors",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -475,7 +475,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "VOLTAGE",
-            "retrieval_value": "VoltageCaps",
+            "retrieval_value": r"VoltageCaps",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -488,7 +488,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "CURRENT SPEED",
-            "retrieval_value": "CurrentClockSpeed",
+            "retrieval_value": r"CurrentClockSpeed",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -501,7 +501,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "SOCKET TYPE",
-            "retrieval_value": "SocketDesignation",
+            "retrieval_value": r"SocketDesignation",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -514,7 +514,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "LETTER",
-            "retrieval_value": "Caption",
+            "retrieval_value": r"Caption",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -527,7 +527,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrieval_value": "MediaType",
+            "retrieval_value": r"MediaType",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -540,7 +540,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "FILE SYSTEM",
-            "retrieval_value": "FileSystem",
+            "retrieval_value": r"FileSystem",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -553,7 +553,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "TOTAL (MB)",
-            "retrieval_value": "SizeMiB",
+            "retrieval_value": r"SizeMiB",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -566,7 +566,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "FREE (MB)",
-            "retrieval_value": "FreeSpaceMiB",
+            "retrieval_value": r"FreeSpaceMiB",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -579,7 +579,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "CAPACITY",
-            "retrieval_value": "UsedPercent",
+            "retrieval_value": r"UsedPercent",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -592,7 +592,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrieval_value": "Type",
+            "retrieval_value": r"Type",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -605,7 +605,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrieval_value": "Manufacturer",
+            "retrieval_value": r"Manufacturer",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -618,7 +618,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "CAPTION",
-            "retrieval_value": "Caption",
+            "retrieval_value": r"Caption",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -631,7 +631,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrieval_value": "Description",
+            "retrieval_value": r"Description",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -644,7 +644,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "INTERFACE",
-            "retrieval_value": "Interface",
+            "retrieval_value": r"Interface",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -657,7 +657,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "SID",
-            "retrieval_value": "SID",
+            "retrieval_value": r"SID",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -670,7 +670,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "DOMAIN",
-            "retrieval_value": "Domain",
+            "retrieval_value": r"Domain",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -683,7 +683,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrieval_value": "Name",
+            "retrieval_value": r"Name",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -696,7 +696,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "SID",
-            "retrieval_value": "SID",
+            "retrieval_value": r"SID",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -709,7 +709,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrieval_value": "Name",
+            "retrieval_value": r"Name",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -722,7 +722,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrieval_value": "Description",
+            "retrieval_value": r"Description",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -735,7 +735,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrieval_value": "AccountType",
+            "retrieval_value": r"AccountType",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -748,7 +748,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "CREATED",
-            "retrieval_value": "InstallDate",
+            "retrieval_value": r"InstallDate",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -761,7 +761,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "STATUS",
-            "retrieval_value": "Status",
+            "retrieval_value": r"Status",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -774,7 +774,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "CHANGE PASSWORD",
-            "retrieval_value": "PasswordChangeable",
+            "retrieval_value": r"PasswordChangeable",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -787,7 +787,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "PASSWORD EXPIRES",
-            "retrieval_value": "PasswordExpires",
+            "retrieval_value": r"PasswordExpires",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -800,7 +800,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "CAPTION",
-            "retrieval_value": "Caption",
+            "retrieval_value": r"Caption",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -813,7 +813,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrieval_value": "BankLabel",
+            "retrieval_value": r"BankLabel",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -826,7 +826,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "CAPACITY",
-            "retrieval_value": "CapacityMiB",
+            "retrieval_value": r"CapacityMiB",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -839,7 +839,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "PURPOSE",
-            "retrieval_value": "Use",
+            "retrieval_value": r"Use",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -852,7 +852,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrieval_value": "MemoryType",
+            "retrieval_value": r"MemoryType",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -865,7 +865,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "SPEED",
-            "retrieval_value": "Speed",
+            "retrieval_value": r"Speed",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -878,7 +878,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "SLOT NUMBER",
-            "retrieval_value": "SlotNumber",
+            "retrieval_value": r"SlotNumber",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -891,7 +891,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "SERIAL NUMBER",
-            "retrieval_value": "SerialNumber",
+            "retrieval_value": r"SerialNumber",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -904,7 +904,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrieval_value": "Manufacturer",
+            "retrieval_value": r"Manufacturer",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -917,7 +917,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "INSTANCE NAME",
-            "retrieval_value": "InstanceName",
+            "retrieval_value": r"InstanceName",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -930,7 +930,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURED ON (WEEK/YEAR)",
-            "retrieval_value": "ManufacturedOn",
+            "retrieval_value": r"ManufacturedOn",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -943,7 +943,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrieval_value": "Type",
+            "retrieval_value": r"Type",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -956,7 +956,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "SERIAL NUMBER",
-            "retrieval_value": "SerialNumber",
+            "retrieval_value": r"SerialNumber",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -969,7 +969,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "ACTIVE",
-            "retrieval_value": "Active",
+            "retrieval_value": r"Active",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -982,7 +982,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrieval_value": "Description",
+            "retrieval_value": r"Description",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -995,7 +995,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrieval_value": "Type",
+            "retrieval_value": r"Type",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1008,7 +1008,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "SPEED",
-            "retrieval_value": "Speed",
+            "retrieval_value": r"Speed",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1021,7 +1021,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MTU",
-            "retrieval_value": "MTU",
+            "retrieval_value": r"MTU",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1034,7 +1034,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MAC ADDRESS",
-            "retrieval_value": "MACAddress",
+            "retrieval_value": r"MACAddress",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1047,7 +1047,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "STATUS",
-            "retrieval_value": "Status",
+            "retrieval_value": r"Status",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1060,7 +1060,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "IP ADDRESS",
-            "retrieval_value": "IPAddress",
+            "retrieval_value": r"IPAddress",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1073,7 +1073,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "NETMASK",
-            "retrieval_value": "NetMask",
+            "retrieval_value": r"NetMask",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1086,7 +1086,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "GATEWAY",
-            "retrieval_value": "Gateway",
+            "retrieval_value": r"Gateway",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1099,7 +1099,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "NETWORK NUMBER",
-            "retrieval_value": "NetworkNumber",
+            "retrieval_value": r"NetworkNumber",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1112,7 +1112,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "DHCP IP",
-            "retrieval_value": "DHCPServer",
+            "retrieval_value": r"DHCPServer",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1125,7 +1125,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrieval_value": "Type",
+            "retrieval_value": r"Type",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1138,7 +1138,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrieval_value": "Name",
+            "retrieval_value": r"Name",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1151,7 +1151,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "CAPTION",
-            "retrieval_value": "Caption",
+            "retrieval_value": r"Caption",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1164,7 +1164,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrieval_value": "Description",
+            "retrieval_value": r"Description",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1177,7 +1177,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrieval_value": "Name",
+            "retrieval_value": r"Name",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1190,7 +1190,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "DRIVER",
-            "retrieval_value": "DriverName",
+            "retrieval_value": r"DriverName",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1203,7 +1203,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "PORT",
-            "retrieval_value": "PortName",
+            "retrieval_value": r"PortName",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1216,7 +1216,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrieval_value": "Description",
+            "retrieval_value": r"Description",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1229,7 +1229,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "SERVER PRINTER SHARING",
-            "retrieval_value": "ServerName",
+            "retrieval_value": r"ServerName",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1242,7 +1242,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "SHARING PRINTER ON SERVER",
-            "retrieval_value": "ShareName",
+            "retrieval_value": r"ShareName",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1255,7 +1255,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "SCREEN (HORIZONTAL / VERTICAL)",
-            "retrieval_value": "Resolution",
+            "retrieval_value": r"Resolution",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1268,7 +1268,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "COMMENT",
-            "retrieval_value": "Comment",
+            "retrieval_value": r"Comment",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1281,7 +1281,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "SHARED",
-            "retrieval_value": "Shared",
+            "retrieval_value": r"Shared",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1294,7 +1294,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "LOCAL / NETWORKS",
-            "retrieval_value": "Network",
+            "retrieval_value": r"Network",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1307,7 +1307,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrieval_value": "Name",
+            "retrieval_value": r"Name",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1320,7 +1320,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrieval_value": "Description",
+            "retrieval_value": r"Description",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1333,7 +1333,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "DESIGNATION",
-            "retrieval_value": "SlotDesignation",
+            "retrieval_value": r"SlotDesignation",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1346,7 +1346,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "PURPOSE",
-            "retrieval_value": "Purpose",
+            "retrieval_value": r"Purpose",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1359,7 +1359,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "STATUS",
-            "retrieval_value": "Status",
+            "retrieval_value": r"Status",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1372,7 +1372,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "SHARED",
-            "retrieval_value": "Shared",
+            "retrieval_value": r"Shared",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1385,7 +1385,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrieval_value": "DisplayName",
+            "retrieval_value": r"DisplayName",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1398,7 +1398,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "PUBLISHER",
-            "retrieval_value": "Publisher",
+            "retrieval_value": r"Publisher",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1411,7 +1411,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "VERSION",
-            "retrieval_value": "DisplayVersion",
+            "retrieval_value": r"DisplayVersion",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1424,7 +1424,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "FOLDER",
-            "retrieval_value": "InstallLocation",
+            "retrieval_value": r"InstallLocation",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1437,7 +1437,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "COMMENTS",
-            "retrieval_value": "Comments",
+            "retrieval_value": r"Comments",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1450,7 +1450,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "FILE NAME",
-            "retrieval_value": "ExecutableName",
+            "retrieval_value": r"ExecutableName",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1463,7 +1463,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "FILE SIZE",
-            "retrieval_value": "EstimatedSize",
+            "retrieval_value": r"EstimatedSize",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1476,7 +1476,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "GUID",
-            "retrieval_value": "PSChildName",
+            "retrieval_value": r"PSChildName",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1489,7 +1489,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "LANGUAGE",
-            "retrieval_value": "LanguageName",
+            "retrieval_value": r"LanguageName",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1502,7 +1502,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "INSTALLATION DATE",
-            "retrieval_value": "InstallDateFormatted",
+            "retrieval_value": r"InstallDateFormatted",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1515,7 +1515,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MAJOR",
-            "retrieval_value": "VersionMajor",
+            "retrieval_value": r"VersionMajor",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1528,7 +1528,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MINOR",
-            "retrieval_value": "VersionMinor",
+            "retrieval_value": r"VersionMinor",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1541,7 +1541,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "PATCH",
-            "retrieval_value": "VersionPatch",
+            "retrieval_value": r"VersionPatch",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1554,7 +1554,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrieval_value": "Manufacturer",
+            "retrieval_value": r"Manufacturer",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1567,7 +1567,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrieval_value": "ProductName",
+            "retrieval_value": r"ProductName",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1580,7 +1580,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrieval_value": "Description",
+            "retrieval_value": r"Description",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1593,7 +1593,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrieval_value": "Manufacturer",
+            "retrieval_value": r"Manufacturer",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1606,7 +1606,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrieval_value": "Name",
+            "retrieval_value": r"Name",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1619,7 +1619,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MODEL",
-            "retrieval_value": "Model",
+            "retrieval_value": r"Model",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1632,7 +1632,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrieval_value": "Description",
+            "retrieval_value": r"Description",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1645,7 +1645,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrieval_value": "Type",
+            "retrieval_value": r"Type",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1658,7 +1658,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "DISK SIZE",
-            "retrieval_value": "Size",
+            "retrieval_value": r"Size",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1671,7 +1671,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "SERIAL NUMBER",
-            "retrieval_value": "SerialNumber",
+            "retrieval_value": r"SerialNumber",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1684,7 +1684,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "FIRMWARE",
-            "retrieval_value": "Firmware",
+            "retrieval_value": r"Firmware",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1697,7 +1697,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "DESCRIPTION",
-            "retrieval_value": "Description",
+            "retrieval_value": r"Description",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1710,7 +1710,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "SERVICE",
-            "retrieval_value": "Service",
+            "retrieval_value": r"Service",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1723,7 +1723,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MANUFACTURER",
-            "retrieval_value": "Manufacturer",
+            "retrieval_value": r"Manufacturer",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1736,7 +1736,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "DEVICE ID",
-            "retrieval_value": "DeviceID",
+            "retrieval_value": r"DeviceID",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1749,7 +1749,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "TYPE",
-            "retrieval_value": "PNPClass",
+            "retrieval_value": r"PNPClass",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1762,7 +1762,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "NAME",
-            "retrieval_value": "Description",
+            "retrieval_value": r"Description",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1775,7 +1775,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "CHIPSET",
-            "retrieval_value": "VideoProcessor",
+            "retrieval_value": r"VideoProcessor",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1788,7 +1788,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "MEMORY",
-            "retrieval_value": "AdapterRAMMiB",
+            "retrieval_value": r"AdapterRAMMiB",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1801,7 +1801,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "RESOLUTION",
-            "retrieval_value": "Resolution",
+            "retrieval_value": r"Resolution",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
@@ -1814,7 +1814,7 @@ def create_default_windows_fields(apps, schema_editor):
         },
         {
             "name": "",
-            "retrieval_value": "",
+            "retrieval_value": r"",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
