@@ -5,6 +5,7 @@ from asset.inventory_base.models import InventoryBase
 from asset.inventory_section.models import InventorySection
 from config.models import Config
 from django.db import transaction
+from django.db.models import F
 from django.db.models.functions import Now
 from inventory.software.models import SoftwareDictionary, SoftwareMapping
 
@@ -104,7 +105,8 @@ class SoftwareDictionaryService:
         if not entry_ids_list:
             return
 
-        cls._detach_asset_entries(asset_id, entry_ids_list)
+        cls._decrement_installation_numbers(entry_ids_list)
+        cls._cleanup_empty_entries(entry_ids_list)
 
     @classmethod
     def _build_entries_for_asset(cls, asset: InventoryBase) -> List[Dict]:
@@ -132,19 +134,31 @@ class SoftwareDictionaryService:
                 for field in section.fields.all()
             }
 
+            version_value = cls._value_for_field(mapping.version_id, value_map)
+
+            major = cls._value_for_field(mapping.major_version_id, value_map)
+            minor = cls._value_for_field(mapping.minor_version_id, value_map)
+            patch = cls._value_for_field(mapping.patch_version_id, value_map)
+
+            if asset.template and asset.template.os == "LEG":
+                if not (major and minor and patch) and version_value:
+                    cleaned_version = cls._clean_value(version_value)
+
+                    if cleaned_version:
+                        major_int, minor_int, patch_int = cls._split_version_number(
+                            cleaned_version
+                        )
+                        major = str(major_int) if major_int is not None else None
+                        minor = str(minor_int) if minor_int is not None else None
+                        patch = str(patch_int) if patch_int is not None else None
+
             entry = {
                 "name": cls._value_for_field(mapping.name_id, value_map),
                 "publisher": cls._value_for_field(mapping.publisher_id, value_map),
-                "version": cls._value_for_field(mapping.version_id, value_map),
-                "major_version": cls._value_for_field(
-                    mapping.major_version_id, value_map
-                ),
-                "minor_version": cls._value_for_field(
-                    mapping.minor_version_id, value_map
-                ),
-                "patch_version": cls._value_for_field(
-                    mapping.patch_version_id, value_map
-                ),
+                "version": version_value,
+                "major_version": major,
+                "minor_version": minor,
+                "patch_version": patch,
             }
 
             if not entry["name"]:
@@ -167,6 +181,33 @@ class SoftwareDictionaryService:
             return None
         cleaned = str(value).strip()
         return cleaned or None
+
+    @staticmethod
+    def _split_version_number(
+        version: str,
+    ) -> Tuple[Optional[int], Optional[int], Optional[int]]:
+        """
+        Extract major/minor/patch from a legacy version string.
+        Returns None when a component does not exist.
+        """
+
+        if not version:
+            return None, None, None
+
+        import re
+
+        match = re.match(r"^(\d+(?:\.\d+)*)", version)
+        if not match:
+            return None, None, None
+
+        numeric_part = match.group(1)
+        parts = numeric_part.split(".")
+
+        major = int(parts[0]) if len(parts) > 0 else None
+        minor = int(parts[1]) if len(parts) > 1 else None
+        patch = int(parts[2]) if len(parts) > 2 else None
+
+        return major, minor, patch
 
     @classmethod
     def _get_existing_entries(
@@ -213,37 +254,38 @@ class SoftwareDictionaryService:
             return
 
         through_model = SoftwareDictionary.assets.through
-        through_model.objects.filter(
+        link_qs = through_model.objects.filter(
             softwaredictionary_id__in=entry_ids,
             inventorybase_id=asset_id,
-        ).delete()
-
-        empty_ids = list(
-            SoftwareDictionary.objects.filter(
-                id__in=entry_ids, assets__isnull=True
-            ).values_list("id", flat=True)
         )
-        remaining_ids = set(entry_ids) - set(empty_ids)
+        removed_entry_ids = list(
+            link_qs.values_list("softwaredictionary_id", flat=True).distinct()
+        )
+        if not removed_entry_ids:
+            return
 
-        if remaining_ids:
-            SoftwareDictionary.objects.filter(id__in=remaining_ids).update(
-                updated_at=Now()
-            )
-
-        if empty_ids:
-            SoftwareDictionary.objects.filter(id__in=empty_ids).delete()
+        link_qs.delete()
+        cls._decrement_installation_numbers(removed_entry_ids)
+        cls._cleanup_empty_entries(removed_entry_ids)
 
     @classmethod
     def _attach_asset_entries(cls, asset: InventoryBase, entries: List[Dict]) -> None:
         """Attach an asset to the provided dictionary entries"""
+        through_model = SoftwareDictionary.assets.through
         created_count = 0
         for entry in entries:
             obj, created = SoftwareDictionary.objects.get_or_create(**entry)
-            obj.assets.add(asset)
-            if not created:
-                SoftwareDictionary.objects.filter(id=obj.id).update(updated_at=Now())
-            else:
+            if created:
                 created_count += 1
+
+            _, relation_created = through_model.objects.get_or_create(
+                softwaredictionary_id=obj.id,
+                inventorybase_id=asset.id,
+            )
+            if relation_created:
+                cls._increment_installation_numbers([obj.id])
+            else:
+                SoftwareDictionary.objects.filter(id=obj.id).update(updated_at=Now())
 
         if entries:
             logger.debug(
@@ -252,6 +294,39 @@ class SoftwareDictionaryService:
                 len(entries),
                 created_count,
             )
+
+    @classmethod
+    def _increment_installation_numbers(cls, entry_ids: Iterable[int]) -> None:
+        unique_ids = list(set(entry_ids))
+        if not unique_ids:
+            return
+        SoftwareDictionary.objects.filter(id__in=unique_ids).update(
+            installation_number=F("installation_number") + 1,
+            updated_at=Now(),
+        )
+
+    @classmethod
+    def _decrement_installation_numbers(cls, entry_ids: Iterable[int]) -> None:
+        unique_ids = list(set(entry_ids))
+        if not unique_ids:
+            return
+        SoftwareDictionary.objects.filter(
+            id__in=unique_ids,
+            installation_number__gt=0,
+        ).update(
+            installation_number=F("installation_number") - 1,
+            updated_at=Now(),
+        )
+
+    @classmethod
+    def _cleanup_empty_entries(cls, entry_ids: Iterable[int]) -> None:
+        unique_ids = list(set(entry_ids))
+        if not unique_ids:
+            return
+        SoftwareDictionary.objects.filter(
+            id__in=unique_ids,
+            assets__isnull=True,
+        ).delete()
 
     @classmethod
     def get_generation_mode(cls) -> str:
@@ -278,3 +353,12 @@ class SoftwareDictionaryService:
     @classmethod
     def should_refresh_on_automation(cls) -> bool:
         return cls.get_generation_mode() == cls.MODE_AUTOMATION
+
+    @classmethod
+    def refresh_legacy_asset(cls, asset_ids: Optional[Iterable[int]] = None):
+        queryset = InventoryBase.objects.filter(template__os="LEG")
+        if asset_ids:
+            queryset = queryset.filter(id__in=asset_ids)
+
+        for asset in queryset.iterator():
+            cls.refresh_asset(asset)
