@@ -51,199 +51,230 @@ class SearchView(GenericAPIView):
         "software_dictionary_entries": "assets",
     }
 
+    SAME_ROW_RELATED_MODELS = {
+        "results",
+        "logs",
+        "snmpscanner",
+        "software_dictionary_entries",
+    }
+
+    TEXT_OPERATORS = {"icontains", "iexact", "istartswith", "iendswith"}
+
+    def _normalize_operator(self, operator, value):
+        if (operator in self.TEXT_OPERATORS and isinstance(value, int)) or value in (
+            "",
+            None,
+        ):
+            return "exact"
+        return operator
+
+    def _build_condition_q(self, condition):
+        field = condition["field"]
+        value = condition["value"]
+        obj = condition["object"]
+        operator = self._normalize_operator(condition["operator"], value)
+
+        # Construction of the Q condition
+        if obj == "InventoryBase":
+            condition_q = Q(**{f"{field}__{operator}": value})
+        # Special process if accountinfo
+        elif obj == "AccountinfoConfig":
+            if operator == "iexact" and condition["fieldtype"] != "checkbox":
+                if condition["fieldtype"] == "select":
+                    matching_objects = AccountinfoData.objects.filter(
+                        **{f"accountdata__{field}__value__contains": value},
+                        object_slug="inventory_base.inventorybase",
+                    ).values_list("object_id")
+                else:
+                    matching_objects = AccountinfoData.objects.filter(
+                        accountdata__contains={f"{field}": value},
+                        object_slug="inventory_base.inventorybase",
+                    ).values_list("object_id")
+                if matching_objects:
+                    condition_q = Q(id__in=matching_objects)
+                else:
+                    id_to_exclude = InventoryBase.objects.all().values_list("id")
+                    condition_q = ~Q(id__in=id_to_exclude)
+            else:
+                matching_objects = AccountinfoData.objects.filter(
+                    accountdata__has_key=f"{field}",
+                    object_slug="inventory_base.inventorybase",
+                )
+                if matching_objects:
+                    result = []
+                    for matching_object in matching_objects:
+                        for key, data in matching_object.accountdata.items():
+                            if int(key) == int(field):
+                                if (
+                                    operator == "icontains"
+                                    and data is not None
+                                    and value.lower() in data.lower()
+                                ):
+                                    result.append(matching_object.object_id)
+                                elif (
+                                    operator == "istartswith"
+                                    and data is not None
+                                    and data.lower().startswith(value.lower())
+                                ):
+                                    result.append(matching_object.object_id)
+                                elif (
+                                    operator == "iendswith"
+                                    and data is not None
+                                    and data.lower().endswith(value.lower())
+                                ):
+                                    result.append(matching_object.object_id)
+                                elif (
+                                    operator == "iexact"
+                                    and condition["fieldtype"] == "checkbox"
+                                    and int(value) in data
+                                ):
+                                    result.append(matching_object.object_id)
+                    if len(result) > 0:
+                        condition_q = Q(id__in=result)
+                    else:
+                        id_to_exclude = InventoryBase.objects.all().values_list("id")
+                        condition_q = ~Q(id__in=id_to_exclude)
+                else:
+                    id_to_exclude = InventoryBase.objects.all().values_list("id")
+                    condition_q = ~Q(id__in=id_to_exclude)
+        # Foreign key process
+        else:
+            if obj == "inventory_sections":
+                condition_q = Q(
+                    **{f"{obj}__template_section__exact": condition["section"]}
+                )
+                condition_q &= Q(
+                    **{f"{obj}__fields__template_field__exact": condition["field"]}
+                )
+                condition_q &= Q(**{f"{obj}__fields__value__{operator}": value})
+            else:
+                condition_q = Q(**{f"{obj}__{field}__{operator}": value})
+
+        return condition_q
+
+    def _build_related_condition_q(self, condition):
+        field = condition["field"]
+        operator = self._normalize_operator(condition["operator"], condition["value"])
+
+        if condition["object"] == "inventory_sections":
+            q = Q(template_section__exact=condition["section"])
+            q &= Q(fields__template_field__exact=condition["field"])
+            q &= Q(**{f"fields__value__{operator}": condition["value"]})
+            return q
+
+        return Q(**{f"{field}__{operator}": condition["value"]})
+
+    def _build_condition_units(self, conditions, q_builder):
+        """
+        Group AND conditions that must target the same related row.
+
+        Example:
+        - software.name=apache2 AND software.name=apt => two units, two rows
+        - software.name=adduser AND software.version=3.118 => one unit, same row
+        """
+        units = []
+        pending = None
+
+        for condition in conditions:
+            q = q_builder(condition)
+            obj = condition["object"]
+            field = condition["field"]
+            link = condition.get("link", "AND")
+
+            can_merge = (
+                pending is not None
+                and link == "AND"
+                and obj in self.SAME_ROW_RELATED_MODELS
+                and pending["object"] == obj
+                and field not in pending["fields"]
+            )
+
+            if can_merge:
+                pending["q"] &= q
+                pending["fields"].add(field)
+                continue
+
+            if pending is not None:
+                units.append(pending)
+
+            pending = {
+                "link": link,
+                "object": obj,
+                "fields": {field},
+                "q": q,
+            }
+
+        if pending is not None:
+            units.append(pending)
+
+        return units
+
+    def _combine_querysets(self, base_qs, condition_qs, link):
+        if base_qs is None:
+            return condition_qs
+        if link == "OR":
+            return base_qs | condition_qs
+        return base_qs.filter(pk__in=condition_qs.values("pk"))
+
     def process_search(self, data):
-        # Initializing the Q filter list
         filters = []
         links = {}
         masterindex = 0
-        TEXT_OPERATORS = {"icontains", "iexact", "istartswith", "iendswith"}
 
-        # Iterating over JSON structure
         for and_conditions in data:
-            and_filter = Q()
-            index = 0
+            group_qs = None
 
-            # Iteration on “AND” conditions
-            for condition in and_conditions:
-                field = condition["field"]
-                operator = condition["operator"]
-                value = condition["value"]
-                obj = condition["object"]
-                skip = False
+            if masterindex > 0 and len(and_conditions) > 0:
+                links[masterindex] = and_conditions[0]["link"]
 
-                if masterindex > 0 and index == 0:
-                    links[masterindex] = condition["link"]
+            for unit in self._build_condition_units(
+                and_conditions, self._build_condition_q
+            ):
+                condition_q = unit["q"]
+                condition_qs = InventoryBase.objects.filter(condition_q).distinct("pk")
+                group_qs = self._combine_querysets(
+                    group_qs, condition_qs, unit.get("link", "AND")
+                )
 
-                if (
-                    operator in TEXT_OPERATORS and isinstance(value, int)
-                ) or value == "":
-                    operator = "exact"
+            if group_qs is not None:
+                filters.append(group_qs)
+            masterindex += 1
 
-                # Construction of the Q condition
-                if obj == "InventoryBase":
-                    condition_q = Q(**{f"{field}__{operator}": value})
-                # Special process if accountinfo
-                elif obj == "AccountinfoConfig":
-                    if operator == "iexact" and condition["fieldtype"] != "checkbox":
-                        if condition["fieldtype"] == "select":
-                            matching_objects = AccountinfoData.objects.filter(
-                                **{f"accountdata__{field}__value__contains": value},
-                                object_slug="inventory_base.inventorybase",
-                            ).values_list("object_id")
-                        else:
-                            matching_objects = AccountinfoData.objects.filter(
-                                accountdata__contains={f"{field}": value},
-                                object_slug="inventory_base.inventorybase",
-                            ).values_list("object_id")
-                        if matching_objects:
-                            condition_q = Q(id__in=matching_objects)
-                        else:
-                            id_to_exclude = InventoryBase.objects.all().values_list(
-                                "id"
-                            )
-                            condition_q = ~Q(id__in=id_to_exclude)
-                    else:
-                        matching_objects = AccountinfoData.objects.filter(
-                            accountdata__has_key=f"{field}",
-                            object_slug="inventory_base.inventorybase",
-                        )
-                        if matching_objects:
-                            result = []
-                            for matching_object in matching_objects:
-                                for (
-                                    key,
-                                    data,
-                                ) in matching_object.accountdata.items():
-                                    if int(key) == int(field):
-                                        if (
-                                            operator == "icontains"
-                                            and data is not None
-                                            and value.lower() in data.lower()
-                                        ):
-                                            result.append(matching_object.object_id)
-                                        elif (
-                                            operator == "istartswith"
-                                            and data is not None
-                                            and data.lower().startswith(value.lower())
-                                        ):
-                                            result.append(matching_object.object_id)
-                                        elif (
-                                            operator == "iendswith"
-                                            and data is not None
-                                            and data.lower().endswith(value.lower())
-                                        ):
-                                            result.append(matching_object.object_id)
-                                        elif (
-                                            operator == "iexact"
-                                            and condition["fieldtype"] == "checkbox"
-                                            and int(value) in data
-                                        ):
-                                            result.append(matching_object.object_id)
-                            if len(result) > 0:
-                                condition_q = Q(id__in=result)
-                            else:
-                                id_to_exclude = InventoryBase.objects.all().values_list(
-                                    "id"
-                                )
-                                condition_q = ~Q(id__in=id_to_exclude)
-                        else:
-                            id_to_exclude = InventoryBase.objects.all().values_list(
-                                "id"
-                            )
-                            condition_q = ~Q(id__in=id_to_exclude)
-                # Foreign key process
-                else:
-                    if obj == "inventory_sections":
-                        condition_q = Q(
-                            **{f"{obj}__template_section__exact": condition["section"]}
-                        )
-                        condition_q &= Q(
-                            **{
-                                f"{obj}__fields__template_field__exact": condition[
-                                    "field"
-                                ]
-                            }
-                        )
-                        condition_q &= Q(**{f"{obj}__fields__value__{operator}": value})
-                    else:
-                        condition_q = Q(**{f"{obj}__{field}__{operator}": value})
-
-                # If the previous filter was linked by "OR", use OR,
-                # otherwise use AND
-                if skip is False:
-                    if condition["link"] == "OR":
-                        and_filter |= condition_q
-                    else:
-                        and_filter &= condition_q
-
-                index = index + 1
-
-            # Adding the "AND" filter to the filter list
-            if len(and_filter) > 0:
-                filters.append(and_filter)
-            masterindex = masterindex + 1
-
-        # Construction of the final filter using AND between "OR" filters
         if len(filters) > 0:
-            q_object = filters[0]
+            query_set = filters[0]
             linkindex = 1
-            for q_filter in filters[1:]:
+            for qs_filter in filters[1:]:
                 if links[linkindex] == "OR":
-                    q_object |= q_filter
+                    query_set = query_set | qs_filter
                 else:
-                    q_object &= q_filter
+                    query_set = query_set.filter(pk__in=qs_filter.values("pk"))
+                linkindex += 1
+            return query_set.distinct("pk")
 
-            query_set = InventoryBase.objects.filter(q_object).distinct("pk")
-        else:
-            query_set = InventoryBase.objects.none()
-
-        return query_set
+        return InventoryBase.objects.none()
 
     def _extract_match_filters(self, payload):
         """
-        Returns a dict {related_name: Q()} which represents
-        the "local" filters by relation (including all conditions of this type OR/AND).
+        Returns a dict {related_name: Q()} used to fetch the related
+        rows that matched at least one searched condition.
         """
         rel_q = defaultdict(Q)
 
         for and_conditions in payload:
-            local_per_rel = defaultdict(Q)
+            related_conditions = [
+                condition
+                for condition in and_conditions
+                if condition.get("object") in self.RELATED_MODELS
+            ]
 
-            first_for_rel = defaultdict(lambda: True)
-
-            for condition in and_conditions:
-                obj = condition.get("object")
-                if obj not in self.RELATED_MODELS:
+            for unit in self._build_condition_units(
+                related_conditions, self._build_related_condition_q
+            ):
+                related = unit["object"]
+                if related not in self.RELATED_MODELS:
                     continue
 
-                related = obj
-                field = condition["field"]
-                operator = condition["operator"]
-                value = condition["value"]
-                link = condition.get("link", "AND")
-
-                TEXT_OPERATORS = {"icontains", "iexact", "istartswith", "iendswith"}
-                if operator in TEXT_OPERATORS and isinstance(value, int):
-                    operator = "exact"
-
-                if related == "inventory_sections":
-                    q = Q(template_section__exact=condition["section"])
-                    q &= Q(fields__template_field__exact=condition["field"])
-                    q &= Q(**{f"fields__value__{operator}": value})
-                else:
-                    q = Q(**{f"{field}__{operator}": value})
-
-                if first_for_rel[related]:
-                    local_per_rel[related] = q
-                    first_for_rel[related] = False
-                else:
-                    if link == "OR":
-                        local_per_rel[related] |= q
-                    else:
-                        local_per_rel[related] &= q
-
-            for related, q in local_per_rel.items():
-                rel_q[related] |= q
+                rel_q[related] |= unit["q"]
 
         return rel_q
 
@@ -261,6 +292,7 @@ class SearchView(GenericAPIView):
                 "software_dictionary_entries": [],
             }
         )
+        seen_matches = defaultdict(lambda: defaultdict(set))
 
         manyToMany = ["snmpscanner", "software_dictionary_entries"]
 
@@ -271,9 +303,13 @@ class SearchView(GenericAPIView):
 
             fk = self.RELATED_MODEL_FK.get(related)
             if related in manyToMany:
-                qs = model.objects.filter(
-                    **{f"{fk}__in": inventory_ids},
-                ).filter(q)
+                qs = (
+                    model.objects.filter(
+                        **{f"{fk}__in": inventory_ids},
+                    )
+                    .filter(q)
+                    .distinct()
+                )
 
                 for obj in qs:
                     related_ids = getattr(obj, fk).values_list("id", flat=True)
@@ -285,6 +321,14 @@ class SearchView(GenericAPIView):
                     }
 
                     for inv_id in related_ids:
+                        row_id = row.get("id")
+                        if (
+                            row_id is not None
+                            and row_id in seen_matches[inv_id][related]
+                        ):
+                            continue
+                        if row_id is not None:
+                            seen_matches[inv_id][related].add(row_id)
                         match_map[inv_id][related].append(row)
             else:
                 qs = model.objects.filter(
