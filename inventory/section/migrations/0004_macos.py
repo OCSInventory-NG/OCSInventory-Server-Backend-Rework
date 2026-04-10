@@ -115,7 +115,7 @@ def create_default_macos_sections(apps, schema_editor):
         {
             "name": "REPOSITORY",
             "retrieval_method": "BASH",
-            "retrieval_output": "PTXT",
+            "retrieval_output": "REGX",
             "target": 'echo ""',
             "options": {"multiple": True},
             "template": apps.get_model("template", "Template").objects.get(os="MAC"),
