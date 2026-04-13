@@ -24,7 +24,7 @@ class ServerInfoSerializer(serializers.Serializer):
     infrastructure_type = serializers.CharField(allow_null=True)
     operating_system = serializers.CharField(allow_null=True)
     operating_system_version = serializers.CharField(allow_null=True)
-    orm_db_type = serializers.CharField(allow_null=True)
+    db_engine = serializers.CharField(allow_null=True)
     ocs_configuration = serializers.JSONField()
     python_version = serializers.CharField(allow_null=True)
     python_libs_version = serializers.DictField(

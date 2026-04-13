@@ -1,4 +1,5 @@
 import platform
+from pathlib import Path
 from importlib.metadata import PackageNotFoundError, version
 
 from auth.auth_method.models import AuthMethod
@@ -6,8 +7,12 @@ from config.models import Config
 from config.serializers import ConfigSerializer
 from django.conf import settings
 
-
 class ServerInfoService:
+    # Can be detected only in prod package installation
+    FRONTEND_PATH_CANDIDATES = [
+        Path("/usr/share/ocsinventory-frontend"),
+    ]
+
     LIBRARY_PACKAGE_CANDIDATES = {
         "django": ("django",),
         "djangorestframework": ("djangorestframework",),
@@ -30,7 +35,7 @@ class ServerInfoService:
             "infrastructure_type": cls.get_infrastructure_type(),
             "operating_system": operating_system,
             "operating_system_version": operating_system_version,
-            "orm_db_type": cls.get_database_type(),
+            "db_engine": cls.get_database_type(),
             "ocs_configuration": cls.get_ocs_configuration(),
             "python_version": cls.get_python_version(),
             "python_libs_version": cls.get_python_libraries_version(),
@@ -43,12 +48,12 @@ class ServerInfoService:
         )
         return list(auth_methods.values_list("name", flat=True))
 
-    @staticmethod
-    def get_infrastructure_type():
-        frontend_redirect = getattr(settings, "FRONTEND_REDIRECT", None)
-        if frontend_redirect:
-            return "split"
-        return "standalone"
+    @classmethod
+    def get_infrastructure_type(cls):
+        for frontend_path in cls.FRONTEND_PATH_CANDIDATES:
+            if frontend_path.exists():
+                return "standalone"
+        return "non-standalone"
 
     @staticmethod
     def get_operating_system_info():
@@ -80,7 +85,7 @@ class ServerInfoService:
         if not database_label:
             database_label = engine.rsplit(".", 1)[-1].replace("_", " ").title()
 
-        return f"Django ORM / {database_label}"
+        return f"{database_label}"
 
     @staticmethod
     def get_ocs_configuration():
