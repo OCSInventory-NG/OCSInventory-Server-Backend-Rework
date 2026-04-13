@@ -1,11 +1,12 @@
 import platform
-from pathlib import Path
 from importlib.metadata import PackageNotFoundError, version
+from pathlib import Path
 
 from auth.auth_method.models import AuthMethod
 from config.models import Config
 from config.serializers import ConfigSerializer
 from django.conf import settings
+
 
 class ServerInfoService:
     # Can be detected only in prod package installation
