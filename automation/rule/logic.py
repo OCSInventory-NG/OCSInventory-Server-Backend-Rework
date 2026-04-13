@@ -28,6 +28,11 @@ class Logic:
     def __init__(self, trigger, instance):
         self.trigger = trigger
         self.instance = instance
+        self.current_rule_group_ids = set()
+        self.current_rule_has_group_action = False
+        self.winning_rule_group_ids = set()
+        self.winning_rule_has_group_action = False
+        self.winning_rule = None
 
     def process_rules(self):
         """Process the rules for the given trigger using JSON Logic"""
@@ -38,9 +43,14 @@ class Logic:
                 context = self.build_context()
                 result = jsonLogic(rule.logic, context)
                 if result:
+                    self.current_rule_group_ids = set()
+                    self.current_rule_has_group_action = False
                     self.execute_actions(rule)
+                    self.set_winner_rule(rule)
             except Exception as e:
                 self.LOGGER.error(f"Error processing rule: {e}")
+
+        self.finalize_user_login_groups()
 
     def execute_actions(self, rule):
         """Execute the actions for the given rule"""
@@ -112,8 +122,12 @@ class Logic:
                 field, key = action.field.split(":", 1)
                 self.update_json_field(instance, field, key, action.value)
             else:
-                value = self.convert_value(instance, action.field, action.value)
                 field = instance._meta.get_field(action.field)
+                if self.should_buffer_group_action(instance, action, field):
+                    self.buffer_group_id(action.value)
+                    return
+
+                value = self.convert_value(instance, action.field, action.value)
                 if isinstance(field, ManyToManyField):
                     # use add() for ManyToManyFields (group, permissions, etc.)
                     getattr(instance, action.field).add(value)
@@ -125,6 +139,73 @@ class Logic:
             instance.save()
         except Exception as e:
             self.LOGGER.error(f"Error updating field: {e}")
+
+    def should_buffer_group_action(self, instance, action, field):
+        """Return true when a user_login groups action must be buffered"""
+        return (
+            self.trigger == "user_login"
+            and instance == self.instance
+            and action.field == "groups"
+            and isinstance(field, ManyToManyField)
+        )
+
+    def buffer_group_id(self, value):
+        """Store group id in the current matching rule"""
+        self.current_rule_has_group_action = True
+        group_id = getattr(value, "id", value)
+        try:
+            self.current_rule_group_ids.add(int(group_id))
+        except (TypeError, ValueError):
+            self.LOGGER.error(f"Invalid group ID for user_login rule action: {value}")
+
+    def set_winner_rule(self, rule):
+        """Store the last matching rule as winner for user_login groups"""
+        if self.trigger != "user_login":
+            return
+
+        # preserve legacy behavior across rules for now
+        # when several rules match the last one wins
+        self.winning_rule = rule
+        self.winning_rule_group_ids = set(self.current_rule_group_ids)
+        self.winning_rule_has_group_action = self.current_rule_has_group_action
+
+    @staticmethod
+    def sync_rule_groups(user, group_ids, source_object):
+        """Persist rule based groups for one user"""
+        from user.services import sync_source_groups
+
+        sync_source_groups(
+            user,
+            "rule",
+            group_ids,
+            source_object=source_object,
+        )
+
+    def finalize_user_login_groups(self):
+        """Apply buffered user_login groups after all rules have been evaluated"""
+        if self.trigger != "user_login" or not hasattr(self.instance, "groups"):
+            return
+
+        # no matching rule: keep current rule based assignments unchanged
+        if self.winning_rule is None:
+            return
+
+        # winning rule has no groups action: keep current rule assignments unchanged
+        if not self.winning_rule_has_group_action:
+            return
+
+        try:
+            self.sync_rule_groups(
+                self.instance,
+                self.winning_rule_group_ids,
+                self.winning_rule,
+            )
+        except Exception as exc:
+            self.LOGGER.error(
+                "Failed syncing rule-based groups for user %s: %s",
+                getattr(self.instance, "id", None),
+                exc,
+            )
 
     def build_context(self):
         """Return the data dictionary passed to JSON Logic."""
