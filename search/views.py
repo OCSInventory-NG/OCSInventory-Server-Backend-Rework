@@ -335,30 +335,43 @@ class SearchView(GenericAPIView):
                     **{f"{fk}_id__in": inventory_ids},
                 ).filter(q)
 
-                values = list(qs.values())
+                if related == "inventory_sections":
+                    qs = qs.select_related("template_section")
 
-                for row in values:
-                    inv_id = row.get(f"{fk}_id")
-                    if inv_id is not None:
-                        if related == "inventory_sections":
-                            fieldrow = {}
+                    for section in qs:
+                        inv_id = getattr(section, f"{fk}_id", None)
+                        if inv_id is None:
+                            continue
 
-                            qsf = InventoryField.objects.filter(
-                                inventory_section=row.get("id")
+                        fieldrow = {
+                            "section": (
+                                section.template_section.name
+                                if section.template_section
+                                else None
                             )
-                            fvalues = list(qsf.values("template_field_id", "value"))
+                        }
 
-                            field_ids = [f["template_field_id"] for f in fvalues]
-                            fields = Field.objects.in_bulk(field_ids)
+                        qsf = InventoryField.objects.filter(
+                            inventory_section=section.id
+                        )
+                        fvalues = list(qsf.values("template_field_id", "value"))
 
-                            for frow in fvalues:
-                                field = fields.get(frow["template_field_id"])
-                                if not field:
-                                    continue
+                        field_ids = [f["template_field_id"] for f in fvalues]
+                        fields = Field.objects.in_bulk(field_ids)
 
-                                fieldrow[field.name] = frow.get("value")
-                            match_map[inv_id][related].append(fieldrow)
-                        else:
+                        for frow in fvalues:
+                            field = fields.get(frow["template_field_id"])
+                            if not field:
+                                continue
+
+                            fieldrow[field.name] = frow.get("value")
+                        match_map[inv_id][related].append(fieldrow)
+                else:
+                    values = list(qs.values())
+
+                    for row in values:
+                        inv_id = row.get(f"{fk}_id")
+                        if inv_id is not None:
                             match_map[inv_id][related].append(row)
 
         return match_map
