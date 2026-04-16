@@ -71,6 +71,9 @@ class SearchView(GenericAPIView):
 
     TEXT_OPERATORS = {"icontains", "iexact", "istartswith", "iendswith"}
 
+    def _empty_inventory_match_q(self):
+        return ~Q(id__in=InventoryBase.objects.values_list("id"))
+
     def _normalize_operator(self, operator, value):
         if (operator in self.TEXT_OPERATORS and isinstance(value, int)) or value in (
             "",
@@ -104,8 +107,7 @@ class SearchView(GenericAPIView):
                 if matching_objects:
                     condition_q = Q(id__in=matching_objects)
                 else:
-                    id_to_exclude = InventoryBase.objects.all().values_list("id")
-                    condition_q = ~Q(id__in=id_to_exclude)
+                    condition_q = self._empty_inventory_match_q()
             else:
                 matching_objects = AccountinfoData.objects.filter(
                     accountdata__has_key=f"{field}",
@@ -140,14 +142,12 @@ class SearchView(GenericAPIView):
                                     and int(value) in data
                                 ):
                                     result.append(matching_object.object_id)
-                    if len(result) > 0:
+                    if result:
                         condition_q = Q(id__in=result)
                     else:
-                        id_to_exclude = InventoryBase.objects.all().values_list("id")
-                        condition_q = ~Q(id__in=id_to_exclude)
+                        condition_q = self._empty_inventory_match_q()
                 else:
-                    id_to_exclude = InventoryBase.objects.all().values_list("id")
-                    condition_q = ~Q(id__in=id_to_exclude)
+                    condition_q = self._empty_inventory_match_q()
         # Foreign key process
         else:
             if obj == "inventory_sections":
@@ -385,6 +385,28 @@ class SearchView(GenericAPIView):
 
         return match_map
 
+    def _build_grouped_match_map(self, inventory_ids, rel_q):
+        """
+        In grouped mode, keep only the first matched row per relation and expose
+        how many additional rows were omitted for the frontend.
+        """
+        full_match_map = self._build_match_map(inventory_ids, rel_q)
+        grouped_match_map = {}
+
+        for inventory_id, matches in full_match_map.items():
+            grouped_matches = {}
+
+            for related in self.RELATED_MODELS:
+                items = matches.get(related, [])
+                grouped_matches[related] = items[:1]
+                grouped_matches[f"{related}_remaining_count"] = max(
+                    len(items) - len(grouped_matches[related]), 0
+                )
+
+            grouped_match_map[inventory_id] = grouped_matches
+
+        return grouped_match_map
+
     def _serialize_ungrouped_row(self, obj, request, related=None, item=None):
         match_map = {}
         if related is not None and item is not None:
@@ -569,7 +591,7 @@ class SearchView(GenericAPIView):
             page = self.paginate_queryset(qs)
             if page is not None:
                 inventory_ids = [obj.pk for obj in page]
-                match_map = self._build_match_map(inventory_ids, rel_q)
+                match_map = self._build_grouped_match_map(inventory_ids, rel_q)
                 serializer = InventoryBaseSerializer(
                     page,
                     many=True,
@@ -578,7 +600,7 @@ class SearchView(GenericAPIView):
                 return self.get_paginated_response(serializer.data)
 
             inventory_ids = list(qs.values_list("id", flat=True))
-            match_map = self._build_match_map(inventory_ids, rel_q)
+            match_map = self._build_grouped_match_map(inventory_ids, rel_q)
 
             serializer = InventoryBaseSerializer(
                 qs,
