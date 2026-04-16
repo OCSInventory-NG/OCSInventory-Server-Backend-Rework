@@ -424,7 +424,9 @@ class SearchView(GenericAPIView):
                 yield related, item
 
     def _count_ungrouped_rows_for_asset(self, matches):
-        count = sum(len(matches.get(related, [])) for related in self.UNGROUP_RELATED_ORDER)
+        count = sum(
+            len(matches.get(related, [])) for related in self.UNGROUP_RELATED_ORDER
+        )
         return count or 1
 
     def _build_related_rows_queryset(self, related, inventory_qs, q):
@@ -455,7 +457,9 @@ class SearchView(GenericAPIView):
             )
 
             if related in self.MANY_TO_MANY_RELATED_MODELS:
-                total_count += related_qs.values(inventory_id_field, "id").distinct().count()
+                total_count += (
+                    related_qs.values(inventory_id_field, "id").distinct().count()
+                )
             else:
                 total_count += related_qs.count()
 
@@ -488,7 +492,9 @@ class SearchView(GenericAPIView):
         remaining_offset = offset
         remaining_limit = limit
 
-        inventory_ids = inventory_qs.values_list("pk", flat=True).iterator(chunk_size=100)
+        inventory_ids = inventory_qs.values_list("pk", flat=True).iterator(
+            chunk_size=100
+        )
 
         for chunk_ids in self._chunked(inventory_ids, 100):
             objects = InventoryBase.objects.in_bulk(chunk_ids)
@@ -574,7 +580,10 @@ class SearchView(GenericAPIView):
                         paginator.count = self._count_ungrouped_rows(qs, rel_q)
                         paginator.request = request
 
-                        if paginator.count > paginator.limit and paginator.template is not None:
+                        if (
+                            paginator.count > paginator.limit
+                            and paginator.template is not None
+                        ):
                             paginator.display_page_controls = True
 
                         paginated_rows = self._get_ungrouped_page(
@@ -586,7 +595,9 @@ class SearchView(GenericAPIView):
                         )
                         return paginator.get_paginated_response(paginated_rows)
 
-                return Response(self._get_all_ungrouped_rows(qs, rel_q, request), status=200)
+                return Response(
+                    self._get_all_ungrouped_rows(qs, rel_q, request), status=200
+                )
 
             page = self.paginate_queryset(qs)
             if page is not None:
