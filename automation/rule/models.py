@@ -49,6 +49,7 @@ class Action(models.Model):
     class Meta:
         ordering = ["rule", "priority"]
 
+
 @receiver(post_save, sender=Rule)
 def adjust_rule_order_on_save(sender, instance, created, **kwargs):
     if created:

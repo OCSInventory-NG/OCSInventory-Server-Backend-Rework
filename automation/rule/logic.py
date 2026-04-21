@@ -36,7 +36,9 @@ class Logic:
 
     def process_rules(self):
         """Process the rules for the given trigger using JSON Logic"""
-        rules = Rule.objects.filter(trigger=self.trigger, enabled=True).order_by("priority")
+        rules = Rule.objects.filter(trigger=self.trigger, enabled=True).order_by(
+            "priority"
+        )
 
         for rule in rules:
             try:

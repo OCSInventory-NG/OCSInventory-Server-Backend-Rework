@@ -96,7 +96,16 @@ class RuleSerializer(ExpandableFieldsMixin, ModelSerializer):
         """Define the linked model and the fields registered in the API"""
 
         model = Rule
-        fields = ["id", "priority", "description", "trigger", "enabled", "logic", "break_on_match", "actions"]
+        fields = [
+            "id",
+            "priority",
+            "description",
+            "trigger",
+            "enabled",
+            "logic",
+            "break_on_match",
+            "actions",
+        ]
         expandable_fields = {
             "actions": ActionSerializer,
         }
