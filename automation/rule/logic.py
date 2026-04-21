@@ -36,7 +36,7 @@ class Logic:
 
     def process_rules(self):
         """Process the rules for the given trigger using JSON Logic"""
-        rules = Rule.objects.filter(trigger=self.trigger, enabled=True)
+        rules = Rule.objects.filter(trigger=self.trigger, enabled=True).order_by("priority")
 
         for rule in rules:
             try:
@@ -47,6 +47,8 @@ class Logic:
                     self.current_rule_has_group_action = False
                     self.execute_actions(rule)
                     self.set_winner_rule(rule)
+                    if rule.break_on_match:
+                        break
             except Exception as e:
                 self.LOGGER.error(f"Error processing rule: {e}")
 
@@ -54,7 +56,7 @@ class Logic:
 
     def execute_actions(self, rule):
         """Execute the actions for the given rule"""
-        for action in rule.actions.all():
+        for action in rule.actions.order_by("priority"):
             if action.action == "set":
                 self.handle_set_action(action)
             else:

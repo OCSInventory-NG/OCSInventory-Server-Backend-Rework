@@ -20,8 +20,10 @@ def create_osname_rules_with_actions(apps, schema_editor):
                     "action": "set",
                     "field": "template",
                     "value": 5,
+                    "priority": 1,
                 }
             ],
+            "priority": 2,
         },
         {
             "description": "Assign Linux (Debian based) template",
@@ -39,8 +41,10 @@ def create_osname_rules_with_actions(apps, schema_editor):
                     "action": "set",
                     "field": "template",
                     "value": 2,
+                    "priority": 2,
                 }
             ],
+            "priority": 3,
         },
         {
             "description": "Assign Linux (RHEL based) template",
@@ -58,8 +62,10 @@ def create_osname_rules_with_actions(apps, schema_editor):
                     "action": "set",
                     "field": "template",
                     "value": 3,
+                    "priority": 3,
                 }
             ],
+            "priority": 4,
         },
         {
             "description": "Assign Mac template",
@@ -72,8 +78,10 @@ def create_osname_rules_with_actions(apps, schema_editor):
                     "action": "set",
                     "field": "template",
                     "value": 4,
+                    "priority": 4,
                 }
             ],
+            "priority": 5,
         },
         {
             "description": "Assign Legacy template",
@@ -86,8 +94,10 @@ def create_osname_rules_with_actions(apps, schema_editor):
                     "action": "set",
                     "field": "template",
                     "value": 1,
+                    "priority": 5,
                 }
             ],
+            "priority": 6,
         },
         {
             "description": "Assign SNMP template",
@@ -100,8 +110,10 @@ def create_osname_rules_with_actions(apps, schema_editor):
                     "action": "set",
                     "field": "template",
                     "value": 6,
+                    "priority": 6,
                 }
             ],
+            "priority": 7,
         },
     ]
 

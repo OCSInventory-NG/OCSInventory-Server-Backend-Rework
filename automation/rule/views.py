@@ -22,7 +22,7 @@ class RuleViewSet(viewsets.OCSViewSet):
     serializer_class = RuleSerializer
     model = Rule
 
-    filterset_fields = ["id", "trigger", "actions"]
+    filterset_fields = ["id", "trigger", "priority", "actions"]
 
 
 class ActionViewSet(viewsets.OCSViewSet):
@@ -38,6 +38,7 @@ class ActionViewSet(viewsets.OCSViewSet):
     filterset_fields = [
         "id",
         "rule",
+        "priority",
         "action",
         "description",
         "content_type",
