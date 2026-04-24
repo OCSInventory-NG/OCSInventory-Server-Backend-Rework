@@ -57,8 +57,22 @@ class SearchView(GenericAPIView):
         "snmpscanner",
         "software_dictionary_entries",
     }
+    MANY_TO_MANY_RELATED_MODELS = {
+        "snmpscanner",
+        "software_dictionary_entries",
+    }
+    UNGROUP_RELATED_ORDER = (
+        "results",
+        "logs",
+        "snmpscanner",
+        "inventory_sections",
+        "software_dictionary_entries",
+    )
 
     TEXT_OPERATORS = {"icontains", "iexact", "istartswith", "iendswith"}
+
+    def _empty_inventory_match_q(self):
+        return ~Q(id__in=InventoryBase.objects.values_list("id"))
 
     def _normalize_operator(self, operator, value):
         if (operator in self.TEXT_OPERATORS and isinstance(value, int)) or value in (
@@ -93,8 +107,7 @@ class SearchView(GenericAPIView):
                 if matching_objects:
                     condition_q = Q(id__in=matching_objects)
                 else:
-                    id_to_exclude = InventoryBase.objects.all().values_list("id")
-                    condition_q = ~Q(id__in=id_to_exclude)
+                    condition_q = self._empty_inventory_match_q()
             else:
                 matching_objects = AccountinfoData.objects.filter(
                     accountdata__has_key=f"{field}",
@@ -129,14 +142,12 @@ class SearchView(GenericAPIView):
                                     and int(value) in data
                                 ):
                                     result.append(matching_object.object_id)
-                    if len(result) > 0:
+                    if result:
                         condition_q = Q(id__in=result)
                     else:
-                        id_to_exclude = InventoryBase.objects.all().values_list("id")
-                        condition_q = ~Q(id__in=id_to_exclude)
+                        condition_q = self._empty_inventory_match_q()
                 else:
-                    id_to_exclude = InventoryBase.objects.all().values_list("id")
-                    condition_q = ~Q(id__in=id_to_exclude)
+                    condition_q = self._empty_inventory_match_q()
         # Foreign key process
         else:
             if obj == "inventory_sections":
@@ -294,15 +305,13 @@ class SearchView(GenericAPIView):
         )
         seen_matches = defaultdict(lambda: defaultdict(set))
 
-        manyToMany = ["snmpscanner", "software_dictionary_entries"]
-
         for related, q in rel_q.items():
             model = self.RELATED_MODELS.get(related)
             if model is None:
                 continue
 
             fk = self.RELATED_MODEL_FK.get(related)
-            if related in manyToMany:
+            if related in self.MANY_TO_MANY_RELATED_MODELS:
                 qs = (
                     model.objects.filter(
                         **{f"{fk}__in": inventory_ids},
@@ -335,33 +344,223 @@ class SearchView(GenericAPIView):
                     **{f"{fk}_id__in": inventory_ids},
                 ).filter(q)
 
-                values = list(qs.values())
+                if related == "inventory_sections":
+                    qs = qs.select_related("template_section")
 
-                for row in values:
-                    inv_id = row.get(f"{fk}_id")
-                    if inv_id is not None:
-                        if related == "inventory_sections":
-                            fieldrow = {}
+                    for section in qs:
+                        inv_id = getattr(section, f"{fk}_id", None)
+                        if inv_id is None:
+                            continue
 
-                            qsf = InventoryField.objects.filter(
-                                inventory_section=row.get("id")
+                        fieldrow = {
+                            "section": (
+                                section.template_section.name
+                                if section.template_section
+                                else None
                             )
-                            fvalues = list(qsf.values("template_field_id", "value"))
+                        }
 
-                            field_ids = [f["template_field_id"] for f in fvalues]
-                            fields = Field.objects.in_bulk(field_ids)
+                        qsf = InventoryField.objects.filter(
+                            inventory_section=section.id
+                        )
+                        fvalues = list(qsf.values("template_field_id", "value"))
 
-                            for frow in fvalues:
-                                field = fields.get(frow["template_field_id"])
-                                if not field:
-                                    continue
+                        field_ids = [f["template_field_id"] for f in fvalues]
+                        fields = Field.objects.in_bulk(field_ids)
 
-                                fieldrow[field.name] = frow.get("value")
-                            match_map[inv_id][related].append(fieldrow)
-                        else:
+                        for frow in fvalues:
+                            field = fields.get(frow["template_field_id"])
+                            if not field:
+                                continue
+
+                            fieldrow[field.name] = frow.get("value")
+                        match_map[inv_id][related].append(fieldrow)
+                else:
+                    values = list(qs.values())
+
+                    for row in values:
+                        inv_id = row.get(f"{fk}_id")
+                        if inv_id is not None:
                             match_map[inv_id][related].append(row)
 
         return match_map
+
+    def _build_grouped_match_map(self, inventory_ids, rel_q):
+        """
+        In grouped mode, keep only the first matched row per relation and expose
+        how many additional rows were omitted for the frontend.
+        """
+        full_match_map = self._build_match_map(inventory_ids, rel_q)
+        grouped_match_map = {}
+
+        for inventory_id, matches in full_match_map.items():
+            grouped_matches = {}
+
+            for related in self.RELATED_MODELS:
+                items = matches.get(related, [])
+                grouped_matches[related] = items[:1]
+                grouped_matches[f"{related}_remaining_count"] = max(
+                    len(items) - len(grouped_matches[related]), 0
+                )
+
+            grouped_match_map[inventory_id] = grouped_matches
+
+        return grouped_match_map
+
+    def _serialize_ungrouped_row(self, obj, request, related=None, item=None):
+        match_map = {}
+        if related is not None and item is not None:
+            match_map = {obj.pk: {related: [item]}}
+
+        serializer = InventoryBaseSerializer(
+            obj,
+            context={"request": request, "match_map": match_map},
+        )
+        return serializer.data
+
+    def _iter_ungrouped_match_rows(self, matches):
+        for related in self.UNGROUP_RELATED_ORDER:
+            for item in matches.get(related, []):
+                yield related, item
+
+    def _count_ungrouped_rows_for_asset(self, matches):
+        count = sum(
+            len(matches.get(related, [])) for related in self.UNGROUP_RELATED_ORDER
+        )
+        return count or 1
+
+    def _build_related_rows_queryset(self, related, inventory_qs, q):
+        model = self.RELATED_MODELS.get(related)
+        fk = self.RELATED_MODEL_FK.get(related)
+
+        if related in self.MANY_TO_MANY_RELATED_MODELS:
+            queryset = model.objects.filter(
+                **{f"{fk}__in": inventory_qs.values("pk")}
+            ).filter(q)
+            return queryset, f"{fk}__id"
+
+        queryset = model.objects.filter(
+            **{f"{fk}_id__in": inventory_qs.values("pk")}
+        ).filter(q)
+        return queryset, f"{fk}_id"
+
+    def _count_ungrouped_rows(self, inventory_qs, rel_q):
+        if not rel_q:
+            return inventory_qs.count()
+
+        total_count = 0
+        base_only_qs = inventory_qs
+
+        for related, q in rel_q.items():
+            related_qs, inventory_id_field = self._build_related_rows_queryset(
+                related, inventory_qs, q
+            )
+
+            if related in self.MANY_TO_MANY_RELATED_MODELS:
+                total_count += (
+                    related_qs.values(inventory_id_field, "id").distinct().count()
+                )
+            else:
+                total_count += related_qs.count()
+
+            base_only_qs = base_only_qs.exclude(
+                pk__in=related_qs.values(inventory_id_field).distinct()
+            )
+
+        return total_count + base_only_qs.count()
+
+    def _chunked(self, iterable, size):
+        chunk = []
+        for item in iterable:
+            chunk.append(item)
+            if len(chunk) == size:
+                yield chunk
+                chunk = []
+
+        if chunk:
+            yield chunk
+
+    def _get_ungrouped_page(self, inventory_qs, rel_q, request, offset, limit):
+        if limit == 0:
+            return []
+
+        if not rel_q:
+            page = list(inventory_qs[offset : offset + limit])
+            return [self._serialize_ungrouped_row(obj, request) for obj in page]
+
+        rows = []
+        remaining_offset = offset
+        remaining_limit = limit
+
+        inventory_ids = inventory_qs.values_list("pk", flat=True).iterator(
+            chunk_size=100
+        )
+
+        for chunk_ids in self._chunked(inventory_ids, 100):
+            objects = InventoryBase.objects.in_bulk(chunk_ids)
+            match_map = self._build_match_map(chunk_ids, rel_q)
+
+            for inventory_id in chunk_ids:
+                obj = objects.get(inventory_id)
+                if obj is None:
+                    continue
+
+                matches = match_map.get(inventory_id, {})
+                asset_row_count = self._count_ungrouped_rows_for_asset(matches)
+
+                if remaining_offset >= asset_row_count:
+                    remaining_offset -= asset_row_count
+                    continue
+
+                if matches:
+                    rows_to_skip = remaining_offset
+                    remaining_offset = 0
+
+                    for related, item in self._iter_ungrouped_match_rows(matches):
+                        if rows_to_skip:
+                            rows_to_skip -= 1
+                            continue
+
+                        rows.append(
+                            self._serialize_ungrouped_row(
+                                obj, request, related=related, item=item
+                            )
+                        )
+                        remaining_limit -= 1
+
+                        if remaining_limit == 0:
+                            return rows
+                else:
+                    if remaining_offset:
+                        remaining_offset -= 1
+                        continue
+
+                    rows.append(self._serialize_ungrouped_row(obj, request))
+                    remaining_limit -= 1
+
+                    if remaining_limit == 0:
+                        return rows
+
+        return rows
+
+    def _get_all_ungrouped_rows(self, inventory_qs, rel_q, request):
+        inventory_ids = list(inventory_qs.values_list("id", flat=True))
+        match_map = self._build_match_map(inventory_ids, rel_q)
+        rows = []
+
+        for obj in inventory_qs:
+            matches = match_map.get(obj.pk, {})
+            if matches:
+                for related, item in self._iter_ungrouped_match_rows(matches):
+                    rows.append(
+                        self._serialize_ungrouped_row(
+                            obj, request, related=related, item=item
+                        )
+                    )
+            else:
+                rows.append(self._serialize_ungrouped_row(obj, request))
+
+        return rows
 
     def post(self, request, *args, **kwargs):
         data = request.data.get("search_data", [])
@@ -369,67 +568,50 @@ class SearchView(GenericAPIView):
 
         try:
             qs = self.process_search(data)
-            page = self.paginate_queryset(qs)
-
             rel_q = self._extract_match_filters(data)
-            if page is not None:
-                inventory_ids = [obj.pk for obj in page]
-                match_map = self._build_match_map(inventory_ids, rel_q)
-                if ungroup:
-                    ungrouped_objects = []
-                    for obj in page:
-                        matches = match_map.get(obj.pk, {})
-                        if matches:
-                            for related, items in matches.items():
-                                for item in items:
-                                    single_match_context = {
-                                        "request": request,
-                                        "match_map": {obj.pk: {related: [item]}},
-                                    }
-                                    serializer = InventoryBaseSerializer(
-                                        obj, context=single_match_context
-                                    )
-                                    ungrouped_objects.append(serializer.data)
-                        else:
-                            serializer = InventoryBaseSerializer(
-                                obj, context={"request": request, "match_map": {}}
-                            )
-                            ungrouped_objects.append(serializer.data)
-
-                    return self.get_paginated_response(ungrouped_objects)
-                else:
-                    serializer = InventoryBaseSerializer(
-                        page,
-                        many=True,
-                        context={"request": request, "match_map": match_map},
-                    )
-                    return self.get_paginated_response(serializer.data)
-
-            inventory_ids = list(qs.values_list("id", flat=True))
-            match_map = self._build_match_map(inventory_ids, rel_q)
 
             if ungroup:
-                ungrouped_objects = []
-                for obj in qs:
-                    matches = match_map.get(obj.pk, {})
-                    if matches:
-                        for related, items in matches.items():
-                            for item in items:
-                                single_match_context = {
-                                    "request": request,
-                                    "match_map": {obj.pk: {related: [item]}},
-                                }
-                                serializer = InventoryBaseSerializer(
-                                    obj, context=single_match_context
-                                )
-                                ungrouped_objects.append(serializer.data)
-                    else:
-                        serializer = InventoryBaseSerializer(
-                            obj, context={"request": request, "match_map": {}}
-                        )
-                        ungrouped_objects.append(serializer.data)
+                paginator = self.paginator
+                if paginator is not None:
+                    limit = paginator.get_limit(request)
+                    if limit is not None:
+                        paginator.limit = limit
+                        paginator.offset = paginator.get_offset(request)
+                        paginator.count = self._count_ungrouped_rows(qs, rel_q)
+                        paginator.request = request
 
-                return Response(ungrouped_objects, status=200)
+                        if (
+                            paginator.count > paginator.limit
+                            and paginator.template is not None
+                        ):
+                            paginator.display_page_controls = True
+
+                        paginated_rows = self._get_ungrouped_page(
+                            qs,
+                            rel_q,
+                            request,
+                            paginator.offset,
+                            paginator.limit,
+                        )
+                        return paginator.get_paginated_response(paginated_rows)
+
+                return Response(
+                    self._get_all_ungrouped_rows(qs, rel_q, request), status=200
+                )
+
+            page = self.paginate_queryset(qs)
+            if page is not None:
+                inventory_ids = [obj.pk for obj in page]
+                match_map = self._build_grouped_match_map(inventory_ids, rel_q)
+                serializer = InventoryBaseSerializer(
+                    page,
+                    many=True,
+                    context={"request": request, "match_map": match_map},
+                )
+                return self.get_paginated_response(serializer.data)
+
+            inventory_ids = list(qs.values_list("id", flat=True))
+            match_map = self._build_grouped_match_map(inventory_ids, rel_q)
 
             serializer = InventoryBaseSerializer(
                 qs,
