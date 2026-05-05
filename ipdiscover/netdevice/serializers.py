@@ -41,7 +41,10 @@ class NetdeviceSerializer(ExpandableFieldsMixin, ModelSerializer):
             return representation
 
         # get the accountinfo data first return if not found
-        data = AccountinfoData.objects.filter(object_id=representation["id"]).first()
+        data = AccountinfoData.objects.filter(
+            object_id=representation["id"], 
+            object_slug="netdevice.netdevice"
+        ).first()
         if not data:
             return representation
 
