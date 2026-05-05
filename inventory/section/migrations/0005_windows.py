@@ -161,7 +161,7 @@ def create_default_windows_sections(apps, schema_editor):
             "name": "VIRTUAL MACHINES",
             "retrieval_method": "PW",
             "retrieval_output": "JSON",
-            "target": "",
+            "target": "@() | ConvertTo-Json",
             "options": {"submap": None},
             "template": apps.get_model("template", "Template").objects.get(os="WIN"),
         },
