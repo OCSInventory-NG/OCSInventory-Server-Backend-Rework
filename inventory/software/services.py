@@ -152,6 +152,10 @@ class SoftwareDictionaryService:
                         minor = str(minor_int) if minor_int is not None else None
                         patch = str(patch_int) if patch_int is not None else None
 
+            major = cls._parse_version_component(major)
+            minor = cls._parse_version_component(minor)
+            patch = cls._parse_version_component(patch)
+
             entry = {
                 "name": cls._value_for_field(mapping.name_id, value_map),
                 "publisher": cls._value_for_field(mapping.publisher_id, value_map),
@@ -181,6 +185,16 @@ class SoftwareDictionaryService:
             return None
         cleaned = str(value).strip()
         return cleaned or None
+
+    @staticmethod
+    def _parse_version_component(value: Optional[str]) -> Optional[int]:
+        if value is None:
+            return None
+
+        import re
+
+        match = re.match(r"^\d+", str(value).strip())
+        return int(match.group(0)) if match else None
 
     @staticmethod
     def _split_version_number(
