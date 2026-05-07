@@ -16,7 +16,7 @@ class SnmpScannerViewSet(viewsets.OCSViewSet):
     # Set default filter
     filter_backends = [filters.OrderingFilter]
 
-    ordering = ["identifier"]
+    ordering = ["name"]
 
     # Need to be authenticated to consult
     permission_classes = [DefaultModelPermissions]

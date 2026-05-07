@@ -21,7 +21,7 @@ class SnmpScanner(models.Model):
     - assets : list of assets within OCS
     """
 
-    identifier = models.CharField(max_length=100, primary_key=True)
+    name = models.CharField(max_length=100, unique=True)
     ip = models.GenericIPAddressField()
     subnets = JSONField(default=list)
     notes = models.TextField(blank=True, null=True)

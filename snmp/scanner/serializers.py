@@ -15,7 +15,8 @@ class SnmpScannerSerializer(ExpandableFieldsMixin, ModelSerializer):
 
         model = SnmpScanner
         fields = [
-            "identifier",
+            "id",
+            "name",
             "ip",
             "subnets",
             "notes",
