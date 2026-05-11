@@ -18,3 +18,6 @@ pytz>=2024.2
 
 # environment variables
 python-dotenv>=1.0.1
+
+#automation
+python-dateutil>=2.9
