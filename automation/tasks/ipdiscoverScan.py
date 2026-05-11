@@ -5,7 +5,11 @@ import shutil
 import subprocess
 from ipaddress import AddressValueError, IPv4Network
 
-import nmap
+try:
+    import nmap
+except ImportError:
+    nmap = None
+
 from automation.tasks.abstractTask import AbstractTask
 from config.models import Config
 from django.db import DatabaseError
@@ -51,7 +55,8 @@ class IpDiscoverScan(AbstractTask):
 
             # check system requirements
             self.check_privileges()
-            self.check_scan_tools(scantype)
+            if not self.check_scan_tools(scantype):
+                return
 
             # determine networks to scan
             networks_to_scan = self.get_networks_to_scan()
@@ -144,21 +149,28 @@ class IpDiscoverScan(AbstractTask):
         Check if required scan tools (nmap or fping) are available
         """
         if scantype == "nmap":
+            if nmap is None:
+                logger.warning(
+                    "IpDiscover is configured to use nmap, but the Python nmap module "
+                    "is not installed. Skipping IpDiscover scan."
+                )
+                return False
             if not shutil.which("nmap"):
                 logger.warning(
-                    "nmap is not installed or not found in PATH."
-                    " Network scans will fail."
+                    "IpDiscover is configured to use nmap, but nmap is not installed "
+                    "or not found in PATH. Skipping IpDiscover scan."
                 )
-            else:
-                logger.debug("nmap found in system PATH")
+                return False
+            logger.debug("nmap found in system PATH")
         elif scantype in ["fping", "ping"]:
             if not shutil.which("fping"):
                 logger.warning(
-                    "fping is not installed or not found in PATH."
-                    " Network scans will fail."
+                    f"IpDiscover is configured to use {scantype}, but fping is not "
+                    "installed or not found in PATH. Skipping IpDiscover scan."
                 )
-            else:
-                logger.debug("fping found in system PATH")
+                return False
+            logger.debug("fping found in system PATH")
+        return True
 
     def get_networks_to_scan(self):
         """
