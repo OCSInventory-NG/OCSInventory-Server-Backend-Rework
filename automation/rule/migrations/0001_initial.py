@@ -23,7 +23,7 @@ def create_osname_rules_with_actions(apps, schema_editor):
                     "priority": 1,
                 }
             ],
-            "priority": 2,
+            "priority": 1,
         },
         {
             "description": "Assign Linux (Debian based) template",
@@ -41,10 +41,10 @@ def create_osname_rules_with_actions(apps, schema_editor):
                     "action": "set",
                     "field": "template",
                     "value": 2,
-                    "priority": 2,
+                    "priority": 1,
                 }
             ],
-            "priority": 3,
+            "priority": 2,
         },
         {
             "description": "Assign Linux (RHEL based) template",
@@ -62,10 +62,10 @@ def create_osname_rules_with_actions(apps, schema_editor):
                     "action": "set",
                     "field": "template",
                     "value": 3,
-                    "priority": 3,
+                    "priority": 1,
                 }
             ],
-            "priority": 4,
+            "priority": 3,
         },
         {
             "description": "Assign Mac template",
@@ -78,10 +78,10 @@ def create_osname_rules_with_actions(apps, schema_editor):
                     "action": "set",
                     "field": "template",
                     "value": 4,
-                    "priority": 4,
+                    "priority": 1,
                 }
             ],
-            "priority": 5,
+            "priority": 4,
         },
         {
             "description": "Assign Legacy template",
@@ -94,10 +94,10 @@ def create_osname_rules_with_actions(apps, schema_editor):
                     "action": "set",
                     "field": "template",
                     "value": 1,
-                    "priority": 5,
+                    "priority": 1,
                 }
             ],
-            "priority": 6,
+            "priority": 5,
         },
         {
             "description": "Assign SNMP template",
@@ -110,10 +110,10 @@ def create_osname_rules_with_actions(apps, schema_editor):
                     "action": "set",
                     "field": "template",
                     "value": 6,
-                    "priority": 6,
+                    "priority": 1,
                 }
             ],
-            "priority": 7,
+            "priority": 6,
         },
     ]
 
@@ -125,6 +125,8 @@ def create_osname_rules_with_actions(apps, schema_editor):
                 trigger=rule["trigger"],
                 enabled=rule["enabled"],
                 logic=rule["logic"],
+                priority=rule["priority"],
+                break_on_match=False,
             )
 
             for action in rule["actions"]:
@@ -134,6 +136,7 @@ def create_osname_rules_with_actions(apps, schema_editor):
                     action=action["action"],
                     field=action["field"],
                     value=action["value"],
+                    priority=action["priority"],
                 )
         except Exception as e:
             print(e)
@@ -171,6 +174,8 @@ class Migration(migrations.Migration):
                         max_length=50,
                     ),
                 ),
+                ("priority", models.IntegerField()),
+                ("break_on_match", models.BooleanField(default=False)),
                 ("logic", models.JSONField()),
                 ("enabled", models.BooleanField(default=True)),
                 (
@@ -196,6 +201,7 @@ class Migration(migrations.Migration):
                     "description",
                     models.CharField(blank=True, max_length=255, null=True),
                 ),
+                ("priority", models.IntegerField()),
                 ("object_id", models.PositiveIntegerField(blank=True, null=True)),
                 ("object_slug", models.CharField(max_length=100, null=True)),
                 ("field", models.CharField(max_length=255)),
