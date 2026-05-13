@@ -1813,8 +1813,8 @@ def create_default_windows_fields(apps, schema_editor):
             ),
         },
         {
-            "name": "",
-            "retrieval_value": r"",
+            "name": "NAME",
+            "retrieval_value": r"null",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,

@@ -7,7 +7,7 @@ def create_default_macos_fields(apps, schema_editor):
     fields = [
         {
             "name": "CHEMISTRY",
-            "retrieval_value": 'Chemistry"\s*=\s*"([^"]+)',
+            "retrieval_value": r'Chemistry"\s*=\s*"([^"]+)',
             "override_target": True,
             "new_target": "ioreg -rn AppleSmartBattery",
             "retrieval_method": "BASH",
@@ -46,7 +46,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "DESIGN CAPACITY",
-            "retrieval_value": 'DesignCapacity"\s*=\s*([0-9]+)',
+            "retrieval_value": r'DesignCapacity"\s*=\s*([0-9]+)',
             "override_target": True,
             "new_target": "ioreg -rn AppleSmartBattery",
             "retrieval_method": "BASH",
@@ -59,7 +59,7 @@ def create_default_macos_fields(apps, schema_editor):
         },
         {
             "name": "DESIGN VOLTAGE",
-            "retrieval_value": 'DesignVoltage"\s*=\s*([0-9]+)',
+            "retrieval_value": r'DesignVoltage"\s*=\s*([0-9]+)',
             "override_target": True,
             "new_target": "ioreg -rn AppleSmartBattery",
             "retrieval_method": "BASH",
