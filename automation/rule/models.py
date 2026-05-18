@@ -123,10 +123,10 @@ def adjust_action_order_on_save(sender, instance, created, **kwargs):
 
 @receiver(post_delete, sender=Action)
 def adjust_action_order_on_delete(sender, instance, **kwargs):
-    if instance.rule is None:
+    if instance.rule_id is None:
         return
 
     Action.objects.filter(
-        rule=instance.rule,
+        rule_id=instance.rule_id,
         priority__gt=instance.priority,
     ).update(priority=F("priority") - 1)
