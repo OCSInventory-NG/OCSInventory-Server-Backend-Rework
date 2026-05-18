@@ -40,7 +40,6 @@ class ActionViewSet(viewsets.OCSViewSet):
         "rule",
         "priority",
         "action",
-        "description",
         "content_type",
         "object_id",
         "object_slug",

@@ -22,7 +22,6 @@ class ActionSerializer(ExpandableFieldsMixin, ModelSerializer):
             "id",
             "rule",
             "priority",
-            "description",
             "action",
             "field",
             "value",
