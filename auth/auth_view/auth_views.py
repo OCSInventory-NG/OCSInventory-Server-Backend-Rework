@@ -219,4 +219,5 @@ class LogoutView(BaseAuthView):
                 return HttpResponseRedirect(endpoint)
 
         frontend_redirect = getattr(settings, "FRONTEND_REDIRECT", "")
+        frontend_redirect = frontend_redirect + "/ocsreports/login"
         return HttpResponseRedirect(frontend_redirect + "?noauto")
