@@ -34,7 +34,6 @@ class Action(models.Model):
     )
     priority = models.IntegerField()
     action = models.CharField(max_length=50, choices=ACTION_CHOICES)
-    description = models.CharField(max_length=255, null=True, blank=True)
     # Define a GenericForeignKey to handle actions on different models
     content_type = models.ForeignKey(
         ContentType, on_delete=models.CASCADE, null=True, blank=True

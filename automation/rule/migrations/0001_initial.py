@@ -16,7 +16,6 @@ def create_osname_rules_with_actions(apps, schema_editor):
             "logic": {"regex": [{"var": "osname"}, "(?i)(Windows)"]},
             "actions": [
                 {
-                    "description": "Update template for Windows",
                     "action": "set",
                     "field": "template",
                     "value": 5,
@@ -37,7 +36,6 @@ def create_osname_rules_with_actions(apps, schema_editor):
             },
             "actions": [
                 {
-                    "description": "Update template for Linux (Debian based)",
                     "action": "set",
                     "field": "template",
                     "value": 2,
@@ -58,7 +56,6 @@ def create_osname_rules_with_actions(apps, schema_editor):
             },
             "actions": [
                 {
-                    "description": "Update template for Linux (RHEL based)",
                     "action": "set",
                     "field": "template",
                     "value": 3,
@@ -74,7 +71,6 @@ def create_osname_rules_with_actions(apps, schema_editor):
             "logic": {"regex": [{"var": "osname"}, "(?i)(Mac)"]},
             "actions": [
                 {
-                    "description": "Update template for Mac",
                     "action": "set",
                     "field": "template",
                     "value": 4,
@@ -90,7 +86,6 @@ def create_osname_rules_with_actions(apps, schema_editor):
             "logic": {"regex": [{"var": "agent"}, "(?i)(OCS-NG)"]},
             "actions": [
                 {
-                    "description": "Update template for Legacy",
                     "action": "set",
                     "field": "template",
                     "value": 1,
@@ -106,7 +101,6 @@ def create_osname_rules_with_actions(apps, schema_editor):
             "logic": {"==": [{"var": "osname"}, "SNMP"], "case_sensitive": False},
             "actions": [
                 {
-                    "description": "Update template for SNMP",
                     "action": "set",
                     "field": "template",
                     "value": 6,
@@ -132,7 +126,6 @@ def create_osname_rules_with_actions(apps, schema_editor):
             for action in rule["actions"]:
                 Action.objects.create(
                     rule=new_rule,
-                    description=action["description"],
                     action=action["action"],
                     field=action["field"],
                     value=action["value"],
@@ -197,10 +190,6 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ("action", models.CharField(choices=[("set", "Set")], max_length=50)),
-                (
-                    "description",
-                    models.CharField(blank=True, max_length=255, null=True),
-                ),
                 ("priority", models.IntegerField()),
                 ("object_id", models.PositiveIntegerField(blank=True, null=True)),
                 ("object_slug", models.CharField(max_length=100, null=True)),
