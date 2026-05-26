@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
                     "name",
                     models.CharField(default="Default Config Name", max_length=255),
                 ),
-                ("description", models.TextField(blank=True)),
+                ("description", models.TextField(blank=True, null=True)),
                 ("config", models.JSONField()),
                 ("priority", models.IntegerField(blank=True, null=True)),
                 ("enabled", models.BooleanField(default=False)),
