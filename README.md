@@ -1,9 +1,27 @@
-# OCSInventory-Server-Rework
+# OCS Inventory Server Backend
 
-Rework of the OCS Inventory project server
+Welcome to the new backend application for OCS Inventory.
 
-# Getting started
+## Table of Contents
+- [Introduction](#introduction)
+- [Production Use](#production-use)
+- [Development Setup](#development-setup)
 
+## Introduction
+
+This repository hosts the backend application for the OCS Inventory Server. It aims to provide a modern REST API for managing IT assets, deployments, and administrative tasks.
+
+If you are a user of version 2.x, you can find more information about what has changed between v2 and v3 at the following link:
+- [v2 vs v3: What’s changed](https://documentation.ocsinventory-ng.org/project-overview/v2-vs-v3-whats-changed)
+
+## Production Use
+
+To deploy and use the backend in production, or to find resources related to OCS Inventory, refer to the following official links:
+- [OCS Inventory Prerequisites](https://documentation.ocsinventory-ng.org/administrator-docs/system-requirements) - Requirements needed to install the solution
+- [OCS Inventory Server Setup](https://documentation.ocsinventory-ng.org/administrator-docs/server-setup) - Complete installation guide for OCS Inventory Server (backend and frontend component)
+- [OCS Inventory Documentation Wiki](https://documentation.ocsinventory-ng.org/) - Official guides on installation, configuration, and administration.
+
+## Development Setup
 
 Install basic requirements using pip
 
