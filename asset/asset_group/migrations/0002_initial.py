@@ -10,26 +10,28 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('asset_group', '0001_initial'),
-        ('auth', '0012_alter_user_first_name_max_length'),
-        ('inventory_base', '0001_initial'),
+        ("asset_group", "0001_initial"),
+        ("auth", "0012_alter_user_first_name_max_length"),
+        ("inventory_base", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='assetgroup',
-            name='assets',
-            field=models.ManyToManyField(blank=True, to='inventory_base.inventorybase'),
+            model_name="assetgroup",
+            name="assets",
+            field=models.ManyToManyField(blank=True, to="inventory_base.inventorybase"),
         ),
         migrations.AddField(
-            model_name='assetgroup',
-            name='groups',
-            field=models.ManyToManyField(blank=True, to='auth.group'),
+            model_name="assetgroup",
+            name="groups",
+            field=models.ManyToManyField(blank=True, to="auth.group"),
         ),
         migrations.AddField(
-            model_name='assetgroup',
-            name='user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+            model_name="assetgroup",
+            name="user",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL
+            ),
         ),
     ]

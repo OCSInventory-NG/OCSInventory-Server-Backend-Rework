@@ -7,14 +7,19 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('section', '0008_debian_linux'),
-        ('template', '0001_initial'),
+        ("section", "0008_debian_linux"),
+        ("template", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='section',
-            name='template',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, related_name='sections', to='template.template'),
+            model_name="section",
+            name="template",
+            field=models.ForeignKey(
+                default=1,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="sections",
+                to="template.template",
+            ),
         ),
     ]

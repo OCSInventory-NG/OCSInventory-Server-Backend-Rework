@@ -9,27 +9,43 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('template', '0001_initial'),
+        ("template", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='InventoryBase',
+            name="InventoryBase",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=50)),
-                ('description', models.CharField(max_length=255, null=True)),
-                ('serial', models.CharField(max_length=255)),
-                ('osname', models.CharField(max_length=255)),
-                ('osversion', models.CharField(blank=True, max_length=255)),
-                ('uuid', models.CharField(max_length=255, unique=True)),
-                ('srcip', models.CharField(blank=True, max_length=255)),
-                ('srcmac', models.CharField(blank=True, max_length=255)),
-                ('domain', models.CharField(blank=True, max_length=255)),
-                ('agent', models.CharField(blank=True, max_length=255)),
-                ('is_template_forced', models.BooleanField(default=False)),
-                ('last_update', models.DateTimeField(auto_now=True)),
-                ('template', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='template.template')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=50)),
+                ("description", models.CharField(max_length=255, null=True)),
+                ("serial", models.CharField(max_length=255)),
+                ("osname", models.CharField(max_length=255)),
+                ("osversion", models.CharField(blank=True, max_length=255)),
+                ("uuid", models.CharField(max_length=255, unique=True)),
+                ("srcip", models.CharField(blank=True, max_length=255)),
+                ("srcmac", models.CharField(blank=True, max_length=255)),
+                ("domain", models.CharField(blank=True, max_length=255)),
+                ("agent", models.CharField(blank=True, max_length=255)),
+                ("is_template_forced", models.BooleanField(default=False)),
+                ("last_update", models.DateTimeField(auto_now=True)),
+                (
+                    "template",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="template.template",
+                    ),
+                ),
             ],
         ),
     ]

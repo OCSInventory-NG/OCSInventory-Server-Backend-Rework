@@ -7,23 +7,28 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('field', '0008_debian_linux'),
-        ('section', '0008_debian_linux'),
+        ("field", "0008_debian_linux"),
+        ("section", "0008_debian_linux"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='field',
-            options={'ordering': ['order']},
+            name="field",
+            options={"ordering": ["order"]},
         ),
         migrations.AlterField(
-            model_name='field',
-            name='retrieval_value',
+            model_name="field",
+            name="retrieval_value",
             field=models.CharField(blank=True, max_length=255, null=True),
         ),
         migrations.AlterField(
-            model_name='field',
-            name='section',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, related_name='fields', to='section.section'),
+            model_name="field",
+            name="section",
+            field=models.ForeignKey(
+                default=1,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="fields",
+                to="section.section",
+            ),
         ),
     ]

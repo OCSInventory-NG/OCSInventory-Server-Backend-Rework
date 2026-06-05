@@ -7,24 +7,45 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='AssetGroup',
+            name="AssetGroup",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('visibility', models.CharField(choices=[('public', 'Public'), ('private_personal', 'Private (Personal)'), ('private_group', 'Private (Group)')], default='private_personal', max_length=20)),
-                ('allow_group_modification', models.BooleanField(default=False)),
-                ('name', models.CharField(max_length=50)),
-                ('description', models.CharField(blank=True, max_length=255, null=True)),
-                ('is_dynamic', models.BooleanField(default=False)),
-                ('search', models.JSONField(blank=True, null=True)),
-                ('last_updated', models.DateTimeField(auto_now=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "visibility",
+                    models.CharField(
+                        choices=[
+                            ("public", "Public"),
+                            ("private_personal", "Private (Personal)"),
+                            ("private_group", "Private (Group)"),
+                        ],
+                        default="private_personal",
+                        max_length=20,
+                    ),
+                ),
+                ("allow_group_modification", models.BooleanField(default=False)),
+                ("name", models.CharField(max_length=50)),
+                (
+                    "description",
+                    models.CharField(blank=True, max_length=255, null=True),
+                ),
+                ("is_dynamic", models.BooleanField(default=False)),
+                ("search", models.JSONField(blank=True, null=True)),
+                ("last_updated", models.DateTimeField(auto_now=True)),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
     ]

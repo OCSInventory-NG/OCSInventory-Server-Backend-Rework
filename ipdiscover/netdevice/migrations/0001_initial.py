@@ -9,19 +9,34 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('network', '0001_initial'),
+        ("network", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Netdevice',
+            name="Netdevice",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('ip', models.GenericIPAddressField()),
-                ('netname', models.CharField(max_length=128)),
-                ('mac', models.CharField(max_length=20)),
-                ('last_seen', models.DateTimeField(auto_now=True)),
-                ('network', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='netdevices', to='network.network')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("ip", models.GenericIPAddressField()),
+                ("netname", models.CharField(max_length=128)),
+                ("mac", models.CharField(max_length=20)),
+                ("last_seen", models.DateTimeField(auto_now=True)),
+                (
+                    "network",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="netdevices",
+                        to="network.network",
+                    ),
+                ),
             ],
         ),
     ]

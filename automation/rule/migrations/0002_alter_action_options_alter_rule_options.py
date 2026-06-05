@@ -6,16 +6,16 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rule', '0001_initial'),
+        ("rule", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='action',
-            options={'ordering': ['rule', 'priority']},
+            name="action",
+            options={"ordering": ["rule", "priority"]},
         ),
         migrations.AlterModelOptions(
-            name='rule',
-            options={'ordering': ['trigger', 'priority']},
+            name="rule",
+            options={"ordering": ["trigger", "priority"]},
         ),
     ]

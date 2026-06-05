@@ -7,20 +7,30 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Extension',
+            name="Extension",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
-                ('description', models.CharField(blank=True, max_length=255, null=True)),
-                ('version', models.CharField(default='0.0.0', max_length=255)),
-                ('author', models.CharField(blank=True, max_length=255, null=True)),
-                ('enabled', models.BooleanField(default=False)),
-                ('django_app', models.CharField(max_length=255, unique=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255)),
+                (
+                    "description",
+                    models.CharField(blank=True, max_length=255, null=True),
+                ),
+                ("version", models.CharField(default="0.0.0", max_length=255)),
+                ("author", models.CharField(blank=True, max_length=255, null=True)),
+                ("enabled", models.BooleanField(default=False)),
+                ("django_app", models.CharField(max_length=255, unique=True)),
             ],
         ),
     ]

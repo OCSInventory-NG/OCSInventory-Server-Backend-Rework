@@ -9,20 +9,26 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('field', '0009_alter_field_options_alter_field_retrieval_value_and_more'),
-        ('inventory_field', '0001_initial'),
-        ('inventory_section', '0001_initial'),
+        ("field", "0009_alter_field_options_alter_field_retrieval_value_and_more"),
+        ("inventory_field", "0001_initial"),
+        ("inventory_section", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='inventoryfield',
-            name='inventory_section',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='fields', to='inventory_section.inventorysection'),
+            model_name="inventoryfield",
+            name="inventory_section",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="fields",
+                to="inventory_section.inventorysection",
+            ),
         ),
         migrations.AddField(
-            model_name='inventoryfield',
-            name='template_field',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='field.field'),
+            model_name="inventoryfield",
+            name="template_field",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="field.field"
+            ),
         ),
     ]

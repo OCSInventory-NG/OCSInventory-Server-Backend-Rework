@@ -10,26 +10,51 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('auth', '0012_alter_user_first_name_max_length'),
+        ("auth", "0012_alter_user_first_name_max_length"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Search',
+            name="Search",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('visibility', models.CharField(choices=[('public', 'Public'), ('private_personal', 'Private (Personal)'), ('private_group', 'Private (Group)')], default='private_personal', max_length=20)),
-                ('allow_group_modification', models.BooleanField(default=False)),
-                ('search', models.JSONField()),
-                ('last_updated', models.DateTimeField(auto_now=True)),
-                ('name', models.CharField(max_length=50)),
-                ('description', models.TextField(blank=True, null=True)),
-                ('groups', models.ManyToManyField(blank=True, to='auth.group')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "visibility",
+                    models.CharField(
+                        choices=[
+                            ("public", "Public"),
+                            ("private_personal", "Private (Personal)"),
+                            ("private_group", "Private (Group)"),
+                        ],
+                        default="private_personal",
+                        max_length=20,
+                    ),
+                ),
+                ("allow_group_modification", models.BooleanField(default=False)),
+                ("search", models.JSONField()),
+                ("last_updated", models.DateTimeField(auto_now=True)),
+                ("name", models.CharField(max_length=50)),
+                ("description", models.TextField(blank=True, null=True)),
+                ("groups", models.ManyToManyField(blank=True, to="auth.group")),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
     ]

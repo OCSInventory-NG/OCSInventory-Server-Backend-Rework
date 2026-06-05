@@ -9,23 +9,66 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('asset_group', '0001_initial'),
-        ('inventory_base', '0001_initial'),
-        ('package', '0001_initial'),
+        ("asset_group", "0001_initial"),
+        ("inventory_base", "0001_initial"),
+        ("package", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Result',
+            name="Result",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=128)),
-                ('status', models.IntegerField(choices=[(0, 'Sucess'), (1, 'Waiting notification'), (2, 'Notified'), (3, 'Error')], default=1)),
-                ('comment', models.TextField(null=True)),
-                ('date_created', models.DateTimeField(auto_now_add=True)),
-                ('asset', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='results', to='inventory_base.inventorybase')),
-                ('group', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='results', to='asset_group.assetgroup')),
-                ('package', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='result', to='package.package')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=128)),
+                (
+                    "status",
+                    models.IntegerField(
+                        choices=[
+                            (0, "Sucess"),
+                            (1, "Waiting notification"),
+                            (2, "Notified"),
+                            (3, "Error"),
+                        ],
+                        default=1,
+                    ),
+                ),
+                ("comment", models.TextField(null=True)),
+                ("date_created", models.DateTimeField(auto_now_add=True)),
+                (
+                    "asset",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="results",
+                        to="inventory_base.inventorybase",
+                    ),
+                ),
+                (
+                    "group",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="results",
+                        to="asset_group.assetgroup",
+                    ),
+                ),
+                (
+                    "package",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="result",
+                        to="package.package",
+                    ),
+                ),
             ],
         ),
     ]

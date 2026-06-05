@@ -9,17 +9,38 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('inventory_base', '0001_initial'),
-        ('section', '0008_debian_linux'),
+        ("inventory_base", "0001_initial"),
+        ("section", "0008_debian_linux"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='InventorySection',
+            name="InventorySection",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('base', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='inventory_sections', to='inventory_base.inventorybase')),
-                ('template_section', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='section.section')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "base",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="inventory_sections",
+                        to="inventory_base.inventorybase",
+                    ),
+                ),
+                (
+                    "template_section",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="section.section",
+                    ),
+                ),
             ],
         ),
     ]

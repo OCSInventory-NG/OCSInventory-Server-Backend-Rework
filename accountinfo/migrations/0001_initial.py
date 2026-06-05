@@ -9,39 +9,99 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('contenttypes', '0002_remove_content_type_name'),
+        ("contenttypes", "0002_remove_content_type_name"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='AccountinfoConfig',
+            name="AccountinfoConfig",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('description', models.CharField(max_length=512)),
-                ('datatype', models.CharField(choices=[('TEXT', 'Text'), ('TEXTAREA', 'Textarea'), ('SELECT', 'Select'), ('CHECKBOX', 'Checkbox')], default='TEXT', max_length=10)),
-                ('datatarget', models.CharField(choices=[('ASSET', 'Assets'), ('IPDISCOVER', 'IPDiscover')], default='ASSET', max_length=10)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                ("description", models.CharField(max_length=512)),
+                (
+                    "datatype",
+                    models.CharField(
+                        choices=[
+                            ("TEXT", "Text"),
+                            ("TEXTAREA", "Textarea"),
+                            ("SELECT", "Select"),
+                            ("CHECKBOX", "Checkbox"),
+                        ],
+                        default="TEXT",
+                        max_length=10,
+                    ),
+                ),
+                (
+                    "datatarget",
+                    models.CharField(
+                        choices=[("ASSET", "Assets"), ("IPDISCOVER", "IPDiscover")],
+                        default="ASSET",
+                        max_length=10,
+                    ),
+                ),
             ],
             options={
-                'constraints': [models.UniqueConstraint(fields=('name', 'datatarget'), name='unique_accountinfo')],
+                "constraints": [
+                    models.UniqueConstraint(
+                        fields=("name", "datatarget"), name="unique_accountinfo"
+                    )
+                ],
             },
         ),
         migrations.CreateModel(
-            name='AccountinfoData',
+            name="AccountinfoData",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('accountdata', models.JSONField(blank=True, null=True)),
-                ('object_slug', models.CharField(max_length=100, null=True)),
-                ('object_id', models.PositiveIntegerField()),
-                ('content_type', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='contenttypes.contenttype')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("accountdata", models.JSONField(blank=True, null=True)),
+                ("object_slug", models.CharField(max_length=100, null=True)),
+                ("object_id", models.PositiveIntegerField()),
+                (
+                    "content_type",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to="contenttypes.contenttype",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='AccountinfoValue',
+            name="AccountinfoValue",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('value', models.CharField(max_length=100)),
-                ('accountinfo_config', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='accountinfo_values', to='accountinfo.accountinfoconfig')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("value", models.CharField(max_length=100)),
+                (
+                    "accountinfo_config",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="accountinfo_values",
+                        to="accountinfo.accountinfoconfig",
+                    ),
+                ),
             ],
         ),
     ]

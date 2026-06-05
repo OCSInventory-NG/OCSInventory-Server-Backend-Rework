@@ -9,18 +9,32 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('scheduler', '0001_initial'),
+        ("scheduler", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='History',
+            name="History",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('date', models.DateTimeField(auto_now=True)),
-                ('status', models.IntegerField()),
-                ('comment', models.CharField(max_length=255)),
-                ('scheduler', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='scheduler.scheduler')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("date", models.DateTimeField(auto_now=True)),
+                ("status", models.IntegerField()),
+                ("comment", models.CharField(max_length=255)),
+                (
+                    "scheduler",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="scheduler.scheduler",
+                    ),
+                ),
             ],
         ),
     ]

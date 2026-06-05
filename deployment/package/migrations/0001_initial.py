@@ -7,18 +7,32 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Package',
+            name="Package",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=128)),
-                ('description', models.TextField()),
-                ('date_created', models.DateTimeField(auto_now_add=True)),
-                ('target_os', models.CharField(choices=[('WIN', 'Windows'), ('LIN', 'Linux'), ('MAC', 'Mac')], default='WIN', max_length=3)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=128)),
+                ("description", models.TextField()),
+                ("date_created", models.DateTimeField(auto_now_add=True)),
+                (
+                    "target_os",
+                    models.CharField(
+                        choices=[("WIN", "Windows"), ("LIN", "Linux"), ("MAC", "Mac")],
+                        default="WIN",
+                        max_length=3,
+                    ),
+                ),
             ],
         ),
     ]
