@@ -19,10 +19,9 @@ A clear and concise description of what the bug is.
 A clear and concise description of what you expected to happen.
 
 ## Environment Details
-- **Python Version:** <!-- e.g., 3.10, 3.11 -->
-- **Database Engine & Version:** <!-- e.g., PostgreSQL 15, MySQL 8.0 -->
 - **Deployment Type:** <!-- e.g., Docker Compose, Source install, Packages -->
 - **OCS Server Backend Version:** <!-- e.g., commit hash or release version -->
+- **OCS Server Information** <!-- Can be retrieved from the web console under "Configuration", use the "Copy all" button -->
 
 ## Configuration Sample
 Provide relevant configuration parameters (from your `.env` or Django settings if customized, omitting secrets).
