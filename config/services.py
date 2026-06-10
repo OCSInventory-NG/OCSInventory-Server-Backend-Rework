@@ -9,6 +9,8 @@ from django.conf import settings
 
 
 class ServerInfoService:
+    BACKEND_VERSION = "3.0.0"
+
     # Can be detected only in prod package installation
     FRONTEND_PATH_CANDIDATES = [
         Path("/usr/share/ocsinventory-frontend"),
@@ -32,6 +34,7 @@ class ServerInfoService:
     def get_server_info(cls):
         operating_system, operating_system_version = cls.get_operating_system_info()
         return {
+            "backend_version": cls.BACKEND_VERSION,
             "authentication_type": cls.get_authentication_types(),
             "infrastructure_type": cls.get_infrastructure_type(),
             "operating_system": operating_system,

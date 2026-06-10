@@ -18,6 +18,7 @@ class ConfigSerializer(ExpandableFieldsMixin, ModelSerializer):
 
 
 class ServerInfoSerializer(serializers.Serializer):
+    backend_version = serializers.CharField(allow_null=True)
     authentication_type = serializers.ListField(
         child=serializers.CharField(), allow_empty=True
     )
