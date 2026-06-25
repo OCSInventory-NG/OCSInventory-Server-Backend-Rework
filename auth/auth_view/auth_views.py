@@ -119,17 +119,10 @@ class LoginView(BaseAuthView):
 
         # Générer un state aléatoire et le stocker en session comme mozilla_django_oidc l'attend
         state = get_random_string(32)
-        nonce = get_random_string(32)
-        add_state_and_verifier_and_nonce_to_session(request, state, {
-            "nonce": nonce,
-            "code_verifier": None,
-        })
-
         params = {
             "response_type": "code",
             "client_id": self.current_auth_config.config["CLIENT_ID"],
             "state": state,
-            "nonce": nonce,
             "scope": self.current_auth_config.config["SCOPES"],
             "redirect_uri": redirect_uri,
         }
