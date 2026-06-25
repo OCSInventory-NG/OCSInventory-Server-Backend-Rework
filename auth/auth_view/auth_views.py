@@ -4,6 +4,8 @@ from urllib.parse import parse_qsl, quote, urlencode, urlsplit, urlunsplit
 
 from auth.auth_backend.cas_backend import CustomCASBackend
 from auth.auth_backend.oidc_backend import CustomOIDCBackend
+from mozilla_django_oidc.utils import add_state_and_verifier_and_nonce_to_session
+from django.utils.crypto import get_random_string
 from auth.auth_config.models import AuthConfig
 from auth.auth_method.models import AuthMethod
 from django.conf import settings
@@ -114,10 +116,20 @@ class LoginView(BaseAuthView):
     def oidc_login(self, request):
         """Redirect to OIDC login page"""
         redirect_uri = request.build_absolute_uri(reverse("callback"))
+
+        # Générer un state aléatoire et le stocker en session comme mozilla_django_oidc l'attend
+        state = get_random_string(32)
+        nonce = get_random_string(32)
+        add_state_and_verifier_and_nonce_to_session(request, state, {
+            "nonce": nonce,
+            "code_verifier": None,
+        })
+
         params = {
             "response_type": "code",
             "client_id": self.current_auth_config.config["CLIENT_ID"],
-            "state": None,
+            "state": state,
+            "nonce": nonce,
             "scope": self.current_auth_config.config["SCOPES"],
             "redirect_uri": redirect_uri,
         }
