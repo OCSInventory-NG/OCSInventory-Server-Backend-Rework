@@ -86,6 +86,7 @@ INSTALLED_APPS = [
     "django_cas_ng",
     "filemanager.apps.FileManagerConfig",
     "extension.apps.ExtensionConfig",
+    "compliance.apps.ComplianceConfig",
 ]
 
 MIDDLEWARE = [

@@ -59,6 +59,11 @@ def less(a, b):
         except TypeError:
             # NaN
             return False
+    elif isinstance(a, str) and isinstance(b, str):
+        try:
+            return float(a) < float(b)
+        except (ValueError, TypeError):
+            pass
     return a < b
 
 
@@ -99,7 +104,7 @@ def get_var(data, var_name, not_found=None):
 
 operations = {
     "==": soft_equals,
-    "!=": lambda a, b: not soft_equals(a, b),
+    "!=": lambda a, b, case_sensitive=False: not soft_equals(a, b, case_sensitive),
     ">": lambda a, b: less(b, a),
     ">=": lambda a, b: less(b, a) or soft_equals(a, b),
     "<": less,

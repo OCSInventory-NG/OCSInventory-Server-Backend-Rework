@@ -18,6 +18,7 @@ import sys
 
 from accountinfo.routers import AccountinfoRouter
 from asset.agent_config.routers import AgentConfigRouter
+from compliance.routers import ComplianceRouter
 from asset.asset_group.routers import AssetGroupRouter
 from asset.collection.views import CollectionView
 from asset.inventory_base.routers import InventoryBaseRouter
@@ -215,6 +216,9 @@ fileManagerRouter = fileManagerRouter.defineRoutes(defaultRouter)
 # Add Extension declaration
 extensionRouter = ExtensionRouter()
 extensionRouter = extensionRouter.defineRoutes(defaultRouter)
+
+complianceRouter = ComplianceRouter()
+complianceRouter = complianceRouter.defineRoutes(defaultRouter)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.

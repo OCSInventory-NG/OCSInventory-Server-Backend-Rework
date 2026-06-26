@@ -1,0 +1,7 @@
+{
+    "name": "compliance",
+    "description": "Module de conformité : règles logicielles, sécurité et fin de vie (EOL).",
+    "version": "1.0.0",
+    "author": "FactorFX",
+    "django_app": "compliance"
+}
