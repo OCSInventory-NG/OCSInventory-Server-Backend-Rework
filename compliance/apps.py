@@ -14,11 +14,10 @@ def _on_inventory_received(sender, instance, **kwargs):
     """
     try:
         from .engine import evaluate_asset
+
         evaluate_asset(instance)
     except Exception:
-        LOGGER.exception(
-            "Compliance evaluation failed for asset %s", instance.id
-        )
+        LOGGER.exception("Compliance evaluation failed for asset %s", instance.id)
 
 
 class ComplianceConfig(AppConfig):
@@ -33,8 +32,8 @@ class ComplianceConfig(AppConfig):
     name = "compliance"
 
     def ready(self):
-        from django.db.models.signals import post_save
         from asset.inventory_base.models import InventoryBase
+        from django.db.models.signals import post_save
 
         post_save.connect(
             _on_inventory_received,

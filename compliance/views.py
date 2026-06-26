@@ -12,7 +12,13 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from .models import AssetEOLStatus, ComplianceResult, ComplianceRule, ComplianceTarget, WindowsBuildMapping
+from .models import (
+    AssetEOLStatus,
+    ComplianceResult,
+    ComplianceRule,
+    ComplianceTarget,
+    WindowsBuildMapping,
+)
 from .serializers import (
     AssetEOLStatusSerializer,
     ComplianceResultSerializer,
@@ -25,7 +31,7 @@ LOGGER = logging.getLogger(__name__)
 
 _IMPORT_REQUIRED = {"name", "type", "severity", "logic"}
 _IMPORT_OPTIONAL = {"description", "enabled"}
-_VALID_TYPES     = {c[0] for c in ComplianceRule.TYPE_CHOICES}
+_VALID_TYPES = {c[0] for c in ComplianceRule.TYPE_CHOICES}
 _VALID_SEVERITIES = {c[0] for c in ComplianceRule.SEVERITY_CHOICES}
 
 
@@ -83,14 +89,16 @@ class ComplianceRuleViewSet(viewsets.OCSViewSet):
 
                 missing = _IMPORT_REQUIRED - row.keys()
                 if missing:
-                    errors.append({"row": i, "error": f"Colonnes manquantes : {missing}"})
+                    errors.append(
+                        {"row": i, "error": f"Colonnes manquantes : {missing}"}
+                    )
                     skipped.append(i)
                     continue
 
-                name     = row["name"]
-                type_    = row["type"]
+                name = row["name"]
+                type_ = row["type"]
                 severity = row["severity"]
-                enabled  = row.get("enabled", "true").lower() not in ("false", "0", "")
+                enabled = row.get("enabled", "true").lower() not in ("false", "0", "")
 
                 if type_ not in _VALID_TYPES:
                     errors.append({"row": i, "error": f"Type invalide : {type_!r}"})
@@ -98,7 +106,9 @@ class ComplianceRuleViewSet(viewsets.OCSViewSet):
                     continue
 
                 if severity not in _VALID_SEVERITIES:
-                    errors.append({"row": i, "error": f"Sévérité invalide : {severity!r}"})
+                    errors.append(
+                        {"row": i, "error": f"Sévérité invalide : {severity!r}"}
+                    )
                     skipped.append(i)
                     continue
 
@@ -111,10 +121,10 @@ class ComplianceRuleViewSet(viewsets.OCSViewSet):
 
                 defaults = {
                     "description": row.get("description") or None,
-                    "type":        type_,
-                    "severity":    severity,
-                    "logic":       logic,
-                    "enabled":     enabled,
+                    "type": type_,
+                    "severity": severity,
+                    "logic": logic,
+                    "enabled": enabled,
                 }
                 rule = ComplianceRule.objects.filter(name=name).first()
                 if rule:
@@ -123,7 +133,9 @@ class ComplianceRuleViewSet(viewsets.OCSViewSet):
                     rule.save(update_fields=list(defaults.keys()))
                     updated.append(rule.name)
                 else:
-                    max_priority = ComplianceRule.objects.aggregate(Max("priority"))["priority__max"]
+                    max_priority = ComplianceRule.objects.aggregate(Max("priority"))[
+                        "priority__max"
+                    ]
                     defaults["priority"] = (max_priority or 0) + 1
                     rule = ComplianceRule.objects.create(name=name, **defaults)
                     created.append(rule.name)
@@ -135,13 +147,16 @@ class ComplianceRuleViewSet(viewsets.OCSViewSet):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
-        return Response({
-            "created": len(created),
-            "updated": len(updated),
-            "skipped": len(skipped),
-            "errors":  errors,
-            "rules":   created,
-        }, status=status.HTTP_200_OK)
+        return Response(
+            {
+                "created": len(created),
+                "updated": len(updated),
+                "skipped": len(skipped),
+                "errors": errors,
+                "rules": created,
+            },
+            status=status.HTTP_200_OK,
+        )
 
 
 class ComplianceTargetViewSet(viewsets.OCSViewSet):
@@ -174,7 +189,14 @@ class ComplianceResultViewSet(viewsets.OCSViewSet):
     model = ComplianceResult
     filterset_fields = ["asset", "rule", "status", "rule__severity"]
     search_fields = ["asset__name", "rule__name", "status"]
-    ordering_fields = ["id", "evaluated_at", "status", "asset__name", "rule__name", "rule__severity"]
+    ordering_fields = [
+        "id",
+        "evaluated_at",
+        "status",
+        "asset__name",
+        "rule__name",
+        "rule__severity",
+    ]
 
     @action(
         detail=False,
@@ -197,8 +219,12 @@ class ComplianceResultViewSet(viewsets.OCSViewSet):
             try:
                 asset_ids = [int(i) for i in asset_ids_param.split(",") if i.strip()]
             except ValueError:
-                return Response({"error": "Invalid asset IDs"}, status=status.HTTP_400_BAD_REQUEST)
-            queryset = ComplianceResult.objects.filter(asset_id__in=asset_ids).select_related("rule")
+                return Response(
+                    {"error": "Invalid asset IDs"}, status=status.HTTP_400_BAD_REQUEST
+                )
+            queryset = ComplianceResult.objects.filter(
+                asset_id__in=asset_ids
+            ).select_related("rule")
         else:
             queryset = ComplianceResult.objects.select_related("rule").all()
 
@@ -220,7 +246,9 @@ class ComplianceResultViewSet(viewsets.OCSViewSet):
         result_list = [
             {
                 "asset": data["asset"],
-                "global_status": "non_compliant" if data["has_non_compliant"] else "compliant",
+                "global_status": (
+                    "non_compliant" if data["has_non_compliant"] else "compliant"
+                ),
                 "counts": data["counts"],
             }
             for data in summary.values()
@@ -246,10 +274,12 @@ class ComplianceResultViewSet(viewsets.OCSViewSet):
         from .engine import run_evaluation
 
         report = run_evaluation()
-        return Response({
-            "evaluated": len(report),
-            "results": report,
-        })
+        return Response(
+            {
+                "evaluated": len(report),
+                "results": report,
+            }
+        )
 
 
 class AssetEOLStatusViewSet(viewsets.OCSViewSet):
@@ -266,9 +296,9 @@ class AssetEOLStatusViewSet(viewsets.OCSViewSet):
     serializer_class = AssetEOLStatusSerializer
     model = AssetEOLStatus
     filterset_fields = {
-        "is_eol":  ["exact"],
+        "is_eol": ["exact"],
         "product": ["exact", "isnull"],
-        "asset":   ["exact"],
+        "asset": ["exact"],
     }
     search_fields = ["product", "asset__name"]
     ordering_fields = ["id", "asset", "is_eol", "product"]
@@ -291,21 +321,25 @@ class AssetEOLStatusViewSet(viewsets.OCSViewSet):
             try:
                 asset_ids = [int(i) for i in asset_ids_param.split(",") if i.strip()]
             except ValueError:
-                return Response({"error": "Invalid asset IDs"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    {"error": "Invalid asset IDs"}, status=status.HTTP_400_BAD_REQUEST
+                )
             queryset = AssetEOLStatus.objects.filter(asset_id__in=asset_ids)
         else:
             queryset = AssetEOLStatus.objects.all()
 
-        return Response([
-            {
-                "asset":   e.asset_id,
-                "is_eol":  e.is_eol,
-                "product": e.product,
-                "cycle":   e.cycle,
-                "eol":     e.eol,
-            }
-            for e in queryset
-        ])
+        return Response(
+            [
+                {
+                    "asset": e.asset_id,
+                    "is_eol": e.is_eol,
+                    "product": e.product,
+                    "cycle": e.cycle,
+                    "eol": e.eol,
+                }
+                for e in queryset
+            ]
+        )
 
 
 class WindowsBuildMappingViewSet(viewsets.OCSViewSet):

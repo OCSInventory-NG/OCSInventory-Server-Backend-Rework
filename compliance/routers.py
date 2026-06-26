@@ -28,5 +28,7 @@ class ComplianceRouter:
         defaultRouter.register(r"compliance/targets", ComplianceTargetViewSet)
         defaultRouter.register(r"compliance/results", ComplianceResultViewSet)
         defaultRouter.register(r"compliance/eol-status", AssetEOLStatusViewSet)
-        defaultRouter.register(r"compliance/windows-build-mapping", WindowsBuildMappingViewSet)
+        defaultRouter.register(
+            r"compliance/windows-build-mapping", WindowsBuildMappingViewSet
+        )
         return defaultRouter

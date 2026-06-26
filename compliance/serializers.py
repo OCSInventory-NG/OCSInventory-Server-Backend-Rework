@@ -1,9 +1,15 @@
-from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
 from django.db.models import F, Max
+from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
-from .models import AssetEOLStatus, ComplianceResult, ComplianceRule, ComplianceTarget, WindowsBuildMapping
+from .models import (
+    AssetEOLStatus,
+    ComplianceResult,
+    ComplianceRule,
+    ComplianceTarget,
+    WindowsBuildMapping,
+)
 
 
 class ComplianceTargetSerializer(ModelSerializer):
@@ -62,7 +68,9 @@ class ComplianceRuleSerializer(ExpandableFieldsMixin, ModelSerializer):
 
     def create(self, validated_data):
         if "priority" not in validated_data:
-            max_priority = ComplianceRule.objects.aggregate(Max("priority"))["priority__max"]
+            max_priority = ComplianceRule.objects.aggregate(Max("priority"))[
+                "priority__max"
+            ]
             validated_data["priority"] = (max_priority or 0) + 1
         else:
             self._reorder_priorities(validated_data)
@@ -81,11 +89,29 @@ class AssetEOLStatusSerializer(ModelSerializer):
     class Meta:
         model = AssetEOLStatus
         fields = [
-            "id", "asset", "asset_name",
-            "product", "cycle", "eol", "is_eol",
-            "support", "latest", "fetched_at",
+            "id",
+            "asset",
+            "asset_name",
+            "product",
+            "cycle",
+            "eol",
+            "is_eol",
+            "support",
+            "latest",
+            "fetched_at",
         ]
-        read_only_fields = ["id", "asset", "asset_name", "product", "cycle", "eol", "is_eol", "support", "latest", "fetched_at"]
+        read_only_fields = [
+            "id",
+            "asset",
+            "asset_name",
+            "product",
+            "cycle",
+            "eol",
+            "is_eol",
+            "support",
+            "latest",
+            "fetched_at",
+        ]
 
 
 class ComplianceResultSerializer(ExpandableFieldsMixin, ModelSerializer):
@@ -93,7 +119,15 @@ class ComplianceResultSerializer(ExpandableFieldsMixin, ModelSerializer):
 
     class Meta:
         model = ComplianceResult
-        fields = ["id", "asset", "asset_name", "rule", "status", "detail", "evaluated_at"]
+        fields = [
+            "id",
+            "asset",
+            "asset_name",
+            "rule",
+            "status",
+            "detail",
+            "evaluated_at",
+        ]
         read_only_fields = ["evaluated_at", "asset_name"]
         expandable_fields = {
             "rule": ComplianceRuleSerializer,

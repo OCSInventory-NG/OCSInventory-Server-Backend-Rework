@@ -6,8 +6,12 @@ from django.dispatch import receiver
 
 
 class WindowsBuildMapping(models.Model):
-    build = models.IntegerField(unique=True, help_text="Numéro de build Windows (ex: 22621)")
-    channel = models.CharField(max_length=20, help_text="Canal endoflife.date (ex: 22h2)")
+    build = models.IntegerField(
+        unique=True, help_text="Numéro de build Windows (ex: 22621)"
+    )
+    channel = models.CharField(
+        max_length=20, help_text="Canal endoflife.date (ex: 22h2)"
+    )
 
     class Meta:
         ordering = ["build"]
@@ -38,7 +42,9 @@ class ComplianceRule(models.Model):
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255, null=True, blank=True)
     type = models.CharField(max_length=50, choices=TYPE_CHOICES)
-    severity = models.CharField(max_length=50, choices=SEVERITY_CHOICES, default=SEVERITY_MEDIUM)
+    severity = models.CharField(
+        max_length=50, choices=SEVERITY_CHOICES, default=SEVERITY_MEDIUM
+    )
     priority = models.IntegerField()
     logic = models.JSONField()
     enabled = models.BooleanField(default=True)
@@ -65,7 +71,9 @@ class ComplianceTarget(models.Model):
     rule = models.ForeignKey(
         ComplianceRule, related_name="targets", on_delete=models.CASCADE
     )
-    target_type = models.CharField(max_length=50, choices=TARGET_CHOICES, default=TARGET_ALL)
+    target_type = models.CharField(
+        max_length=50, choices=TARGET_CHOICES, default=TARGET_ALL
+    )
     target_value = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:
@@ -91,7 +99,9 @@ class ComplianceResult(models.Model):
     rule = models.ForeignKey(
         ComplianceRule, related_name="results", on_delete=models.CASCADE
     )
-    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default=STATUS_UNKNOWN)
+    status = models.CharField(
+        max_length=50, choices=STATUS_CHOICES, default=STATUS_UNKNOWN
+    )
     detail = models.JSONField(null=True, blank=True)
     evaluated_at = models.DateTimeField(auto_now=True)
 
@@ -108,12 +118,12 @@ class ComplianceResult(models.Model):
 
 
 class EOLCache(models.Model):
-    product    = models.CharField(max_length=100)
-    cycle      = models.CharField(max_length=50)
-    eol        = models.CharField(max_length=20, null=True, blank=True)
-    is_eol     = models.BooleanField(default=False)
-    support    = models.CharField(max_length=20, null=True, blank=True)
-    latest     = models.CharField(max_length=50, null=True, blank=True)
+    product = models.CharField(max_length=100)
+    cycle = models.CharField(max_length=50)
+    eol = models.CharField(max_length=20, null=True, blank=True)
+    is_eol = models.BooleanField(default=False)
+    support = models.CharField(max_length=20, null=True, blank=True)
+    latest = models.CharField(max_length=50, null=True, blank=True)
     fetched_at = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -128,15 +138,15 @@ class EOLCache(models.Model):
 
 
 class AssetEOLStatus(models.Model):
-    asset      = models.OneToOneField(
+    asset = models.OneToOneField(
         InventoryBase, related_name="eol_status", on_delete=models.CASCADE
     )
-    product    = models.CharField(max_length=100, null=True, blank=True)
-    cycle      = models.CharField(max_length=50, null=True, blank=True)
-    eol        = models.CharField(max_length=20, null=True, blank=True)
-    is_eol     = models.BooleanField(default=False)
-    support    = models.CharField(max_length=20, null=True, blank=True)
-    latest     = models.CharField(max_length=50, null=True, blank=True)
+    product = models.CharField(max_length=100, null=True, blank=True)
+    cycle = models.CharField(max_length=50, null=True, blank=True)
+    eol = models.CharField(max_length=20, null=True, blank=True)
+    is_eol = models.BooleanField(default=False)
+    support = models.CharField(max_length=20, null=True, blank=True)
+    latest = models.CharField(max_length=50, null=True, blank=True)
     fetched_at = models.DateTimeField(auto_now=True)
 
     class Meta:
