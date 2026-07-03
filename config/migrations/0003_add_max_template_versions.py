@@ -31,7 +31,9 @@ def remove_max_template_versions_config(apps, schema_editor):
         return
 
     server_config.value = [
-        item for item in server_config.value if item.get("name") != "max_template_versions"
+        item
+        for item in server_config.value
+        if item.get("name") != "max_template_versions"
     ]
     server_config.save()
 

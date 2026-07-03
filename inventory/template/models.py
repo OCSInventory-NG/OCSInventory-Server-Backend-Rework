@@ -92,8 +92,10 @@ class TemplateVersion(models.Model):
         if not max_versions or max_versions <= 0:
             return
 
-        stale_ids = cls.objects.filter(template=template).order_by(
-            "-created_at"
-        ).values_list("id", flat=True)[max_versions:]
+        stale_ids = (
+            cls.objects.filter(template=template)
+            .order_by("-created_at")
+            .values_list("id", flat=True)[max_versions:]
+        )
         if stale_ids:
             cls.objects.filter(id__in=list(stale_ids)).delete()

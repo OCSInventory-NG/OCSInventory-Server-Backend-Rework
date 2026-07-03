@@ -122,7 +122,10 @@ class TemplateViewSet(TemplateVersionSnapshotMixin, viewsets.OCSViewSet):
         template = self.get_object()
         version = get_object_or_404(TemplateVersion, pk=version_id, template=template)
 
-        version_date = request.data.get("version_date") or f"{version.created_at:%d/%m/%Y %H:%M:%S %Z}"
+        version_date = (
+            request.data.get("version_date")
+            or f"{version.created_at:%d/%m/%Y %H:%M:%S %Z}"
+        )
 
         with transaction.atomic():
             TemplateVersion.create_snapshot(
