@@ -1,7 +1,7 @@
 from inventory.section.serializers import SectionExportSerializer, SectionSerializer
-from inventory.template.models import Template
+from inventory.template.models import Template, TemplateVersion
 from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, SerializerMethodField
 
 
 class TemplateSerializer(ExpandableFieldsMixin, ModelSerializer):
@@ -49,3 +49,35 @@ class TemplateExportSerializer(ModelSerializer):
     class Meta:
         model = Template
         fields = ["name", "os", "is_protected", "sections"]
+
+
+class TemplateVersionListSerializer(ModelSerializer):
+    """
+    Lightweight serializer used to list a template's version history,
+    the full snapshot is intentionally left out
+    """
+
+    created_by = SerializerMethodField()
+
+    class Meta:
+        model = TemplateVersion
+        fields = ["id", "template", "created_at", "created_by", "label"]
+
+    def get_created_by(self, obj):
+        return obj.created_by.username if obj.created_by else None
+
+
+class TemplateVersionSerializer(ModelSerializer):
+    """
+    Full serializer for a single version, snapshot included
+    """
+
+    created_by = SerializerMethodField()
+
+    class Meta:
+        model = TemplateVersion
+        fields = ["id", "template", "created_at", "created_by", "label", "snapshot"]
+        extra_kwargs = {"snapshot": {"read_only": True}}
+
+    def get_created_by(self, obj):
+        return obj.created_by.username if obj.created_by else None
