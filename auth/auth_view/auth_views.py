@@ -2,17 +2,20 @@ import logging
 from typing import Any
 from urllib.parse import parse_qsl, quote, urlencode, urlsplit, urlunsplit
 
-from auth.auth_backend.cas_backend import CustomCASBackend
-from auth.auth_backend.oidc_backend import CustomOIDCBackend
-from auth.auth_config.models import AuthConfig
-from auth.auth_method.models import AuthMethod
 from django.conf import settings
 from django.contrib.auth import login, logout
 from django.contrib.auth.signals import user_logged_in
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
+from django.utils.crypto import get_random_string
 from django.views import View
+from mozilla_django_oidc.utils import add_state_and_verifier_and_nonce_to_session
 from rest_framework.authtoken.models import Token
+
+from auth.auth_backend.cas_backend import CustomCASBackend
+from auth.auth_backend.oidc_backend import CustomOIDCBackend
+from auth.auth_config.models import AuthConfig
+from auth.auth_method.models import AuthMethod
 
 
 class BaseAuthView(View):
@@ -49,18 +52,23 @@ class BaseAuthView(View):
         elif len(self.auth_methods) == 0:
             self.logger.debug("No SSO authentication method enabled")
 
-    def _build_frontend_redirect(self, token=None):
+    def _build_frontend_redirect(self, token=None, noauto=False):
         frontend_redirect = settings.FRONTEND_REDIRECT
         if not frontend_redirect:
             return None
         parts = urlsplit(frontend_redirect)
+        query = parts.query
         fragment = parts.fragment
+        if noauto:
+            query_params = dict(parse_qsl(query, keep_blank_values=True))
+            query_params["noauto"] = ""
+            query = urlencode(query_params)
         if token:
             fragment_params = dict(parse_qsl(fragment, keep_blank_values=True))
             fragment_params["token_authentication"] = token
             fragment = urlencode(fragment_params)
         return urlunsplit(
-            (parts.scheme, parts.netloc, parts.path, parts.query, fragment)
+            (parts.scheme, parts.netloc, parts.path, query, fragment)
         )
 
     def get(self, request, *args, **kwargs):
@@ -75,13 +83,11 @@ class BaseAuthView(View):
             response = {"SSO": False, "auto_redirect": False}
             return JsonResponse(response)
 
-        # get redirect url
-        login_view = LoginView()
-        url_redirect = getattr(
-            login_view, f"{self.current_auth_config.auth_method.name.lower()}_login"
-        )(request)
-
-        response = {"SSO": True, "auto_redirect": True, "redirect_url": url_redirect}
+        response = {
+            "SSO": True,
+            "auto_redirect": True,
+            "redirect_url": request.build_absolute_uri(reverse("sso_start")),
+        }
 
         if self.current_auth_method.name == "OIDC":
             response["endpoint_logout"] = self.current_auth_config.config.get(
@@ -93,6 +99,26 @@ class BaseAuthView(View):
             response["auto_redirect"] = False
 
         return JsonResponse(response)
+
+
+class SSOStartView(BaseAuthView):
+    """
+    View to start the configured SSO authentication flow
+    """
+
+    def get(self, request, *args, **kwargs):
+        if not self.current_auth_config or not self.current_auth_method:
+            redirect_url = self._build_frontend_redirect(noauto=True)
+            if redirect_url:
+                return HttpResponseRedirect(redirect_url)
+            return HttpResponseRedirect("/")
+
+        login_view = LoginView()
+        redirect_url = getattr(
+            login_view, f"{self.current_auth_config.auth_method.name.lower()}_login"
+        )(request)
+
+        return HttpResponseRedirect(redirect_url)
 
 
 class LoginView(BaseAuthView):
@@ -114,13 +140,19 @@ class LoginView(BaseAuthView):
     def oidc_login(self, request):
         """Redirect to OIDC login page"""
         redirect_uri = request.build_absolute_uri(reverse("callback"))
+        # Generate a random state and store it in session for later validation
+        state = get_random_string(getattr(settings, "OIDC_STATE_SIZE", 32))
         params = {
             "response_type": "code",
             "client_id": self.current_auth_config.config["CLIENT_ID"],
-            "state": None,
+            "state": state,
             "scope": self.current_auth_config.config["SCOPES"],
             "redirect_uri": redirect_uri,
         }
+
+        add_state_and_verifier_and_nonce_to_session(request, state, params)
+        request.session.modified = True
+
         query = urlencode(params, quote_via=quote)
 
         redirect_url = "{url}?{query}".format(
@@ -143,6 +175,9 @@ class CallbackView(BaseAuthView):
 
         code = request.GET.get("code")
         if code:
+            return self.oidc_callback(request)
+
+        if request.GET.get("error"):
             return self.oidc_callback(request)
 
     def cas_callback(self, request):
@@ -174,8 +209,10 @@ class CallbackView(BaseAuthView):
 
     def oidc_callback(self, request):
         """Handle OIDC callback requests"""
+        if self._consume_oidc_state(request) is None or request.GET.get("error"):
+            return self._oidc_login_failure_response(request)
+
         customOIDCBackend = CustomOIDCBackend()
-        user = None
         user = customOIDCBackend.authenticate(request)
         if user is not None:
             login(request, user)
@@ -195,6 +232,31 @@ class CallbackView(BaseAuthView):
             if redirect_url:
                 return HttpResponseRedirect(redirect_url)
             return HttpResponseRedirect("/")
+
+    def _consume_oidc_state(self, request):
+        state = request.GET.get("state")
+        oidc_states = request.session.get("oidc_states")
+
+        if not state or not isinstance(oidc_states, dict) or state not in oidc_states:
+            self.logger.warning("OIDC callback state not found in session")
+            return None
+
+        oidc_state = oidc_states.pop(state)
+        request.session.modified = True
+        if not isinstance(oidc_state, dict):
+            self.logger.warning("OIDC callback state session value is invalid")
+            request.session.save()
+            return None
+
+        request.session.save()
+        request.session = request.session.__class__(request.session.session_key)
+        return oidc_state
+
+    def _oidc_login_failure_response(self, request):
+        redirect_url = self._build_frontend_redirect(noauto=True)
+        if redirect_url:
+            return HttpResponseRedirect(redirect_url)
+        return HttpResponseRedirect("/")
 
 
 class LogoutView(BaseAuthView):
