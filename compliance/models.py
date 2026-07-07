@@ -52,29 +52,6 @@ class ComplianceRule(models.Model):
         return f"[{self.type}] {self.name}"
 
 
-class ComplianceTarget(models.Model):
-    TARGET_ALL = "all"
-    TARGET_GROUP = "group"
-    TARGET_TAG = "tag"
-    TARGET_CHOICES = [
-        (TARGET_ALL, "Tous les assets"),
-        (TARGET_GROUP, "Groupe d'assets"),
-        (TARGET_TAG, "TAG"),
-    ]
-
-    rule = models.ForeignKey(
-        ComplianceRule, related_name="targets", on_delete=models.CASCADE
-    )
-    target_type = models.CharField(max_length=50, choices=TARGET_CHOICES, default=TARGET_ALL)
-    target_value = models.CharField(max_length=255, null=True, blank=True)
-
-    class Meta:
-        ordering = ["rule"]
-
-    def __str__(self):
-        return f"{self.rule.name} → {self.target_type}:{self.target_value or '*'}"
-
-
 class ComplianceResult(models.Model):
     STATUS_COMPLIANT = "compliant"
     STATUS_NON_COMPLIANT = "non_compliant"
@@ -144,6 +121,33 @@ class AssetEOLStatus(models.Model):
 
     def __str__(self):
         return f"{self.asset.name} → {self.product}/{self.cycle} eol={self.eol}"
+
+
+class CustomEOLExtendedSupport(models.Model):
+    product = models.CharField(
+        max_length=100,
+        help_text="endoflife.date product slug (e.g. ubuntu)",
+    )
+    cycle = models.CharField(
+        max_length=50,
+        help_text="Version cycle (e.g. 22.04)",
+    )
+    extended_support_until = models.DateField(
+        help_text="Purchased extended support end date",
+    )
+    label = models.CharField(max_length=255, null=True, blank=True)
+
+    class Meta:
+        ordering = ["product", "cycle"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["product", "cycle"],
+                name="unique_custom_eol_product_cycle",
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.product}/{self.cycle} → {self.extended_support_until}"
 
 
 @receiver(post_delete, sender=ComplianceRule)

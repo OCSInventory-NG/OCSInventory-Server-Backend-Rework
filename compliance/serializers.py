@@ -3,16 +3,13 @@ from django.db.models import F, Max
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
-from .models import AssetEOLStatus, ComplianceResult, ComplianceRule, ComplianceTarget, WindowsBuildMapping
+from .models import (
+    AssetEOLStatus, ComplianceResult, ComplianceRule,
+    CustomEOLExtendedSupport, WindowsBuildMapping,
+)
 
 
-class ComplianceTargetSerializer(ModelSerializer):
-    class Meta:
-        model = ComplianceTarget
-        fields = ["id", "rule", "target_type", "target_value"]
-
-
-class ComplianceRuleSerializer(ExpandableFieldsMixin, ModelSerializer):
+class ComplianceRuleSerializer(ModelSerializer):
     priority = serializers.IntegerField(required=False)
 
     class Meta:
@@ -28,12 +25,8 @@ class ComplianceRuleSerializer(ExpandableFieldsMixin, ModelSerializer):
             "enabled",
             "created_at",
             "updated_at",
-            "targets",
         ]
-        read_only_fields = ["created_at", "updated_at", "targets"]
-        expandable_fields = {
-            "targets": ComplianceTargetSerializer,
-        }
+        read_only_fields = ["created_at", "updated_at"]
 
     def _reorder_priorities(self, data):
         if "priority" not in data:
@@ -104,3 +97,21 @@ class WindowsBuildMappingSerializer(ModelSerializer):
     class Meta:
         model = WindowsBuildMapping
         fields = ["id", "build", "channel"]
+
+
+class CustomEOLExtendedSupportSerializer(ModelSerializer):
+    class Meta:
+        model = CustomEOLExtendedSupport
+        fields = ["id", "product", "cycle", "extended_support_until", "label"]
+        validators = [
+            serializers.UniqueTogetherValidator(
+                queryset=CustomEOLExtendedSupport.objects.all(),
+                fields=["product", "cycle"],
+            )
+        ]
+
+    def validate_product(self, value):
+        return value.lower().strip()
+
+    def validate_cycle(self, value):
+        return value.lower().strip()

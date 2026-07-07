@@ -2,7 +2,7 @@ from .views import (
     AssetEOLStatusViewSet,
     ComplianceResultViewSet,
     ComplianceRuleViewSet,
-    ComplianceTargetViewSet,
+    CustomEOLExtendedSupportViewSet,
     WindowsBuildMappingViewSet,
 )
 
@@ -25,8 +25,8 @@ class ComplianceRouter:
             [DefaultRouter]: Updated router with app's dedicated routes
         """
         defaultRouter.register(r"compliance/rules", ComplianceRuleViewSet)
-        defaultRouter.register(r"compliance/targets", ComplianceTargetViewSet)
         defaultRouter.register(r"compliance/results", ComplianceResultViewSet)
         defaultRouter.register(r"compliance/eol-status", AssetEOLStatusViewSet)
         defaultRouter.register(r"compliance/windows-build-mapping", WindowsBuildMappingViewSet)
+        defaultRouter.register(r"compliance/eol-extended-support", CustomEOLExtendedSupportViewSet)
         return defaultRouter

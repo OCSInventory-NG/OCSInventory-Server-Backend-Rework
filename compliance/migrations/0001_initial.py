@@ -1,7 +1,7 @@
 import django.db.models.deletion
 from django.db import migrations, models
 
-INITIAL_MAPPINGS = [
+_WINDOWS_BUILD_MAPPINGS = [
     (19044, "21h2"),
     (19045, "22h2"),
     (22000, "21h2"),
@@ -11,17 +11,17 @@ INITIAL_MAPPINGS = [
 ]
 
 
-def seed_mappings(apps, schema_editor):
+def seed_windows_build_mappings(apps, schema_editor):
     WindowsBuildMapping = apps.get_model("compliance", "WindowsBuildMapping")
     WindowsBuildMapping.objects.bulk_create([
         WindowsBuildMapping(build=build, channel=channel)
-        for build, channel in INITIAL_MAPPINGS
+        for build, channel in _WINDOWS_BUILD_MAPPINGS
     ])
 
 
-def unseed_mappings(apps, schema_editor):
+def unseed_windows_build_mappings(apps, schema_editor):
     WindowsBuildMapping = apps.get_model("compliance", "WindowsBuildMapping")
-    WindowsBuildMapping.objects.filter(build__in=[b for b, _ in INITIAL_MAPPINGS]).delete()
+    WindowsBuildMapping.objects.filter(build__in=[b for b, _ in _WINDOWS_BUILD_MAPPINGS]).delete()
 
 
 class Migration(migrations.Migration):
@@ -34,46 +34,63 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
+            name='AssetEOLStatus',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('product', models.CharField(blank=True, max_length=100, null=True)),
+                ('cycle', models.CharField(blank=True, max_length=50, null=True)),
+                ('eol', models.CharField(blank=True, max_length=20, null=True)),
+                ('is_eol', models.BooleanField(default=False)),
+                ('support', models.CharField(blank=True, max_length=20, null=True)),
+                ('latest', models.CharField(blank=True, max_length=50, null=True)),
+                ('fetched_at', models.DateTimeField(auto_now=True)),
+            ],
+            options={
+                'ordering': ['asset'],
+            },
+        ),
+        migrations.CreateModel(
             name='ComplianceRule',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=255)),
                 ('description', models.CharField(blank=True, max_length=255, null=True)),
-                ('type', models.CharField(choices=[('software', 'Logiciel'), ('security', 'Sécurité')], max_length=50)),
-                ('severity', models.CharField(choices=[('critical', 'Critique'), ('high', 'Élevée'), ('medium', 'Moyenne'), ('low', 'Faible')], default='medium', max_length=50)),
+                ('type', models.CharField(choices=[('software', 'Software'), ('security', 'Security')], max_length=50)),
+                ('severity', models.CharField(choices=[('critical', 'Critical'), ('high', 'High'), ('medium', 'Medium'), ('low', 'Low')], default='medium', max_length=50)),
                 ('priority', models.IntegerField()),
                 ('logic', models.JSONField()),
                 ('enabled', models.BooleanField(default=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
             ],
-            options={'ordering': ['priority']},
-        ),
-        migrations.CreateModel(
-            name='ComplianceTarget',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('target_type', models.CharField(choices=[('all', 'Tous les assets'), ('group', "Groupe d'assets"), ('tag', 'TAG')], default='all', max_length=50)),
-                ('target_value', models.CharField(blank=True, max_length=255, null=True)),
-                ('rule', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='targets', to='compliance.compliancerule')),
-            ],
-            options={'ordering': ['rule']},
+            options={
+                'ordering': ['priority'],
+            },
         ),
         migrations.CreateModel(
             name='ComplianceResult',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('status', models.CharField(choices=[('compliant', 'Conforme'), ('non_compliant', 'Non conforme'), ('unknown', 'Inconnu')], default='unknown', max_length=50)),
+                ('status', models.CharField(choices=[('compliant', 'Compliant'), ('non_compliant', 'Non compliant'), ('unknown', 'Unknown')], default='unknown', max_length=50)),
                 ('detail', models.JSONField(blank=True, null=True)),
                 ('evaluated_at', models.DateTimeField(auto_now=True)),
-                ('asset', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='compliance_results', to='inventory_base.inventorybase')),
-                ('rule', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='results', to='compliance.compliancerule')),
             ],
-            options={'ordering': ['-evaluated_at']},
+            options={
+                'ordering': ['-evaluated_at'],
+            },
         ),
-        migrations.AddConstraint(
-            model_name='complianceresult',
-            constraint=models.UniqueConstraint(fields=['asset', 'rule'], name='unique_compliance_result_per_asset_rule'),
+        migrations.CreateModel(
+            name='CustomEOLExtendedSupport',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('product', models.CharField(help_text='endoflife.date product slug (e.g. ubuntu)', max_length=100)),
+                ('cycle', models.CharField(help_text='Version cycle (e.g. 22.04)', max_length=50)),
+                ('extended_support_until', models.DateField(help_text='Purchased extended support end date')),
+                ('label', models.CharField(blank=True, max_length=255, null=True)),
+            ],
+            options={
+                'ordering': ['product', 'cycle'],
+            },
         ),
         migrations.CreateModel(
             name='EOLCache',
@@ -88,32 +105,43 @@ class Migration(migrations.Migration):
                 ('fetched_at', models.DateTimeField(auto_now=True)),
             ],
         ),
-        migrations.AddConstraint(
-            model_name='eolcache',
-            constraint=models.UniqueConstraint(fields=['product', 'cycle'], name='unique_eol_cache_product_cycle'),
-        ),
-        migrations.CreateModel(
-            name='AssetEOLStatus',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('product', models.CharField(blank=True, max_length=100, null=True)),
-                ('cycle', models.CharField(blank=True, max_length=50, null=True)),
-                ('eol', models.CharField(blank=True, max_length=20, null=True)),
-                ('is_eol', models.BooleanField(default=False)),
-                ('support', models.CharField(blank=True, max_length=20, null=True)),
-                ('latest', models.CharField(blank=True, max_length=50, null=True)),
-                ('fetched_at', models.DateTimeField(auto_now=True)),
-                ('asset', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='eol_status', to='inventory_base.inventorybase')),
-            ],
-        ),
         migrations.CreateModel(
             name='WindowsBuildMapping',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('build', models.IntegerField(help_text='Numéro de build Windows (ex: 22621)', unique=True)),
-                ('channel', models.CharField(help_text='Canal endoflife.date (ex: 22h2)', max_length=20)),
+                ('build', models.IntegerField(help_text='Windows build number (e.g. 22621)', unique=True)),
+                ('channel', models.CharField(help_text='endoflife.date channel (e.g. 22h2)', max_length=20)),
             ],
-            options={'ordering': ['build']},
+            options={
+                'ordering': ['build'],
+            },
         ),
-        migrations.RunPython(seed_mappings, reverse_code=unseed_mappings),
+        migrations.RunPython(seed_windows_build_mappings, reverse_code=unseed_windows_build_mappings),
+        migrations.AddField(
+            model_name='asseteolstatus',
+            name='asset',
+            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='eol_status', to='inventory_base.inventorybase'),
+        ),
+        migrations.AddField(
+            model_name='complianceresult',
+            name='asset',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='compliance_results', to='inventory_base.inventorybase'),
+        ),
+        migrations.AddField(
+            model_name='complianceresult',
+            name='rule',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='results', to='compliance.compliancerule'),
+        ),
+        migrations.AddConstraint(
+            model_name='customeolextendedsupport',
+            constraint=models.UniqueConstraint(fields=('product', 'cycle'), name='unique_custom_eol_product_cycle'),
+        ),
+        migrations.AddConstraint(
+            model_name='eolcache',
+            constraint=models.UniqueConstraint(fields=('product', 'cycle'), name='unique_eol_cache_product_cycle'),
+        ),
+        migrations.AddConstraint(
+            model_name='complianceresult',
+            constraint=models.UniqueConstraint(fields=('asset', 'rule'), name='unique_compliance_result_per_asset_rule'),
+        ),
     ]

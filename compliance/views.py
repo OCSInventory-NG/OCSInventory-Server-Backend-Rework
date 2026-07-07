@@ -12,12 +12,15 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from .models import AssetEOLStatus, ComplianceResult, ComplianceRule, ComplianceTarget, WindowsBuildMapping
+from .models import (
+    AssetEOLStatus, ComplianceResult, ComplianceRule,
+    CustomEOLExtendedSupport, WindowsBuildMapping,
+)
 from .serializers import (
     AssetEOLStatusSerializer,
     ComplianceResultSerializer,
     ComplianceRuleSerializer,
-    ComplianceTargetSerializer,
+    CustomEOLExtendedSupportSerializer,
     WindowsBuildMappingSerializer,
 )
 
@@ -144,22 +147,6 @@ class ComplianceRuleViewSet(viewsets.OCSViewSet):
         }, status=status.HTTP_200_OK)
 
 
-class ComplianceTargetViewSet(viewsets.OCSViewSet):
-    """
-    This class will define the view behavior for ComplianceTarget
-
-    Args:
-        viewsets ([OCSViewSet])
-    """
-
-    permission_classes = [DefaultModelPermissions]
-    queryset = ComplianceTarget.objects.all()
-    serializer_class = ComplianceTargetSerializer
-    model = ComplianceTarget
-    filterset_fields = ["rule", "target_type"]
-    ordering_fields = ["id", "rule", "target_type"]
-
-
 class ComplianceResultViewSet(viewsets.OCSViewSet):
     """
     This class will define the view behavior for ComplianceResult
@@ -256,7 +243,7 @@ class AssetEOLStatusViewSet(viewsets.OCSViewSet):
     """
     Read-only viewset exposing per-asset EOL status.
 
-    Populated automatically at each inventory — no user action required.
+    Populated by the compliance automation task or the manual /evaluate endpoint.
 
     GET /compliance/eol-status/
     """
@@ -320,3 +307,20 @@ class WindowsBuildMappingViewSet(viewsets.OCSViewSet):
     queryset = WindowsBuildMapping.objects.all()
     serializer_class = WindowsBuildMappingSerializer
     model = WindowsBuildMapping
+
+
+class CustomEOLExtendedSupportViewSet(viewsets.OCSViewSet):
+    """
+    CRUD viewset for the custom extended support overrides table.
+
+    GET/POST /compliance/eol-extended-support/
+    PATCH/DELETE /compliance/eol-extended-support/{id}/
+    """
+
+    permission_classes = [DefaultModelPermissions]
+    queryset = CustomEOLExtendedSupport.objects.all()
+    serializer_class = CustomEOLExtendedSupportSerializer
+    model = CustomEOLExtendedSupport
+    filterset_fields = ["product", "cycle"]
+    search_fields = ["product", "cycle", "label"]
+    ordering_fields = ["id", "product", "cycle", "extended_support_until"]

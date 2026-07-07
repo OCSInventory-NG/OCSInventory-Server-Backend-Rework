@@ -40,6 +40,11 @@ logger = logging.getLogger(__name__)
 
 def soft_equals(a, b, case_sensitive=False):
     """Implements the '==' operator with case sensitivity."""
+    if isinstance(a, list):
+        return any(soft_equals(item, b, case_sensitive) for item in a)
+    if isinstance(b, list):
+        return any(soft_equals(a, item, case_sensitive) for item in b)
+
     if isinstance(a, str) and isinstance(b, str):
         if not case_sensitive:
             return a.lower() == b.lower()
@@ -83,6 +88,10 @@ def regex_match(string, pattern):
 
 def contains(a, b, case_sensitive=False):
     """Checks if the string contains the substring."""
+    if isinstance(b, (list, tuple)):
+        if not case_sensitive:
+            return any(str(a).lower() == str(x).lower() for x in b)
+        return a in b
     if not case_sensitive:
         return str(a).lower() in str(b).lower()
     return str(a) in str(b)

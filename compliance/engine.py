@@ -4,43 +4,9 @@ from asset.inventory_base.models import InventoryBase
 from automation.rule.jsonlogic import jsonLogic
 
 from .context import build_context
-from .models import AssetEOLStatus, ComplianceResult, ComplianceRule, ComplianceTarget
+from .models import AssetEOLStatus, ComplianceResult, ComplianceRule
 
 LOGGER = logging.getLogger(__name__)
-
-
-def _rule_applies_to_asset(rule, asset):
-    targets = rule.targets.all()
-    if not targets:
-        return True
-
-    for target in targets:
-        if target.target_type == ComplianceTarget.TARGET_ALL:
-            return True
-
-        if target.target_type == ComplianceTarget.TARGET_GROUP:
-            try:
-                from asset.asset_group.models import AssetGroup
-                if AssetGroup.objects.filter(id=int(target.target_value), assets=asset).exists():
-                    return True
-            except Exception:
-                pass
-
-        elif target.target_type == ComplianceTarget.TARGET_TAG:
-            try:
-                from accountinfo.models import AccountinfoConfig, AccountinfoData
-                config = AccountinfoConfig.objects.filter(name='TAG', datatarget='ASSET').first()
-                if config:
-                    data = AccountinfoData.objects.filter(
-                        object_id=asset.id,
-                        object_slug='inventory_base.inventorybase',
-                    ).first()
-                    if data and str(data.accountdata.get(str(config.id), '') or '') == target.target_value:
-                        return True
-            except Exception:
-                pass
-
-    return False
 
 
 def evaluate_rule(rule, context):
@@ -74,7 +40,7 @@ def evaluate_asset(asset):
     """
     Evaluate all enabled rules against a single asset and persist results.
 
-    Called automatically on each inventory reception (post_save signal).
+    Called by the compliance automation task or the manual evaluate endpoint.
     Also persists AssetEOLStatus from the OS EOL data.
 
     Returns a list of dicts {asset_id, rule_id, status} for reporting.
@@ -94,16 +60,15 @@ def evaluate_asset(asset):
         },
     )
 
-    all_rules = list(ComplianceRule.objects.filter(enabled=True).prefetch_related('targets'))
-    applicable_rules = [r for r in all_rules if _rule_applies_to_asset(r, asset)]
+    all_rules = list(ComplianceRule.objects.filter(enabled=True))
 
-    # Supprimer les résultats des règles qui ne s'appliquent plus à cet asset
-    applicable_ids = [r.id for r in applicable_rules]
-    ComplianceResult.objects.filter(asset=asset).exclude(rule_id__in=applicable_ids).delete()
+    ComplianceResult.objects.filter(asset=asset).exclude(
+        rule_id__in=[r.id for r in all_rules]
+    ).delete()
 
     report = []
 
-    for rule in applicable_rules:
+    for rule in all_rules:
         status, detail = evaluate_rule(rule, context)
         ComplianceResult.objects.update_or_create(
             asset=asset,

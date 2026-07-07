@@ -3,6 +3,7 @@ import re
 from datetime import date
 
 import requests
+from django.conf import settings
 
 LOGGER = logging.getLogger(__name__)
 
@@ -11,7 +12,7 @@ _ASSET_FIELDS = [
     "osname", "osversion", "uuid", "srcip", "srcmac", "domain", "agent",
 ]
 
-_EOL_API = "https://endoflife.date/api/{product}/{cycle}.json"
+_EOL_API = settings.EOL_API_URL
 
 def _get_win_build_channel():
     from .models import WindowsBuildMapping
@@ -54,6 +55,15 @@ def _fetch_eol(product, cycle):
         else:
             is_eol  = False
             eol_str = None
+
+        if is_eol:
+            support_raw = data.get("extendedSupport")
+            if isinstance(support_raw, str):
+                try:
+                    if date.today() < date.fromisoformat(support_raw):
+                        is_eol = False
+                except ValueError:
+                    pass
 
         defaults = {
             "eol":     eol_str,
@@ -153,6 +163,26 @@ def _product_candidates(words):
             yield "".join(slug_words[:2])
 
 
+def _apply_custom_eol_override(result):
+    """
+    If a CustomEOLExtendedSupport entry exists for this product/cycle
+    and its end date has not yet passed, force is_eol to False.
+    """
+    if not result or not result.get("is_eol"):
+        return result
+
+    from .models import CustomEOLExtendedSupport
+    has_override = CustomEOLExtendedSupport.objects.filter(
+        product=result["product"].lower(),
+        cycle=result["cycle"].lower(),
+        extended_support_until__gte=date.today(),
+    ).exists()
+
+    if has_override:
+        return {**result, "is_eol": False}
+    return result
+
+
 def build_context(asset):
     """
     Build the JSON Logic evaluation context for a given InventoryBase instance.
@@ -186,10 +216,10 @@ def build_context(asset):
         for s in softwares if s["name"] and s["major_version"] is not None
     }
 
-    context["os_eol"] = _guess_eol(
+    context["os_eol"] = _apply_custom_eol_override(_guess_eol(
         getattr(asset, "osname", None),
         getattr(asset, "osversion", None),
-    )
+    ))
 
     try:
         inventory = {}
@@ -201,5 +231,18 @@ def build_context(asset):
     except Exception:
         LOGGER.exception("Failed to fetch inventory fields for asset %s", asset.id)
         context["inventory"] = {}
+
+    try:
+        context["group_ids"] = list(asset.assetgroup_set.values_list("id", flat=True))
+    except Exception:
+        LOGGER.exception("Failed to fetch group_ids for asset %s", asset.id)
+        context["group_ids"] = []
+
+    try:
+        accountinfo_obj = asset.accountinfo.first()
+        context["accountinfo"] = accountinfo_obj.accountdata if accountinfo_obj and accountinfo_obj.accountdata else {}
+    except Exception:
+        LOGGER.exception("Failed to fetch accountinfo for asset %s", asset.id)
+        context["accountinfo"] = {}
 
     return context

@@ -322,3 +322,6 @@ OCS_CUSTOM_AUTH_BACKENDS = {
     "LDAP": "auth.auth_backend.ldap_backend.CustomLDAPBackend",
     "OIDC": "auth.auth_backend.oidc_backend.CustomOIDCBackend",
 }
+
+# Compliance
+EOL_API_URL = "https://endoflife.date/api/{product}/{cycle}.json"
