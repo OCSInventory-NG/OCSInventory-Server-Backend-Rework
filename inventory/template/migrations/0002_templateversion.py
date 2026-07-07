@@ -62,13 +62,13 @@ def create_initial_versions(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('template', '0001_initial'),
+        ("template", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='TemplateVersion',
+            name="TemplateVersion",
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('revision', models.PositiveIntegerField()),
@@ -79,7 +79,7 @@ class Migration(migrations.Migration):
                 ('template', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='versions', to='template.template')),
             ],
             options={
-                'ordering': ['-created_at'],
+                "ordering": ["-created_at"],
             },
         ),
         migrations.AddConstraint(
