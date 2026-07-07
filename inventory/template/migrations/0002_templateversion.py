@@ -5,6 +5,60 @@ from django.conf import settings
 from django.db import migrations, models
 
 
+def create_initial_versions(apps, schema_editor):
+    """
+    Backfill an "Initial version" snapshot for every template that doesn't
+    have one yet, most notably the application's default/protected templates
+    (Legacy, Debian, RHEL, MacOS, Windows, SNMP Generic, ...) created by the
+    data migration in 0001_initial, before TemplateVersion even existed.
+    """
+    Template = apps.get_model("template", "Template")
+    TemplateVersion = apps.get_model("template", "TemplateVersion")
+
+    for template in Template.objects.all():
+        if TemplateVersion.objects.filter(template=template).exists():
+            continue
+
+        sections = []
+        for section in template.sections.all().order_by("id"):
+            fields = [
+                {
+                    "name": field.name,
+                    "order": field.order,
+                    "retrieval_value": field.retrieval_value,
+                    "override_target": field.override_target,
+                    "new_target": field.new_target,
+                    "retrieval_method": field.retrieval_method,
+                    "retrieval_output": field.retrieval_output,
+                    "options": field.options,
+                }
+                for field in section.fields.all().order_by("order")
+            ]
+            sections.append(
+                {
+                    "name": section.name,
+                    "retrieval_method": section.retrieval_method,
+                    "retrieval_output": section.retrieval_output,
+                    "target": section.target,
+                    "fields": fields,
+                    "options": section.options,
+                }
+            )
+
+        TemplateVersion.objects.create(
+            template=template,
+            revision=1,
+            snapshot={
+                "name": template.name,
+                "os": template.os,
+                "is_protected": template.is_protected,
+                "sections": sections,
+            },
+            created_by=None,
+            label="Initial version",
+        )
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -17,6 +71,7 @@ class Migration(migrations.Migration):
             name='TemplateVersion',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('revision', models.PositiveIntegerField()),
                 ('snapshot', models.JSONField()),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('label', models.CharField(blank=True, max_length=255)),
@@ -27,4 +82,11 @@ class Migration(migrations.Migration):
                 'ordering': ['-created_at'],
             },
         ),
+        migrations.AddConstraint(
+            model_name='templateversion',
+            constraint=models.UniqueConstraint(
+                fields=['template', 'revision'], name='unique_template_revision'
+            ),
+        ),
+        migrations.RunPython(create_initial_versions),
     ]

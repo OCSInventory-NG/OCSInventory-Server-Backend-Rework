@@ -41,6 +41,7 @@ class TemplateVersion(models.Model):
     template = models.ForeignKey(
         Template, related_name="versions", on_delete=models.CASCADE
     )
+    revision = models.PositiveIntegerField()
     snapshot = models.JSONField()
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(
@@ -50,50 +51,33 @@ class TemplateVersion(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["template", "revision"], name="unique_template_revision"
+            )
+        ]
 
     @classmethod
     def create_snapshot(cls, template, user=None, label=""):
         """
-        Create a version snapshotting the template's current (pre-change) state,
-        using the same shape as TemplateExportSerializer
+        Create a version snapshotting the template's current state, using the
+        same shape as TemplateExportSerializer. The revision number increments
+        per template (1, 2, 3, ...) and is never reused, even if older
+        versions get deleted.
         """
         from inventory.template.serializers import TemplateExportSerializer
 
-        version = cls.objects.create(
+        last_revision = (
+            cls.objects.filter(template=template)
+            .aggregate(models.Max("revision"))
+            .get("revision__max")
+            or 0
+        )
+
+        return cls.objects.create(
             template=template,
+            revision=last_revision + 1,
             snapshot=TemplateExportSerializer(template).data,
             created_by=user if user and user.is_authenticated else None,
             label=label,
         )
-        cls._trim_excess_versions(template)
-        return version
-
-    @classmethod
-    def _trim_excess_versions(cls, template):
-        """
-        Delete the oldest versions of the template beyond the configured
-        "max_template_versions" limit (config.Config, "server" group).
-        A missing or non-positive value means no limit.
-        """
-        from config.models import Config
-
-        server_config = Config.objects.filter(name="server").first()
-        if not server_config:
-            return
-
-        max_versions = next(
-            (
-                item.get("value")
-                for item in server_config.value
-                if item.get("name") == "max_template_versions"
-            ),
-            None,
-        )
-        if not max_versions or max_versions <= 0:
-            return
-
-        stale_ids = cls.objects.filter(template=template).order_by(
-            "-created_at"
-        ).values_list("id", flat=True)[max_versions:]
-        if stale_ids:
-            cls.objects.filter(id__in=list(stale_ids)).delete()

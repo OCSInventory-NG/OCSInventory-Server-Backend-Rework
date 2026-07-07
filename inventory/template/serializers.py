@@ -61,7 +61,7 @@ class TemplateVersionListSerializer(ModelSerializer):
 
     class Meta:
         model = TemplateVersion
-        fields = ["id", "template", "created_at", "created_by", "label"]
+        fields = ["id", "revision", "template", "created_at", "created_by", "label"]
 
     def get_created_by(self, obj):
         return obj.created_by.username if obj.created_by else None
@@ -76,7 +76,15 @@ class TemplateVersionSerializer(ModelSerializer):
 
     class Meta:
         model = TemplateVersion
-        fields = ["id", "template", "created_at", "created_by", "label", "snapshot"]
+        fields = [
+            "id",
+            "revision",
+            "template",
+            "created_at",
+            "created_by",
+            "label",
+            "snapshot",
+        ]
         extra_kwargs = {"snapshot": {"read_only": True}}
 
     def get_created_by(self, obj):

@@ -10,49 +10,12 @@ from inventory.template.serializers import (
 )
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
+from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 
-class TemplateVersionSnapshotMixin:
-    """
-    Mixin for viewsets that mutate a Template's content (the template itself,
-    or one of its sections/fields). Snapshots the parent template's state
-    right before an existing object is changed or removed, so it can be
-    listed/restored later via TemplateVersion.
-    """
-
-    def get_versioned_template(self, instance):
-        raise NotImplementedError
-
-    def get_versioned_template_for_create(self, serializer):
-        """
-        Return the parent Template to snapshot before a new object is added
-        to it, or None to skip (e.g. when creating a Template itself, there
-        is no pre-existing state to protect)
-        """
-        return None
-
-    def perform_create(self, serializer):
-        template = self.get_versioned_template_for_create(serializer)
-        if template is not None:
-            TemplateVersion.create_snapshot(template, self.request.user)
-        super().perform_create(serializer)
-
-    def perform_update(self, serializer):
-        TemplateVersion.create_snapshot(
-            self.get_versioned_template(serializer.instance), self.request.user
-        )
-        super().perform_update(serializer)
-
-    def perform_destroy(self, instance):
-        TemplateVersion.create_snapshot(
-            self.get_versioned_template(instance), self.request.user
-        )
-        super().perform_destroy(instance)
-
-
-class TemplateViewSet(TemplateVersionSnapshotMixin, viewsets.OCSViewSet):
+class TemplateViewSet(viewsets.OCSViewSet):
     """
     This class will define the view behavior
 
@@ -67,11 +30,13 @@ class TemplateViewSet(TemplateVersionSnapshotMixin, viewsets.OCSViewSet):
     serializer_class = TemplateSerializer
     model = Template
 
-    def get_versioned_template(self, instance):
-        return instance
-
     def perform_create(self, serializer):
-        super(TemplateVersionSnapshotMixin, self).perform_create(serializer)
+        """
+        Creating a template also takes its one and only automatic snapshot;
+        every other version is created manually from then on (see the
+        `versions` action below).
+        """
+        super().perform_create(serializer)
         TemplateVersion.create_snapshot(
             serializer.instance, self.request.user, label="Initial version"
         )
@@ -91,10 +56,18 @@ class TemplateViewSet(TemplateVersionSnapshotMixin, viewsets.OCSViewSet):
         resp = Response(payload)
         return resp
 
-    @action(detail=True, methods=["get"], url_path="versions")
+    @action(detail=True, methods=["get", "post"], url_path="versions")
     def versions(self, request, pk=None):
-        """List the version history for this template"""
+        """List the version history for this template, or manually create a new revision"""
         template = self.get_object()
+
+        if request.method == "POST":
+            version = TemplateVersion.create_snapshot(
+                template, request.user, label=request.data.get("label", "")
+            )
+            serializer = TemplateVersionListSerializer(version)
+            return Response(serializer.data, status=201)
+
         queryset = template.versions.all()
         page = self.paginate_queryset(queryset)
         serializer = TemplateVersionListSerializer(
@@ -104,11 +77,25 @@ class TemplateViewSet(TemplateVersionSnapshotMixin, viewsets.OCSViewSet):
             return self.get_paginated_response(serializer.data)
         return Response(serializer.data)
 
-    @action(detail=True, methods=["get"], url_path=r"versions/(?P<version_id>[^/.]+)")
+    @action(
+        detail=True,
+        methods=["get", "delete"],
+        url_path=r"versions/(?P<version_id>[^/.]+)",
+    )
     def version_detail(self, request, pk=None, version_id=None):
-        """Retrieve a single version, including its full snapshot"""
+        """Retrieve a single version, including its full snapshot, or delete it"""
         template = self.get_object()
         version = get_object_or_404(TemplateVersion, pk=version_id, template=template)
+
+        if request.method == "DELETE":
+            if version.revision == 1:
+                return Response(
+                    {"error": "The initial version of a template cannot be deleted"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            version.delete()
+            return Response(status=204)
+
         serializer = TemplateVersionSerializer(version)
         return Response(serializer.data)
 
@@ -122,15 +109,7 @@ class TemplateViewSet(TemplateVersionSnapshotMixin, viewsets.OCSViewSet):
         template = self.get_object()
         version = get_object_or_404(TemplateVersion, pk=version_id, template=template)
 
-        version_date = request.data.get("version_date") or f"{version.created_at:%d/%m/%Y %H:%M:%S %Z}"
-
         with transaction.atomic():
-            TemplateVersion.create_snapshot(
-                template,
-                request.user,
-                label=f"Before rollback to the {version_date} version",
-            )
-
             template.sections.all().delete()
             template.name = version.snapshot["name"]
             template.os = version.snapshot["os"]
