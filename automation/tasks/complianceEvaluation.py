@@ -60,6 +60,7 @@ class ComplianceEvaluation(AbstractTask):
         try:
             logger.debug(f"Running compliance evaluation for asset {asset.name}")
             from compliance.engine import evaluate_asset
+
             evaluate_asset(asset)
         except DatabaseError as e:
             logger.error(

@@ -8,14 +8,25 @@ from django.conf import settings
 LOGGER = logging.getLogger(__name__)
 
 _ASSET_FIELDS = [
-    "id", "name", "description", "serial",
-    "osname", "osversion", "uuid", "srcip", "srcmac", "domain", "agent",
+    "id",
+    "name",
+    "description",
+    "serial",
+    "osname",
+    "osversion",
+    "uuid",
+    "srcip",
+    "srcmac",
+    "domain",
+    "agent",
 ]
 
 _EOL_API = settings.EOL_API_URL
 
+
 def _get_win_build_channel():
     from .models import WindowsBuildMapping
+
     return {m.build: m.channel for m in WindowsBuildMapping.objects.all()}
 
 
@@ -30,30 +41,30 @@ def _fetch_eol(product, cycle):
     from .models import EOLCache
 
     product = product.lower()
-    cycle   = str(cycle).lower()
+    cycle = str(cycle).lower()
 
     try:
-        url  = _EOL_API.format(product=product, cycle=cycle)
+        url = _EOL_API.format(product=product, cycle=cycle)
         resp = requests.get(url, timeout=5)
         if resp.status_code != 200:
             return None
 
-        data    = resp.json()
+        data = resp.json()
         eol_raw = data.get("eol")
 
         if isinstance(eol_raw, str):
             try:
                 eol_date = date.fromisoformat(eol_raw)
-                is_eol   = date.today() >= eol_date
-                eol_str  = eol_raw
+                is_eol = date.today() >= eol_date
+                eol_str = eol_raw
             except ValueError:
-                is_eol  = False
+                is_eol = False
                 eol_str = eol_raw
         elif isinstance(eol_raw, bool):
-            is_eol  = eol_raw
+            is_eol = eol_raw
             eol_str = None
         else:
-            is_eol  = False
+            is_eol = False
             eol_str = None
 
         if is_eol:
@@ -66,10 +77,10 @@ def _fetch_eol(product, cycle):
                     pass
 
         defaults = {
-            "eol":     eol_str,
-            "is_eol":  is_eol,
+            "eol": eol_str,
+            "is_eol": is_eol,
             "support": data.get("extendedSupport") or None,
-            "latest":  data.get("latest"),
+            "latest": data.get("latest"),
         }
         EOLCache.objects.update_or_create(
             product=product, cycle=cycle, defaults=defaults
@@ -199,21 +210,24 @@ def build_context(asset):
     try:
         softwares = list(
             asset.software_dictionary_entries.values(
-                "name", "publisher", "version",
-                "major_version", "minor_version", "patch_version",
+                "name",
+                "publisher",
+                "version",
+                "major_version",
+                "minor_version",
+                "patch_version",
             )
         )
     except Exception:
         LOGGER.exception("Failed to fetch softwares for asset %s", asset.id)
         softwares = []
 
-    context["softwares"]       = softwares
-    context["softwares_names"] = [
-        s["name"].lower() for s in softwares if s["name"]
-    ]
+    context["softwares"] = softwares
+    context["softwares_names"] = [s["name"].lower() for s in softwares if s["name"]]
     context["softwares_versions"] = {
         s["name"].lower(): s["major_version"]
-        for s in softwares if s["name"] and s["major_version"] is not None
+        for s in softwares
+        if s["name"] and s["major_version"] is not None
     }
 
     context["os_eol"] = _apply_custom_eol_override(_guess_eol(
@@ -223,7 +237,9 @@ def build_context(asset):
 
     try:
         inventory = {}
-        for inv_section in asset.inventory_sections.prefetch_related("fields__template_field"):
+        for inv_section in asset.inventory_sections.prefetch_related(
+            "fields__template_field"
+        ):
             for inv_field in inv_section.fields.all():
                 if inv_field.template_field_id is not None:
                     inventory[str(inv_field.template_field_id)] = inv_field.value
