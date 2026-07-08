@@ -58,7 +58,7 @@ class TemplateViewSet(viewsets.OCSViewSet):
 
     @action(detail=True, methods=["get", "post"], url_path="versions")
     def versions(self, request, pk=None):
-        """List the version history for this template, or manually create a new revision"""
+        """List the version history for this template"""
         template = self.get_object()
 
         if request.method == "POST":
