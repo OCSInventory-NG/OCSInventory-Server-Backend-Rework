@@ -2,6 +2,10 @@ import logging
 from typing import Any
 from urllib.parse import parse_qsl, quote, urlencode, urlsplit, urlunsplit
 
+from auth.auth_backend.cas_backend import CustomCASBackend
+from auth.auth_backend.oidc_backend import CustomOIDCBackend
+from auth.auth_config.models import AuthConfig
+from auth.auth_method.models import AuthMethod
 from django.conf import settings
 from django.contrib.auth import login, logout
 from django.contrib.auth.signals import user_logged_in
@@ -11,11 +15,6 @@ from django.utils.crypto import get_random_string
 from django.views import View
 from mozilla_django_oidc.utils import add_state_and_verifier_and_nonce_to_session
 from rest_framework.authtoken.models import Token
-
-from auth.auth_backend.cas_backend import CustomCASBackend
-from auth.auth_backend.oidc_backend import CustomOIDCBackend
-from auth.auth_config.models import AuthConfig
-from auth.auth_method.models import AuthMethod
 
 
 class BaseAuthView(View):
@@ -70,9 +69,7 @@ class BaseAuthView(View):
             fragment_params = dict(parse_qsl(fragment, keep_blank_values=True))
             fragment_params["token_authentication"] = token
             fragment = urlencode(fragment_params)
-        return urlunsplit(
-            (parts.scheme, parts.netloc, parts.path, query, fragment)
-        )
+        return urlunsplit((parts.scheme, parts.netloc, parts.path, query, fragment))
 
     def get(self, request, *args, **kwargs):
         """
