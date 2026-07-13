@@ -28,12 +28,17 @@ class EOLUpdate(AbstractTask):
 
             for index, asset in enumerate(assets, 1):
                 try:
-                    logger.debug("Updating EOL for asset %d/%d: %s", index, total, asset.name)
+                    logger.debug(
+                        "Updating EOL for asset %d/%d: %s", index, total, asset.name
+                    )
                     self.update_asset_eol_status(asset)
                     processed += 1
                 except Exception as e:
                     failed += 1
-                    logger.error("Failed to update EOL for asset %s: %s", asset.name, e, exc_info=True)
+                    logger.error(
+                        "Failed to update EOL for asset %s: %s",
+                        asset.name, e, exc_info=True
+                    )
 
             logger.info(
                 "EOLUpdate task completed: %d succeeded, %d failed out of %d total assets",
@@ -48,8 +53,14 @@ class EOLUpdate(AbstractTask):
             from compliance.engine import update_asset_eol_status
             update_asset_eol_status(asset)
         except DatabaseError as e:
-            logger.error("Database error while updating EOL for asset %s: %s", asset.name, e, exc_info=True)
+            logger.error(
+                "Database error while updating EOL for asset %s: %s",
+                asset.name, e, exc_info=True
+            )
             raise
         except Exception as e:
-            logger.error("Unexpected error while updating EOL for asset %s: %s", asset.name, e, exc_info=True)
+            logger.error(
+                "Unexpected error while updating EOL for asset %s: %s",
+                asset.name, e, exc_info=True
+            )
             raise
