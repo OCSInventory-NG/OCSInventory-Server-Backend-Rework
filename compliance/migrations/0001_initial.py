@@ -111,7 +111,7 @@ class Migration(migrations.Migration):
                 (
                     "type",
                     models.CharField(
-                        choices=[("software", "Logiciel"), ("security", "Sécurité")],
+                        choices=[("software", "Software"), ("security", "Security")],
                         max_length=50,
                     ),
                 ),
@@ -119,10 +119,10 @@ class Migration(migrations.Migration):
                     "severity",
                     models.CharField(
                         choices=[
-                            ("critical", "Critique"),
-                            ("high", "Élevée"),
-                            ("medium", "Moyenne"),
-                            ("low", "Faible"),
+                            ("critical", "Critical"),
+                            ("high", "High"),
+                            ("medium", "Medium"),
+                            ("low", "Low"),
                         ],
                         default="medium",
                         max_length=50,
@@ -212,14 +212,14 @@ class Migration(migrations.Migration):
                 (
                     "build",
                     models.IntegerField(
-                        help_text="Numéro de build Windows (ex: 22621)",
+                        help_text="Windows build number (e.g. 22621)",
                         unique=True,
                     ),
                 ),
                 (
                     "channel",
                     models.CharField(
-                        help_text="Canal endoflife.date (ex: 22h2)",
+                        help_text="endoflife.date channel slug (e.g. 22h2)",
                         max_length=20,
                     ),
                 ),
@@ -292,9 +292,9 @@ class Migration(migrations.Migration):
                     "status",
                     models.CharField(
                         choices=[
-                            ("compliant", "Conforme"),
-                            ("non_compliant", "Non conforme"),
-                            ("unknown", "Inconnu"),
+                            ("compliant", "Compliant"),
+                            ("non_compliant", "Non-compliant"),
+                            ("unknown", "Unknown"),
                         ],
                         default="unknown",
                         max_length=50,

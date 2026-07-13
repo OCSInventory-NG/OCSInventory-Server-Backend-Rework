@@ -6,8 +6,8 @@ from django.dispatch import receiver
 
 
 class WindowsBuildMapping(models.Model):
-    build = models.IntegerField(unique=True, help_text="Numéro de build Windows (ex: 22621)")
-    channel = models.CharField(max_length=20, help_text="Canal endoflife.date (ex: 22h2)")
+    build = models.IntegerField(unique=True, help_text="Windows build number (e.g. 22621)")
+    channel = models.CharField(max_length=20, help_text="endoflife.date channel slug (e.g. 22h2)")
 
     class Meta:
         ordering = ["build"]
@@ -20,8 +20,8 @@ class ComplianceRule(models.Model):
     TYPE_SOFTWARE = "software"
     TYPE_SECURITY = "security"
     TYPE_CHOICES = [
-        (TYPE_SOFTWARE, "Logiciel"),
-        (TYPE_SECURITY, "Sécurité"),
+        (TYPE_SOFTWARE, "Software"),
+        (TYPE_SECURITY, "Security"),
     ]
 
     SEVERITY_CRITICAL = "critical"
@@ -29,10 +29,10 @@ class ComplianceRule(models.Model):
     SEVERITY_MEDIUM = "medium"
     SEVERITY_LOW = "low"
     SEVERITY_CHOICES = [
-        (SEVERITY_CRITICAL, "Critique"),
-        (SEVERITY_HIGH, "Élevée"),
-        (SEVERITY_MEDIUM, "Moyenne"),
-        (SEVERITY_LOW, "Faible"),
+        (SEVERITY_CRITICAL, "Critical"),
+        (SEVERITY_HIGH, "High"),
+        (SEVERITY_MEDIUM, "Medium"),
+        (SEVERITY_LOW, "Low"),
     ]
 
     name = models.CharField(max_length=255)
@@ -57,9 +57,9 @@ class ComplianceResult(models.Model):
     STATUS_NON_COMPLIANT = "non_compliant"
     STATUS_UNKNOWN = "unknown"
     STATUS_CHOICES = [
-        (STATUS_COMPLIANT, "Conforme"),
-        (STATUS_NON_COMPLIANT, "Non conforme"),
-        (STATUS_UNKNOWN, "Inconnu"),
+        (STATUS_COMPLIANT, "Compliant"),
+        (STATUS_NON_COMPLIANT, "Non-compliant"),
+        (STATUS_UNKNOWN, "Unknown"),
     ]
 
     asset = models.ForeignKey(

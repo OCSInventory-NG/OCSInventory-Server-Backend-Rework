@@ -1,14 +1,9 @@
-import csv
-import io
-import json
 import logging
 
-from django.db.models import Max
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
 from rest_framework import status
 from rest_framework.decorators import action
-from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -26,20 +21,8 @@ from .serializers import (
 
 LOGGER = logging.getLogger(__name__)
 
-_IMPORT_REQUIRED = {"name", "type", "severity", "logic"}
-_IMPORT_OPTIONAL = {"description", "enabled"}
-_VALID_TYPES     = {c[0] for c in ComplianceRule.TYPE_CHOICES}
-_VALID_SEVERITIES = {c[0] for c in ComplianceRule.SEVERITY_CHOICES}
-
 
 class ComplianceRuleViewSet(viewsets.OCSViewSet):
-    """
-    This class will define the view behavior for ComplianceRule
-
-    Args:
-        viewsets ([OCSViewSet])
-    """
-
     permission_classes = [DefaultModelPermissions]
     queryset = ComplianceRule.objects.all()
     serializer_class = ComplianceRuleSerializer
@@ -48,113 +31,8 @@ class ComplianceRuleViewSet(viewsets.OCSViewSet):
     search_fields = ["name", "description"]
     ordering_fields = ["id", "priority", "name", "enabled", "created_at"]
 
-    @action(
-        detail=False,
-        methods=["post"],
-        permission_classes=[IsAuthenticated],
-        parser_classes=[MultiPartParser],
-        url_path="import",
-    )
-    def import_csv(self, request):
-        """
-        Import compliance rules from a CSV file.
-
-        Expected format (semicolon-separated, UTF-8):
-            name;description;type;severity;logic;enabled
-
-        - logic  : valid JSON string
-        - enabled: true/false (optional, defaults to true)
-        - Rows with unknown type or severity are skipped.
-
-        POST /compliance/rules/import/
-        """
-        file = request.FILES.get("file")
-        if not file:
-            return Response(
-                {"error": "Aucun fichier fourni."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        created, updated, skipped, errors = [], [], [], []
-
-        try:
-            text = file.read().decode("utf-8-sig")
-            reader = csv.DictReader(io.StringIO(text), delimiter=";")
-
-            for i, row in enumerate(reader, start=2):
-                row = {k.strip(): v.strip() for k, v in row.items() if k}
-
-                missing = _IMPORT_REQUIRED - row.keys()
-                if missing:
-                    errors.append({"row": i, "error": f"Colonnes manquantes : {missing}"})
-                    skipped.append(i)
-                    continue
-
-                name     = row["name"]
-                type_    = row["type"]
-                severity = row["severity"]
-                enabled  = row.get("enabled", "true").lower() not in ("false", "0", "")
-
-                if type_ not in _VALID_TYPES:
-                    errors.append({"row": i, "error": f"Type invalide : {type_!r}"})
-                    skipped.append(i)
-                    continue
-
-                if severity not in _VALID_SEVERITIES:
-                    errors.append({"row": i, "error": f"Sévérité invalide : {severity!r}"})
-                    skipped.append(i)
-                    continue
-
-                try:
-                    logic = json.loads(row["logic"])
-                except json.JSONDecodeError as exc:
-                    errors.append({"row": i, "error": f"Logic JSON invalide : {exc}"})
-                    skipped.append(i)
-                    continue
-
-                defaults = {
-                    "description": row.get("description") or None,
-                    "type":        type_,
-                    "severity":    severity,
-                    "logic":       logic,
-                    "enabled":     enabled,
-                }
-                rule = ComplianceRule.objects.filter(name=name).first()
-                if rule:
-                    for field, value in defaults.items():
-                        setattr(rule, field, value)
-                    rule.save(update_fields=list(defaults.keys()))
-                    updated.append(rule.name)
-                else:
-                    max_priority = ComplianceRule.objects.aggregate(Max("priority"))["priority__max"]
-                    defaults["priority"] = (max_priority or 0) + 1
-                    rule = ComplianceRule.objects.create(name=name, **defaults)
-                    created.append(rule.name)
-
-        except Exception as exc:
-            LOGGER.exception("CSV import failed")
-            return Response(
-                {"error": str(exc)},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
-
-        return Response({
-            "created": len(created),
-            "updated": len(updated),
-            "skipped": len(skipped),
-            "errors":  errors,
-            "rules":   created,
-        }, status=status.HTTP_200_OK)
-
 
 class ComplianceResultViewSet(viewsets.OCSViewSet):
-    """
-    This class will define the view behavior for ComplianceResult
-
-    Args:
-        viewsets ([OCSViewSet])
-    """
-
     permission_classes = [DefaultModelPermissions]
     queryset = ComplianceResult.objects.all()
     serializer_class = ComplianceResultSerializer
@@ -185,9 +63,9 @@ class ComplianceResultViewSet(viewsets.OCSViewSet):
                 asset_ids = [int(i) for i in asset_ids_param.split(",") if i.strip()]
             except ValueError:
                 return Response({"error": "Invalid asset IDs"}, status=status.HTTP_400_BAD_REQUEST)
-            queryset = ComplianceResult.objects.filter(asset_id__in=asset_ids).select_related("rule")
+            queryset = ComplianceResult.objects.filter(asset_id__in=asset_ids).select_related("rule", "asset")
         else:
-            queryset = ComplianceResult.objects.select_related("rule").all()
+            queryset = ComplianceResult.objects.select_related("rule", "asset").all()
 
         summary = {}
         for result in queryset:
@@ -195,6 +73,7 @@ class ComplianceResultViewSet(viewsets.OCSViewSet):
             if asset_id not in summary:
                 summary[asset_id] = {
                     "asset": asset_id,
+                    "asset_name": result.asset.name if result.asset else None,
                     "counts": {"critical": 0, "high": 0, "medium": 0, "low": 0},
                     "has_non_compliant": False,
                 }
@@ -207,6 +86,7 @@ class ComplianceResultViewSet(viewsets.OCSViewSet):
         result_list = [
             {
                 "asset": data["asset"],
+                "asset_name": data["asset_name"],
                 "global_status": "non_compliant" if data["has_non_compliant"] else "compliant",
                 "counts": data["counts"],
             }
@@ -215,35 +95,10 @@ class ComplianceResultViewSet(viewsets.OCSViewSet):
 
         return Response(result_list)
 
-    @action(
-        detail=False,
-        methods=["post"],
-        permission_classes=[IsAuthenticated],
-        url_path="evaluate",
-    )
-    def evaluate(self, request):
-        """
-        Trigger a full compliance evaluation.
-
-        Evaluates all enabled rules against all assets and persists the
-        results. Returns a summary of what was evaluated.
-
-        POST /compliance/results/evaluate/
-        """
-        from .engine import run_evaluation
-
-        report = run_evaluation()
-        return Response({
-            "evaluated": len(report),
-            "results": report,
-        })
-
 
 class AssetEOLStatusViewSet(viewsets.OCSViewSet):
     """
     Read-only viewset exposing per-asset EOL status.
-
-    Populated by the compliance automation task or the manual /evaluate endpoint.
 
     GET /compliance/eol-status/
     """
@@ -296,13 +151,6 @@ class AssetEOLStatusViewSet(viewsets.OCSViewSet):
 
 
 class WindowsBuildMappingViewSet(viewsets.OCSViewSet):
-    """
-    CRUD viewset for the Windows build → channel mapping table.
-
-    GET/POST /compliance/windows-build-mapping/
-    PATCH/DELETE /compliance/windows-build-mapping/{id}/
-    """
-
     permission_classes = [DefaultModelPermissions]
     queryset = WindowsBuildMapping.objects.all()
     serializer_class = WindowsBuildMappingSerializer
@@ -310,17 +158,10 @@ class WindowsBuildMappingViewSet(viewsets.OCSViewSet):
 
 
 class CustomEOLExtendedSupportViewSet(viewsets.OCSViewSet):
-    """
-    CRUD viewset for the custom extended support overrides table.
-
-    GET/POST /compliance/eol-extended-support/
-    PATCH/DELETE /compliance/eol-extended-support/{id}/
-    """
-
     permission_classes = [DefaultModelPermissions]
     queryset = CustomEOLExtendedSupport.objects.all()
     serializer_class = CustomEOLExtendedSupportSerializer
     model = CustomEOLExtendedSupport
     filterset_fields = ["product", "cycle"]
-    search_fields = ["product", "cycle", "label"]
+    search_fields = ["product", "cycle", "description"]
     ordering_fields = ["id", "product", "cycle", "extended_support_until"]
