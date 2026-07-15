@@ -41,7 +41,7 @@ class EOLUpdate(AbstractTask):
                     )
 
             logger.info(
-                "EOLUpdate task completed: %d succeeded, %d failed out of %d total assets",
+                "EOLUpdate task completed: %d succeeded, %d failed out of %d",
                 processed, failed, total,
             )
         except Exception as e:
