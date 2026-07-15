@@ -53,6 +53,22 @@ class Command(MigrateCommand):
             "super-admin": {"patterns": ["add_", "change_", "delete_", "view_"]},
             "admin": {"patterns": ["add_", "change_", "view_"]},
             "user": {"patterns": ["view_"]},
+            "AgentInventory": {
+                "patterns": [
+                    "view_config",
+                    "add_log",
+                    "view_inventorybase",
+                    "view_template",
+                ]
+            },
+            "AgentDeployment": {
+                "patterns": [
+                    "view_deploymentaction",
+                    "view_result",
+                    "change_result",
+                    "add_log",
+                ]
+            },
         }
 
     def get_filtered_permissions(self, patterns):
@@ -61,9 +77,16 @@ class Command(MigrateCommand):
         all_permissions = Permission.objects.all()
 
         for permission in all_permissions:
-            # check patterns
+            # check patterns: a trailing "_" matches any codename with that
+            # prefix (eg. "view_" matches every view_* permission), otherwise
+            # the pattern must match the codename exactly (eg. "add_log"
+            # should not also match "add_logentry")
             for pattern in patterns:
-                if permission.codename.startswith(pattern):
+                if pattern.endswith("_"):
+                    if permission.codename.startswith(pattern):
+                        filtered_permissions.add(permission)
+                        break
+                elif permission.codename == pattern:
                     filtered_permissions.add(permission)
                     break
 
