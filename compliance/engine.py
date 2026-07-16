@@ -4,7 +4,7 @@ from asset.inventory_base.models import InventoryBase
 from automation.rule.jsonlogic import jsonLogic
 
 from .context import build_context
-from .models import AssetEOLStatus, ComplianceResult, ComplianceRule
+from .models import ComplianceResult, ComplianceRule
 
 LOGGER = logging.getLogger(__name__)
 
@@ -41,24 +41,12 @@ def evaluate_asset(asset):
     Evaluate all enabled rules against a single asset and persist results.
 
     Called by the compliance automation task or the manual evaluate endpoint.
-    Also persists AssetEOLStatus from the OS EOL data.
+    EOL resolution is a separate concern owned by compliance.eol / the EOLUpdate
+    task; it is not triggered here.
 
     Returns a list of dicts {asset_id, rule_id, status} for reporting.
     """
     context = build_context(asset)
-
-    eol = context.get("os_eol") or {}
-    AssetEOLStatus.objects.update_or_create(
-        asset=asset,
-        defaults={
-            "product": eol.get("product"),
-            "cycle":   eol.get("cycle"),
-            "eol":     eol.get("eol"),
-            "is_eol":  eol.get("is_eol", False),
-            "support": eol.get("support"),
-            "latest":  eol.get("latest"),
-        },
-    )
 
     all_rules = list(ComplianceRule.objects.filter(enabled=True))
 

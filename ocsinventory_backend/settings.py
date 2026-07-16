@@ -324,4 +324,4 @@ OCS_CUSTOM_AUTH_BACKENDS = {
 }
 
 # Compliance
-EOL_API_URL = "https://endoflife.date/api/{product}/{cycle}.json"
+EOL_API_BASE_URL = "https://endoflife.date/api"

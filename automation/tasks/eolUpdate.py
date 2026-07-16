@@ -50,7 +50,7 @@ class EOLUpdate(AbstractTask):
 
     def update_asset_eol_status(self, asset):
         try:
-            from compliance.engine import update_asset_eol_status
+            from compliance.eol import update_asset_eol_status
             update_asset_eol_status(asset)
         except DatabaseError as e:
             logger.error(
