@@ -31,6 +31,25 @@ class ComplianceRuleViewSet(viewsets.OCSViewSet):
     search_fields = ["name", "description"]
     ordering_fields = ["id", "priority", "name", "enabled", "created_at"]
 
+    @action(
+        detail=False,
+        methods=["get"],
+        permission_classes=[IsAuthenticated],
+        url_path="context-fields",
+    )
+    def context_fields(self, request):
+        """
+        Expose the compliance rule context schema for the rule editor.
+
+        Mirrors automation's TriggerViewSet: returns the extra (non-model)
+        context fields available to compliance rules — currently the software
+        group — so the frontend builds the field list from the backend instead
+        of hard-coding it.
+        """
+        from .context import resolver
+
+        return Response(resolver.get_schema())
+
 
 class ComplianceResultViewSet(viewsets.OCSViewSet):
     permission_classes = [DefaultModelPermissions]

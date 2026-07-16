@@ -35,7 +35,7 @@ def seed_default_rules(apps, schema_editor):
             type="software",
             severity="medium",
             priority=1,
-            logic={"in": ["example-software", {"var": "softwares_names"}]},
+            logic={"in": ["example-software", {"var": "softwares.names"}]},
             enabled=False,
         ),
     ])

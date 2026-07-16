@@ -22,10 +22,14 @@ class ComplianceEvaluation(AbstractTask):
         try:
             logger.info("Starting ComplianceEvaluation task")
             from asset.inventory_base.models import InventoryBase
+            from compliance.models import ComplianceRule
 
             assets = InventoryBase.objects.all()
             total_assets = assets.count()
             logger.info(f"Found {total_assets} assets to evaluate")
+
+            # Fetch enabled rules once for the whole run instead of per asset.
+            rules = list(ComplianceRule.objects.filter(enabled=True))
 
             processed = 0
             failed = 0
@@ -35,7 +39,7 @@ class ComplianceEvaluation(AbstractTask):
                     logger.debug(
                         f"Evaluating asset {index}/{total_assets}: {asset.name}"
                     )
-                    self.evaluate_asset(asset)
+                    self.evaluate_asset(asset, rules)
                     processed += 1
                 except Exception as e:
                     failed += 1
@@ -53,7 +57,7 @@ class ComplianceEvaluation(AbstractTask):
             )
             raise
 
-    def evaluate_asset(self, asset):
+    def evaluate_asset(self, asset, rules=None):
         """
         Evaluate all enabled compliance rules against a single asset
         """
@@ -61,7 +65,7 @@ class ComplianceEvaluation(AbstractTask):
             logger.debug(f"Running compliance evaluation for asset {asset.name}")
             from compliance.engine import evaluate_asset
 
-            evaluate_asset(asset)
+            evaluate_asset(asset, rules)
         except DatabaseError as e:
             logger.error(
                 f"Database error while evaluating asset {asset.name}: {e}",

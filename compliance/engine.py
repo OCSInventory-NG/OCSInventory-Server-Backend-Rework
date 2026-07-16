@@ -3,7 +3,7 @@ import logging
 from asset.inventory_base.models import InventoryBase
 from automation.rule.jsonlogic import jsonLogic
 
-from .context import build_context
+from .context import resolver
 from .models import ComplianceResult, ComplianceRule
 
 LOGGER = logging.getLogger(__name__)
@@ -36,32 +36,37 @@ def evaluate_rule(rule, context):
         return ComplianceResult.STATUS_UNKNOWN, {"error": str(exc)}
 
 
-def evaluate_asset(asset):
+def evaluate_asset(asset, rules=None):
     """
     Evaluate all enabled rules against a single asset and persist results.
 
-    Called by the compliance automation task or the manual evaluate endpoint.
-    EOL resolution is a separate concern owned by compliance.eol / the EOLUpdate
-    task; it is not triggered here.
+    Called by the ComplianceEvaluation automation task. The evaluation context
+    is built by compliance.context.ComplianceContextResolver. EOL resolution is
+    a separate concern owned by compliance.eol / the EOLUpdate task; it is not
+    triggered here.
+
+    `rules` lets the caller pass the enabled ComplianceRule list once for a
+    whole-fleet run (avoiding one query per asset); it is fetched here when not
+    provided. Results are written with a single bulk upsert per asset.
 
     Returns a list of dicts {asset_id, rule_id, status} for reporting.
     """
-    context = build_context(asset)
+    context = resolver.build(asset)
 
-    all_rules = list(ComplianceRule.objects.filter(enabled=True))
+    if rules is None:
+        rules = list(ComplianceRule.objects.filter(enabled=True))
 
     ComplianceResult.objects.filter(asset=asset).exclude(
-        rule_id__in=[r.id for r in all_rules]
+        rule_id__in=[r.id for r in rules]
     ).delete()
 
+    results = []
     report = []
 
-    for rule in all_rules:
+    for rule in rules:
         status, detail = evaluate_rule(rule, context)
-        ComplianceResult.objects.update_or_create(
-            asset=asset,
-            rule=rule,
-            defaults={"status": status, "detail": detail},
+        results.append(
+            ComplianceResult(asset=asset, rule=rule, status=status, detail=detail)
         )
         report.append({
             "asset_id": asset.id,
@@ -69,6 +74,13 @@ def evaluate_asset(asset):
             "status": status,
         })
         LOGGER.debug("Asset %s / Rule %s → %s", asset.id, rule.id, status)
+
+    ComplianceResult.objects.bulk_create(
+        results,
+        update_conflicts=True,
+        unique_fields=["asset", "rule"],
+        update_fields=["status", "detail", "evaluated_at"],
+    )
 
     LOGGER.info(
         "Compliance evaluated for asset %s: %d rule(s)", asset.id, len(report)
@@ -80,16 +92,17 @@ def run_evaluation():
     """
     Evaluate all enabled rules against all assets and persist results.
 
-    Intended for bulk re-evaluation triggered manually via the API.
-    For per-asset evaluation at inventory time, use evaluate_asset() instead.
+    Bulk helper for re-evaluating the whole fleet (e.g. from a shell). The
+    ComplianceEvaluation task iterates assets itself via evaluate_asset().
 
     Returns a list of dicts {asset_id, rule_id, status} for reporting.
     """
     assets = list(InventoryBase.objects.all())
+    rules = list(ComplianceRule.objects.filter(enabled=True))
     report = []
 
     for asset in assets:
-        report.extend(evaluate_asset(asset))
+        report.extend(evaluate_asset(asset, rules))
 
     LOGGER.info(
         "Full evaluation complete: %d asset(s), %d result(s)",
