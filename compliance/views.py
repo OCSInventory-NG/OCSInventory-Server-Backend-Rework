@@ -29,7 +29,7 @@ class ComplianceRuleViewSet(viewsets.OCSViewSet):
     model = ComplianceRule
     filterset_fields = ["type", "severity", "enabled"]
     search_fields = ["name", "description"]
-    ordering_fields = ["id", "priority", "name", "enabled", "created_at"]
+    ordering_fields = ["id", "name", "enabled", "created_at"]
 
     @action(
         detail=False,

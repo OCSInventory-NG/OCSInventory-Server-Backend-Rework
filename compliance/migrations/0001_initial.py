@@ -34,7 +34,6 @@ def seed_default_rules(apps, schema_editor):
             description="Example rule: checks that a required software is present on the asset. Edit the software name to match your environment.",
             type="software",
             severity="medium",
-            priority=1,
             logic={"in": ["example-software", {"var": "softwares.names"}]},
             enabled=False,
         ),
@@ -128,14 +127,13 @@ class Migration(migrations.Migration):
                         max_length=50,
                     ),
                 ),
-                ("priority", models.IntegerField()),
                 ("logic", models.JSONField()),
                 ("enabled", models.BooleanField(default=True)),
                 ("created_at", models.DateTimeField(auto_now_add=True)),
                 ("updated_at", models.DateTimeField(auto_now=True)),
             ],
             options={
-                "ordering": ["priority"],
+                "ordering": ["id"],
             },
         ),
         migrations.CreateModel(

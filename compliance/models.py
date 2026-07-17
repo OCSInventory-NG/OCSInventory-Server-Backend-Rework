@@ -1,8 +1,5 @@
 from asset.inventory_base.models import InventoryBase
 from django.db import models
-from django.db.models import F
-from django.db.models.signals import post_delete
-from django.dispatch import receiver
 
 
 class WindowsBuildMapping(models.Model):
@@ -39,14 +36,13 @@ class ComplianceRule(models.Model):
     description = models.CharField(max_length=255, null=True, blank=True)
     type = models.CharField(max_length=50, choices=TYPE_CHOICES)
     severity = models.CharField(max_length=50, choices=SEVERITY_CHOICES, default=SEVERITY_MEDIUM)
-    priority = models.IntegerField()
     logic = models.JSONField()
     enabled = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ["priority"]
+        ordering = ["id"]
 
     def __str__(self):
         return f"[{self.type}] {self.name}"
@@ -148,10 +144,3 @@ class CustomEOLExtendedSupport(models.Model):
 
     def __str__(self):
         return f"{self.product}/{self.cycle} → {self.extended_support_until}"
-
-
-@receiver(post_delete, sender=ComplianceRule)
-def adjust_compliance_rule_order_on_delete(sender, instance, **kwargs):
-    ComplianceRule.objects.filter(
-        priority__gt=instance.priority,
-    ).update(priority=F("priority") - 1)
