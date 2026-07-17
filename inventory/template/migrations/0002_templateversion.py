@@ -23,6 +23,7 @@ def create_initial_versions(apps, schema_editor):
         for section in template.sections.all().order_by("id"):
             fields = [
                 {
+                    "id": field.id,
                     "name": field.name,
                     "order": field.order,
                     "retrieval_value": field.retrieval_value,
@@ -36,6 +37,7 @@ def create_initial_versions(apps, schema_editor):
             ]
             sections.append(
                 {
+                    "id": section.id,
                     "name": section.name,
                     "retrieval_method": section.retrieval_method,
                     "retrieval_output": section.retrieval_output,
@@ -49,6 +51,7 @@ def create_initial_versions(apps, schema_editor):
             template=template,
             revision=1,
             snapshot={
+                "id": template.id,
                 "name": template.name,
                 "os": template.os,
                 "is_protected": template.is_protected,

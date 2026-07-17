@@ -21,6 +21,7 @@ class Template(models.Model):
         ("MAC", "Mac"),
         ("WIN", "Windows"),
         ("SNMP", "SNMP"),
+        ("VIRT", "Virtualization"),
     )
 
     name = models.CharField(max_length=50)
@@ -60,12 +61,13 @@ class TemplateVersion(models.Model):
     @classmethod
     def create_snapshot(cls, template, user=None, label=""):
         """
-        Create a version snapshotting the template's current state, using the
-        same shape as TemplateExportSerializer. The revision number increments
-        per template (1, 2, 3, ...) and is never reused, even if older
-        versions get deleted.
+        Create a version snapshotting the template's current state, including
+        the primary keys of the nested sections/fields (see
+        TemplateSnapshotSerializer) so a rollback can restore by id. The
+        revision number increments per template (1, 2, 3, ...) and is never
+        reused, even if older versions get deleted.
         """
-        from inventory.template.serializers import TemplateExportSerializer
+        from inventory.template.serializers import TemplateSnapshotSerializer
 
         last_revision = (
             cls.objects.filter(template=template)
@@ -77,7 +79,7 @@ class TemplateVersion(models.Model):
         return cls.objects.create(
             template=template,
             revision=last_revision + 1,
-            snapshot=TemplateExportSerializer(template).data,
+            snapshot=TemplateSnapshotSerializer(template).data,
             created_by=user if user and user.is_authenticated else None,
             label=label,
         )
