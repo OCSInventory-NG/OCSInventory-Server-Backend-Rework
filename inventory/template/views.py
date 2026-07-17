@@ -32,14 +32,17 @@ class TemplateViewSet(viewsets.OCSViewSet):
 
     def perform_create(self, serializer):
         """
-        Creating a template also takes its one and only automatic snapshot;
-        every other version is created manually from then on (see the
-        `versions` action below).
+        Creating a protected template also takes its one and only automatic
+        snapshot; every other version is created manually from then on (see
+        the `versions` action below). Regular templates are created empty, so
+        an automatic initial version would just capture an empty snapshot and
+        is skipped.
         """
         super().perform_create(serializer)
-        TemplateVersion.create_snapshot(
-            serializer.instance, self.request.user, label="Initial version"
-        )
+        if serializer.instance.is_protected:
+            TemplateVersion.create_snapshot(
+                serializer.instance, self.request.user, label="Initial version"
+            )
 
     @action(detail=True, methods=["get"], url_path="export")
     def export(self, request, pk=None):
@@ -88,7 +91,7 @@ class TemplateViewSet(viewsets.OCSViewSet):
         version = get_object_or_404(TemplateVersion, pk=version_id, template=template)
 
         if request.method == "DELETE":
-            if version.revision == 1:
+            if template.is_protected and version.revision == 1:
                 return Response(
                     {"error": "The initial version of a template cannot be deleted"},
                     status=status.HTTP_400_BAD_REQUEST,
