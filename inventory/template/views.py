@@ -1,5 +1,6 @@
 from django.db import transaction
 from django.shortcuts import get_object_or_404
+from inventory.category.models import Category
 from inventory.field.models import Field
 from inventory.section.models import Section
 from inventory.template.models import Template, TemplateVersion
@@ -180,6 +181,20 @@ class TemplateViewSet(viewsets.OCSViewSet):
             instance.save()
         return changed
 
+    @staticmethod
+    def _restore_categories(section, category_ids):
+        """
+        Restore the section's category links (the Category.inventory_sections
+        M2M) to the set captured in the snapshot. Categories that no longer
+        exist are ignored, and the M2M is only rewritten when it actually
+        differs to avoid needless churn.
+        """
+        categories = list(Category.objects.filter(id__in=category_ids))
+        desired = {category.id for category in categories}
+        current = set(section.category_set.values_list("id", flat=True))
+        if desired != current:
+            section.category_set.set(categories)
+
     def _restore_fields(self, section, snapshot_fields):
         matched, to_create, to_delete = self._diff(
             list(section.fields.all()), snapshot_fields
@@ -199,6 +214,8 @@ class TemplateViewSet(viewsets.OCSViewSet):
         section = Section.objects.create(
             template=template, **{attr: snap.get(attr) for attr in self.SECTION_ATTRS}
         )
+        if "categories" in snap:
+            self._restore_categories(section, snap["categories"])
         for field_snap in snap.get("fields", []):
             Field.objects.create(
                 section=section,
@@ -213,6 +230,8 @@ class TemplateViewSet(viewsets.OCSViewSet):
             section.delete()
         for section, snap in matched:
             self._apply(section, snap, self.SECTION_ATTRS)
+            if "categories" in snap:
+                self._restore_categories(section, snap["categories"])
             self._restore_fields(section, snap.get("fields", []))
         for snap in to_create:
             self._create_section(template, snap)

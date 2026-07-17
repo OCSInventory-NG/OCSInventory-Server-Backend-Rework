@@ -3,7 +3,11 @@ from inventory.section.models import Section
 from inventory.section.serializers import SectionExportSerializer, SectionSerializer
 from inventory.template.models import Template, TemplateVersion
 from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
-from rest_framework.serializers import ModelSerializer, SerializerMethodField
+from rest_framework.serializers import (
+    ModelSerializer,
+    PrimaryKeyRelatedField,
+    SerializerMethodField,
+)
 
 
 class TemplateSerializer(ExpandableFieldsMixin, ModelSerializer):
@@ -80,6 +84,9 @@ class SectionSnapshotSerializer(ModelSerializer):
     """Snapshot serializer for Section, keeping the primary key (see above)"""
 
     fields = FieldSnapshotSerializer(many=True)
+    categories = PrimaryKeyRelatedField(
+        source="category_set", many=True, read_only=True
+    )
 
     class Meta:
         model = Section
@@ -91,6 +98,7 @@ class SectionSnapshotSerializer(ModelSerializer):
             "target",
             "fields",
             "options",
+            "categories",
         ]
 
 

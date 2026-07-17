@@ -44,6 +44,9 @@ def create_initial_versions(apps, schema_editor):
                     "target": section.target,
                     "fields": fields,
                     "options": section.options,
+                    "categories": list(
+                        section.category_set.values_list("id", flat=True)
+                    ),
                 }
             )
 
@@ -66,6 +69,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("template", "0001_initial"),
+        ("category", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
