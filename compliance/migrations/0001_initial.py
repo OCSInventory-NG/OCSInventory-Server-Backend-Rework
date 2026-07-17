@@ -26,6 +26,21 @@ def unseed_windows_build_mappings(apps, schema_editor):
     ).delete()
 
 
+_COMPLIANCE_TYPES = ["software", "security", "hardware"]
+
+
+def seed_compliance_types(apps, schema_editor):
+    ComplianceType = apps.get_model("compliance", "ComplianceType")
+    ComplianceType.objects.bulk_create([
+        ComplianceType(name=name) for name in _COMPLIANCE_TYPES
+    ])
+
+
+def unseed_compliance_types(apps, schema_editor):
+    ComplianceType = apps.get_model("compliance", "ComplianceType")
+    ComplianceType.objects.filter(name__in=_COMPLIANCE_TYPES).delete()
+
+
 def seed_default_rules(apps, schema_editor):
     ComplianceRule = apps.get_model("compliance", "ComplianceRule")
     ComplianceRule.objects.bulk_create([
@@ -94,6 +109,24 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
+            name="ComplianceType",
+            fields=[
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=50, unique=True)),
+            ],
+            options={
+                "ordering": ["name"],
+            },
+        ),
+        migrations.CreateModel(
             name="ComplianceRule",
             fields=[
                 (
@@ -109,10 +142,7 @@ class Migration(migrations.Migration):
                 ("description", models.CharField(blank=True, max_length=255, null=True)),
                 (
                     "type",
-                    models.CharField(
-                        choices=[("software", "Software"), ("security", "Security")],
-                        max_length=50,
-                    ),
+                    models.CharField(max_length=50),
                 ),
                 (
                     "severity",
@@ -163,12 +193,12 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    "extended_support_until",
-                    models.DateField(
-                        help_text="Purchased extended support end date",
+                    "is_extended",
+                    models.BooleanField(
+                        default=True,
+                        help_text="Whether purchased extended support is active for this product/cycle",
                     ),
                 ),
-                ("label", models.CharField(blank=True, max_length=255, null=True)),
             ],
             options={
                 "ordering": ["product", "cycle"],
@@ -190,7 +220,7 @@ class Migration(migrations.Migration):
                 ("cycle", models.CharField(max_length=50)),
                 ("eol", models.CharField(blank=True, max_length=20, null=True)),
                 ("is_eol", models.BooleanField(default=False)),
-                ("support", models.CharField(blank=True, max_length=20, null=True)),
+                ("support", models.BooleanField(default=False)),
                 ("latest", models.CharField(blank=True, max_length=50, null=True)),
                 ("fetched_at", models.DateTimeField(auto_now=True)),
             ],
@@ -250,7 +280,7 @@ class Migration(migrations.Migration):
                 ("cycle", models.CharField(blank=True, max_length=50, null=True)),
                 ("eol", models.CharField(blank=True, max_length=20, null=True)),
                 ("is_eol", models.BooleanField(default=False)),
-                ("support", models.CharField(blank=True, max_length=20, null=True)),
+                ("support", models.BooleanField(default=False)),
                 ("latest", models.CharField(blank=True, max_length=50, null=True)),
                 ("fetched_at", models.DateTimeField(auto_now=True)),
             ],
@@ -329,6 +359,10 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             seed_windows_build_mappings,
             reverse_code=unseed_windows_build_mappings,
+        ),
+        migrations.RunPython(
+            seed_compliance_types,
+            reverse_code=unseed_compliance_types,
         ),
         migrations.RunPython(
             seed_default_rules,

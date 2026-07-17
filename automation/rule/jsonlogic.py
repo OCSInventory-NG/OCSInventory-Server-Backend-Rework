@@ -52,11 +52,27 @@ def soft_equals(a, b, case_sensitive=False):
 
     if isinstance(a, bool) or isinstance(b, bool):
         return bool(a) is bool(b)
+
+    # Numeric coercion (JS-style) when one side is a number and the other a
+    # numeric string, e.g. software version 3 (int) vs "3" typed in the editor.
+    if isinstance(a, (int, float)) and isinstance(b, str):
+        try:
+            return float(a) == float(b)
+        except ValueError:
+            return False
+    if isinstance(b, (int, float)) and isinstance(a, str):
+        try:
+            return float(a) == float(b)
+        except ValueError:
+            return False
+
     return a == b
 
 
 def less(a, b):
     """Implements the '<' operator with JS-style type coercion."""
+    if a is None or b is None:
+        return False
     types = set([type(a), type(b)])
     if float in types or int in types:
         try:

@@ -3,9 +3,15 @@ from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
 from .models import (
-    AssetEOLStatus, ComplianceResult, ComplianceRule,
+    AssetEOLStatus, ComplianceResult, ComplianceRule, ComplianceType,
     CustomEOLExtendedSupport, WindowsBuildMapping,
 )
+
+
+class ComplianceTypeSerializer(ModelSerializer):
+    class Meta:
+        model = ComplianceType
+        fields = ["id", "name"]
 
 
 class ComplianceRuleSerializer(ModelSerializer):
@@ -59,7 +65,7 @@ class WindowsBuildMappingSerializer(ModelSerializer):
 class CustomEOLExtendedSupportSerializer(ModelSerializer):
     class Meta:
         model = CustomEOLExtendedSupport
-        fields = ["id", "product", "cycle", "extended_support_until", "label"]
+        fields = ["id", "product", "cycle", "is_extended"]
         validators = [
             serializers.UniqueTogetherValidator(
                 queryset=CustomEOLExtendedSupport.objects.all(),

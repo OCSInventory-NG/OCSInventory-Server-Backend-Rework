@@ -8,13 +8,14 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import (
-    AssetEOLStatus, ComplianceResult, ComplianceRule,
+    AssetEOLStatus, ComplianceResult, ComplianceRule, ComplianceType,
     CustomEOLExtendedSupport, WindowsBuildMapping,
 )
 from .serializers import (
     AssetEOLStatusSerializer,
     ComplianceResultSerializer,
     ComplianceRuleSerializer,
+    ComplianceTypeSerializer,
     CustomEOLExtendedSupportSerializer,
     WindowsBuildMappingSerializer,
 )
@@ -169,6 +170,15 @@ class AssetEOLStatusViewSet(viewsets.OCSViewSet):
         ])
 
 
+class ComplianceTypeViewSet(viewsets.OCSViewSet):
+    permission_classes = [DefaultModelPermissions]
+    queryset = ComplianceType.objects.all()
+    serializer_class = ComplianceTypeSerializer
+    model = ComplianceType
+    search_fields = ["name"]
+    ordering_fields = ["id", "name"]
+
+
 class WindowsBuildMappingViewSet(viewsets.OCSViewSet):
     permission_classes = [DefaultModelPermissions]
     queryset = WindowsBuildMapping.objects.all()
@@ -182,5 +192,5 @@ class CustomEOLExtendedSupportViewSet(viewsets.OCSViewSet):
     serializer_class = CustomEOLExtendedSupportSerializer
     model = CustomEOLExtendedSupport
     filterset_fields = ["product", "cycle"]
-    search_fields = ["product", "cycle", "description"]
-    ordering_fields = ["id", "product", "cycle", "extended_support_until"]
+    search_fields = ["product", "cycle"]
+    ordering_fields = ["id", "product", "cycle"]

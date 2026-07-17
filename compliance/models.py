@@ -13,14 +13,17 @@ class WindowsBuildMapping(models.Model):
         return f"{self.build} → {self.channel}"
 
 
-class ComplianceRule(models.Model):
-    TYPE_SOFTWARE = "software"
-    TYPE_SECURITY = "security"
-    TYPE_CHOICES = [
-        (TYPE_SOFTWARE, "Software"),
-        (TYPE_SECURITY, "Security"),
-    ]
+class ComplianceType(models.Model):
+    name = models.CharField(max_length=50, unique=True)
 
+    class Meta:
+        ordering = ["name"]
+
+    def __str__(self):
+        return self.name
+
+
+class ComplianceRule(models.Model):
     SEVERITY_CRITICAL = "critical"
     SEVERITY_HIGH = "high"
     SEVERITY_MEDIUM = "medium"
@@ -34,7 +37,7 @@ class ComplianceRule(models.Model):
 
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255, null=True, blank=True)
-    type = models.CharField(max_length=50, choices=TYPE_CHOICES)
+    type = models.CharField(max_length=50)
     severity = models.CharField(max_length=50, choices=SEVERITY_CHOICES, default=SEVERITY_MEDIUM)
     logic = models.JSONField()
     enabled = models.BooleanField(default=True)
@@ -85,7 +88,7 @@ class EOLCache(models.Model):
     cycle      = models.CharField(max_length=50)
     eol        = models.CharField(max_length=20, null=True, blank=True)
     is_eol     = models.BooleanField(default=False)
-    support    = models.CharField(max_length=20, null=True, blank=True)
+    support    = models.BooleanField(default=False)
     latest     = models.CharField(max_length=50, null=True, blank=True)
     fetched_at = models.DateTimeField(auto_now=True)
 
@@ -108,7 +111,7 @@ class AssetEOLStatus(models.Model):
     cycle      = models.CharField(max_length=50, null=True, blank=True)
     eol        = models.CharField(max_length=20, null=True, blank=True)
     is_eol     = models.BooleanField(default=False)
-    support    = models.CharField(max_length=20, null=True, blank=True)
+    support    = models.BooleanField(default=False)
     latest     = models.CharField(max_length=50, null=True, blank=True)
     fetched_at = models.DateTimeField(auto_now=True)
 
@@ -128,10 +131,10 @@ class CustomEOLExtendedSupport(models.Model):
         max_length=50,
         help_text="Version cycle (e.g. 22.04)",
     )
-    extended_support_until = models.DateField(
-        help_text="Purchased extended support end date",
+    is_extended = models.BooleanField(
+        default=True,
+        help_text="Whether purchased extended support is active for this product/cycle",
     )
-    label = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:
         ordering = ["product", "cycle"]
@@ -143,4 +146,4 @@ class CustomEOLExtendedSupport(models.Model):
         ]
 
     def __str__(self):
-        return f"{self.product}/{self.cycle} → {self.extended_support_until}"
+        return f"{self.product}/{self.cycle} → is_extended={self.is_extended}"

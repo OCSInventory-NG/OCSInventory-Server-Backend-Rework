@@ -74,19 +74,25 @@ def _fetch_eol(product, cycle):
             is_eol = False
             eol_str = None
 
-        if is_eol:
-            support_raw = data.get("extendedSupport")
-            if isinstance(support_raw, str):
-                try:
-                    if date.today() < date.fromisoformat(support_raw):
-                        is_eol = False
-                except ValueError:
-                    pass
+        # Extended support currently active (future date or explicit True)
+        support_raw = data.get("extendedSupport")
+        support_active = False
+        if isinstance(support_raw, str):
+            try:
+                support_active = date.today() < date.fromisoformat(support_raw)
+            except ValueError:
+                support_active = False
+        elif isinstance(support_raw, bool):
+            support_active = support_raw
+
+        # Active extended support keeps the OS out of end-of-life
+        if is_eol and support_active:
+            is_eol = False
 
         defaults = {
             "eol": eol_str,
             "is_eol": is_eol,
-            "support": data.get("extendedSupport") or None,
+            "support": support_active,
             "latest": data.get("latest"),
         }
         EOLCache.objects.update_or_create(
@@ -183,8 +189,8 @@ def _product_candidates(words):
 
 def _apply_custom_eol_override(result):
     """
-    If a CustomEOLExtendedSupport entry exists for this product/cycle
-    and its end date has not yet passed, force is_eol to False.
+    If an active CustomEOLExtendedSupport entry exists for this product/cycle,
+    force is_eol to False.
     """
     if not result or not result.get("is_eol"):
         return result
@@ -193,7 +199,7 @@ def _apply_custom_eol_override(result):
     has_override = CustomEOLExtendedSupport.objects.filter(
         product=result["product"].lower(),
         cycle=result["cycle"].lower(),
-        extended_support_until__gte=date.today(),
+        is_extended=True,
     ).exists()
 
     if has_override:
