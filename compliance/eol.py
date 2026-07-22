@@ -248,7 +248,7 @@ def update_asset_eol_status(asset):
             "cycle":        eol.get("cycle"),
             "eol":          eol.get("eol"),
             "is_eol":       eol.get("is_eol", False),
-            "support":      eol.get("support"),
+            "support":      eol.get("support", False),
             "support_date": eol.get("support_date"),
             "latest":       eol.get("latest"),
         },
