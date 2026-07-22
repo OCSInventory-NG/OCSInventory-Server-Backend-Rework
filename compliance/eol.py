@@ -136,7 +136,10 @@ def _guess_eol(osname, osversion):
             return _fetch_eol("windows-server", m.group(1))
         else:
             parts = str(osversion or "").split(".")
-            major = parts[0] if parts else None
+            # Windows 11 still reports version 10.0.x, so the marketing major
+            # (10 vs 11) must come from the OS name, not from osversion.
+            m_major = re.search(r"windows\s+(\d+)", osname.lower())
+            major = m_major.group(1) if m_major else (parts[0] if parts else None)
             build = int(parts[2]) if len(parts) >= 3 and parts[2].isdigit() else None
             channel = _get_win_build_channel().get(build) if build else None
             if not channel or not major:
