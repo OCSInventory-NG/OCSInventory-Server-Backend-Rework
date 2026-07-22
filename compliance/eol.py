@@ -26,8 +26,8 @@ def _fetch_eol(product, cycle):
     without hitting the network. Otherwise queries endoflife.date and refreshes
     the cache (update_or_create bumps fetched_at via auto_now).
 
-    Returns a dict with keys product, cycle, eol, is_eol, support, latest
-    — or None on HTTP/network failure.
+    Returns a dict with keys product, cycle, eol, is_eol, support,
+    support_date, latest — or None on HTTP/network failure.
     """
     from .models import EOLCache
 
@@ -47,6 +47,7 @@ def _fetch_eol(product, cycle):
             "eol": cached.eol,
             "is_eol": cached.is_eol,
             "support": cached.support,
+            "support_date": cached.support_date,
             "latest": cached.latest,
         }
 
@@ -77,22 +78,30 @@ def _fetch_eol(product, cycle):
         # Extended support currently active (future date or explicit True)
         support_raw = data.get("extendedSupport")
         support_active = False
+        support_date_str = support_raw if isinstance(support_raw, str) else None
         if isinstance(support_raw, str):
             try:
                 support_active = date.today() < date.fromisoformat(support_raw)
             except ValueError:
                 support_active = False
+                support_date_str = None
         elif isinstance(support_raw, bool):
             support_active = support_raw
 
-        # Active extended support keeps the OS out of end-of-life
+        # Extended support only matters once normal support has already ended.
+        # If the cycle is still within its normal EOL window, extendedSupport
+        # is irrelevant yet, even when the provider already lists a date for it.
         if is_eol and support_active:
             is_eol = False
+        else:
+            support_active = False
+            support_date_str = None
 
         defaults = {
             "eol": eol_str,
             "is_eol": is_eol,
             "support": support_active,
+            "support_date": support_date_str,
             "latest": data.get("latest"),
         }
         EOLCache.objects.update_or_create(
@@ -190,7 +199,7 @@ def _product_candidates(words):
 def _apply_custom_eol_override(result):
     """
     If an active CustomEOLExtendedSupport entry exists for this product/cycle,
-    force is_eol to False.
+    force is_eol to False and mark the asset as covered by extended support.
     """
     if not result or not result.get("is_eol"):
         return result
@@ -203,7 +212,7 @@ def _apply_custom_eol_override(result):
     ).exists()
 
     if has_override:
-        return {**result, "is_eol": False}
+        return {**result, "is_eol": False, "support": True}
     return result
 
 
@@ -235,11 +244,12 @@ def update_asset_eol_status(asset):
     AssetEOLStatus.objects.update_or_create(
         asset=asset,
         defaults={
-            "product": eol.get("product"),
-            "cycle":   eol.get("cycle"),
-            "eol":     eol.get("eol"),
-            "is_eol":  eol.get("is_eol", False),
-            "support": eol.get("support"),
-            "latest":  eol.get("latest"),
+            "product":      eol.get("product"),
+            "cycle":        eol.get("cycle"),
+            "eol":          eol.get("eol"),
+            "is_eol":       eol.get("is_eol", False),
+            "support":      eol.get("support"),
+            "support_date": eol.get("support_date"),
+            "latest":       eol.get("latest"),
         },
     )

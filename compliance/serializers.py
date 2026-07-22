@@ -39,9 +39,12 @@ class AssetEOLStatusSerializer(ModelSerializer):
         fields = [
             "id", "asset", "asset_name",
             "product", "cycle", "eol", "is_eol",
-            "support", "latest", "fetched_at",
+            "support", "support_date", "latest", "fetched_at",
         ]
-        read_only_fields = ["id", "asset", "asset_name", "product", "cycle", "eol", "is_eol", "support", "latest", "fetched_at"]
+        read_only_fields = [
+            "id", "asset", "asset_name", "product", "cycle", "eol", "is_eol",
+            "support", "support_date", "latest", "fetched_at",
+        ]
 
 
 class ComplianceResultSerializer(ExpandableFieldsMixin, ModelSerializer):

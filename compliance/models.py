@@ -84,13 +84,14 @@ class ComplianceResult(models.Model):
 
 
 class EOLCache(models.Model):
-    product    = models.CharField(max_length=100)
-    cycle      = models.CharField(max_length=50)
-    eol        = models.CharField(max_length=20, null=True, blank=True)
-    is_eol     = models.BooleanField(default=False)
-    support    = models.BooleanField(default=False)
-    latest     = models.CharField(max_length=50, null=True, blank=True)
-    fetched_at = models.DateTimeField(auto_now=True)
+    product      = models.CharField(max_length=100)
+    cycle        = models.CharField(max_length=50)
+    eol          = models.CharField(max_length=20, null=True, blank=True)
+    is_eol       = models.BooleanField(default=False)
+    support      = models.BooleanField(default=False)
+    support_date = models.CharField(max_length=20, null=True, blank=True)
+    latest       = models.CharField(max_length=50, null=True, blank=True)
+    fetched_at   = models.DateTimeField(auto_now=True)
 
     class Meta:
         constraints = [
@@ -107,13 +108,14 @@ class AssetEOLStatus(models.Model):
     asset      = models.OneToOneField(
         InventoryBase, related_name="eol_status", on_delete=models.CASCADE
     )
-    product    = models.CharField(max_length=100, null=True, blank=True)
-    cycle      = models.CharField(max_length=50, null=True, blank=True)
-    eol        = models.CharField(max_length=20, null=True, blank=True)
-    is_eol     = models.BooleanField(default=False)
-    support    = models.BooleanField(default=False)
-    latest     = models.CharField(max_length=50, null=True, blank=True)
-    fetched_at = models.DateTimeField(auto_now=True)
+    product      = models.CharField(max_length=100, null=True, blank=True)
+    cycle        = models.CharField(max_length=50, null=True, blank=True)
+    eol          = models.CharField(max_length=20, null=True, blank=True)
+    is_eol       = models.BooleanField(default=False)
+    support      = models.BooleanField(default=False)
+    support_date = models.CharField(max_length=20, null=True, blank=True)
+    latest       = models.CharField(max_length=50, null=True, blank=True)
+    fetched_at   = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ["asset"]

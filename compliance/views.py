@@ -58,7 +58,7 @@ class ComplianceResultViewSet(viewsets.OCSViewSet):
     serializer_class = ComplianceResultSerializer
     model = ComplianceResult
     filterset_fields = ["asset", "rule", "status", "rule__severity"]
-    search_fields = ["asset__name", "rule__name", "status"]
+    search_fields = ["asset__name", "rule__name", "status", "rule__type", "rule__severity"]
     ordering_fields = ["id", "evaluated_at", "status", "asset__name", "rule__name", "rule__severity"]
 
     @action(
@@ -115,6 +115,35 @@ class ComplianceResultViewSet(viewsets.OCSViewSet):
 
         return Response(result_list)
 
+    @action(
+        detail=False,
+        methods=["get"],
+        permission_classes=[IsAuthenticated],
+        url_path="rule-summary",
+    )
+    def rule_summary(self, request):
+        """
+        Return, for each compliance rule, the number of distinct assets that
+        are non compliant with it. Rules with no impacted asset are included
+        (impacted = 0). Mirrors asset-summary but aggregated per rule.
+        """
+        counts = {}
+        for rule_id in ComplianceResult.objects.filter(
+            status=ComplianceResult.STATUS_NON_COMPLIANT
+        ).values_list("rule_id", flat=True):
+            counts[rule_id] = counts.get(rule_id, 0) + 1
+
+        return Response([
+            {
+                "rule": rule.id,
+                "rule_name": rule.name,
+                "severity": rule.severity,
+                "type": rule.type,
+                "impacted": counts.get(rule.id, 0),
+            }
+            for rule in ComplianceRule.objects.all()
+        ])
+
 
 class AssetEOLStatusViewSet(viewsets.OCSViewSet):
     """
@@ -129,6 +158,7 @@ class AssetEOLStatusViewSet(viewsets.OCSViewSet):
     model = AssetEOLStatus
     filterset_fields = {
         "is_eol":  ["exact"],
+        "support": ["exact"],
         "product": ["exact", "isnull"],
         "asset":   ["exact"],
     }
