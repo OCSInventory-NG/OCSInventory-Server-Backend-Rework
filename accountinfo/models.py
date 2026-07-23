@@ -89,3 +89,13 @@ class AccountinfoData(models.Model):
     content_type = models.ForeignKey(ContentType, on_delete=models.PROTECT)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey("content_type", "object_id")
+
+    class Meta:
+        """Define unique constraints"""
+
+        constraints = [
+            models.UniqueConstraint(
+                fields=["object_id", "object_slug"],
+                name="unique_accountinfo_data",
+            )
+        ]
