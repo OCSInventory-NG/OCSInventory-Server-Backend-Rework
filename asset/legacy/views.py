@@ -6,6 +6,7 @@ from asset.inventory_field.models import InventoryField
 from asset.inventory_section.models import InventorySection
 from asset.legacy.parsers import LegacyXMLParser
 from asset.legacy.renderers import LegacyXMLRenderer
+from asset.services import ReconciliationService
 from inventory.field.models import Field
 from inventory.section.models import Section
 from inventory.software.services import SoftwareDictionaryService
@@ -73,7 +74,20 @@ class LegacyView(APIView):
                     },
                     status=200,
                 )
-            if InventoryBase.objects.filter(uuid=data["uuid"]):
+            service = ReconciliationService()
+            try:
+                reconciliation_filter = service.get_reconciliation_filter(
+                    data,
+                    service.get_legacy_reconciliation_fields(),
+                )
+            except ValueError as ve:
+                self.LOGGER.error("Reconciliation error: %s", ve)
+                return Response({"error": str(ve)}, status=400)
+
+            asset_instance = InventoryBase.objects.filter(
+                **reconciliation_filter
+            ).first()
+            if asset_instance:
                 self.LOGGER.info(
                     "Updating inventory for device %s - %s",
                     data["uuid"],
@@ -81,7 +95,7 @@ class LegacyView(APIView):
                 )
                 try:
                     asset_serializer = InventoryBaseSerializer(
-                        InventoryBase.objects.get(uuid=data["uuid"]),
+                        asset_instance,
                         data=data,
                     )
                     if asset_serializer.is_valid(raise_exception=True):
