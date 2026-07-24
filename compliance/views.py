@@ -8,8 +8,12 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import (
-    AssetEOLStatus, ComplianceResult, ComplianceRule, ComplianceType,
-    CustomEOLExtendedSupport, WindowsBuildMapping,
+    AssetEOLStatus,
+    ComplianceResult,
+    ComplianceRule,
+    ComplianceType,
+    CustomEOLExtendedSupport,
+    WindowsBuildMapping,
 )
 from .serializers import (
     AssetEOLStatusSerializer,
@@ -58,8 +62,21 @@ class ComplianceResultViewSet(viewsets.OCSViewSet):
     serializer_class = ComplianceResultSerializer
     model = ComplianceResult
     filterset_fields = ["asset", "rule", "status", "rule__severity"]
-    search_fields = ["asset__name", "rule__name", "status", "rule__type", "rule__severity"]
-    ordering_fields = ["id", "evaluated_at", "status", "asset__name", "rule__name", "rule__severity"]
+    search_fields = [
+        "asset__name",
+        "rule__name",
+        "status",
+        "rule__type",
+        "rule__severity",
+    ]
+    ordering_fields = [
+        "id",
+        "evaluated_at",
+        "status",
+        "asset__name",
+        "rule__name",
+        "rule__severity",
+    ]
 
     @action(
         detail=False,
@@ -82,8 +99,12 @@ class ComplianceResultViewSet(viewsets.OCSViewSet):
             try:
                 asset_ids = [int(i) for i in asset_ids_param.split(",") if i.strip()]
             except ValueError:
-                return Response({"error": "Invalid asset IDs"}, status=status.HTTP_400_BAD_REQUEST)
-            queryset = ComplianceResult.objects.filter(asset_id__in=asset_ids).select_related("rule", "asset")
+                return Response(
+                    {"error": "Invalid asset IDs"}, status=status.HTTP_400_BAD_REQUEST
+                )
+            queryset = ComplianceResult.objects.filter(
+                asset_id__in=asset_ids
+            ).select_related("rule", "asset")
         else:
             queryset = ComplianceResult.objects.select_related("rule", "asset").all()
 
@@ -107,7 +128,9 @@ class ComplianceResultViewSet(viewsets.OCSViewSet):
             {
                 "asset": data["asset"],
                 "asset_name": data["asset_name"],
-                "global_status": "non_compliant" if data["has_non_compliant"] else "compliant",
+                "global_status": (
+                    "non_compliant" if data["has_non_compliant"] else "compliant"
+                ),
                 "counts": data["counts"],
             }
             for data in summary.values()
@@ -133,16 +156,18 @@ class ComplianceResultViewSet(viewsets.OCSViewSet):
         ).values_list("rule_id", flat=True):
             counts[rule_id] = counts.get(rule_id, 0) + 1
 
-        return Response([
-            {
-                "rule": rule.id,
-                "rule_name": rule.name,
-                "severity": rule.severity,
-                "type": rule.type,
-                "impacted": counts.get(rule.id, 0),
-            }
-            for rule in ComplianceRule.objects.all()
-        ])
+        return Response(
+            [
+                {
+                    "rule": rule.id,
+                    "rule_name": rule.name,
+                    "severity": rule.severity,
+                    "type": rule.type,
+                    "impacted": counts.get(rule.id, 0),
+                }
+                for rule in ComplianceRule.objects.all()
+            ]
+        )
 
 
 class AssetEOLStatusViewSet(viewsets.OCSViewSet):
@@ -157,10 +182,10 @@ class AssetEOLStatusViewSet(viewsets.OCSViewSet):
     serializer_class = AssetEOLStatusSerializer
     model = AssetEOLStatus
     filterset_fields = {
-        "is_eol":  ["exact"],
+        "is_eol": ["exact"],
         "support": ["exact"],
         "product": ["exact", "isnull"],
-        "asset":   ["exact"],
+        "asset": ["exact"],
     }
     search_fields = ["product", "asset__name"]
     ordering_fields = ["id", "asset", "is_eol", "product"]
@@ -183,21 +208,25 @@ class AssetEOLStatusViewSet(viewsets.OCSViewSet):
             try:
                 asset_ids = [int(i) for i in asset_ids_param.split(",") if i.strip()]
             except ValueError:
-                return Response({"error": "Invalid asset IDs"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    {"error": "Invalid asset IDs"}, status=status.HTTP_400_BAD_REQUEST
+                )
             queryset = AssetEOLStatus.objects.filter(asset_id__in=asset_ids)
         else:
             queryset = AssetEOLStatus.objects.all()
 
-        return Response([
-            {
-                "asset":   e.asset_id,
-                "is_eol":  e.is_eol,
-                "product": e.product,
-                "cycle":   e.cycle,
-                "eol":     e.eol,
-            }
-            for e in queryset
-        ])
+        return Response(
+            [
+                {
+                    "asset": e.asset_id,
+                    "is_eol": e.is_eol,
+                    "product": e.product,
+                    "cycle": e.cycle,
+                    "eol": e.eol,
+                }
+                for e in queryset
+            ]
+        )
 
 
 class ComplianceTypeViewSet(viewsets.OCSViewSet):

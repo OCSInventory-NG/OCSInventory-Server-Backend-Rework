@@ -3,8 +3,12 @@ from django.db import models
 
 
 class WindowsBuildMapping(models.Model):
-    build = models.IntegerField(unique=True, help_text="Windows build number (e.g. 22621)")
-    channel = models.CharField(max_length=20, help_text="endoflife.date channel slug (e.g. 22h2)")
+    build = models.IntegerField(
+        unique=True, help_text="Windows build number (e.g. 22621)"
+    )
+    channel = models.CharField(
+        max_length=20, help_text="endoflife.date channel slug (e.g. 22h2)"
+    )
 
     class Meta:
         ordering = ["build"]
@@ -38,7 +42,9 @@ class ComplianceRule(models.Model):
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255, null=True, blank=True)
     type = models.CharField(max_length=50)
-    severity = models.CharField(max_length=50, choices=SEVERITY_CHOICES, default=SEVERITY_MEDIUM)
+    severity = models.CharField(
+        max_length=50, choices=SEVERITY_CHOICES, default=SEVERITY_MEDIUM
+    )
     logic = models.JSONField()
     enabled = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -67,7 +73,9 @@ class ComplianceResult(models.Model):
     rule = models.ForeignKey(
         ComplianceRule, related_name="results", on_delete=models.CASCADE
     )
-    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default=STATUS_UNKNOWN)
+    status = models.CharField(
+        max_length=50, choices=STATUS_CHOICES, default=STATUS_UNKNOWN
+    )
     detail = models.JSONField(null=True, blank=True)
     evaluated_at = models.DateTimeField(auto_now=True)
 
@@ -84,14 +92,14 @@ class ComplianceResult(models.Model):
 
 
 class EOLCache(models.Model):
-    product      = models.CharField(max_length=100)
-    cycle        = models.CharField(max_length=50)
-    eol          = models.CharField(max_length=20, null=True, blank=True)
-    is_eol       = models.BooleanField(default=False)
-    support      = models.BooleanField(default=False)
+    product = models.CharField(max_length=100)
+    cycle = models.CharField(max_length=50)
+    eol = models.CharField(max_length=20, null=True, blank=True)
+    is_eol = models.BooleanField(default=False)
+    support = models.BooleanField(default=False)
     support_date = models.CharField(max_length=20, null=True, blank=True)
-    latest       = models.CharField(max_length=50, null=True, blank=True)
-    fetched_at   = models.DateTimeField(auto_now=True)
+    latest = models.CharField(max_length=50, null=True, blank=True)
+    fetched_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         constraints = [
@@ -105,17 +113,17 @@ class EOLCache(models.Model):
 
 
 class AssetEOLStatus(models.Model):
-    asset      = models.OneToOneField(
+    asset = models.OneToOneField(
         InventoryBase, related_name="eol_status", on_delete=models.CASCADE
     )
-    product      = models.CharField(max_length=100, null=True, blank=True)
-    cycle        = models.CharField(max_length=50, null=True, blank=True)
-    eol          = models.CharField(max_length=20, null=True, blank=True)
-    is_eol       = models.BooleanField(default=False)
-    support      = models.BooleanField(default=False)
+    product = models.CharField(max_length=100, null=True, blank=True)
+    cycle = models.CharField(max_length=50, null=True, blank=True)
+    eol = models.CharField(max_length=20, null=True, blank=True)
+    is_eol = models.BooleanField(default=False)
+    support = models.BooleanField(default=False)
     support_date = models.CharField(max_length=20, null=True, blank=True)
-    latest       = models.CharField(max_length=50, null=True, blank=True)
-    fetched_at   = models.DateTimeField(auto_now=True)
+    latest = models.CharField(max_length=50, null=True, blank=True)
+    fetched_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ["asset"]

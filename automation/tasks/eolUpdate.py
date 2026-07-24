@@ -37,12 +37,16 @@ class EOLUpdate(AbstractTask):
                     failed += 1
                     logger.error(
                         "Failed to update EOL for asset %s: %s",
-                        asset.name, e, exc_info=True
+                        asset.name,
+                        e,
+                        exc_info=True,
                     )
 
             logger.info(
                 "EOLUpdate task completed: %d succeeded, %d failed out of %d",
-                processed, failed, total,
+                processed,
+                failed,
+                total,
             )
         except Exception as e:
             logger.error("Critical error in EOLUpdate task: %s", e, exc_info=True)
@@ -51,16 +55,21 @@ class EOLUpdate(AbstractTask):
     def update_asset_eol_status(self, asset):
         try:
             from compliance.eol import update_asset_eol_status
+
             update_asset_eol_status(asset)
         except DatabaseError as e:
             logger.error(
                 "Database error while updating EOL for asset %s: %s",
-                asset.name, e, exc_info=True
+                asset.name,
+                e,
+                exc_info=True,
             )
             raise
         except Exception as e:
             logger.error(
                 "Unexpected error while updating EOL for asset %s: %s",
-                asset.name, e, exc_info=True
+                asset.name,
+                e,
+                exc_info=True,
             )
             raise

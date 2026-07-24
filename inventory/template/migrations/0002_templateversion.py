@@ -77,22 +77,44 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="TemplateVersion",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('revision', models.PositiveIntegerField()),
-                ('snapshot', models.JSONField()),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('label', models.CharField(blank=True, max_length=255)),
-                ('created_by', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
-                ('template', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='versions', to='template.template')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("revision", models.PositiveIntegerField()),
+                ("snapshot", models.JSONField()),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("label", models.CharField(blank=True, max_length=255)),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "template",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="versions",
+                        to="template.template",
+                    ),
+                ),
             ],
             options={
                 "ordering": ["-created_at"],
             },
         ),
         migrations.AddConstraint(
-            model_name='templateversion',
+            model_name="templateversion",
             constraint=models.UniqueConstraint(
-                fields=['template', 'revision'], name='unique_template_revision'
+                fields=["template", "revision"], name="unique_template_revision"
             ),
         ),
         migrations.RunPython(create_initial_versions),
