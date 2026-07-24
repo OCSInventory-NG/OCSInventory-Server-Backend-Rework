@@ -30,4 +30,3 @@ Describe the tests you ran to verify your changes.
 - [ ] I have performed a self-review of my own code
 - [ ] I have commented my code, particularly in hard-to-understand areas
 - [ ] I have executed database migrations and generated the necessary migration files
-- [ ] New and existing unit tests pass locally with my changes

@@ -29,7 +29,12 @@ from asset.reconciliation.views import ReconciliationView
 from auth.auth_config.routers import AuthConfigRouter
 from auth.auth_mapping.routers import AuthMappingRouter
 from auth.auth_method.routers import AuthMethodRouter
-from auth.auth_view.auth_views import BaseAuthView, CallbackView, LogoutView
+from auth.auth_view.auth_views import (
+    BaseAuthView,
+    CallbackView,
+    LogoutView,
+    SSOStartView,
+)
 from automation.history.routers import HistoryRouter
 from automation.rule.routers import RuleRouter
 from automation.scheduler.routers import SchedulerRouter
@@ -237,6 +242,7 @@ urlpatterns = [
     path("search/", SearchView.as_view(), name="search"),
     # Authentication
     path("login/", BaseAuthView.as_view(), name="login"),
+    path("login/sso/start/", SSOStartView.as_view(), name="sso_start"),
     path("callback/", CallbackView.as_view(), name="callback"),
     path("logout/", LogoutView.as_view(), name="logout"),
 ]
