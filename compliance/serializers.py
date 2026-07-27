@@ -3,8 +3,12 @@ from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
 from .models import (
-    AssetEOLStatus, ComplianceResult, ComplianceRule, ComplianceType,
-    CustomEOLExtendedSupport, WindowsBuildMapping,
+    AssetEOLStatus,
+    ComplianceResult,
+    ComplianceRule,
+    ComplianceType,
+    CustomEOLExtendedSupport,
+    WindowsBuildMapping,
 )
 
 
@@ -37,13 +41,30 @@ class AssetEOLStatusSerializer(ModelSerializer):
     class Meta:
         model = AssetEOLStatus
         fields = [
-            "id", "asset", "asset_name",
-            "product", "cycle", "eol", "is_eol",
-            "support", "support_date", "latest", "fetched_at",
+            "id",
+            "asset",
+            "asset_name",
+            "product",
+            "cycle",
+            "eol",
+            "is_eol",
+            "support",
+            "support_date",
+            "latest",
+            "fetched_at",
         ]
         read_only_fields = [
-            "id", "asset", "asset_name", "product", "cycle", "eol", "is_eol",
-            "support", "support_date", "latest", "fetched_at",
+            "id",
+            "asset",
+            "asset_name",
+            "product",
+            "cycle",
+            "eol",
+            "is_eol",
+            "support",
+            "support_date",
+            "latest",
+            "fetched_at",
         ]
 
 
@@ -52,7 +73,15 @@ class ComplianceResultSerializer(ExpandableFieldsMixin, ModelSerializer):
 
     class Meta:
         model = ComplianceResult
-        fields = ["id", "asset", "asset_name", "rule", "status", "detail", "evaluated_at"]
+        fields = [
+            "id",
+            "asset",
+            "asset_name",
+            "rule",
+            "status",
+            "detail",
+            "evaluated_at",
+        ]
         read_only_fields = ["evaluated_at", "asset_name"]
         expandable_fields = {
             "rule": ComplianceRuleSerializer,

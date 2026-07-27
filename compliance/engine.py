@@ -31,7 +31,9 @@ def evaluate_rule(rule, context):
     except Exception as exc:
         LOGGER.error(
             "Error evaluating rule %s (%s): %s",
-            rule.id, rule.name, exc,
+            rule.id,
+            rule.name,
+            exc,
         )
         return ComplianceResult.STATUS_UNKNOWN, {"error": str(exc)}
 
@@ -68,11 +70,13 @@ def evaluate_asset(asset, rules=None):
         results.append(
             ComplianceResult(asset=asset, rule=rule, status=status, detail=detail)
         )
-        report.append({
-            "asset_id": asset.id,
-            "rule_id": rule.id,
-            "status": status,
-        })
+        report.append(
+            {
+                "asset_id": asset.id,
+                "rule_id": rule.id,
+                "status": status,
+            }
+        )
         LOGGER.debug("Asset %s / Rule %s → %s", asset.id, rule.id, status)
 
     ComplianceResult.objects.bulk_create(
@@ -82,9 +86,7 @@ def evaluate_asset(asset, rules=None):
         update_fields=["status", "detail", "evaluated_at"],
     )
 
-    LOGGER.info(
-        "Compliance evaluated for asset %s: %d rule(s)", asset.id, len(report)
-    )
+    LOGGER.info("Compliance evaluated for asset %s: %d rule(s)", asset.id, len(report))
     return report
 
 
@@ -106,6 +108,7 @@ def run_evaluation():
 
     LOGGER.info(
         "Full evaluation complete: %d asset(s), %d result(s)",
-        len(assets), len(report),
+        len(assets),
+        len(report),
     )
     return report

@@ -13,10 +13,12 @@ _WINDOWS_BUILD_MAPPINGS = [
 
 def seed_windows_build_mappings(apps, schema_editor):
     WindowsBuildMapping = apps.get_model("compliance", "WindowsBuildMapping")
-    WindowsBuildMapping.objects.bulk_create([
-        WindowsBuildMapping(build=build, channel=channel)
-        for build, channel in _WINDOWS_BUILD_MAPPINGS
-    ])
+    WindowsBuildMapping.objects.bulk_create(
+        [
+            WindowsBuildMapping(build=build, channel=channel)
+            for build, channel in _WINDOWS_BUILD_MAPPINGS
+        ]
+    )
 
 
 def unseed_windows_build_mappings(apps, schema_editor):
@@ -31,9 +33,9 @@ _COMPLIANCE_TYPES = ["Security", "Software", "Hardware"]
 
 def seed_compliance_types(apps, schema_editor):
     ComplianceType = apps.get_model("compliance", "ComplianceType")
-    ComplianceType.objects.bulk_create([
-        ComplianceType(name=name) for name in _COMPLIANCE_TYPES
-    ])
+    ComplianceType.objects.bulk_create(
+        [ComplianceType(name=name) for name in _COMPLIANCE_TYPES]
+    )
 
 
 def unseed_compliance_types(apps, schema_editor):
@@ -43,16 +45,18 @@ def unseed_compliance_types(apps, schema_editor):
 
 def seed_default_rules(apps, schema_editor):
     ComplianceRule = apps.get_model("compliance", "ComplianceRule")
-    ComplianceRule.objects.bulk_create([
-        ComplianceRule(
-            name="Required software installed",
-            description="Example rule: checks that a required software is present on the asset. Edit the software name to match your environment.",
-            type="Software",
-            severity="medium",
-            logic={"in": ["example-software", {"var": "softwares.names"}]},
-            enabled=False,
-        ),
-    ])
+    ComplianceRule.objects.bulk_create(
+        [
+            ComplianceRule(
+                name="Required software installed",
+                description="Example rule: checks that a required software is present on the asset. Edit the software name to match your environment.",
+                type="Software",
+                severity="medium",
+                logic={"in": ["example-software", {"var": "softwares.names"}]},
+                enabled=False,
+            ),
+        ]
+    )
 
 
 def unseed_default_rules(apps, schema_editor):
@@ -139,7 +143,10 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ("name", models.CharField(max_length=255)),
-                ("description", models.CharField(blank=True, max_length=255, null=True)),
+                (
+                    "description",
+                    models.CharField(blank=True, max_length=255, null=True),
+                ),
                 (
                     "type",
                     models.CharField(max_length=50),
@@ -221,7 +228,10 @@ class Migration(migrations.Migration):
                 ("eol", models.CharField(blank=True, max_length=20, null=True)),
                 ("is_eol", models.BooleanField(default=False)),
                 ("support", models.BooleanField(default=False)),
-                ("support_date", models.CharField(blank=True, max_length=20, null=True)),
+                (
+                    "support_date",
+                    models.CharField(blank=True, max_length=20, null=True),
+                ),
                 ("latest", models.CharField(blank=True, max_length=50, null=True)),
                 ("fetched_at", models.DateTimeField(auto_now=True)),
             ],
@@ -282,7 +292,10 @@ class Migration(migrations.Migration):
                 ("eol", models.CharField(blank=True, max_length=20, null=True)),
                 ("is_eol", models.BooleanField(default=False)),
                 ("support", models.BooleanField(default=False)),
-                ("support_date", models.CharField(blank=True, max_length=20, null=True)),
+                (
+                    "support_date",
+                    models.CharField(blank=True, max_length=20, null=True),
+                ),
                 ("latest", models.CharField(blank=True, max_length=50, null=True)),
                 ("fetched_at", models.DateTimeField(auto_now=True)),
             ],

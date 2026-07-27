@@ -29,6 +29,10 @@ class ComplianceRouter:
         defaultRouter.register(r"compliance/types", ComplianceTypeViewSet)
         defaultRouter.register(r"compliance/results", ComplianceResultViewSet)
         defaultRouter.register(r"compliance/eol-status", AssetEOLStatusViewSet)
-        defaultRouter.register(r"compliance/windows-build-mapping", WindowsBuildMappingViewSet)
-        defaultRouter.register(r"compliance/eol-extended-support", CustomEOLExtendedSupportViewSet)
+        defaultRouter.register(
+            r"compliance/windows-build-mapping", WindowsBuildMappingViewSet
+        )
+        defaultRouter.register(
+            r"compliance/eol-extended-support", CustomEOLExtendedSupportViewSet
+        )
         return defaultRouter

@@ -208,6 +208,7 @@ def _apply_custom_eol_override(result):
         return result
 
     from .models import CustomEOLExtendedSupport
+
     has_override = CustomEOLExtendedSupport.objects.filter(
         product=result["product"].lower(),
         cycle=result["cycle"].lower(),
@@ -227,10 +228,12 @@ def resolve_asset_eol(asset):
     Returns the EOL dict {product, cycle, eol, is_eol, support, latest}
     or None if the OS could not be resolved.
     """
-    return _apply_custom_eol_override(_guess_eol(
-        getattr(asset, "osname", None),
-        getattr(asset, "osversion", None),
-    ))
+    return _apply_custom_eol_override(
+        _guess_eol(
+            getattr(asset, "osname", None),
+            getattr(asset, "osversion", None),
+        )
+    )
 
 
 def update_asset_eol_status(asset):
@@ -247,12 +250,12 @@ def update_asset_eol_status(asset):
     AssetEOLStatus.objects.update_or_create(
         asset=asset,
         defaults={
-            "product":      eol.get("product"),
-            "cycle":        eol.get("cycle"),
-            "eol":          eol.get("eol"),
-            "is_eol":       eol.get("is_eol", False),
-            "support":      eol.get("support", False),
+            "product": eol.get("product"),
+            "cycle": eol.get("cycle"),
+            "eol": eol.get("eol"),
+            "is_eol": eol.get("is_eol", False),
+            "support": eol.get("support", False),
             "support_date": eol.get("support_date"),
-            "latest":       eol.get("latest"),
+            "latest": eol.get("latest"),
         },
     )
