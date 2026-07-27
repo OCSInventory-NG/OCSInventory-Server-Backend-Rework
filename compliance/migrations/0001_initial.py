@@ -26,7 +26,7 @@ def unseed_windows_build_mappings(apps, schema_editor):
     ).delete()
 
 
-_COMPLIANCE_TYPES = ["software", "security", "hardware"]
+_COMPLIANCE_TYPES = ["Security", "Software", "Hardware"]
 
 
 def seed_compliance_types(apps, schema_editor):
@@ -47,7 +47,7 @@ def seed_default_rules(apps, schema_editor):
         ComplianceRule(
             name="Required software installed",
             description="Example rule: checks that a required software is present on the asset. Edit the software name to match your environment.",
-            type="software",
+            type="Software",
             severity="medium",
             logic={"in": ["example-software", {"var": "softwares.names"}]},
             enabled=False,
