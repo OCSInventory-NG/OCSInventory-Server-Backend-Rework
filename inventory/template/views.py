@@ -80,7 +80,7 @@ class TemplateViewSet(viewsets.OCSViewSet):
         payload = {"schema_version": 1, **data}
         resp = Response(payload)
         return resp
-    
+
     @action(detail=True, methods=["post"], url_path="import-sections")
     def import_sections(self, request, pk=None):
         """
