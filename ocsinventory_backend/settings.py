@@ -31,6 +31,10 @@ BACKEND_VERSION = "3.0.0"
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 
+# SECURITY WARNING: keep the field encryption key secret and back it up: losing
+# it makes the encrypted configuration values unrecoverable.
+FIELD_ENCRYPTION_KEY = os.getenv("FIELD_ENCRYPTION_KEY")
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False") == "True"
 FRONTEND_REDIRECT = os.getenv("FRONTEND_REDIRECT")
