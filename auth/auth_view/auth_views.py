@@ -13,8 +13,10 @@ from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.utils.crypto import get_random_string
 from django.views import View
+from knox.models import AuthToken
 from mozilla_django_oidc.utils import add_state_and_verifier_and_nonce_to_session
-from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.response import Response
 
 
 class BaseAuthView(View):
@@ -189,14 +191,14 @@ class CallbackView(BaseAuthView):
             login(request, user)
             request.session["auth_method"] = "sso"
             # Generate a token for the user
-            token, created = Token.objects.get_or_create(user=user)
+            _, token = AuthToken.objects.create(user=user)
             # sending the user_logged_in signal manually
             user_logged_in.send(sender=user.__class__, request=request, user=user)
             # Include the token in the response
-            redirect_url = self._build_frontend_redirect(token.key)
+            redirect_url = self._build_frontend_redirect(token)
             if redirect_url:
                 return HttpResponseRedirect(redirect_url)
-            return JsonResponse({"token_authentication": token.key})
+            return JsonResponse({"token_authentication": token})
 
         else:
             redirect_url = self._build_frontend_redirect()
@@ -215,14 +217,14 @@ class CallbackView(BaseAuthView):
             login(request, user)
             request.session["auth_method"] = "sso"
             # Generate a token for the user
-            token, created = Token.objects.get_or_create(user=user)
+            _, token = AuthToken.objects.create(user=user)
             # sending the user_logged_in signal manually
             user_logged_in.send(sender=user.__class__, request=request, user=user)
             # Include the token in the response
-            redirect_url = self._build_frontend_redirect(token.key)
+            redirect_url = self._build_frontend_redirect(token)
             if redirect_url:
                 return HttpResponseRedirect(redirect_url)
-            return JsonResponse({"token_authentication": token.key})
+            return JsonResponse({"token_authentication": token})
 
         else:
             redirect_url = self._build_frontend_redirect()
@@ -265,7 +267,7 @@ class LogoutView(BaseAuthView):
         auth_method = request.GET.get("method")
 
         if request.user.is_authenticated:
-            Token.objects.filter(user=request.user).delete()
+            AuthToken.objects.filter(user=request.user).delete()
         logout(request)
 
         if (
@@ -280,3 +282,19 @@ class LogoutView(BaseAuthView):
         frontend_redirect = getattr(settings, "FRONTEND_REDIRECT", "")
         frontend_redirect = frontend_redirect + "/ocsreports/login"
         return HttpResponseRedirect(frontend_redirect + "?noauto")
+
+
+class ApiTokenView(ObtainAuthToken):
+    """
+    View to issue a token from username and password credentials.
+
+    Subclasses ObtainAuthToken so the endpoint keeps accepting JSON credentials
+    and returning a "token" key, as the frontend and the agents expect, while
+    the issued token is a knox one.
+    """
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        _, token = AuthToken.objects.create(user=serializer.validated_data["user"])
+        return Response({"token": token})

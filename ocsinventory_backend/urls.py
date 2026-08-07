@@ -30,6 +30,7 @@ from auth.auth_config.routers import AuthConfigRouter
 from auth.auth_mapping.routers import AuthMappingRouter
 from auth.auth_method.routers import AuthMethodRouter
 from auth.auth_view.auth_views import (
+    ApiTokenView,
     BaseAuthView,
     CallbackView,
     LogoutView,
@@ -65,7 +66,6 @@ from ocsinventory_backend.ocs_framework.viewsets import ApiCheckViewSet
 
 # Import dedicated routers and provide different endpoint
 from permission.routers import PermissionRouter
-from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.routers import DefaultRouter
 from search.routers import SearchRouter
 from search.views import SearchView
@@ -227,7 +227,7 @@ urlpatterns = [
     path(r"", include(defaultRouter.urls)),
     path("api-check/", ApiCheckViewSet.as_view({"get": "api_check"}), name="api_check"),
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
-    path("api-auth/token", obtain_auth_token, name="api_token_auth"),
+    path("api-auth/token", ApiTokenView.as_view(), name="api_token_auth"),
     path("asset/collection/", CollectionView.as_view(), name="asset_collection"),
     path("asset/legacy/", LegacyView.as_view(), name="legacy_collection"),
     path(

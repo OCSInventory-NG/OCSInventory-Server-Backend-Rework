@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+from datetime import timedelta
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -52,6 +53,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "rest_framework",
     "rest_framework.authtoken",
+    "knox",
     "user.apps.UserConfig",
     "group.apps.GroupConfig",
     "permission.apps.PermissionConfig",
@@ -210,7 +212,7 @@ WSGI_APPLICATION = "ocsinventory_backend.wsgi.application"
 REST_FRAMEWORK = {
     # Add default auth using Token Auth
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.TokenAuthentication",
+        "knox.auth.TokenAuthentication",
     ],
     # Use to permit the server to retreive data in JSON or XML.
     "DEFAULT_PARSER_CLASSES": [
@@ -233,6 +235,14 @@ REST_FRAMEWORK = {
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
     "DATETIME_FORMAT": "%Y-%m-%dT%H:%M:%S%z",
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+}
+
+# Knox token authentication
+REST_KNOX = {
+    # AUTO_REFRESH extends the expiry on each authenticated request, so TOKEN_TTL
+    # acts as an inactivity delay and active sessions are never cut off.
+    "TOKEN_TTL": timedelta(hours=10),
+    "AUTO_REFRESH": True,
 }
 
 # CORS Allow all during dev
