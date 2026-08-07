@@ -152,6 +152,13 @@ class CustomLDAPBackend(LDAPBackend):
             "MIRROR_GROUPS",
         ]
 
+    @staticmethod
+    def get_sensitive_config_fields():
+        """
+        Return the config fields holding a secret, stored encrypted in database.
+        """
+        return ["BIND_PASSWORD"]
+
     def _build_metadata(self, user):
         metadata = {}
         ldap_user = getattr(user, "ldap_user", None)
