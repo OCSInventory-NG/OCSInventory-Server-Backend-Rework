@@ -60,6 +60,7 @@ from inventory.template.routers import TemplateRouter
 from ipdiscover.netdevice.routers import NetdeviceRouter
 from ipdiscover.netgroup.routers import NetgroupRouter
 from ipdiscover.network.routers import NetworkRouter
+from knox.views import LogoutView as TokenLogoutView
 from notes.routers import NotesRouter
 from ocsinventory_backend import settings
 from ocsinventory_backend.ocs_framework.viewsets import ApiCheckViewSet
@@ -228,6 +229,11 @@ urlpatterns = [
     path("api-check/", ApiCheckViewSet.as_view({"get": "api_check"}), name="api_check"),
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
     path("api-auth/token", ApiTokenView.as_view(), name="api_token_auth"),
+    path(
+        "api-auth/token/logout",
+        TokenLogoutView.as_view(),
+        name="api_token_logout",
+    ),
     path("asset/collection/", CollectionView.as_view(), name="asset_collection"),
     path("asset/legacy/", LegacyView.as_view(), name="legacy_collection"),
     path(
