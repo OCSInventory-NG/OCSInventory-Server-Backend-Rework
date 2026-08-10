@@ -176,9 +176,7 @@ class ReconciliationService:
         return {"uuid": uuid}
 
     @classmethod
-    def format_reconciliation_info(
-        cls, data: Dict[str, Optional[str]], fields=None
-    ):
+    def format_reconciliation_info(cls, data: Dict[str, Optional[str]], fields=None):
         """
         Human readable summary of the values a device is reconciled on.
 
