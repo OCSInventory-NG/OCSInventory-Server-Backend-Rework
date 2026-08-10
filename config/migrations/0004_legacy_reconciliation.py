@@ -3,7 +3,7 @@ from django.db import migrations
 LEGACY_ENTRY = {
     "name": "legacy_duplicate_reconciliation",
     "description": "Field(s) used to reconcile duplicate computers "
-    "on the legacy endpoint",
+    "on the legacy endpoint, uuid is used by default if left empty",
     "value": ["uuid"],
     "type": "multiselect",
     "unit": "",

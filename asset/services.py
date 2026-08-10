@@ -24,11 +24,12 @@ class ReconciliationService:
             )
 
     @classmethod
-    def _get_server_param(cls, name, default=None):
+    def _get_server_entry(cls, name):
         """
-        Read a single value from the "server" configuration.
+        Read an entry of the "server" configuration.
 
-        Returns `default` when the configuration or the entry is missing.
+        Returns the whole entry, so callers can use its declared `options` as
+        well as its value. None when the configuration or the entry is missing.
         """
         try:
             config = Config.objects.get(name="server")
@@ -38,12 +39,12 @@ class ReconciliationService:
                   default reconciliation field""",
                 extra={"classname": __name__},
             )
-            return default
+            return None
 
         for item in config.value:
             if item.get("name") == name:
-                return item.get("value")
-        return default
+                return item
+        return None
 
     @classmethod
     def get_reconciliation_fields(cls):
@@ -56,7 +57,8 @@ class ReconciliationService:
          - "uuid, srcmac"
          Default is "uuid"
         """
-        selection = cls._get_server_param("duplicate_reconciliation")
+        entry = cls._get_server_entry("duplicate_reconciliation")
+        selection = entry.get("value") if entry else None
         if selection == "uuid, name":
             fields = ["uuid", "name"]
         elif selection == "uuid, srcmac":
@@ -82,12 +84,34 @@ class ReconciliationService:
          - "uuid", "name", "serial", "srcmac"
          Default is ["uuid"]
         """
-        configured = cls._get_server_param("legacy_duplicate_reconciliation")
-        fields = configured or ["uuid"]
+        entry = cls._get_server_entry("legacy_duplicate_reconciliation") or {}
+        configured = entry.get("value") or []
+        if isinstance(configured, str):
+            configured = [configured]
+        allowed = entry.get("options") or ["uuid", "name", "serial", "srcmac"]
+
+        fields = [field for field in configured if field in allowed]
+        unknown = [field for field in configured if field not in allowed]
+        if unknown:
+            cls.LOGGER.warning(
+                f"Ignoring unknown legacy reconciliation field(s): {unknown}",
+                extra={"classname": __name__},
+            )
+        if not fields:
+            if configured:
+                cls.LOGGER.warning(
+                    f"No usable legacy reconciliation field in {configured!r}, "
+                    "falling back to ['uuid']",
+                    extra={"classname": __name__},
+                )
+            cls.LOGGER.debug(
+                "Legacy reconciliation fields (default): ['uuid']",
+                extra={"classname": __name__},
+            )
+            return ["uuid"]
 
         cls.LOGGER.debug(
-            f"Legacy reconciliation fields "
-            f"({'config' if configured else 'default'}): {fields}",
+            f"Legacy reconciliation fields (config): {fields}",
             extra={"classname": __name__},
         )
         return fields
