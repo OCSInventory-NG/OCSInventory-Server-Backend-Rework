@@ -24,6 +24,28 @@ class ReconciliationService:
             )
 
     @classmethod
+    def _get_server_param(cls, name, default=None):
+        """
+        Read a single value from the "server" configuration.
+
+        Returns `default` when the configuration or the entry is missing.
+        """
+        try:
+            config = Config.objects.get(name="server")
+        except Config.DoesNotExist:
+            cls.LOGGER.warning(
+                """No server configuration found, will be using uuid only as
+                  default reconciliation field""",
+                extra={"classname": __name__},
+            )
+            return default
+
+        for item in config.value:
+            if item.get("name") == name:
+                return item.get("value")
+        return default
+
+    @classmethod
     def get_reconciliation_fields(cls):
         """
         Get the fields used for reconciliation from the server configuration
@@ -34,42 +56,21 @@ class ReconciliationService:
          - "uuid, srcmac"
          Default is "uuid"
         """
+        selection = cls._get_server_param("duplicate_reconciliation")
+        if selection == "uuid, name":
+            fields = ["uuid", "name"]
+        elif selection == "uuid, srcmac":
+            fields = ["uuid", "srcmac"]
+        else:
+            # default or "uuid"
+            fields = ["uuid"]
 
-        try:
-            config = Config.objects.get(name="server")
-            for item in config.value:
-                if item.get("name") == "duplicate_reconciliation":
-                    selection = item.get("value", "uuid")
-                    if selection == "uuid, name":
-                        fields = ["uuid", "name"]
-                    elif selection == "uuid, srcmac":
-                        fields = ["uuid", "srcmac"]
-                    else:
-                        # default or "uuid"
-                        fields = ["uuid"]
-                    cls.LOGGER.debug(
-                        f"Reconciliation fields configured as: {fields}",
-                        extra={"classname": __name__},
-                    )
-                    return fields
-            fields = ["uuid"]
-            cls.LOGGER.debug(
-                f"Using default reconciliation fields: {fields}",
-                extra={"classname": __name__},
-            )
-            return fields
-        except Config.DoesNotExist:
-            cls.LOGGER.warning(
-                """No server configuration found, will be using uuid only as
-                  default reconciliation field""",
-                extra={"classname": __name__},
-            )
-            fields = ["uuid"]
-            cls.LOGGER.debug(
-                f"Using default reconciliation fields: {fields}",
-                extra={"classname": __name__},
-            )
-            return fields
+        cls.LOGGER.debug(
+            f"Reconciliation fields "
+            f"({'config' if selection is not None else 'default'}): {fields}",
+            extra={"classname": __name__},
+        )
+        return fields
 
     @classmethod
     def get_legacy_reconciliation_fields(cls):
@@ -81,36 +82,17 @@ class ReconciliationService:
          - "uuid", "name", "serial", "srcmac"
          Default is ["uuid"]
         """
+        configured = cls._get_server_param("legacy_duplicate_reconciliation")
+        fields = configured or ["uuid"]
 
-        try:
-            config = Config.objects.get(name="server")
-            for item in config.value:
-                if item.get("name") == "legacy_duplicate_reconciliation":
-                    fields = item.get("value") or ["uuid"]
-                    cls.LOGGER.debug(
-                        f"Legacy reconciliation fields configured as: {fields}",
-                        extra={"classname": __name__},
-                    )
-                    return fields
-            fields = ["uuid"]
-            cls.LOGGER.debug(
-                f"Using default legacy reconciliation fields: {fields}",
-                extra={"classname": __name__},
-            )
-            return fields
-        except Config.DoesNotExist:
-            cls.LOGGER.warning(
-                """No server configuration found, will be using uuid only as
-                  default reconciliation field""",
-                extra={"classname": __name__},
-            )
-            fields = ["uuid"]
-            cls.LOGGER.debug(
-                f"Using default legacy reconciliation fields: {fields}",
-                extra={"classname": __name__},
-            )
-            return fields
+        cls.LOGGER.debug(
+            f"Legacy reconciliation fields "
+            f"({'config' if configured else 'default'}): {fields}",
+            extra={"classname": __name__},
+        )
+        return fields
 
+    @classmethod
     def get_reconciliation_filter(cls, data: Dict[str, Optional[str]], fields=None):
         """
         Build a filter for asset lookup from the reconciliation fields (config)
@@ -169,6 +151,7 @@ class ReconciliationService:
             raise cls.UnusableReconciliationValue("uuid", uuid)
         return {"uuid": uuid}
 
+    @classmethod
     def format_reconciliation_info(
         cls, data: Dict[str, Optional[str]], fields=None
     ):
