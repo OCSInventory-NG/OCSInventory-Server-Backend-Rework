@@ -83,14 +83,19 @@ class LegacyView(APIView):
                 self.LOGGER.error("Reconciliation error: %s", ve)
                 return Response({"error": str(ve)}, status=400)
 
+            # an unusable value falls back to the deviceid
+            reconciliation_info = service.format_reconciliation_info(
+                data, list(reconciliation_filter)
+            )
+            device_id = f"{data.get('name', 'unknown')} {reconciliation_info}"
+
             asset_instance = InventoryBase.objects.filter(
                 **reconciliation_filter
             ).first()
             if asset_instance:
                 self.LOGGER.info(
-                    "Updating inventory for device %s - %s",
-                    data["uuid"],
-                    data["name"],
+                    "Updating inventory for device %s",
+                    device_id,
                 )
                 try:
                     asset_serializer = InventoryBaseSerializer(
@@ -103,9 +108,8 @@ class LegacyView(APIView):
                 except ValidationError as ve:
                     errors.append(f"Error while updating inventory: {ve}")
                     self.LOGGER.error(
-                        "Error while updating inventory for device %s - %s: %s",
-                        data["uuid"],
-                        data["name"],
+                        "Error while updating inventory for device %s: %s",
+                        device_id,
                         ve,
                     )
                     return Response(
@@ -114,9 +118,8 @@ class LegacyView(APIView):
                     )
                 except Exception as e:
                     self.LOGGER.error(
-                        "Error while updating inventory for device %s - %s: %s",
-                        data["uuid"],
-                        data["name"],
+                        "Error while updating inventory for device %s: %s",
+                        device_id,
                         e,
                     )
                     return Response(
@@ -196,23 +199,21 @@ class LegacyView(APIView):
 
                 if errors:
                     self.LOGGER.error(
-                        "Partial update completed with errors for device %s - %s: %s",
-                        data["uuid"],
-                        data["name"],
+                        "Partial update completed with errors for device %s: %s",
+                        device_id,
                         errors,
                     )
                     return Response(
                         {
                             "Partial update completed with errors for device "
-                            f'{data["uuid"]} - {data["name"]}: {str(errors)}'
+                            f"{device_id}: {str(errors)}"
                         },
                         status=200,
                     )
                 else:
                     self.LOGGER.info(
-                        "Inventory updated successfully for device %s - %s",
-                        data["uuid"],
-                        data["name"],
+                        "Inventory updated successfully for device %s",
+                        device_id,
                     )
 
                 return Response(
@@ -224,15 +225,8 @@ class LegacyView(APIView):
                 )
             else:
                 self.LOGGER.info(
-                    "Managing legacy inventory for device %s - %s",
-                    data["uuid"],
-                    data["name"],
-                )
-
-                self.LOGGER.info(
-                    "Creating inventory for device %s - %s",
-                    data["uuid"],
-                    data["name"],
+                    "Creating inventory for device %s",
+                    device_id,
                 )
 
                 try:
@@ -247,9 +241,8 @@ class LegacyView(APIView):
                 except ValidationError as ve:
                     errors.append(f"Error while creating inventory: {ve}")
                     self.LOGGER.error(
-                        "Error while creating inventory for device %s - %s: %s",
-                        data["uuid"],
-                        data["name"],
+                        "Error while creating inventory for device %s: %s",
+                        device_id,
                         ve,
                     )
                     return Response(
@@ -259,9 +252,8 @@ class LegacyView(APIView):
 
                 except Exception as e:
                     self.LOGGER.error(
-                        "Error while creating inventory for device %s - %s: %s",
-                        data["uuid"],
-                        data["name"],
+                        "Error while creating inventory for device %s: %s",
+                        device_id,
                         e,
                     )
                     return Response(
@@ -333,24 +325,22 @@ class LegacyView(APIView):
                 if errors:
                     self.LOGGER.error(
                         "Errors encountered while creating legacy inventory "
-                        "for device %s - %s: %s",
-                        data["uuid"],
-                        data["name"],
+                        "for device %s: %s",
+                        device_id,
                         errors,
                     )
 
                     return Response(
                         {
                             "Inventory created with errors for device "
-                            f'{data["uuid"]} - {data["name"]}: {str(errors)}'
+                            f"{device_id}: {str(errors)}"
                         },
                         status=201,
                     )
                 else:
                     self.LOGGER.info(
-                        "Inventory created successfully for device %s - %s",
-                        data["uuid"],
-                        data["name"],
+                        "Inventory created successfully for device %s",
+                        device_id,
                     )
 
                 # successful creation response

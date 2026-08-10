@@ -169,7 +169,17 @@ class ReconciliationService:
             raise cls.UnusableReconciliationValue("uuid", uuid)
         return {"uuid": uuid}
 
-    def format_reconciliation_info(cls, data: Dict[str, Optional[str]]):
-        fields = cls.get_reconciliation_fields()
+    def format_reconciliation_info(
+        cls, data: Dict[str, Optional[str]], fields=None
+    ):
+        """
+        Human readable summary of the values a device is reconciled on.
+
+        `fields` must be passed by the legacy endpoint: its fields come from
+        another configuration entry, and may differ from the configured ones
+        when an unusable value forced a fallback.
+        """
+        if fields is None:
+            fields = cls.get_reconciliation_fields()
         values = [f"{field}={data.get(field, 'unknown')}" for field in fields]
         return f"({' - '.join(values)})"
