@@ -76,9 +76,8 @@ class LegacyView(APIView):
                 )
             service = ReconciliationService()
             try:
-                reconciliation_filter = service.get_reconciliation_filter(
+                reconciliation_filter = service.get_legacy_reconciliation_filter(
                     data,
-                    service.get_legacy_reconciliation_fields(),
                 )
             except ValueError as ve:
                 self.LOGGER.error("Reconciliation error: %s", ve)

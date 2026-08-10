@@ -9,6 +9,20 @@ class ReconciliationService:
 
     LOGGER = logging.getLogger(__name__)
 
+    # never used to match an asset
+    BLACKLIST = ("", "Empty", None)
+
+    class UnusableReconciliationValue(ValueError):
+        """Raised when a reconciliation field holds no usable value."""
+
+        def __init__(self, field, value):
+            self.field = field
+            self.value = value
+            super().__init__(
+                f"Field '{field}' holds no value usable for "
+                f"reconciliation ({value!r})."
+            )
+
     @classmethod
     def get_reconciliation_fields(cls):
         """
@@ -110,6 +124,50 @@ class ReconciliationService:
                                   required for reconciliation.""")
             filter_dict[field] = data[field]
         return filter_dict
+
+    @classmethod
+    def get_legacy_reconciliation_filter(cls, data, fields=None):
+        """
+        Build the asset lookup filter for the legacy endpoint.
+
+        args:
+            data: the parsed inventory
+            fields: reconciliation fields, read from the config when omitted
+
+        returns:
+            the filter to look the asset up with
+
+        raises:
+            UnusableReconciliationValue: when not even the deviceid is usable
+        """
+        if fields is None:
+            fields = cls.get_legacy_reconciliation_fields()
+
+        filter_dict = {}
+        for field in fields:
+            value = data.get(field)
+            if value in cls.BLACKLIST:
+                cls.LOGGER.warning(
+                    f"Cannot reconcile device "
+                    f"{data.get('name', 'unknown')} on '{field}': no usable "
+                    f"value ({value!r}), falling back to uuid",
+                    extra={"classname": __name__},
+                )
+                return cls._uuid_reconciliation_filter(data)
+            filter_dict[field] = value
+        return filter_dict
+
+    @classmethod
+    def _uuid_reconciliation_filter(cls, data):
+        """
+        Fallback filter, used when the configured fields cannot identify the
+        device. Reproduces the behaviour that predates the configurable
+        reconciliation: one asset per deviceid.
+        """
+        uuid = data.get("uuid")
+        if uuid in cls.BLACKLIST:
+            raise cls.UnusableReconciliationValue("uuid", uuid)
+        return {"uuid": uuid}
 
     def format_reconciliation_info(cls, data: Dict[str, Optional[str]]):
         fields = cls.get_reconciliation_fields()
