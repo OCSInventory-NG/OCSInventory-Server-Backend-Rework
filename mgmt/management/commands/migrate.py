@@ -57,6 +57,8 @@ class Command(MigrateCommand):
                 "patterns": [
                     "view_config",
                     "add_log",
+                    "add_inventorybase",
+                    "change_inventorybase",
                     "view_inventorybase",
                     "view_template",
                 ]
