@@ -184,6 +184,12 @@ LOGGING = {
             "level": "INFO",
             "propagate": False,
         },
+        # legacy inventory collection
+        "asset.legacy.views": {
+            "handlers": ["ocs_collection"],
+            "level": "INFO",
+            "propagate": False,
+        },
         "auth": {
             "handlers": ["ocs_auth"],
             "level": "INFO",
