@@ -58,3 +58,19 @@ class DynamicLogLevelManager:
             f"{logger_name or 'root'} level set"
             f" to {logging.getLevelName(level)}{default_msg}"
         )
+
+
+def add_console_handler(logger_names, stream):
+    """
+    Mirror the given loggers to a stream, on top of their usual handlers.
+
+    Returns:
+        logging.StreamHandler: handler added to each logger
+    """
+    handler = logging.StreamHandler(stream)
+    handler.setFormatter(
+        logging.Formatter(fmt="[{levelname}][{asctime}][{name}]: {message}", style="{")
+    )
+    for logger_name in logger_names:
+        logging.getLogger(logger_name).addHandler(handler)
+    return handler
