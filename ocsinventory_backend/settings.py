@@ -89,6 +89,7 @@ INSTALLED_APPS = [
     "django_cas_ng",
     "filemanager.apps.FileManagerConfig",
     "extension.apps.ExtensionConfig",
+    "compliance.apps.ComplianceConfig",
 ]
 
 MIDDLEWARE = [
@@ -324,3 +325,6 @@ OCS_CUSTOM_AUTH_BACKENDS = {
     "LDAP": "auth.auth_backend.ldap_backend.CustomLDAPBackend",
     "OIDC": "auth.auth_backend.oidc_backend.CustomOIDCBackend",
 }
+
+# Compliance
+EOL_API_BASE_URL = "https://endoflife.date/api"

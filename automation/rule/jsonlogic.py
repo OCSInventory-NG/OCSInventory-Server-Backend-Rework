@@ -40,6 +40,11 @@ logger = logging.getLogger(__name__)
 
 def soft_equals(a, b, case_sensitive=False):
     """Implements the '==' operator with case sensitivity."""
+    if isinstance(a, list):
+        return any(soft_equals(item, b, case_sensitive) for item in a)
+    if isinstance(b, list):
+        return any(soft_equals(a, item, case_sensitive) for item in b)
+
     if isinstance(a, str) and isinstance(b, str):
         if not case_sensitive:
             return a.lower() == b.lower()
@@ -47,11 +52,27 @@ def soft_equals(a, b, case_sensitive=False):
 
     if isinstance(a, bool) or isinstance(b, bool):
         return bool(a) is bool(b)
+
+    # Numeric coercion (JS-style) when one side is a number and the other a
+    # numeric string, e.g. software version 3 (int) vs "3" typed in the editor.
+    if isinstance(a, (int, float)) and isinstance(b, str):
+        try:
+            return float(a) == float(b)
+        except ValueError:
+            return False
+    if isinstance(b, (int, float)) and isinstance(a, str):
+        try:
+            return float(a) == float(b)
+        except ValueError:
+            return False
+
     return a == b
 
 
 def less(a, b):
     """Implements the '<' operator with JS-style type coercion."""
+    if a is None or b is None:
+        return False
     types = set([type(a), type(b)])
     if float in types or int in types:
         try:
@@ -59,6 +80,11 @@ def less(a, b):
         except TypeError:
             # NaN
             return False
+    elif isinstance(a, str) and isinstance(b, str):
+        try:
+            return float(a) < float(b)
+        except (ValueError, TypeError):
+            pass
     return a < b
 
 
@@ -78,6 +104,10 @@ def regex_match(string, pattern):
 
 def contains(a, b, case_sensitive=False):
     """Checks if the string contains the substring."""
+    if isinstance(b, (list, tuple)):
+        if not case_sensitive:
+            return any(str(a).lower() == str(x).lower() for x in b)
+        return a in b
     if not case_sensitive:
         return str(a).lower() in str(b).lower()
     return str(a) in str(b)
@@ -99,7 +129,7 @@ def get_var(data, var_name, not_found=None):
 
 operations = {
     "==": soft_equals,
-    "!=": lambda a, b: not soft_equals(a, b),
+    "!=": lambda a, b, case_sensitive=False: not soft_equals(a, b, case_sensitive),
     ">": lambda a, b: less(b, a),
     ">=": lambda a, b: less(b, a) or soft_equals(a, b),
     "<": less,
