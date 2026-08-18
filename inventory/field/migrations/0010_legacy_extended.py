@@ -2749,7 +2749,9 @@ def create_legacy_extended_fields(apps, schema_editor):
             "retrieval_method": None,
             "retrieval_output": None,
             "options": None,
-            "section": Section.objects.get(name="SECURITYCERTIFICATE", template=template),
+            "section": Section.objects.get(
+                name="SECURITYCERTIFICATE", template=template
+            ),
         },
         {
             "name": "AUTORITY",
@@ -2760,7 +2762,9 @@ def create_legacy_extended_fields(apps, schema_editor):
             "retrieval_method": None,
             "retrieval_output": None,
             "options": None,
-            "section": Section.objects.get(name="SECURITYCERTIFICATE", template=template),
+            "section": Section.objects.get(
+                name="SECURITYCERTIFICATE", template=template
+            ),
         },
         {
             "name": "DATESTART",
@@ -2771,7 +2775,9 @@ def create_legacy_extended_fields(apps, schema_editor):
             "retrieval_method": None,
             "retrieval_output": None,
             "options": None,
-            "section": Section.objects.get(name="SECURITYCERTIFICATE", template=template),
+            "section": Section.objects.get(
+                name="SECURITYCERTIFICATE", template=template
+            ),
         },
         {
             "name": "EXPIRATION",
@@ -2782,7 +2788,9 @@ def create_legacy_extended_fields(apps, schema_editor):
             "retrieval_method": None,
             "retrieval_output": None,
             "options": None,
-            "section": Section.objects.get(name="SECURITYCERTIFICATE", template=template),
+            "section": Section.objects.get(
+                name="SECURITYCERTIFICATE", template=template
+            ),
         },
         # UWPAPPS section fields
         {
