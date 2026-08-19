@@ -2,7 +2,9 @@ from django.db import migrations
 
 
 def create_default_debian_linux_software_mapping(apps, schema_editor):
-    Template = apps.get_model("template", "Template").objects.get(os="DEB")
+    Template = apps.get_model("template", "Template").objects.get(
+        os="DEB", name="Linux (Debian based)"
+    )
     Section = apps.get_model("section", "Section").objects.get(
         name="SOFTWARES",
         template=Template,
