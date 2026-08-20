@@ -79,7 +79,9 @@ class TestCategoryCreate:
 @pytest.mark.django_db
 class TestCategoryUpdate:
     def test_partial_update_changes_only_given_fields(self, api_client):
-        category = Category.objects.create(name="Custom category", description="Old desc")
+        category = Category.objects.create(
+            name="Custom category", description="Old desc"
+        )
 
         response = api_client.patch(
             f"/categories/{category.id}/",

@@ -25,7 +25,9 @@ def asset(template):
 @pytest.mark.django_db
 class TestLogList:
     def test_list_includes_created_log(self, api_client, asset):
-        Log.objects.create(asset=asset, scope="INVENTORY_BASE_INSERT", comment="new asset")
+        Log.objects.create(
+            asset=asset, scope="INVENTORY_BASE_INSERT", comment="new asset"
+        )
 
         response = api_client.get("/asset/logs/")
 
@@ -54,7 +56,11 @@ class TestLogCreate:
     def test_create_minimal_log(self, api_client, asset):
         response = api_client.post(
             "/asset/logs/",
-            {"asset": asset.id, "scope": "TEMPLATE_UPDATE", "comment": "template changed"},
+            {
+                "asset": asset.id,
+                "scope": "TEMPLATE_UPDATE",
+                "comment": "template changed",
+            },
             format="json",
         )
 
@@ -66,7 +72,11 @@ class TestLogCreate:
 
         response = client.post(
             "/asset/logs/",
-            {"asset": asset.id, "scope": "TEMPLATE_UPDATE", "comment": "template changed"},
+            {
+                "asset": asset.id,
+                "scope": "TEMPLATE_UPDATE",
+                "comment": "template changed",
+            },
             format="json",
         )
 

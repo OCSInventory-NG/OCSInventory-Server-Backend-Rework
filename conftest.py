@@ -12,7 +12,9 @@ def admin_user(db):
     already creates a superuser with that username.
     """
     return User.objects.create_superuser(
-        username="test-superuser", email="test-superuser@example.com", password="password"
+        username="test-superuser",
+        email="test-superuser@example.com",
+        password="password",
     )
 
 

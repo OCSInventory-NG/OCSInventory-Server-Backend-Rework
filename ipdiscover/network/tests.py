@@ -152,7 +152,11 @@ class TestNetworkUpdate:
                 "netid": "10.0.0.0",
                 "mask": "255.255.255.0",
                 "netdevices": [
-                    {"ip": "10.0.0.5", "netname": "new-name", "mac": "11:11:11:11:11:11"}
+                    {
+                        "ip": "10.0.0.5",
+                        "netname": "new-name",
+                        "mac": "11:11:11:11:11:11",
+                    }
                 ],
             },
             format="json",

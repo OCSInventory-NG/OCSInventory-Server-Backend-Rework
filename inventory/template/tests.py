@@ -150,9 +150,7 @@ class TestTemplateVersionDetail:
     def test_get_returns_full_snapshot(self, api_client, template, section, field):
         version = TemplateVersion.create_snapshot(template, label="v1")
 
-        response = api_client.get(
-            f"/templates/{template.id}/versions/{version.id}/"
-        )
+        response = api_client.get(f"/templates/{template.id}/versions/{version.id}/")
 
         assert response.status_code == 200
         assert response.data["snapshot"]["sections"][0]["fields"][0]["name"] == "Name"
@@ -160,20 +158,18 @@ class TestTemplateVersionDetail:
     def test_delete_removes_non_initial_version(self, api_client, template):
         version = TemplateVersion.create_snapshot(template, label="v1")
 
-        response = api_client.delete(
-            f"/templates/{template.id}/versions/{version.id}/"
-        )
+        response = api_client.delete(f"/templates/{template.id}/versions/{version.id}/")
 
         assert response.status_code == 204
         assert not TemplateVersion.objects.filter(id=version.id).exists()
 
     def test_delete_rejects_initial_version_of_protected_template(self, api_client):
-        template = Template.objects.create(name="Protected", os="WIN", is_protected=True)
+        template = Template.objects.create(
+            name="Protected", os="WIN", is_protected=True
+        )
         version = TemplateVersion.create_snapshot(template, label="Initial version")
 
-        response = api_client.delete(
-            f"/templates/{template.id}/versions/{version.id}/"
-        )
+        response = api_client.delete(f"/templates/{template.id}/versions/{version.id}/")
 
         assert response.status_code == 400
         assert TemplateVersion.objects.filter(id=version.id).exists()

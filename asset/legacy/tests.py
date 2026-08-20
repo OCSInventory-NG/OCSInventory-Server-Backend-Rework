@@ -187,7 +187,9 @@ class TestLegacyViewCreate:
 
         assert response.status_code == 201
         asset = InventoryBase.objects.get(uuid="uuid-asset-1")
-        inventory_section = InventorySection.objects.get(base=asset, template_section=section)
+        inventory_section = InventorySection.objects.get(
+            base=asset, template_section=section
+        )
         field = InventoryField.objects.get(inventory_section=inventory_section)
         assert field.value == "asset-1"
 
@@ -234,7 +236,14 @@ class TestLegacyViewUpdate:
         )
 
         assert response.status_code == 200
-        assert InventorySection.objects.filter(base=asset, template_section=section).count() == 1
-        inventory_section = InventorySection.objects.get(base=asset, template_section=section)
+        assert (
+            InventorySection.objects.filter(
+                base=asset, template_section=section
+            ).count()
+            == 1
+        )
+        inventory_section = InventorySection.objects.get(
+            base=asset, template_section=section
+        )
         field = InventoryField.objects.get(inventory_section=inventory_section)
         assert field.value == "updated-name"

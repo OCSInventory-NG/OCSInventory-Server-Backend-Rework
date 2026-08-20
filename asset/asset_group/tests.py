@@ -31,7 +31,9 @@ def make_client(user):
 @pytest.mark.django_db
 class TestAssetGroupVisibility:
     def test_owner_sees_own_private_group(self, admin_user):
-        AssetGroup.objects.create(name="My group", user=admin_user, visibility="private_personal")
+        AssetGroup.objects.create(
+            name="My group", user=admin_user, visibility="private_personal"
+        )
 
         client = make_client(admin_user)
         response = client.get("/asset/groups/")
@@ -41,7 +43,9 @@ class TestAssetGroupVisibility:
         assert "My group" in names
 
     def test_other_user_does_not_see_private_group(self, owner, other_user):
-        AssetGroup.objects.create(name="Private group", user=owner, visibility="private_personal")
+        AssetGroup.objects.create(
+            name="Private group", user=owner, visibility="private_personal"
+        )
 
         client = make_client(other_user)
         response = client.get("/asset/groups/")
@@ -97,7 +101,9 @@ class TestAssetGroupUpdate:
     def test_other_user_cannot_update_public_group_they_do_not_own(
         self, owner, other_user
     ):
-        group = AssetGroup.objects.create(name="Public group", user=owner, visibility="public")
+        group = AssetGroup.objects.create(
+            name="Public group", user=owner, visibility="public"
+        )
         client = make_client(other_user)
 
         response = client.patch(

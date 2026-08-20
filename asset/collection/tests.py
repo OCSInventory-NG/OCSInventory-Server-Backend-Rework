@@ -246,13 +246,28 @@ class TestCollectionViewUpdate:
         )
 
         assert response.status_code == 200
-        assert InventorySection.objects.filter(base=asset, template_section=old_section).count() == 0
-        assert InventorySection.objects.filter(base=asset, template_section=section).count() == 1
+        assert (
+            InventorySection.objects.filter(
+                base=asset, template_section=old_section
+            ).count()
+            == 0
+        )
+        assert (
+            InventorySection.objects.filter(
+                base=asset, template_section=section
+            ).count()
+            == 1
+        )
 
     def test_put_returns_500_when_asset_not_found(self, api_client):
         response = api_client.put(
             "/asset/collection/",
-            {"name": "unknown", "serial": "x", "osname": "Linux", "uuid": "does-not-exist"},
+            {
+                "name": "unknown",
+                "serial": "x",
+                "osname": "Linux",
+                "uuid": "does-not-exist",
+            },
             format="json",
         )
 
@@ -324,9 +339,19 @@ class TestCollectionViewPatch:
 
         assert response.status_code == 200
         # untouched section is preserved
-        assert InventorySection.objects.filter(base=asset, template_section=other_section).count() == 1
+        assert (
+            InventorySection.objects.filter(
+                base=asset, template_section=other_section
+            ).count()
+            == 1
+        )
         # new section was added
-        assert InventorySection.objects.filter(base=asset, template_section=section).count() == 1
+        assert (
+            InventorySection.objects.filter(
+                base=asset, template_section=section
+            ).count()
+            == 1
+        )
 
     def test_patch_replaces_items_for_same_section_on_repeated_calls(
         self, api_client, template, section, hardware_fields
@@ -358,8 +383,15 @@ class TestCollectionViewPatch:
         response = api_client.patch("/asset/collection/", payload, format="json")
 
         assert response.status_code == 200
-        assert InventorySection.objects.filter(base=asset, template_section=section).count() == 1
-        inventory_section = InventorySection.objects.get(base=asset, template_section=section)
+        assert (
+            InventorySection.objects.filter(
+                base=asset, template_section=section
+            ).count()
+            == 1
+        )
+        inventory_section = InventorySection.objects.get(
+            base=asset, template_section=section
+        )
         values = {
             field.template_field.name: field.value
             for field in inventory_section.fields.all()

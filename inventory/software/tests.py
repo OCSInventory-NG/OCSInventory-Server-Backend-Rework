@@ -16,7 +16,9 @@ def template(db):
 
 @pytest.fixture
 def section(template):
-    return Section.objects.create(name="SOFTWARES", target="softwares", template=template)
+    return Section.objects.create(
+        name="SOFTWARES", target="softwares", template=template
+    )
 
 
 @pytest.fixture
@@ -84,7 +86,12 @@ class TestSoftwareDictionaryServiceRefreshAsset:
         self, asset, section, software_fields, mapping
     ):
         add_software_entry(
-            asset, section, software_fields, name="apache2", publisher="Debian", version="2.4"
+            asset,
+            section,
+            software_fields,
+            name="apache2",
+            publisher="Debian",
+            version="2.4",
         )
 
         SoftwareDictionaryService.refresh_asset(asset)
@@ -111,7 +118,12 @@ class TestSoftwareDictionaryServiceRefreshAsset:
         self, asset, section, software_fields, mapping
     ):
         inventory_section = add_software_entry(
-            asset, section, software_fields, name="apache2", publisher="Debian", version="2.4"
+            asset,
+            section,
+            software_fields,
+            name="apache2",
+            publisher="Debian",
+            version="2.4",
         )
         SoftwareDictionaryService.refresh_asset(asset)
         assert SoftwareDictionary.objects.count() == 1
@@ -139,10 +151,20 @@ class TestSoftwareDictionaryServiceRefreshAsset:
             is_template_forced=True,
         )
         add_software_entry(
-            asset, section, software_fields, name="apache2", publisher="Debian", version="2.4"
+            asset,
+            section,
+            software_fields,
+            name="apache2",
+            publisher="Debian",
+            version="2.4",
         )
         add_software_entry(
-            other_asset, section, software_fields, name="apache2", publisher="Debian", version="2.4"
+            other_asset,
+            section,
+            software_fields,
+            name="apache2",
+            publisher="Debian",
+            version="2.4",
         )
 
         SoftwareDictionaryService.refresh_asset(asset)
@@ -178,7 +200,12 @@ class TestSoftwareDictionaryServiceCleanupDelete:
         self, asset, section, software_fields, mapping
     ):
         add_software_entry(
-            asset, section, software_fields, name="apache2", publisher="Debian", version="2.4"
+            asset,
+            section,
+            software_fields,
+            name="apache2",
+            publisher="Debian",
+            version="2.4",
         )
         SoftwareDictionaryService.refresh_asset(asset)
         entry = SoftwareDictionary.objects.get()
@@ -190,9 +217,16 @@ class TestSoftwareDictionaryServiceCleanupDelete:
 
         assert not SoftwareDictionary.objects.filter(id=entry_id).exists()
 
-    def test_cleanup_delete_is_a_noop_with_no_entry_ids(self, asset, section, software_fields, mapping):
+    def test_cleanup_delete_is_a_noop_with_no_entry_ids(
+        self, asset, section, software_fields, mapping
+    ):
         add_software_entry(
-            asset, section, software_fields, name="apache2", publisher="Debian", version="2.4"
+            asset,
+            section,
+            software_fields,
+            name="apache2",
+            publisher="Debian",
+            version="2.4",
         )
         SoftwareDictionaryService.refresh_asset(asset)
 
@@ -218,10 +252,20 @@ class TestSoftwareDictionaryServiceCleanupDelete:
             is_template_forced=True,
         )
         add_software_entry(
-            asset, section, software_fields, name="apache2", publisher="Debian", version="2.4"
+            asset,
+            section,
+            software_fields,
+            name="apache2",
+            publisher="Debian",
+            version="2.4",
         )
         add_software_entry(
-            other_asset, section, software_fields, name="apache2", publisher="Debian", version="2.4"
+            other_asset,
+            section,
+            software_fields,
+            name="apache2",
+            publisher="Debian",
+            version="2.4",
         )
         SoftwareDictionaryService.refresh_asset(asset)
         SoftwareDictionaryService.refresh_asset(other_asset)
@@ -259,7 +303,12 @@ class TestSoftwareDictionaryServiceVersionParsing:
             is_template_forced=True,
         )
         add_software_entry(
-            asset, section, software_fields, name="apache2", publisher="Debian", version="2.4.1"
+            asset,
+            section,
+            software_fields,
+            name="apache2",
+            publisher="Debian",
+            version="2.4.1",
         )
 
         SoftwareDictionaryService.refresh_asset(asset)
@@ -306,7 +355,9 @@ class TestSoftwareMappingApi:
         )
 
         assert response.status_code == 201
-        assert SoftwareMapping.objects.filter(template=template, section=section).exists()
+        assert SoftwareMapping.objects.filter(
+            template=template, section=section
+        ).exists()
 
     def test_create_requires_authentication(self):
         from rest_framework.test import APIClient
@@ -318,9 +369,16 @@ class TestSoftwareMappingApi:
 
 @pytest.mark.django_db
 class TestSoftwareDictionaryApi:
-    def test_list_returns_entries(self, api_client, asset, section, software_fields, mapping):
+    def test_list_returns_entries(
+        self, api_client, asset, section, software_fields, mapping
+    ):
         add_software_entry(
-            asset, section, software_fields, name="apache2", publisher="Debian", version="2.4"
+            asset,
+            section,
+            software_fields,
+            name="apache2",
+            publisher="Debian",
+            version="2.4",
         )
         SoftwareDictionaryService.refresh_asset(asset)
 
@@ -330,9 +388,16 @@ class TestSoftwareDictionaryApi:
         names = [entry["name"] for entry in response.data]
         assert "apache2" in names
 
-    def test_search_filters_by_name(self, api_client, asset, section, software_fields, mapping):
+    def test_search_filters_by_name(
+        self, api_client, asset, section, software_fields, mapping
+    ):
         add_software_entry(
-            asset, section, software_fields, name="apache2", publisher="Debian", version="2.4"
+            asset,
+            section,
+            software_fields,
+            name="apache2",
+            publisher="Debian",
+            version="2.4",
         )
         SoftwareDictionaryService.refresh_asset(asset)
 

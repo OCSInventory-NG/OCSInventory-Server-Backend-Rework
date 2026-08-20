@@ -74,7 +74,9 @@ class TestInventorySectionCreate:
         )
 
         assert response.status_code == 201
-        assert InventorySection.objects.filter(base=asset, template_section=section).exists()
+        assert InventorySection.objects.filter(
+            base=asset, template_section=section
+        ).exists()
 
     def test_create_requires_add_permission(self, make_api_client, asset, section):
         client = make_api_client("view_inventorysection")
@@ -97,10 +99,14 @@ class TestInventorySectionDelete:
         )
         template_field = Field.objects.create(name="Name", section=section, order=1)
         InventoryField.objects.create(
-            inventory_section=inventory_section, template_field=template_field, value="x"
+            inventory_section=inventory_section,
+            template_field=template_field,
+            value="x",
         )
 
         response = api_client.delete(f"/asset/sections/{inventory_section.id}/")
 
         assert response.status_code == 204
-        assert not InventoryField.objects.filter(inventory_section=inventory_section.id).exists()
+        assert not InventoryField.objects.filter(
+            inventory_section=inventory_section.id
+        ).exists()

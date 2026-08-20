@@ -46,7 +46,9 @@ class TestInventoryFieldList:
         self, api_client, inventory_section, template_field
     ):
         InventoryField.objects.create(
-            inventory_section=inventory_section, template_field=template_field, value="Linux"
+            inventory_section=inventory_section,
+            template_field=template_field,
+            value="Linux",
         )
 
         response = api_client.get("/asset/fields/")
@@ -64,10 +66,14 @@ class TestInventoryFieldList:
         self, api_client, inventory_section, template_field
     ):
         InventoryField.objects.create(
-            inventory_section=inventory_section, template_field=template_field, value="Linux"
+            inventory_section=inventory_section,
+            template_field=template_field,
+            value="Linux",
         )
 
-        response = api_client.get(f"/asset/fields/?inventory_section={inventory_section.id}")
+        response = api_client.get(
+            f"/asset/fields/?inventory_section={inventory_section.id}"
+        )
 
         assert response.status_code == 200
         assert len(response.data) == 1
@@ -114,7 +120,9 @@ class TestInventoryFieldCreate:
 class TestInventoryFieldUpdate:
     def test_update_changes_value(self, api_client, inventory_section, template_field):
         field = InventoryField.objects.create(
-            inventory_section=inventory_section, template_field=template_field, value="old"
+            inventory_section=inventory_section,
+            template_field=template_field,
+            value="old",
         )
 
         response = api_client.put(
@@ -138,7 +146,9 @@ class TestInventoryFieldDelete:
         self, api_client, inventory_section, template_field
     ):
         field = InventoryField.objects.create(
-            inventory_section=inventory_section, template_field=template_field, value="Linux"
+            inventory_section=inventory_section,
+            template_field=template_field,
+            value="Linux",
         )
 
         response = api_client.delete(f"/asset/fields/{field.id}/")

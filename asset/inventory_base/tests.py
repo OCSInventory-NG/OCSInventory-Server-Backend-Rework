@@ -1,5 +1,5 @@
 import pytest
-from accountinfo.models import AccountinfoConfig, AccountinfoData, AccountinfoValue
+from accountinfo.models import AccountinfoConfig, AccountinfoData
 from asset.inventory_base.models import InventoryBase
 from django.contrib.contenttypes.models import ContentType
 from inventory.software.models import SoftwareDictionary

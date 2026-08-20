@@ -8,7 +8,9 @@ from rest_framework.test import APIClient
 
 @pytest.fixture
 def network(db):
-    return Network.objects.create(nettag="net-1", netid="10.0.0.0", mask="255.255.255.0")
+    return Network.objects.create(
+        nettag="net-1", netid="10.0.0.0", mask="255.255.255.0"
+    )
 
 
 @pytest.mark.django_db
@@ -49,7 +51,12 @@ class TestNetdeviceCreate:
     def test_create_minimal_netdevice(self, api_client, network):
         response = api_client.post(
             "/netdevices/",
-            {"ip": "10.0.0.5", "netname": "host-1", "mac": "00:11:22:33:44:55", "network": network.id},
+            {
+                "ip": "10.0.0.5",
+                "netname": "host-1",
+                "mac": "00:11:22:33:44:55",
+                "network": network.id,
+            },
             format="json",
         )
 
@@ -61,7 +68,12 @@ class TestNetdeviceCreate:
 
         response = client.post(
             "/netdevices/",
-            {"ip": "10.0.0.5", "netname": "host-1", "mac": "00:11:22:33:44:55", "network": network.id},
+            {
+                "ip": "10.0.0.5",
+                "netname": "host-1",
+                "mac": "00:11:22:33:44:55",
+                "network": network.id,
+            },
             format="json",
         )
 
@@ -109,7 +121,9 @@ class TestNetdeviceAccountinfoRepresentation:
         config = AccountinfoConfig.objects.create(
             name="Tags", description="", datatype="CHECKBOX", datatarget="IPDISCOVER"
         )
-        value = AccountinfoValue.objects.create(accountinfo_config=config, value="Critical")
+        value = AccountinfoValue.objects.create(
+            accountinfo_config=config, value="Critical"
+        )
         AccountinfoData.objects.create(
             object_id=device.id,
             object_slug="netdevice.netdevice",

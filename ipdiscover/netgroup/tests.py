@@ -23,7 +23,11 @@ class TestNetgroupList:
     def test_expand_networks_includes_nested_network_data(self, api_client):
         group = Netgroup.objects.create(name="HQ", description="Head office")
         Network.objects.create(
-            nettag="hq-net", name="HQ network", netid="10.0.0.0", mask="255.255.255.0", group=group
+            nettag="hq-net",
+            name="HQ network",
+            netid="10.0.0.0",
+            mask="255.255.255.0",
+            group=group,
         )
 
         response = api_client.get(f"/netgroups/{group.id}/?expand=networks")
@@ -62,7 +66,11 @@ class TestNetgroupDelete:
     def test_delete_cascades_to_networks(self, api_client):
         group = Netgroup.objects.create(name="HQ", description="Head office")
         network = Network.objects.create(
-            nettag="hq-net", name="HQ network", netid="10.0.0.0", mask="255.255.255.0", group=group
+            nettag="hq-net",
+            name="HQ network",
+            netid="10.0.0.0",
+            mask="255.255.255.0",
+            group=group,
         )
 
         response = api_client.delete(f"/netgroups/{group.id}/")
