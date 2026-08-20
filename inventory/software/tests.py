@@ -239,7 +239,7 @@ class TestSoftwareDictionaryServiceVersionParsing:
         self, section, software_fields
     ):
         legacy_template = Template.objects.create(name="Legacy", os="LEG")
-        mapping = SoftwareMapping.objects.create(
+        SoftwareMapping.objects.create(
             template=legacy_template,
             section=section,
             name=software_fields["name"],
