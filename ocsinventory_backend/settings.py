@@ -21,7 +21,7 @@ load_dotenv()
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Backend version
-BACKEND_VERSION = "3.0.0"
+BACKEND_VERSION = "3.0.0-rc2"
 
 
 # Quick-start development settings - unsuitable for production
