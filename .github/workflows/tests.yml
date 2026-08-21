@@ -32,6 +32,13 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: pip
 
+      - name: Install system dependencies
+        # python-ldap (pulled in by django-auth-ldap) builds a C extension
+        # against the LDAP/SASL headers, which aren't on the runner by default.
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libldap2-dev libsasl2-dev
+
       - name: Install dependencies
         run: |
           python -m pip install -U pip
