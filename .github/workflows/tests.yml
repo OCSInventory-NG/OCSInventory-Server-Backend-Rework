@@ -1,0 +1,44 @@
+---
+name: Tests
+
+on:
+  push:
+  pull_request:
+    branches: [main, dev]
+
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+env:
+  SECRET_KEY: ci-tests-not-a-real-secret
+  DJANGO_SETTINGS_MODULE: ocsinventory_backend.settings_test
+
+jobs:
+  pytest:
+    name: pytest (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.13"]
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v6
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install -U pip
+          pip install -r requirements-test.txt
+
+      - name: Run Django checks
+        run: python manage.py check
+
+      - name: Run unit tests
+        run: python -m pytest
