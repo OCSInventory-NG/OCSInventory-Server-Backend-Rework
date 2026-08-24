@@ -36,6 +36,10 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # it makes the encrypted configuration values unrecoverable.
 FIELD_ENCRYPTION_KEY = os.getenv("FIELD_ENCRYPTION_KEY")
 
+# Knox token authentication
+TOKEN_TTL = timedelta(hours=int(os.getenv("TOKEN_TTL", "10")))
+TOKEN_AUTO_REFRESH = os.getenv("TOKEN_AUTO_REFRESH", "True") == "True"
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False") == "True"
 FRONTEND_REDIRECT = os.getenv("FRONTEND_REDIRECT")
@@ -252,8 +256,8 @@ REST_FRAMEWORK = {
 REST_KNOX = {
     # AUTO_REFRESH extends the expiry on each authenticated request, so TOKEN_TTL
     # acts as an inactivity delay and active sessions are never cut off.
-    "TOKEN_TTL": timedelta(hours=10),
-    "AUTO_REFRESH": True,
+    "TOKEN_TTL": TOKEN_TTL,
+    "AUTO_REFRESH": TOKEN_AUTO_REFRESH,
 }
 
 # CORS Allow all during dev
