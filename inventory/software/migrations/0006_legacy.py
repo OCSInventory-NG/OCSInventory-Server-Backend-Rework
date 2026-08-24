@@ -2,7 +2,9 @@ from django.db import migrations
 
 
 def create_default_legacy_software_mapping(apps, schema_editor):
-    Template = apps.get_model("template", "Template").objects.get(os="LEG")
+    Template = apps.get_model("template", "Template").objects.get(
+        os="LEG", name="Legacy"
+    )
     Section = apps.get_model("section", "Section").objects.get(
         name="SOFTWARES",
         template=Template,

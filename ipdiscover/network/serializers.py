@@ -9,6 +9,16 @@ class NetworkSerializer(ExpandableFieldsMixin, ModelSerializer):
     This serialize class provide the API representation
     """
 
+    def get_fields(self):
+        # imported lazily: netdevice.serializers imports NetworkSerializer for
+        # its own expandable_fields, so importing NetdeviceSerializer at
+        # module level here would create a circular import
+        from ipdiscover.netdevice.serializers import NetdeviceSerializer
+
+        fields = super().get_fields()
+        fields["netdevices"] = NetdeviceSerializer(many=True, required=False)
+        return fields
+
     class Meta:
         """Define the linked model and the fields registered in the API"""
 

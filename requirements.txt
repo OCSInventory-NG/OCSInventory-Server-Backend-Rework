@@ -10,6 +10,9 @@ mozilla-django-oidc>=3.0.0
 django-auth-ldap>=4.3.0
 django-cas-ng>=4.3.0
 
+# Encryption of the sensitive configuration values
+cryptography>=42.0.0
+
 # Handling XML
 xmltodict>=0.13.0
 

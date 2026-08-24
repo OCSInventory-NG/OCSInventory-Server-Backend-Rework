@@ -91,6 +91,7 @@ class FieldExportSerializer(ModelSerializer):
         model = Field
         fields = [
             "name",
+            "order",
             "retrieval_value",
             "override_target",
             "new_target",

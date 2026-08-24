@@ -126,9 +126,9 @@ class CustomLDAPBackend(LDAPBackend):
             return None
 
     def defineMapping(self, config):
-        for mapping in self.mappings:
+        self.settings.USER_ATTR_MAP = {}
+        for mapping in self.mappings.filter(auth_config=config):
             self.settings.USER_ATTR_MAP[mapping.internal_field] = mapping.external_field
-
         # if empty mapping is defined, inform user
         if len(self.settings.USER_ATTR_MAP) == 0:
             self.logger.info(
@@ -151,6 +151,13 @@ class CustomLDAPBackend(LDAPBackend):
             "PROTOCOL_VERSION",
             "MIRROR_GROUPS",
         ]
+
+    @staticmethod
+    def get_sensitive_config_fields():
+        """
+        Return the config fields holding a secret, stored encrypted in database.
+        """
+        return ["BIND_PASSWORD"]
 
     def _build_metadata(self, user):
         metadata = {}

@@ -6,7 +6,10 @@ from automation.history.models import History
 from automation.scheduler.models import Scheduler
 from django.core.management.base import BaseCommand
 from django.utils import module_loading
-from ocsinventory_backend.ocs_framework.logmanager import DynamicLogLevelManager
+from ocsinventory_backend.ocs_framework.logmanager import (
+    DynamicLogLevelManager,
+    add_console_handler,
+)
 
 
 class Command(BaseCommand):
@@ -19,6 +22,7 @@ class Command(BaseCommand):
     help = "Execute scheduled automation tasks"
     library = "automation.tasks."
     utc = pytz.UTC
+    task_loggers = ("mgmt.management.commands", "automation.tasks")
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -51,22 +55,27 @@ class Command(BaseCommand):
         else:
             logger.debug("Using log level from server")
 
-        logger.info("Starting automation tasks")
-        logger.debug(f"Command arguments: {options}")
-
-        def updateHistory(task, comment, status):
-            """Update history with task and comment"""
-            h = History(scheduler=task, comment=comment, status=status)
-            h.save()
-            logger.debug(f"History updated for task {task.name}: {comment}")
-
         # get forced tasks
         force_tasks = []
         if options.get("force"):
             force_tasks = [
                 name.strip() for name in options["force"].split(",") if name.strip()
             ]
+
+        # mirror the task logs to stdout
+        if force_tasks:
+            add_console_handler(self.task_loggers, self.stdout)
+
+        logger.info("Starting automation tasks")
+        logger.debug(f"Command arguments: {options}")
+        if force_tasks:
             logger.info(f"Forcing execution of tasks: {force_tasks}")
+
+        def updateHistory(task, comment, status):
+            """Update history with task and comment"""
+            h = History(scheduler=task, comment=comment, status=status)
+            h.save()
+            logger.debug(f"History updated for task {task.name}: {comment}")
 
         if force_tasks:
             tasks = Scheduler.objects.filter(name__in=force_tasks, active=True)

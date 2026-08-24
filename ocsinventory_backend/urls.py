@@ -38,6 +38,7 @@ from auth.auth_view.auth_views import (
 from automation.history.routers import HistoryRouter
 from automation.rule.routers import RuleRouter
 from automation.scheduler.routers import SchedulerRouter
+from compliance.routers import ComplianceRouter
 from config.routers import ConfigRouter
 from dashboard.chart.routers import DashboardChartRouter
 from dashboard.layout.routers import DashboardLayoutRouter
@@ -220,6 +221,9 @@ fileManagerRouter = fileManagerRouter.defineRoutes(defaultRouter)
 # Add Extension declaration
 extensionRouter = ExtensionRouter()
 extensionRouter = extensionRouter.defineRoutes(defaultRouter)
+
+complianceRouter = ComplianceRouter()
+complianceRouter = complianceRouter.defineRoutes(defaultRouter)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.

@@ -1,0 +1,191 @@
+---
+# Builds the backend at the commit under test, drives the
+# OCSInventory-Loadtest-Rework locustfiles against it, then checks the data
+# actually landed. The docker stack comes from OCSInventory-Server-Packages.
+
+name: Locust data injection
+
+on:
+  pull_request:
+    branches: [main, dev]
+    paths-ignore:
+      - "**/*.md"
+      - "z_doc/**"
+      - ".github/ISSUE_TEMPLATE/**"
+  # Uncomment to also catch regressions on dev without an open PR.
+  # schedule:
+  #   - cron: "0 3 * * *"
+  workflow_dispatch:
+    inputs:
+      loadtest_ref:
+        description: "Branch/tag of OCSInventory-Loadtest-Rework to run"
+        required: false
+        default: ""
+      users:
+        description: "Number of simulated users (>= the number of User classes)"
+        required: false
+        default: ""
+      run_time:
+        description: "Locust run duration (e.g. 5m)"
+        required: false
+        default: ""
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  LOADTEST_REPOSITORY: OCSInventory-NG/OCSInventory-Loadtest-Rework
+  # Point at a feature branch to validate it before it is merged.
+  DEFAULT_LOADTEST_REF: main
+
+  PACKAGES_REPOSITORY: OCSInventory-NG/OCSInventory-Server-Packages
+  PACKAGES_REF: main
+  DEV_COMPOSE: packages/ocsinventory-server/docker/dev/docker-compose.postgres.yml
+
+  DEV_HTTP_PORT: "8880"
+
+  # Must stay >= the number of HttpUser classes; see the check below.
+  DEFAULT_USERS: "26"
+  DEFAULT_SPAWN_RATE: "5"
+  DEFAULT_RUN_TIME: 5m
+
+  MIN_ASSETS: "20"
+
+jobs:
+  injection:
+    name: Inject and validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout backend
+        uses: actions/checkout@v4
+
+      - name: Checkout packages repository (dev stack)
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.PACKAGES_REPOSITORY }}
+          ref: ${{ env.PACKAGES_REF }}
+          path: packages
+
+      - name: Checkout loadtest repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.LOADTEST_REPOSITORY }}
+          ref: ${{ inputs.loadtest_ref || env.DEFAULT_LOADTEST_REF }}
+          path: loadtest
+          token: ${{ secrets.LOADTEST_TOKEN || github.token }}
+
+      - name: Resolve run parameters
+        id: params
+        env:
+          INPUT_USERS: ${{ inputs.users }}
+          INPUT_RUN_TIME: ${{ inputs.run_time }}
+        run: |
+          {
+            echo "users=${INPUT_USERS:-$DEFAULT_USERS}"
+            echo "run_time=${INPUT_RUN_TIME:-$DEFAULT_RUN_TIME}"
+            echo "spawn_rate=${DEFAULT_SPAWN_RATE}"
+          } >> "$GITHUB_OUTPUT"
+
+      # Below one user per class, Locust spawns none for some of them and
+      # their whole domain goes uninjected.
+      - name: Check user count covers every locustfile
+        env:
+          USERS: ${{ steps.params.outputs.users }}
+        run: |
+          classes=$(grep -rh '^class .*HttpUser' loadtest/locustfiles/*.py | wc -l)
+          echo "locustfiles declare $classes User class(es), run uses $USERS user(s)."
+          if [ "$USERS" -lt "$classes" ]; then
+            echo "::error::$USERS user(s) for $classes User class(es): some classes would get none, leaving their domain uninjected."
+            exit 1
+          fi
+          if [ $((USERS % classes)) -ne 0 ]; then
+            echo "::warning::$USERS is not a multiple of $classes User class(es): domain coverage is uneven."
+          fi
+
+      # BACKEND_REF is the PR head, reachable from the base repository through
+      # refs/pull/N/head. The frontend is skipped: this job only tests the API.
+      - name: Build and start the dev stack
+        env:
+          BACKEND_REF: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          echo "Building the dev backend image at ${BACKEND_REF}"
+          docker compose -f "${DEV_COMPOSE}" up -d --build \
+            ocsinventory-db ocsinventory-backend ocsinventory-proxy
+
+      - name: Wait for the API to answer
+        run: |
+          for attempt in $(seq 1 60); do
+            code=$(curl -s -o /dev/null -w "%{http_code}" \
+              "http://localhost:${DEV_HTTP_PORT}/api-check/" || true)
+            if [ "$code" = "200" ]; then
+              echo "API is up after ${attempt} attempt(s)."
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "::error::the API never answered on port ${DEV_HTTP_PORT}"
+          docker compose -f "${DEV_COMPOSE}" ps -a
+          docker compose -f "${DEV_COMPOSE}" logs
+          exit 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: loadtest/requirements.txt
+
+      - name: Install Locust
+        run: pip install -r loadtest/requirements.txt
+
+      # --exit-code-on-error 0: two known backend/packages bugs make requests
+      # fail on every run, so the gate is the data check below, not Locust's
+      # exit code. Individual failures stay visible in the uploaded report.
+      - name: Run the data injection
+        working-directory: loadtest
+        env:
+          USERS: ${{ steps.params.outputs.users }}
+          SPAWN_RATE: ${{ steps.params.outputs.spawn_rate }}
+          RUN_TIME: ${{ steps.params.outputs.run_time }}
+        run: |
+          mkdir -p ../report
+          locust \
+            --locustfile locustfiles/ \
+            --headless \
+            --host "http://localhost:${DEV_HTTP_PORT}" \
+            --users "${USERS}" \
+            --spawn-rate "${SPAWN_RATE}" \
+            --run-time "${RUN_TIME}" \
+            --csv ../report/locust \
+            --html ../report/locust.html \
+            --only-summary \
+            --exit-code-on-error 0
+
+      - name: Validate injected data
+        run: |
+          python .github/scripts/validate_injection.py \
+            --base-url "http://localhost:${DEV_HTTP_PORT}" \
+            --loadtest-dir "${GITHUB_WORKSPACE}/loadtest" \
+            --min-assets "${MIN_ASSETS}"
+
+      - name: Collect backend logs
+        if: always()
+        run: |
+          mkdir -p report
+          docker compose -f "${DEV_COMPOSE}" logs --no-color > report/backend.log 2>&1 || true
+
+      - name: Upload run report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: locust-injection-report
+          path: report/
+          retention-days: 14
+          if-no-files-found: warn
+
+      - name: Tear down
+        if: always()
+        run: docker compose -f "${DEV_COMPOSE}" down -v

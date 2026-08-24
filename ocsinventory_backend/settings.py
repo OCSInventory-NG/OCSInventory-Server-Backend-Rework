@@ -20,6 +20,9 @@ load_dotenv()
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# Backend version
+BACKEND_VERSION = "3.0.0"
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
@@ -28,8 +31,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 
+# SECURITY WARNING: keep the field encryption key secret and back it up: losing
+# it makes the encrypted configuration values unrecoverable.
+FIELD_ENCRYPTION_KEY = os.getenv("FIELD_ENCRYPTION_KEY")
+
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG")
+DEBUG = os.getenv("DEBUG", "False") == "True"
 FRONTEND_REDIRECT = os.getenv("FRONTEND_REDIRECT")
 
 ALLOWED_HOSTS = ["*"]
@@ -86,6 +93,7 @@ INSTALLED_APPS = [
     "django_cas_ng",
     "filemanager.apps.FileManagerConfig",
     "extension.apps.ExtensionConfig",
+    "compliance.apps.ComplianceConfig",
 ]
 
 MIDDLEWARE = [
@@ -177,6 +185,12 @@ LOGGING = {
         },
         # inventory collection  only
         "asset.collection.views": {
+            "handlers": ["ocs_collection"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        # legacy inventory collection
+        "asset.legacy.views": {
             "handlers": ["ocs_collection"],
             "level": "INFO",
             "propagate": False,
@@ -321,3 +335,6 @@ OCS_CUSTOM_AUTH_BACKENDS = {
     "LDAP": "auth.auth_backend.ldap_backend.CustomLDAPBackend",
     "OIDC": "auth.auth_backend.oidc_backend.CustomOIDCBackend",
 }
+
+# Compliance
+EOL_API_BASE_URL = "https://endoflife.date/api"
