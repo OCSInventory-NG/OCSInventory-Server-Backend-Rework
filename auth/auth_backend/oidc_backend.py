@@ -186,6 +186,13 @@ class CustomOIDCBackend(OIDCAuthenticationBackend):
             "AUTO_REDIRECT",
         ]
 
+    @staticmethod
+    def get_sensitive_config_fields():
+        """
+        Return the config fields holding a secret, stored encrypted in database.
+        """
+        return ["CLIENT_SECRET"]
+
     def get_or_create_user(self, access_token, id_token, payload):
         """Override to attach auth profile metadata."""
         self.logger.debug(
