@@ -51,16 +51,19 @@ class BaseAuthView(View):
         elif len(self.auth_methods) == 0:
             self.logger.debug("No SSO authentication method enabled")
 
-    def _build_frontend_redirect(self, token=None, noauto=False):
+    def _build_frontend_redirect(self, token=None, noauto=False, error=None):
         frontend_redirect = settings.FRONTEND_REDIRECT
         if not frontend_redirect:
             return None
         parts = urlsplit(frontend_redirect)
         query = parts.query
         fragment = parts.fragment
-        if noauto:
+        if noauto or error:
             query_params = dict(parse_qsl(query, keep_blank_values=True))
-            query_params["noauto"] = ""
+            if noauto:
+                query_params["noauto"] = ""
+            if error:
+                query_params["error"] = error
             query = urlencode(query_params)
         if token:
             fragment_params = dict(parse_qsl(fragment, keep_blank_values=True))
@@ -225,10 +228,7 @@ class CallbackView(BaseAuthView):
             return JsonResponse({"token_authentication": token.key})
 
         else:
-            redirect_url = self._build_frontend_redirect()
-            if redirect_url:
-                return HttpResponseRedirect(redirect_url)
-            return HttpResponseRedirect("/")
+            return self._oidc_login_failure_response(request)
 
     def _consume_oidc_state(self, request):
         state = request.GET.get("state")
@@ -249,8 +249,8 @@ class CallbackView(BaseAuthView):
         request.session = request.session.__class__(request.session.session_key)
         return oidc_state
 
-    def _oidc_login_failure_response(self, request):
-        redirect_url = self._build_frontend_redirect(noauto=True)
+    def _oidc_login_failure_response(self, request, error="sso_failed"):
+        redirect_url = self._build_frontend_redirect(noauto=True, error=error)
         if redirect_url:
             return HttpResponseRedirect(redirect_url)
         return HttpResponseRedirect("/")
