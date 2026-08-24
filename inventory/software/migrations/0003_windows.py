@@ -2,7 +2,9 @@ from django.db import migrations
 
 
 def create_default_windows_software_mapping(apps, schema_editor):
-    Template = apps.get_model("template", "Template").objects.get(os="WIN")
+    Template = apps.get_model("template", "Template").objects.get(
+        os="WIN", name="Windows"
+    )
     Section = apps.get_model("section", "Section").objects.get(
         name="SOFTWARES",
         template=Template,

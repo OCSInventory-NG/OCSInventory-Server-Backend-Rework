@@ -70,6 +70,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ("template", "0001_initial"),
         ("category", "0001_initial"),
+        ("field", "0009_alter_field_options_alter_field_retrieval_value_and_more"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 

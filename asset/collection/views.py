@@ -11,6 +11,7 @@ from config.models import Config
 from inventory.field.models import Field
 from inventory.section.models import Section
 from inventory.software.services import SoftwareDictionaryService
+from permission.permissions import DefaultModelPermissions
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -36,7 +37,9 @@ class CollectionView(APIView):
     InventoryFieldSerializer
     """
 
-    permission_classes = []
+    permission_classes = [DefaultModelPermissions]
+
+    queryset = InventoryBase.objects.none()
 
     LOGGER = logging.getLogger(__name__)
 

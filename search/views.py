@@ -242,7 +242,7 @@ class SearchView(GenericAPIView):
                 and_conditions, self._build_condition_q
             ):
                 condition_q = unit["q"]
-                condition_qs = InventoryBase.objects.filter(condition_q).distinct("pk")
+                condition_qs = InventoryBase.objects.filter(condition_q).distinct()
                 group_qs = self._combine_querysets(
                     group_qs, condition_qs, unit.get("link", "AND")
                 )
@@ -260,7 +260,7 @@ class SearchView(GenericAPIView):
                 else:
                     query_set = query_set.filter(pk__in=qs_filter.values("pk"))
                 linkindex += 1
-            return query_set.distinct("pk")
+            return query_set.distinct()
 
         return InventoryBase.objects.none()
 
