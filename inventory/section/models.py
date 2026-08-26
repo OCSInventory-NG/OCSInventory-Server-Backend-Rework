@@ -46,6 +46,7 @@ class Section(models.Model):
         Template, related_name="sections", on_delete=models.CASCADE, default=1
     )
     options = models.JSONField(null=True)
+    is_active = models.BooleanField(default=True)
 
 
 @receiver(post_save, sender=Section)
