@@ -11,6 +11,46 @@ def template(db):
 
 
 @pytest.mark.django_db
+class TestSectionIsActive:
+    def test_defaults_to_active(self, template):
+        section = Section.objects.create(name="OS", target="os", template=template)
+
+        assert section.is_active is True
+
+    def test_can_be_created_inactive(self, template):
+        section = Section.objects.create(
+            name="OS", target="os", template=template, is_active=False
+        )
+
+        assert section.is_active is False
+
+    def test_list_can_be_filtered_by_is_active(self, api_client, template):
+        Section.objects.create(
+            name="Active", target="os", template=template, is_active=True
+        )
+        Section.objects.create(
+            name="Inactive", target="os", template=template, is_active=False
+        )
+
+        response = api_client.get("/sections/?is_active=false")
+
+        assert response.status_code == 200
+        names = [section["name"] for section in response.data]
+        assert names == ["Inactive"]
+
+    def test_update_can_toggle_is_active(self, api_client, template):
+        section = Section.objects.create(name="OS", target="os", template=template)
+
+        response = api_client.patch(
+            f"/sections/{section.id}/", {"is_active": False}, format="json"
+        )
+
+        assert response.status_code == 200
+        section.refresh_from_db()
+        assert section.is_active is False
+
+
+@pytest.mark.django_db
 class TestSectionModelSignals:
     def test_saving_section_bumps_template_last_update(self, template):
         with freeze_time("2020-01-01 00:00:00"):

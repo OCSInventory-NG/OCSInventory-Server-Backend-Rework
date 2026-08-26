@@ -113,6 +113,32 @@ class TestCollectionViewCreate:
         assert InventoryBase.objects.filter(uuid="uuid-asset-1").exists()
         assert InventorySection.objects.count() == 0
 
+    def test_create_ignores_inactive_section(
+        self, api_client, template, section, hardware_fields
+    ):
+        section.is_active = False
+        section.save()
+
+        response = api_client.post(
+            "/asset/collection/",
+            {
+                "name": "asset-1",
+                "serial": "SER-1",
+                "osname": "Linux",
+                "uuid": "uuid-asset-1",
+                "template": template.id,
+                "is_template_forced": True,
+                "template_inventory": {
+                    "HARDWARE": [{"NAME": "Motherboard", "MEMORY": "16384"}]
+                },
+            },
+            format="json",
+        )
+
+        assert response.status_code == 201
+        assert InventoryBase.objects.filter(uuid="uuid-asset-1").exists()
+        assert InventorySection.objects.count() == 0
+
     def test_create_rejects_blacklisted_mac_address(self, api_client, template):
         enable_blacklist_switch("macaddresses", "00:11:22:33:44:55")
 
@@ -259,6 +285,42 @@ class TestCollectionViewUpdate:
             == 1
         )
 
+    def test_put_ignores_inactive_section(
+        self, api_client, template, section, hardware_fields
+    ):
+        asset = InventoryBase.objects.create(
+            name="asset-1",
+            serial="SER-1",
+            osname="Linux",
+            uuid="uuid-asset-1",
+            template=template,
+            is_template_forced=True,
+        )
+        section.is_active = False
+        section.save()
+
+        response = api_client.put(
+            "/asset/collection/",
+            {
+                "name": "asset-1",
+                "serial": "SER-1",
+                "osname": "Linux",
+                "uuid": "uuid-asset-1",
+                "template": template.id,
+                "is_template_forced": True,
+                "template_inventory": {
+                    "HARDWARE": [{"NAME": "Motherboard", "MEMORY": "16384"}]
+                },
+            },
+            format="json",
+        )
+
+        assert response.status_code == 200
+        assert (
+            InventorySection.objects.filter(base=asset, template_section=section).count()
+            == 0
+        )
+
     def test_put_returns_500_when_asset_not_found(self, api_client):
         response = api_client.put(
             "/asset/collection/",
@@ -351,6 +413,42 @@ class TestCollectionViewPatch:
                 base=asset, template_section=section
             ).count()
             == 1
+        )
+
+    def test_patch_ignores_inactive_section(
+        self, api_client, template, section, hardware_fields
+    ):
+        asset = InventoryBase.objects.create(
+            name="asset-1",
+            serial="SER-1",
+            osname="Linux",
+            uuid="uuid-asset-1",
+            template=template,
+            is_template_forced=True,
+        )
+        section.is_active = False
+        section.save()
+
+        response = api_client.patch(
+            "/asset/collection/",
+            {
+                "name": "asset-1",
+                "serial": "SER-1",
+                "osname": "Linux",
+                "uuid": "uuid-asset-1",
+                "template": template.id,
+                "is_template_forced": True,
+                "template_inventory": {
+                    "HARDWARE": [{"NAME": "Motherboard", "MEMORY": "16384"}]
+                },
+            },
+            format="json",
+        )
+
+        assert response.status_code == 200
+        assert (
+            InventorySection.objects.filter(base=asset, template_section=section).count()
+            == 0
         )
 
     def test_patch_replaces_items_for_same_section_on_repeated_calls(
