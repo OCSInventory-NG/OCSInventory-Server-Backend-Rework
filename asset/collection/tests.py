@@ -317,7 +317,9 @@ class TestCollectionViewUpdate:
 
         assert response.status_code == 200
         assert (
-            InventorySection.objects.filter(base=asset, template_section=section).count()
+            InventorySection.objects.filter(
+                base=asset, template_section=section
+            ).count()
             == 0
         )
 
@@ -447,7 +449,9 @@ class TestCollectionViewPatch:
 
         assert response.status_code == 200
         assert (
-            InventorySection.objects.filter(base=asset, template_section=section).count()
+            InventorySection.objects.filter(
+                base=asset, template_section=section
+            ).count()
             == 0
         )
 

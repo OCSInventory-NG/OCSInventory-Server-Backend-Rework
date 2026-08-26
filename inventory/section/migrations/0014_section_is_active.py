@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('section', '0013_linux_extended_rhel'),
+        ("section", "0013_linux_extended_rhel"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='section',
-            name='is_active',
+            model_name="section",
+            name="is_active",
             field=models.BooleanField(default=True),
         ),
     ]
