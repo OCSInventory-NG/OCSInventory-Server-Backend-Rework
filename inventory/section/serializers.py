@@ -24,6 +24,7 @@ class SectionSerializer(ExpandableFieldsMixin, ModelSerializer):
             "template",
             "fields",
             "options",
+            "is_active",
         ]
 
         expandable_fields = {
@@ -63,4 +64,5 @@ class SectionExportSerializer(ModelSerializer):
             "target",
             "fields",
             "options",
+            "is_active",
         ]

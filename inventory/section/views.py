@@ -26,4 +26,5 @@ class SectionViewSet(viewsets.OCSViewSet):
         "retrieval_method",
         "retrieval_output",
         "template",
+        "is_active",
     ]
