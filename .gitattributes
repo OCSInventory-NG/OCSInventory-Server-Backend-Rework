@@ -1,0 +1,16 @@
+# Dev/CI/lint tooling that has no business being in a release tarball -
+# git archive (used by .github/workflows/release.yml) skips anything
+# marked export-ignore automatically, no extra filtering needed there.
+.checkov.yml            export-ignore
+.cspell.json            export-ignore
+.flake8                 export-ignore
+.github                 export-ignore
+.gitignore              export-ignore
+.gitleaks.toml          export-ignore
+.jscpd.json             export-ignore
+.megalinter_github_conf export-ignore
+.mega-linter.yml        export-ignore
+.ruff.toml              export-ignore
+.shellcheckrc           export-ignore
+.travis.yml             export-ignore
+.gitattributes          export-ignore
