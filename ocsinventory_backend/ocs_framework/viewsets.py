@@ -157,8 +157,9 @@ class RestrictVisibilityViewSet(OCSViewSet):
                 status=status.HTTP_403_FORBIDDEN,
             )
 
-        # for public searches, check if user is the creator
-        if search.visibility == "public" and search.user != user:
+        # for public and private_personal items, only the creator may modify
+        # (already excluded above); anyone else is forbidden
+        if search.visibility in ("public", "private_personal") and search.user != user:
             return Response(
                 {"detail": "You do not have permission to modify this item."},
                 status=status.HTTP_403_FORBIDDEN,

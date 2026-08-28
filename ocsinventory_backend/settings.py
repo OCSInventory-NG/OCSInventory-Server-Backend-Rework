@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+from datetime import timedelta
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -21,7 +22,7 @@ load_dotenv()
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Backend version
-BACKEND_VERSION = "3.0.0"
+BACKEND_VERSION = "3.0.0-rc2"
 
 
 # Quick-start development settings - unsuitable for production
@@ -30,6 +31,14 @@ BACKEND_VERSION = "3.0.0"
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv("SECRET_KEY")
 
+
+# SECURITY WARNING: keep the field encryption key secret and back it up: losing
+# it makes the encrypted configuration values unrecoverable.
+FIELD_ENCRYPTION_KEY = os.getenv("FIELD_ENCRYPTION_KEY")
+
+# Knox token authentication
+TOKEN_TTL = timedelta(hours=int(os.getenv("TOKEN_TTL", "10")))
+TOKEN_AUTO_REFRESH = os.getenv("TOKEN_AUTO_REFRESH", "True") == "True"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False") == "True"
@@ -52,6 +61,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "rest_framework",
     "rest_framework.authtoken",
+    "knox",
     "user.apps.UserConfig",
     "group.apps.GroupConfig",
     "permission.apps.PermissionConfig",
@@ -217,7 +227,7 @@ WSGI_APPLICATION = "ocsinventory_backend.wsgi.application"
 REST_FRAMEWORK = {
     # Add default auth using Token Auth
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.TokenAuthentication",
+        "knox.auth.TokenAuthentication",
     ],
     # Use to permit the server to retreive data in JSON or XML.
     "DEFAULT_PARSER_CLASSES": [
@@ -240,6 +250,14 @@ REST_FRAMEWORK = {
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
     "DATETIME_FORMAT": "%Y-%m-%dT%H:%M:%S%z",
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+}
+
+# Knox token authentication
+REST_KNOX = {
+    # AUTO_REFRESH extends the expiry on each authenticated request, so TOKEN_TTL
+    # acts as an inactivity delay and active sessions are never cut off.
+    "TOKEN_TTL": TOKEN_TTL,
+    "AUTO_REFRESH": TOKEN_AUTO_REFRESH,
 }
 
 # CORS Allow all during dev
