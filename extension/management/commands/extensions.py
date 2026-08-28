@@ -110,9 +110,7 @@ def _migration_state(label):
         return {"has_migrations": False, "unapplied": [], "blocking": []}
 
     own, blocking = [], []
-    for migration, backwards in executor.migration_plan(
-        loader.graph.leaf_nodes(label)
-    ):
+    for migration, backwards in executor.migration_plan(loader.graph.leaf_nodes(label)):
         if backwards:
             continue
         if migration.app_label == label:
@@ -383,9 +381,11 @@ class Command(BaseCommand):
                 state["folder"],
                 (state["manifest"] or {}).get("version") or "-",
                 state["row"].version if state["row"] else "-",
-                {True: "yes", False: "no"}[state["row"].enabled]
-                if state["row"]
-                else "-",
+                (
+                    {True: "yes", False: "no"}[state["row"].enabled]
+                    if state["row"]
+                    else "-"
+                ),
                 _status(state),
             )
             for state in states.values()
