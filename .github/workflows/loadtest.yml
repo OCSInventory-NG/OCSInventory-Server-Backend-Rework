@@ -60,17 +60,17 @@ jobs:
 
     steps:
       - name: Checkout backend
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Checkout packages repository (dev stack)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: ${{ env.PACKAGES_REPOSITORY }}
           ref: ${{ env.PACKAGES_REF }}
           path: packages
 
       - name: Checkout loadtest repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: ${{ env.LOADTEST_REPOSITORY }}
           ref: ${{ inputs.loadtest_ref || env.DEFAULT_LOADTEST_REF }}
@@ -132,7 +132,7 @@ jobs:
           exit 1
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: pip
@@ -179,7 +179,7 @@ jobs:
 
       - name: Upload run report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: locust-injection-report
           path: report/
