@@ -1,11 +1,10 @@
 # Example: a REST API (list, create, update, delete).
 
+from permission.permissions import DefaultModelPermissions
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.response import Response
-
-from permission.permissions import DefaultModelPermissions
 
 from .models import SampleComment
 from .serializer import SampleCommentSerializer

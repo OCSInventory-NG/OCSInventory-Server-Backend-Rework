@@ -21,7 +21,9 @@ class SampleCommentsResolver:
         from extensions.sampleextension.models import SampleComment
 
         data = self.base_resolver.build(instance)
-        data["sample"] = {"comments_count": SampleComment.objects.filter(asset=instance).count()}
+        data["sample"] = {
+            "comments_count": SampleComment.objects.filter(asset=instance).count()
+        }
         return data
 
     def get_schema(self):

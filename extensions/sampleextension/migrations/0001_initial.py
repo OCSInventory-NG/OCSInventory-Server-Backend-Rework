@@ -9,20 +9,35 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('inventory_base', '0001_initial'),
+        ("inventory_base", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='SampleComment',
+            name="SampleComment",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('message', models.TextField()),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('asset', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='sample_comments', to='inventory_base.inventorybase')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("message", models.TextField()),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "asset",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="sample_comments",
+                        to="inventory_base.inventorybase",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['-created_at'],
+                "ordering": ["-created_at"],
             },
         ),
     ]

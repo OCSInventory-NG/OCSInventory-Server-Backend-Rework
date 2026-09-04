@@ -7,7 +7,6 @@ import json
 from pathlib import Path
 
 from django.core.management.base import BaseCommand
-
 from extensions.sampleextension.models import SampleComment
 
 _CONFIG = json.loads((Path(__file__).resolve().parents[2] / "config.json").read_text())
@@ -19,4 +18,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         total = SampleComment.objects.count()
         assets = SampleComment.objects.values("asset_id").distinct().count()
-        self.stdout.write(self.style.SUCCESS(f"{total} {_CONFIG['stats_label']} on {assets} asset(s)."))
+        self.stdout.write(
+            self.style.SUCCESS(
+                f"{total} {_CONFIG['stats_label']} on {assets} asset(s)."
+            )
+        )
