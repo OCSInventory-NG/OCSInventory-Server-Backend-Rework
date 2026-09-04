@@ -26,7 +26,8 @@ class SampleCommentViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(asset_id=asset_id)
         return queryset
 
-    # Example: a custom endpoint next to plain CRUD - GET /sampleextension/comments/count/
+    # Example: a custom endpoint next to plain CRUD.
+    # GET /sampleextension/comments/count/
     @action(detail=False, methods=["get"])
     def count(self, request):
         return Response({"count": self.get_queryset().count()})
