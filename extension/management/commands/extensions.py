@@ -9,6 +9,8 @@ the app registry rather than assumed, since an AppConfig may declare its own.
 import argparse
 import json
 import logging
+import subprocess
+import sys
 from pathlib import Path
 
 from django.apps import apps
@@ -29,7 +31,16 @@ from ocsinventory_backend.ocs_framework.logmanager import DynamicLogLevelManager
 
 LOGGER_NAME = "mgmt.management.commands"
 APP_PREFIX = "extensions."
-HEADERS = ("FOLDER", "MANIFEST", "DB", "ENABLED", "STATUS")
+HEADERS = ("FOLDER", "MANIFEST", "MARKED", "DB", "ENABLED", "STATUS")
+
+# Presence of this file is what settings.py checks to add the extension to
+# INSTALLED_APPS. It is what keeps a folder merely dropped into EXTENSIONS_DIR
+# from having its migrations picked up by a plain 'migrate'.
+INSTALLED_MARKER = ".installed"
+
+
+def _installed_marker(folder_path):
+    return folder_path / INSTALLED_MARKER
 
 
 def _manifest(folder_path):
@@ -69,6 +80,11 @@ def _scan():
             "on_disk": folder in folders,
             "label": labels.get(folder),
             "manifest": _manifest(root / folder) if folder in folders else None,
+            "marked_installed": (
+                _installed_marker(root / folder).exists()
+                if folder in folders
+                else False
+            ),
             "row": rows.get(folder),
         }
         for folder in sorted(folders | set(labels) | set(rows))
@@ -81,6 +97,8 @@ def _status(state):
         return "orphan (no folder)"
     if state["manifest"] is None:
         return "no usable extension.json"
+    if not state["marked_installed"]:
+        return "not installed"
     if state["label"] is None:
         return "not loaded by Django"
     if state["label"] != state["folder"]:
@@ -151,6 +169,25 @@ def _orphan_tables(label):
     return sorted(name for name in names if name.startswith(f"{label}_"))
 
 
+def _delete_permissions(label):
+    """Delete the ContentTypes of an app label, and cascade to their Permissions.
+
+    migrate never does this on its own: it only ever adds permissions
+    (create_permissions, run from post_migrate), so unapplying an extension's
+    migrations -- or removing its folder entirely -- leaves add_x/change_x/
+    delete_x/view_x rows behind for models that no longer have a table, or do
+    not exist at all. They keep showing up wherever permissions are listed
+    (admin, group/user permission pickers) long after the extension is gone.
+    """
+    from django.contrib.contenttypes.models import ContentType
+
+    content_types = list(ContentType.objects.filter(app_label=label))
+    if not content_types:
+        return 0
+    deleted, _ = ContentType.objects.filter(pk__in=[ct.pk for ct in content_types]).delete()
+    return deleted
+
+
 class Command(BaseCommand):
     """Inspect and manage the extensions installed on this server."""
 
@@ -205,6 +242,7 @@ class Command(BaseCommand):
         install.add_argument(
             "--enable", action="store_true", help="Enable it once installed"
         )
+        self._add_noinput(install)
 
         check = add(
             "check-migrations",
@@ -380,6 +418,7 @@ class Command(BaseCommand):
             (
                 state["folder"],
                 (state["manifest"] or {}).get("version") or "-",
+                {True: "yes", False: "no"}[state["marked_installed"]],
                 state["row"].version if state["row"] else "-",
                 (
                     {True: "yes", False: "no"}[state["row"].enabled]
@@ -417,10 +456,64 @@ class Command(BaseCommand):
         Extension.objects.filter(pk=state["row"].pk).update(enabled=enabled)
 
         action = "enabled" if enabled else "disabled"
-        self.stdout.write(self.style.SUCCESS(f"{folder} {action}."))
-        # urls.py mounts the extension routes at import time, and the frontend
-        # asks extensions/enabled/ once per page load
-        self.stdout.write("Restart the application server to apply the change.")
+        self.stdout.write(self.style.SUCCESS(f"{folder} {action} in the database."))
+        # urls.py mounts each enabled extension's routes once, when the process
+        # starts; it never re-reads Extension.enabled afterwards, so a running
+        # server keeps serving (or refusing) the old routes until restarted
+        verb = "appear" if enabled else "stop responding"
+        self.stdout.write(
+            self.style.WARNING(
+                f"This is not yet visible to users: the running application "
+                f"server(s) built {folder}'s routes at startup and won't "
+                f"re-read this change. Restart the application server "
+                f"(all worker processes) so {folder}'s routes {verb}."
+            )
+        )
+
+    def _mark_installed_and_relaunch(self, folder, options):
+        """Create the .installed marker, then hand off to a fresh process.
+
+        settings.py only adds a folder to INSTALLED_APPS when this marker is
+        present, and INSTALLED_APPS is fixed for the lifetime of the current
+        process. So once the marker is written, this process still cannot see
+        the extension's app label or migrate it: a brand new 'manage.py'
+        invocation is needed, which re-reads settings.py and picks it up.
+        """
+        self._confirm(
+            f"{folder} is not marked installed yet. Installing it writes "
+            f"{INSTALLED_MARKER} into its folder and restarts the application "
+            "(a fresh 'manage.py extensions install' subprocess) so Django "
+            "loads it. This has no effect on extension data.",
+            options,
+        )
+
+        marker = _installed_marker(Path(settings.EXTENSIONS_DIR) / folder)
+        marker.touch()
+        self.stdout.write(f"{folder}: marked installed ({marker})")
+
+        argv = [
+            sys.executable,
+            str(Path(settings.BASE_DIR) / "manage.py"),
+            "extensions",
+            "install",
+            folder,
+            "--noinput",
+        ]
+        if options.get("enable"):
+            argv.append("--enable")
+        if options.get("loglevel"):
+            argv.extend(["--loglevel", options["loglevel"]])
+
+        self.stdout.write("Restarting to load the extension...")
+        result = subprocess.run(argv)
+        if result.returncode != 0:
+            marker.unlink(missing_ok=True)
+            raise CommandError(
+                f"{folder}: install failed in the restarted process; the "
+                f"{INSTALLED_MARKER} marker was removed so the extension is "
+                "not left half-installed.",
+                returncode=result.returncode,
+            )
 
     # ---------------------------------------------------------------- install
 
@@ -434,6 +527,11 @@ class Command(BaseCommand):
                 "the extension folder into the addons directory first.",
                 returncode=1,
             )
+
+        if not state["marked_installed"]:
+            self._mark_installed_and_relaunch(folder, options)
+            return
+
         label = self._label(state)
 
         # checked before the first write: sync_extensions_from_filesystem()
@@ -589,19 +687,35 @@ class Command(BaseCommand):
 
         if erase:
             self._migrate(state["label"], "zero", **options)
+            deleted = _delete_permissions(state["label"])
+            if deleted:
+                self.stdout.write(
+                    f"{folder}: {deleted} stale permission/content-type row(s) "
+                    "deleted"
+                )
 
         # after the migrations, never before: migrate emits post_migrate, which
         # syncs the manifests again and would recreate the row
         Extension.objects.filter(pk=state["row"].pk).delete()
         self.stdout.write(f"{folder}: removed from the registry")
 
+        # settings.py only loads the folder into INSTALLED_APPS while this
+        # marker exists, so removing it is what stops a plain 'migrate' from
+        # touching this extension again -- the folder may stay on disk safely
+        marker = _installed_marker(Path(settings.EXTENSIONS_DIR) / folder)
+        if marker.exists():
+            marker.unlink()
+            self.stdout.write(f"{folder}: {INSTALLED_MARKER} marker removed")
+
         if state["on_disk"]:
             self.stdout.write(
                 self.style.WARNING(
                     f"The code is still in {Path(settings.EXTENSIONS_DIR) / folder}\n"
-                    "Remove that folder to complete the uninstall: while it is "
-                    "there, the next 'manage.py migrate' registers the extension "
-                    "again (disabled)."
+                    "It is no longer marked installed, so 'manage.py migrate' "
+                    "will not load it or touch its migrations. Restart the "
+                    "application server to unload it from the running process. "
+                    "Remove the folder entirely if you also want it gone from "
+                    "'extensions list'."
                 )
             )
 
@@ -636,6 +750,13 @@ class Command(BaseCommand):
 
         deleted, _ = MigrationRecorder.Migration.objects.filter(app=folder).delete()
         self.stdout.write(f"{folder}: {deleted} migration history row(s) deleted")
+
+        deleted_perms = _delete_permissions(folder)
+        if deleted_perms:
+            self.stdout.write(
+                f"{folder}: {deleted_perms} stale permission/content-type "
+                "row(s) deleted"
+            )
 
         if tables:
             self.stdout.write(
