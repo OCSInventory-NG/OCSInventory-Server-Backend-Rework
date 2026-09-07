@@ -184,7 +184,9 @@ def _delete_permissions(label):
     content_types = list(ContentType.objects.filter(app_label=label))
     if not content_types:
         return 0
-    deleted, _ = ContentType.objects.filter(pk__in=[ct.pk for ct in content_types]).delete()
+    deleted, _ = ContentType.objects.filter(
+        pk__in=[ct.pk for ct in content_types]
+    ).delete()
     return deleted
 
 
