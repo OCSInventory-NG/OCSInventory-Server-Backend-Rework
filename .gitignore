@@ -137,3 +137,6 @@ megalinter-reports/
 
 # Django logging
 logs/
+
+# Checkov
+.megalinter_github_conf/
