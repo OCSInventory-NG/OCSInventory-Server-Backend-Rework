@@ -333,9 +333,13 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
 
 # Extensions
+# Only a folder marked installed (see extension/management/commands/extensions.py)
+# is loaded: a folder merely present in EXTENSIONS_DIR must not have its
+# migrations picked up by a plain 'migrate', since that would apply them
+# without the extension ever having been installed.
 EXTENSIONS_DIR = Path(BASE_DIR) / "extensions"
 for extension in EXTENSIONS_DIR.iterdir():
-    if (extension / "__init__.py").exists():
+    if (extension / "__init__.py").exists() and (extension / ".installed").exists():
         INSTALLED_APPS.append(f"extensions.{extension.name}")
 
 # Authentication

@@ -24,16 +24,21 @@ def sync_extensions_from_filesystem():
     for manifest_path in _iter_manifests():
         data = json.loads(manifest_path.read_text(encoding="utf-8"))
 
-        name = data["name"]
+        # the folder name is the reference: settings.py builds INSTALLED_APPS
+        # from it, so it is the only value that cannot diverge
+        django_app = manifest_path.parent.name
         defaults = {
+            "name": data["name"],
             "description": data.get("description", ""),
             "version": data.get("version", "0.0.0"),
             "author": data.get("author", ""),
-            "django_app": data.get("django_app", f"extensions.{name}"),
         }
 
+        # matched on django_app, the unique column: 'name' is a display label
+        # the author may change between versions, and two extensions may share
+        # it, so it cannot identify a row
         obj, created = Extension.objects.get_or_create(
-            name=name,
+            django_app=django_app,
             defaults={**defaults, "enabled": False},
         )
 
