@@ -64,9 +64,7 @@ class CollectionView(APIView):
         if isinstance(value, list):
             return [cls.sanitize_field_value(item) for item in value]
         if isinstance(value, dict):
-            return {
-                key: cls.sanitize_field_value(val) for key, val in value.items()
-            }
+            return {key: cls.sanitize_field_value(val) for key, val in value.items()}
         return value
 
     def check_blacklist(self, data):
