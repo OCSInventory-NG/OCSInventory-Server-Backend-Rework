@@ -16,3 +16,14 @@ DATABASES = {
 PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.MD5PasswordHasher",
 ]
+
+# Used to (re)generate tools/ocsinventory-backend-api-references.yaml,
+# see .github/workflows/openapi-schema.yml
+INSTALLED_APPS = INSTALLED_APPS + ["drf_spectacular"]  # noqa: F405
+REST_FRAMEWORK["DEFAULT_SCHEMA_CLASS"] = (
+    "drf_spectacular.openapi.AutoSchema"  # noqa: F405
+)
+SPECTACULAR_SETTINGS = {
+    "TITLE": "OCS Inventory Backend API References",
+    "VERSION": "3.0.0",
+}

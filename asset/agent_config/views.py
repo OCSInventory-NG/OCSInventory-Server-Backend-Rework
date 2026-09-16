@@ -1,8 +1,9 @@
+from rest_framework.response import Response
+
 from config.models import Config
 from config.serializers import ConfigSerializer
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
-from rest_framework.response import Response
 
 
 class AgentConfigViewSet(viewsets.OCSViewSet):
@@ -14,10 +15,14 @@ class AgentConfigViewSet(viewsets.OCSViewSet):
     List agent configuration
     """
 
+    # Config.value is a JSONField, which django-filter can't auto-filter on
+    filter_backends = []
+
     # Need to have permissions to consult
     permission_classes = [DefaultModelPermissions]
     queryset = Config.objects.all()
-    allowed_methods = ["GET"]
+    serializer_class = ConfigSerializer
+    http_method_names = ["get"]
 
     def list(self, request, *args, **kwargs):
         queryset = self.queryset.filter(name__in=["agent", "deployment"])

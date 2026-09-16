@@ -1,6 +1,7 @@
 import pytest
-from config.models import Config
 from rest_framework.test import APIClient
+
+from config.models import Config
 
 
 @pytest.mark.django_db
@@ -27,15 +28,13 @@ class TestAgentConfigList:
 @pytest.mark.django_db
 class TestAgentConfigMethodRestrictions:
     def test_create_is_rejected(self, api_client):
-        # allowed_methods = ["GET"] on AgentConfigViewSet is not a real DRF
-        # method restriction (that would be http_method_names); POST still
-        # reaches OCSViewSet.create(), which fails because no
-        # serializer_class is defined on this read-only viewset
+        # AgentConfigViewSet is read-only (http_method_names = ["get"]),
+        # so POST must be rejected outright.
         response = api_client.post(
             "/asset/configs/",
             {"name": "custom", "value": {}},
             format="json",
         )
 
-        assert response.status_code == 400
+        assert response.status_code == 405
         assert not Config.objects.filter(name="custom").exists()

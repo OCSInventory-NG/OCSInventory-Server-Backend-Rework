@@ -1,17 +1,73 @@
 from datetime import datetime, timedelta
 
-from asset.inventory_base.models import InventoryBase
 from django.db.models import Count
-from ipdiscover.netdevice.models import Netdevice
-from ipdiscover.network.models import Network
-from ocsinventory_backend.ocs_framework import viewsets
-from permission.permissions import DefaultModelPermissions
+from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.exceptions import APIException
 from rest_framework.response import Response
 
+from asset.inventory_base.models import InventoryBase
+from dashboard.chart.serializers import (
+    DashboardChartCounterSerializer,
+    DashboardChartDescriptorSerializer,
+    DashboardChartSeriesSerializer,
+    DashboardChartTotalSerializer,
+)
+from ipdiscover.netdevice.models import Netdevice
+from ipdiscover.network.models import Network
+from ocsinventory_backend.ocs_framework import viewsets
+from permission.permissions import DefaultModelPermissions
 
+
+@extend_schema_view(
+    list=extend_schema(
+        description="Return the list of available dashboard charts.",
+        responses=DashboardChartDescriptorSerializer(many=True),
+    ),
+    return_total_all=extend_schema(
+        description="Total devices count.", responses=DashboardChartCounterSerializer
+    ),
+    return_total_win=extend_schema(
+        description="Total Windows devices count.",
+        responses=DashboardChartCounterSerializer,
+    ),
+    return_total_lin=extend_schema(
+        description="Total Linux devices count.",
+        responses=DashboardChartCounterSerializer,
+    ),
+    return_total_mac=extend_schema(
+        description="Total MacOS devices count.",
+        responses=DashboardChartCounterSerializer,
+    ),
+    return_total_leg=extend_schema(
+        description="Total Legacy devices count.",
+        responses=DashboardChartCounterSerializer,
+    ),
+    return_total_snmp=extend_schema(
+        description="Total SNMP devices count.",
+        responses=DashboardChartCounterSerializer,
+    ),
+    return_nb_netdevices=extend_schema(
+        description="Total netdevices count.",
+        responses=DashboardChartTotalSerializer,
+    ),
+    return_nb_networks=extend_schema(
+        description="Total networks count.", responses=DashboardChartTotalSerializer
+    ),
+    get_os=extend_schema(
+        description="Unique OS names and their associated count.",
+        responses=DashboardChartSeriesSerializer,
+    ),
+    get_last_contacted=extend_schema(
+        description="Devices count per last contacted date (7 days).",
+        responses=DashboardChartSeriesSerializer,
+    ),
+    get_devices_per_network=extend_schema(
+        description="Devices count per network.",
+        responses=DashboardChartSeriesSerializer,
+    ),
+)
 class DashboardChartViewSet(viewsets.OCSViewSet):
     """
     This class allows the frontend to request data for the dashboard charts
@@ -20,7 +76,7 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
     permission_classes = [DefaultModelPermissions]
     allowed_methods = ["get"]
     queryset = InventoryBase.objects.all()
-    serializer_class = None
+    serializer_class = DashboardChartDescriptorSerializer
 
     def list(self, request):
         """
