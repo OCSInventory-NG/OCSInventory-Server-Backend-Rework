@@ -20,9 +20,8 @@ PASSWORD_HASHERS = [
 # Used to (re)generate tools/ocsinventory-backend-api-references.yaml,
 # see .github/workflows/openapi-schema.yml
 INSTALLED_APPS = INSTALLED_APPS + ["drf_spectacular"]  # noqa: F405
-REST_FRAMEWORK["DEFAULT_SCHEMA_CLASS"] = (
-    "drf_spectacular.openapi.AutoSchema"  # noqa: F405
-)
+SPECTACULAR_SCHEMA_CLASS = "drf_spectacular.openapi.AutoSchema"
+REST_FRAMEWORK["DEFAULT_SCHEMA_CLASS"] = SPECTACULAR_SCHEMA_CLASS  # noqa: F405
 SPECTACULAR_SETTINGS = {
     "TITLE": "OCS Inventory Backend API References",
     "VERSION": "3.0.0",
