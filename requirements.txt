@@ -4,6 +4,7 @@ djangorestframework-xml>=2.0.0
 django-cors-headers>=4.1.0
 django-filter>=23.1
 django-extensions>=3.2
+drf-spectacular>=0.28.0
 
 # Authentication
 mozilla-django-oidc>=3.0.0

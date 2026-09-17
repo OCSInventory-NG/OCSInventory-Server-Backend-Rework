@@ -1,7 +1,13 @@
 import logging
 
 from asset.inventory_base.models import InventoryBase
+from asset.reconciliation.serializers import (
+    ReconciliationErrorSerializer,
+    ReconciliationRequestSerializer,
+    ReconciliationResponseSerializer,
+)
 from asset.services import ReconciliationService
+from drf_spectacular.utils import extend_schema
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -20,6 +26,15 @@ class ReconciliationView(APIView):
 
     LOGGER = logging.getLogger(__name__)
 
+    @extend_schema(
+        description="Check whether an asset exists based on reconciliation "
+        "criteria. Returns {'id': asset_id} if found, else {'id': False}.",
+        request=ReconciliationRequestSerializer,
+        responses={
+            200: ReconciliationResponseSerializer,
+            400: ReconciliationErrorSerializer,
+        },
+    )
     def post(self, request, *args, **kwargs):
         """
         Checks if an asset exists based on the provided data and reconciliation

@@ -6,7 +6,9 @@ from asset.inventory_field.models import InventoryField
 from asset.inventory_section.models import InventorySection
 from asset.legacy.parsers import LegacyXMLParser
 from asset.legacy.renderers import LegacyXMLRenderer
+from asset.legacy.serializers import LegacyErrorSerializer, LegacyResponseSerializer
 from asset.services import ReconciliationService
+from drf_spectacular.utils import extend_schema
 from inventory.field.models import Field
 from inventory.section.models import Section
 from inventory.software.services import SoftwareDictionaryService
@@ -34,6 +36,17 @@ class LegacyView(APIView):
     parser_classes = [LegacyXMLParser]
     renderer_classes = [LegacyXMLRenderer]
 
+    @extend_schema(
+        description="Create or partially update an asset and its inventory "
+        "from the legacy XML agent payload (OCS legacy protocol).",
+        request=InventoryBaseSerializer,
+        responses={
+            200: LegacyResponseSerializer,
+            201: LegacyResponseSerializer,
+            400: LegacyErrorSerializer,
+            500: LegacyErrorSerializer,
+        },
+    )
     def post(
         self,
         request,

@@ -2,12 +2,17 @@ import ipaddress
 import logging
 
 from accountinfo.views import AccountinfoDataViewSet
+from asset.collection.serializers import (
+    CollectionErrorSerializer,
+    CollectionResponseSerializer,
+)
 from asset.inventory_base.models import InventoryBase
 from asset.inventory_base.serializers import InventoryBaseSerializer
 from asset.inventory_field.models import InventoryField
 from asset.inventory_section.models import InventorySection
 from asset.services import ReconciliationService
 from config.models import Config
+from drf_spectacular.utils import extend_schema
 from inventory.field.models import Field
 from inventory.section.models import Section
 from inventory.software.services import SoftwareDictionaryService
@@ -148,6 +153,17 @@ class CollectionView(APIView):
 
         return False, None
 
+    @extend_schema(
+        description="Create an asset and its inventory (if template_inventory "
+        "is provided).",
+        request=InventoryBaseSerializer,
+        responses={
+            201: CollectionResponseSerializer,
+            400: CollectionErrorSerializer,
+            403: CollectionErrorSerializer,
+            500: CollectionErrorSerializer,
+        },
+    )
     def post(self, request, *args, **kwargs):
         """
         Perform creation of asset and inventory. If inventory
@@ -321,6 +337,17 @@ class CollectionView(APIView):
             status=201,
         )
 
+    @extend_schema(
+        description="Update an asset and fully overwrite its inventory "
+        "(missing sections/fields are deleted).",
+        request=InventoryBaseSerializer,
+        responses={
+            200: CollectionResponseSerializer,
+            400: CollectionErrorSerializer,
+            403: CollectionErrorSerializer,
+            500: CollectionErrorSerializer,
+        },
+    )
     def put(self, request):
         """
         Perform update of asset and inventory.
@@ -496,6 +523,17 @@ class CollectionView(APIView):
             status=200,
         )
 
+    @extend_schema(
+        description="Partially update an asset and its inventory (only the "
+        "provided sections/fields are affected).",
+        request=InventoryBaseSerializer,
+        responses={
+            200: CollectionResponseSerializer,
+            400: CollectionErrorSerializer,
+            403: CollectionErrorSerializer,
+            500: CollectionErrorSerializer,
+        },
+    )
     def patch(self, request, *args, **kwargs):
         """
         Perform partial update of asset and inventory.

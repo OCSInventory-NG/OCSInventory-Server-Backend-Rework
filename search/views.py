@@ -9,6 +9,7 @@ from asset.inventory_section.models import InventorySection
 from asset.log.models import Log
 from deployment.result.models import Result
 from django.db.models import Q
+from drf_spectacular.utils import extend_schema
 from inventory.field.models import Field
 from inventory.software.models import SoftwareDictionary
 from ocsinventory_backend.ocs_framework import viewsets
@@ -16,7 +17,11 @@ from permission.permissions import DefaultModelPermissions
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from search.models import Search
-from search.serializers import SearchSerializer
+from search.serializers import (
+    SearchErrorSerializer,
+    SearchRequestSerializer,
+    SearchSerializer,
+)
 from snmp.scanner.models import SnmpScanner
 
 
@@ -26,11 +31,12 @@ class SearchView(GenericAPIView):
     This view is reachable at the /search/ endpoint
 
     POST:
-    Get serach post parameters, construct the search query and
+    Get search post parameters, construct the search query and
     return the result
     """
 
     permission_classes = []
+    queryset = InventoryBase.objects.none()
     serializer_class = InventoryBaseSerializer
 
     LOGGER = logging.getLogger(__name__)
@@ -562,6 +568,16 @@ class SearchView(GenericAPIView):
 
         return rows
 
+    @extend_schema(
+        description="Run a multi-condition search across assets and their "
+        "related data (results, logs, snmpscanner, inventory_sections, "
+        "software_dictionary_entries).",
+        request=SearchRequestSerializer,
+        responses={
+            200: InventoryBaseSerializer(many=True),
+            500: SearchErrorSerializer,
+        },
+    )
     def post(self, request, *args, **kwargs):
         data = request.data.get("search_data", [])
         ungroup = request.data.get("ungroup", False)
