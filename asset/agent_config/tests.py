@@ -1,7 +1,6 @@
 import pytest
-from rest_framework.test import APIClient
-
 from config.models import Config
+from rest_framework.test import APIClient
 
 
 @pytest.mark.django_db

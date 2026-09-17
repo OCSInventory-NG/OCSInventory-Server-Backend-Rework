@@ -1,6 +1,3 @@
-from rest_framework import status
-from rest_framework.response import Response
-
 from automation.rule.context import get_resolver_for_trigger
 from automation.rule.models import Action, Rule
 from automation.rule.serializers import (
@@ -10,6 +7,8 @@ from automation.rule.serializers import (
 )
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
+from rest_framework import status
+from rest_framework.response import Response
 
 
 class RuleViewSet(viewsets.OCSViewSet):

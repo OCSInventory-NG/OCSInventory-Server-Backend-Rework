@@ -1,8 +1,7 @@
-from rest_framework import serializers
-from rest_framework.serializers import ModelSerializer
-
 from group.serializers import GroupSerializer
 from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
+from rest_framework import serializers
+from rest_framework.serializers import ModelSerializer
 from search.models import Search
 from user.serializers import UserSerializer
 

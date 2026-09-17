@@ -1,12 +1,5 @@
 from datetime import datetime, timedelta
 
-from django.db.models import Count
-from drf_spectacular.utils import extend_schema, extend_schema_view
-from rest_framework import status
-from rest_framework.decorators import action
-from rest_framework.exceptions import APIException
-from rest_framework.response import Response
-
 from asset.inventory_base.models import InventoryBase
 from dashboard.chart.serializers import (
     DashboardChartCounterSerializer,
@@ -14,10 +7,16 @@ from dashboard.chart.serializers import (
     DashboardChartSeriesSerializer,
     DashboardChartTotalSerializer,
 )
+from django.db.models import Count
+from drf_spectacular.utils import extend_schema, extend_schema_view
 from ipdiscover.netdevice.models import Netdevice
 from ipdiscover.network.models import Network
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
+from rest_framework import status
+from rest_framework.decorators import action
+from rest_framework.exceptions import APIException
+from rest_framework.response import Response
 
 
 @extend_schema_view(

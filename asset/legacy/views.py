@@ -1,10 +1,5 @@
 import logging
 
-from drf_spectacular.utils import extend_schema
-from rest_framework.exceptions import ValidationError
-from rest_framework.response import Response
-from rest_framework.views import APIView
-
 from asset.inventory_base.models import InventoryBase
 from asset.inventory_base.serializers import InventoryBaseSerializer
 from asset.inventory_field.models import InventoryField
@@ -13,9 +8,13 @@ from asset.legacy.parsers import LegacyXMLParser
 from asset.legacy.renderers import LegacyXMLRenderer
 from asset.legacy.serializers import LegacyErrorSerializer, LegacyResponseSerializer
 from asset.services import ReconciliationService
+from drf_spectacular.utils import extend_schema
 from inventory.field.models import Field
 from inventory.section.models import Section
 from inventory.software.services import SoftwareDictionaryService
+from rest_framework.exceptions import ValidationError
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 
 class LegacyView(APIView):

@@ -1,9 +1,8 @@
-from rest_framework.response import Response
-
 from config.models import Config
 from config.serializers import ConfigSerializer
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
+from rest_framework.response import Response
 
 
 class AgentConfigViewSet(viewsets.OCSViewSet):

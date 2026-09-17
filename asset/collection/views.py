@@ -1,11 +1,6 @@
 import ipaddress
 import logging
 
-from drf_spectacular.utils import extend_schema
-from rest_framework.exceptions import ValidationError
-from rest_framework.response import Response
-from rest_framework.views import APIView
-
 from accountinfo.views import AccountinfoDataViewSet
 from asset.collection.serializers import (
     CollectionErrorSerializer,
@@ -17,10 +12,14 @@ from asset.inventory_field.models import InventoryField
 from asset.inventory_section.models import InventorySection
 from asset.services import ReconciliationService
 from config.models import Config
+from drf_spectacular.utils import extend_schema
 from inventory.field.models import Field
 from inventory.section.models import Section
 from inventory.software.services import SoftwareDictionaryService
 from permission.permissions import DefaultModelPermissions
+from rest_framework.exceptions import ValidationError
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 
 class CollectionView(APIView):

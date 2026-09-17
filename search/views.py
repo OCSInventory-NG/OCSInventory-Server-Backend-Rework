@@ -1,11 +1,6 @@
 import logging
 from collections import defaultdict
 
-from django.db.models import Q
-from drf_spectacular.utils import extend_schema
-from rest_framework.generics import GenericAPIView
-from rest_framework.response import Response
-
 from accountinfo.models import AccountinfoData
 from asset.inventory_base.models import InventoryBase
 from asset.inventory_base.serializers import InventoryBaseSerializer
@@ -13,10 +8,14 @@ from asset.inventory_field.models import InventoryField
 from asset.inventory_section.models import InventorySection
 from asset.log.models import Log
 from deployment.result.models import Result
+from django.db.models import Q
+from drf_spectacular.utils import extend_schema
 from inventory.field.models import Field
 from inventory.software.models import SoftwareDictionary
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
+from rest_framework.generics import GenericAPIView
+from rest_framework.response import Response
 from search.models import Search
 from search.serializers import (
     SearchErrorSerializer,
