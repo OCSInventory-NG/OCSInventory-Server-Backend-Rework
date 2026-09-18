@@ -79,6 +79,8 @@ else
 	exit 1
 fi
 
+chown -R www-data:www-data /usr/share/ocsinventory-backend/logs
+
 # restart uWSGI service
 echo "Restarting uWSGI and Nginx services..."
 systemctl restart uwsgi
