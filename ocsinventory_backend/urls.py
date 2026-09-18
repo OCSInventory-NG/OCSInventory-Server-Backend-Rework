@@ -71,6 +71,7 @@ from permission.routers import PermissionRouter
 from rest_framework.routers import DefaultRouter
 from search.routers import SearchRouter
 from search.views import SearchView
+from security.routers import SecurityRouter
 from snmp.scanner.routers import SnmpScannerRouter
 from snmp.snmp_config.routers import SnmpConfigRouter
 from user.routers import UserRouter
@@ -225,6 +226,9 @@ extensionRouter = extensionRouter.defineRoutes(defaultRouter)
 
 complianceRouter = ComplianceRouter()
 complianceRouter = complianceRouter.defineRoutes(defaultRouter)
+
+securityRouter = SecurityRouter()
+securityRouter = securityRouter.defineRoutes(defaultRouter)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
