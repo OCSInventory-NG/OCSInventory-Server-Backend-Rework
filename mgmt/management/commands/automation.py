@@ -179,18 +179,20 @@ class Command(BaseCommand):
                     # import and execute task
                     task_class = module_loading.import_string(self.library + task.name)
                     task_instance = task_class()
-                    task_instance.execute()
+                    result_summary = task_instance.execute()
 
                     task.last_execution = now
                     task.save()
 
                     logger.info(f"Task {task.name} completed successfully")
-                    # completion history
-                    updateHistory(
-                        task,
-                        f"Task {task.name} finished successfully" f" at {exact_now}",
-                        1,
-                    )
+                    # completion history — tasks may optionally return a short
+                    # summary string from execute() to surface in the history
+                    # comment (e.g. counts of items processed); tasks that
+                    # return None (the default) keep the generic message.
+                    completion_msg = f"Task {task.name} finished successfully at {exact_now}"
+                    if result_summary:
+                        completion_msg = f"{completion_msg}: {result_summary}"
+                    updateHistory(task, completion_msg[:255], 1)
 
                 except Exception as e:
                     error_msg = f"Task {task.name} failed at {exact_now}: {str(e)}"
