@@ -193,6 +193,21 @@ class TestLegacyViewCreate:
         field = InventoryField.objects.get(inventory_section=inventory_section)
         assert field.value == "asset-1"
 
+    def test_ignores_inactive_section(self, template, section, hardware_fields):
+        section.is_active = False
+        section.save()
+        client = APIClient()
+
+        response = client.post(
+            "/asset/legacy/",
+            data=compress_xml(inventory_xml()),
+            content_type="application/x-compress",
+        )
+
+        assert response.status_code == 201
+        asset = InventoryBase.objects.get(uuid="uuid-asset-1")
+        assert InventorySection.objects.filter(base=asset).count() == 0
+
 
 @pytest.mark.django_db
 class TestLegacyViewUpdate:
@@ -247,3 +262,30 @@ class TestLegacyViewUpdate:
         )
         field = InventoryField.objects.get(inventory_section=inventory_section)
         assert field.value == "updated-name"
+
+    def test_update_ignores_inactive_section(self, template, section, hardware_fields):
+        asset = InventoryBase.objects.create(
+            name="asset-1",
+            serial="SER-1",
+            osname="Linux",
+            uuid="uuid-asset-1",
+            template=template,
+            is_template_forced=True,
+        )
+        section.is_active = False
+        section.save()
+        client = APIClient()
+
+        response = client.post(
+            "/asset/legacy/",
+            data=compress_xml(inventory_xml(name="updated-name")),
+            content_type="application/x-compress",
+        )
+
+        assert response.status_code == 200
+        assert (
+            InventorySection.objects.filter(
+                base=asset, template_section=section
+            ).count()
+            == 0
+        )

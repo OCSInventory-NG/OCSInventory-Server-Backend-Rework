@@ -64,6 +64,16 @@ class TestTemplateExport:
         assert "id" not in section_data
         assert section_data["fields"][0]["name"] == "Name"
 
+    def test_export_includes_section_is_active(self, api_client, template, section):
+        section.is_active = False
+        section.save()
+
+        response = api_client.get(f"/templates/{template.id}/export/")
+
+        assert response.status_code == 200
+        section_data = response.data["sections"][0]
+        assert section_data["is_active"] is False
+
 
 @pytest.mark.django_db
 class TestTemplateImportSections:
@@ -235,3 +245,16 @@ class TestTemplateRollback:
         section.refresh_from_db()
         assert section.id == section_id
         assert section.name == "OS"
+
+    def test_rollback_restores_section_is_active(self, api_client, template, section):
+        version = TemplateVersion.create_snapshot(template, label="v1")
+        section.is_active = False
+        section.save()
+
+        response = api_client.post(
+            f"/templates/{template.id}/versions/{version.id}/rollback/"
+        )
+
+        assert response.status_code == 200
+        section.refresh_from_db()
+        assert section.is_active is True

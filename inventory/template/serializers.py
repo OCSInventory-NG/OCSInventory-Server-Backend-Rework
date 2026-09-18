@@ -98,6 +98,7 @@ class SectionSnapshotSerializer(ModelSerializer):
             "target",
             "fields",
             "options",
+            "is_active",
             "categories",
         ]
 

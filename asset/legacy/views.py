@@ -129,7 +129,7 @@ class LegacyView(APIView):
 
                 # pre-fetch Sections and Fields
                 section_objs = Section.objects.filter(
-                    template=asset_instance.template_id
+                    template=asset_instance.template_id, is_active=True
                 )
                 field_objs = Field.objects.filter(section__in=section_objs)
                 section_field_map = {
@@ -262,7 +262,9 @@ class LegacyView(APIView):
                     )
 
                 # pre-fetch all Sections and Fields for this template
-                section_objs = Section.objects.filter(template=templateId)
+                section_objs = Section.objects.filter(
+                    template=templateId, is_active=True
+                )
                 field_objs = Field.objects.filter(section__in=section_objs)
                 section_field_map = {
                     section.name: {

@@ -40,6 +40,7 @@ class TemplateViewSet(viewsets.OCSViewSet):
         "retrieval_output",
         "target",
         "options",
+        "is_active",
     ]
     FIELD_ATTRS = [
         "name",
