@@ -52,8 +52,12 @@ class TriggerViewSet(viewsets.OCSViewSet):
     Trigger viewset
     """
 
+    # list() returns synthetic trigger data, not Rule instances/fields
+    filter_backends = []
+
     permission_classes = []
-    queryset = Rule.TRIGGER_CHOICES
+    queryset = Rule.objects.none()
+    serializer_class = TriggerSerializer
 
     allowed_methods = ["GET"]
 

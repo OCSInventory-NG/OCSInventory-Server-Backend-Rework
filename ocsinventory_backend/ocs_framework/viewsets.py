@@ -2,13 +2,22 @@ import logging
 
 from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, status, viewsets
+from drf_spectacular.utils import extend_schema
+from rest_framework import filters, serializers, status, viewsets
 from rest_framework.response import Response
+
+
+class ApiCheckResponseSerializer(serializers.Serializer):
+    message = serializers.CharField()
 
 
 class ApiCheckViewSet(viewsets.ModelViewSet):
     permission_classes = []
 
+    @extend_schema(
+        description="Health check endpoint, used to verify the API is reachable.",
+        responses=ApiCheckResponseSerializer,
+    )
     def api_check(self, request, *args, **kwargs):
         return Response(
             {
