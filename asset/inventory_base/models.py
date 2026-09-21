@@ -41,6 +41,7 @@ class InventoryBase(models.Model):
         Template, on_delete=models.CASCADE, blank=True, null=True
     )
     is_template_forced = models.BooleanField(default=False)
+    testtest = models.CharField(max_length=255, blank=True, null=True)
     accountinfo = GenericRelation(
         "accountinfo.AccountinfoData",
         content_type_field="content_type",

@@ -32,6 +32,7 @@ class InventoryBaseSerializer(ExpandableFieldsMixin, ModelSerializer):
             "template",
             "last_update",
             "is_template_forced",
+            "testtest",
             "matched",
         ]
 
