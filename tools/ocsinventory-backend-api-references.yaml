@@ -11749,6 +11749,10 @@ paths:
         name: id
         schema:
           type: integer
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
       - name: limit
         required: false
         in: query
@@ -17381,6 +17385,8 @@ components:
             $ref: '#/components/schemas/Field'
         options:
           nullable: true
+        is_active:
+          type: boolean
     PatchedSnmpConfig:
       type: object
       description: This serializer class provide the API representation
@@ -18029,6 +18035,8 @@ components:
             $ref: '#/components/schemas/Field'
         options:
           nullable: true
+        is_active:
+          type: boolean
       required:
       - fields
       - id
