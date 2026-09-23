@@ -96,6 +96,7 @@ INSTALLED_APPS = [
     "dashboard.layout.apps.DashboardLayoutConfig",
     "dashboard.chart.apps.DashboardChartConfig",
     "search.apps.SearchConfig",
+    "virtualcolumn.apps.VirtualColumnConfig",
     "django_cas_ng",
     "filemanager.apps.FileManagerConfig",
     "extension.apps.ExtensionConfig",

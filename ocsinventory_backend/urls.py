@@ -70,6 +70,7 @@ from ocsinventory_backend.ocs_framework.viewsets import ApiCheckViewSet
 from permission.routers import PermissionRouter
 from rest_framework.routers import DefaultRouter
 from search.routers import SearchRouter
+from virtualcolumn.routers import VirtualColRouter
 from search.views import SearchView
 from snmp.scanner.routers import SnmpScannerRouter
 from snmp.snmp_config.routers import SnmpConfigRouter
@@ -202,6 +203,9 @@ authMappingRouter = authMappingRouter.defineRoutes(defaultRouter)
 # Add search declaration
 searchRouter = SearchRouter()
 searchRouter = searchRouter.defineRoutes(defaultRouter)
+
+virtualColRouter = VirtualColRouter()
+virtualColRouter = virtualColRouter.defineRoutes(defaultRouter)
 
 # Add AssetGroup declaration
 assetGroupRouter = AssetGroupRouter()
