@@ -52,6 +52,16 @@ class InventoryBaseSerializer(ExpandableFieldsMixin, ModelSerializer):
         """
         representation = super().to_representation(instance)
 
+        # resolved per page by the viewset, nothing is queried per asset here
+        # every asked column is present, empty when the template has no value
+        virtual_col_map = self.context.get("virtual_col_map")
+        if virtual_col_map is not None:
+            values = virtual_col_map.get(instance.pk, {})
+            representation["virtual_cols"] = {
+                name: values.get(name)
+                for name in self.context.get("virtual_col_names", [])
+            }
+
         request = self.context.get("request")
         accountinfo = None
 
