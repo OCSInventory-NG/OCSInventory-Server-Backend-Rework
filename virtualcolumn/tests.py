@@ -570,3 +570,70 @@ class TestVirtualColEdgeCases:
 
         assert response.status_code == 200
         assert "virtual_cols" not in rows(response)[0]
+
+
+@pytest.mark.django_db
+class TestVirtualColGroupModification:
+    def shared_column(self, park, owner, group, allow):
+        column = VirtualCol.objects.create(
+            name="CPU SPEED",
+            target="asset",
+            mapping={str(park["win"]["template"].id): park["win"]["field"].id},
+            user=owner,
+            visibility="private_group",
+            allow_group_modification=allow,
+        )
+        column.groups.add(group)
+        return column
+
+    def member_client(self, make_api_client, django_user_model, group):
+        client = make_api_client(
+            "view_virtualcol", "change_virtualcol", "delete_virtualcol",
+            username="member",
+        )
+        django_user_model.objects.get(username="member").groups.add(group)
+        return client
+
+    def test_a_member_may_edit_when_the_author_allows_it(
+        self, admin_user, make_api_client, django_user_model, park
+    ):
+        from django.contrib.auth.models import Group
+
+        group = Group.objects.create(name="support")
+        column = self.shared_column(park, admin_user, group, allow=True)
+        client = self.member_client(make_api_client, django_user_model, group)
+
+        response = client.patch(
+            f"/virtual_cols/{column.id}/", {"name": "CPU FREQ"}, format="json"
+        )
+
+        assert response.status_code == 200, response.data
+        column.refresh_from_db()
+        assert column.name == "CPU FREQ"
+
+    def test_a_member_may_not_edit_otherwise(
+        self, admin_user, make_api_client, django_user_model, park
+    ):
+        from django.contrib.auth.models import Group
+
+        group = Group.objects.create(name="support")
+        column = self.shared_column(park, admin_user, group, allow=False)
+        client = self.member_client(make_api_client, django_user_model, group)
+
+        response = client.patch(
+            f"/virtual_cols/{column.id}/", {"name": "CPU FREQ"}, format="json"
+        )
+
+        assert response.status_code == 403
+
+    def test_deleting_stays_reserved_to_the_author(
+        self, admin_user, make_api_client, django_user_model, park
+    ):
+        """RestrictVisibility never opens deletion, whatever the flag says"""
+        from django.contrib.auth.models import Group
+
+        group = Group.objects.create(name="support")
+        column = self.shared_column(park, admin_user, group, allow=True)
+        client = self.member_client(make_api_client, django_user_model, group)
+
+        assert client.delete(f"/virtual_cols/{column.id}/").status_code == 403
