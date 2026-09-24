@@ -78,8 +78,7 @@ class TestVirtualCol:
 
         assert response.status_code == 200
         values = {
-            row["name"]: row["virtual_cols"]["BIOS NAME"]
-            for row in rows(response)
+            row["name"]: row["virtual_cols"]["BIOS NAME"] for row in rows(response)
         }
         assert values == {"PC-WIN": "Dell Inc.", "PC-DEB": "Lenovo"}
 
@@ -113,9 +112,7 @@ class TestVirtualCol:
 
         assert rows(response)[0]["virtual_cols"]["BIOS NAME"] == "first (+2)"
 
-    def test_columns_are_omitted_when_not_requested(
-        self, api_client, admin_user, park
-    ):
+    def test_columns_are_omitted_when_not_requested(self, api_client, admin_user, park):
         make_asset(park, "win", "PC-WIN", "Dell Inc.")
         self.build_column(park, admin_user, ["win"])
 
@@ -398,9 +395,11 @@ class TestVirtualColVisibility:
         """What the form used to produce : the column stayed invisible"""
         self.column_for(park, admin_user, visibility="private_group")
 
-        listed = make_api_client("view_virtualcol", username="outsider").get(
-            "/virtual_cols/"
-        ).data
+        listed = (
+            make_api_client("view_virtualcol", username="outsider")
+            .get("/virtual_cols/")
+            .data
+        )
 
         assert listed == []
 
@@ -423,7 +422,9 @@ class TestVirtualColVisibility:
 
         assert response.status_code == 201, response.data
         assert list(
-            VirtualCol.objects.get(name="CPU SPEED").groups.values_list("name", flat=True)
+            VirtualCol.objects.get(name="CPU SPEED").groups.values_list(
+                "name", flat=True
+            )
         ) == ["support"]
 
 
@@ -481,7 +482,10 @@ class TestVirtualColEdgeCases:
     ):
         make_asset(park, "win", "PC-WIN", "Dell Inc.")
         column = VirtualCol.objects.create(
-            name="EMPTY", target="asset", mapping={}, user=admin_user,
+            name="EMPTY",
+            target="asset",
+            mapping={},
+            user=admin_user,
             visibility="public",
         )
 
@@ -502,9 +506,7 @@ class TestVirtualColEdgeCases:
         assert response.status_code == 200
         assert len(rows(response)) == 1
 
-    def test_search_and_sort_on_the_column_at_once(
-        self, api_client, admin_user, park
-    ):
+    def test_search_and_sort_on_the_column_at_once(self, api_client, admin_user, park):
         make_asset(park, "win", "PC-A", "Dell Inc.")
         make_asset(park, "win", "PC-B", "Dell Inc.")
         make_asset(park, "win", "PC-C", "Lenovo")
@@ -512,7 +514,11 @@ class TestVirtualColEdgeCases:
 
         response = api_client.get(
             "/asset/bases/",
-            {"virtual_cols": column.id, "search": "dell", "ordering": "-" + column.name},
+            {
+                "virtual_cols": column.id,
+                "search": "dell",
+                "ordering": "-" + column.name,
+            },
         )
 
         assert sorted(row["name"] for row in rows(response)) == ["PC-A", "PC-B"]
@@ -533,9 +539,7 @@ class TestVirtualColEdgeCases:
         assert len(response.data["results"]) == 3
         assert response.data["results"][0]["virtual_cols"]["BIOS NAME"] == "value-0"
 
-    def test_retrieving_a_single_asset_is_untouched(
-        self, api_client, admin_user, park
-    ):
+    def test_retrieving_a_single_asset_is_untouched(self, api_client, admin_user, park):
         asset = make_asset(park, "win", "PC-WIN", "Dell Inc.")
         column = self.column_for(park, admin_user)
 
@@ -588,7 +592,9 @@ class TestVirtualColGroupModification:
 
     def member_client(self, make_api_client, django_user_model, group):
         client = make_api_client(
-            "view_virtualcol", "change_virtualcol", "delete_virtualcol",
+            "view_virtualcol",
+            "change_virtualcol",
+            "delete_virtualcol",
             username="member",
         )
         django_user_model.objects.get(username="member").groups.add(group)

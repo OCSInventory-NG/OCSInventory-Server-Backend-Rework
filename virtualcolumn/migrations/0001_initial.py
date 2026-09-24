@@ -10,27 +10,62 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('auth', '0014_remove_group_is_protected'),
+        ("auth", "0014_remove_group_is_protected"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='VirtualCol',
+            name="VirtualCol",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('visibility', models.CharField(choices=[('public', 'Public'), ('private_personal', 'Private (Personal)'), ('private_group', 'Private (Group)')], default='private_personal', max_length=20)),
-                ('allow_group_modification', models.BooleanField(default=False)),
-                ('name', models.CharField(max_length=100)),
-                ('target', models.CharField(choices=[('asset', 'Assets')], default='asset', max_length=30)),
-                ('mapping', models.JSONField(default=dict)),
-                ('last_updated', models.DateTimeField(auto_now=True)),
-                ('groups', models.ManyToManyField(blank=True, to='auth.group')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "visibility",
+                    models.CharField(
+                        choices=[
+                            ("public", "Public"),
+                            ("private_personal", "Private (Personal)"),
+                            ("private_group", "Private (Group)"),
+                        ],
+                        default="private_personal",
+                        max_length=20,
+                    ),
+                ),
+                ("allow_group_modification", models.BooleanField(default=False)),
+                ("name", models.CharField(max_length=100)),
+                (
+                    "target",
+                    models.CharField(
+                        choices=[("asset", "Assets")], default="asset", max_length=30
+                    ),
+                ),
+                ("mapping", models.JSONField(default=dict)),
+                ("last_updated", models.DateTimeField(auto_now=True)),
+                ("groups", models.ManyToManyField(blank=True, to="auth.group")),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'ordering': ['name'],
-                'constraints': [models.UniqueConstraint(fields=('name', 'target'), name='unique_virtual_col_name_per_target')],
+                "ordering": ["name"],
+                "constraints": [
+                    models.UniqueConstraint(
+                        fields=("name", "target"),
+                        name="unique_virtual_col_name_per_target",
+                    )
+                ],
             },
         ),
     ]

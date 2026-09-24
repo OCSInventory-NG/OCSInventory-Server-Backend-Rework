@@ -6,8 +6,8 @@ from asset.inventory_field.models import InventoryField
 from django.db.models import F, OuterRef, Q, Subquery
 from django_filters.rest_framework import DjangoFilterBackend
 from ocsinventory_backend.ocs_framework import viewsets
-from rest_framework import filters
 from permission.permissions import DefaultModelPermissions
+from rest_framework import filters
 from rest_framework.response import Response
 from virtualcolumn.models import VirtualCol
 
