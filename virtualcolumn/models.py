@@ -20,14 +20,9 @@ class VirtualCol(RestrictVisibility):
     last_updated = models.DateTimeField(auto_now=True)
 
     class Meta:
-        """Define unique constraints"""
+        """Define the default ordering"""
 
         ordering = ["name"]
-        constraints = [
-            models.UniqueConstraint(
-                fields=["name", "target"], name="unique_virtual_col_name_per_target"
-            )
-        ]
 
     def __str__(self):
         return self.name

@@ -550,18 +550,35 @@ class TestVirtualColEdgeCases:
         assert response.status_code == 200
         assert response.data["name"] == "PC-WIN"
 
-    def test_two_columns_cannot_share_a_name_on_the_same_target(
-        self, api_client, admin_user, park
+    def test_two_users_may_each_keep_a_private_column_of_the_same_name(
+        self, make_api_client, admin_user, park
     ):
-        self.column_for(park, admin_user)
+        self.column_for(park, admin_user, visibility="private_personal")
 
-        response = api_client.post(
+        client = make_api_client("add_virtualcol", username="other")
+        response = client.post(
             "/virtual_cols/",
             {"name": "BIOS NAME", "target": "asset", "mapping": {}},
             format="json",
         )
 
-        assert response.status_code == 400
+        assert response.status_code == 201
+
+    def test_columns_sharing_a_name_do_not_overwrite_each_other(
+        self, api_client, admin_user, park
+    ):
+        make_asset(park, "win", "PC-WIN", "Dell Inc.")
+        first = self.column_for(park, admin_user)
+        second = self.column_for(park, admin_user, keys=("deb",))
+
+        response = api_client.get(
+            "/asset/bases/", {"virtual_cols": f"{first.id},{second.id}"}
+        )
+
+        assert rows(response)[0]["virtual_cols"] == {
+            first.key: "Dell Inc.",
+            second.key: None,
+        }
 
     def test_a_column_named_like_a_native_field_leaves_it_alone(
         self, api_client, admin_user, park

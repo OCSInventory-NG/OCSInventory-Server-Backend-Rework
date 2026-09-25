@@ -60,12 +60,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 "ordering": ["name"],
-                "constraints": [
-                    models.UniqueConstraint(
-                        fields=("name", "target"),
-                        name="unique_virtual_col_name_per_target",
-                    )
-                ],
             },
         ),
     ]
