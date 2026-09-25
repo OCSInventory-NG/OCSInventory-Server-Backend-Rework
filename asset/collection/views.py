@@ -1,5 +1,6 @@
 import ipaddress
 import logging
+import re
 
 from accountinfo.views import AccountinfoDataViewSet
 from asset.collection.serializers import (
@@ -47,6 +48,29 @@ class CollectionView(APIView):
     queryset = InventoryBase.objects.none()
 
     LOGGER = logging.getLogger(__name__)
+
+    # NUL is rejected outright by PostgreSQL's text storage, and lone
+    # UTF-16 surrogates (seen from some non-Latin Windows agents) break
+    # UTF-8 encoding on the way to the DB driver.
+    _INVALID_CHARS_RE = re.compile("[\x00\ud800-\udfff]")
+
+    @classmethod
+    def sanitize_field_value(cls, value):
+        """
+        Recursively strip characters invalid for PostgreSQL text storage
+        from a field value.
+
+        Some agents (e.g. on certain Windows locales) send strings padded
+        with NUL bytes or containing lone UTF-16 surrogates. Non-string
+        values are returned unchanged.
+        """
+        if isinstance(value, str):
+            return cls._INVALID_CHARS_RE.sub("", value)
+        if isinstance(value, list):
+            return [cls.sanitize_field_value(item) for item in value]
+        if isinstance(value, dict):
+            return {key: cls.sanitize_field_value(val) for key, val in value.items()}
+        return value
 
     def check_blacklist(self, data):
         """
@@ -286,7 +310,7 @@ class CollectionView(APIView):
                             InventoryField(
                                 inventory_section=section_instance,
                                 template_field=field_obj,
-                                value=field_value,
+                                value=self.sanitize_field_value(field_value),
                             )
                         )
 
@@ -477,7 +501,7 @@ class CollectionView(APIView):
                             InventoryField(
                                 inventory_section=section_instance,
                                 template_field=field_obj,
-                                value=field_value,
+                                value=self.sanitize_field_value(field_value),
                             )
                         )
 
@@ -661,7 +685,7 @@ class CollectionView(APIView):
                         new_field = InventoryField(
                             inventory_section=section_instance,
                             template_field=field_obj,
-                            value=field_value,
+                            value=self.sanitize_field_value(field_value),
                         )
                         new_fields.append(new_field)
 

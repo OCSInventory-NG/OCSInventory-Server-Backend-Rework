@@ -1,4 +1,5 @@
 import pytest
+from asset.collection.views import CollectionView
 from asset.inventory_base.models import InventoryBase
 from asset.inventory_section.models import InventorySection
 from asset.services import ReconciliationService
@@ -43,6 +44,36 @@ def force_agent_uuid_reconciliation(db):
     already ["uuid"], so this fixture only documents that assumption.
     """
     assert ReconciliationService.get_reconciliation_fields() == ["uuid"]
+
+
+class TestSanitizeFieldValue:
+    def test_strips_nul_characters(self):
+        nul = chr(0)
+        value = f"2.0.56{nul * 5}"
+
+        assert CollectionView.sanitize_field_value(value) == "2.0.56"
+
+    def test_strips_lone_utf16_surrogates(self):
+        lone_surrogate = chr(0xD800)
+        value = f"abc{lone_surrogate}def"
+
+        sanitized = CollectionView.sanitize_field_value(value)
+
+        assert sanitized == "abcdef"
+        # a lone surrogate would otherwise blow up UTF-8 encoding on the
+        # way to the DB driver
+        sanitized.encode("utf-8")
+
+    def test_recurses_into_lists_and_dicts(self):
+        nul = chr(0)
+        value = {"a": [f"x{nul}y", {"b": f"z{nul}"}]}
+
+        assert CollectionView.sanitize_field_value(value) == {"a": ["xy", {"b": "z"}]}
+
+    def test_leaves_non_string_values_unchanged(self):
+        assert CollectionView.sanitize_field_value(42) == 42
+        assert CollectionView.sanitize_field_value(None) is None
+        assert CollectionView.sanitize_field_value(True) is True
 
 
 @pytest.mark.django_db
@@ -91,6 +122,43 @@ class TestCollectionViewCreate:
             for field in inventory_section.fields.all()
         }
         assert values == {"NAME": "Motherboard", "MEMORY": "16384"}
+
+    def test_create_strips_nul_characters_from_field_values(
+        self, api_client, template, section, hardware_fields
+    ):
+        nul = chr(0)
+        response = api_client.post(
+            "/asset/collection/",
+            {
+                "name": "asset-1",
+                "serial": "SER-1",
+                "osname": "Linux",
+                "uuid": "uuid-asset-1",
+                "template": template.id,
+                "is_template_forced": True,
+                "template_inventory": {
+                    "HARDWARE": [
+                        {
+                            "NAME": f"FUJIFILM Network Scanner Utility 3{nul}{nul}B",
+                            "MEMORY": f"2.0.56{nul * 5}",
+                        }
+                    ]
+                },
+            },
+            format="json",
+        )
+
+        assert response.status_code == 201
+        asset = InventoryBase.objects.get(uuid="uuid-asset-1")
+        inventory_section = InventorySection.objects.get(base=asset)
+        values = {
+            field.template_field.name: field.value
+            for field in inventory_section.fields.all()
+        }
+        assert values == {
+            "NAME": "FUJIFILM Network Scanner Utility 3B",
+            "MEMORY": "2.0.56",
+        }
 
     def test_create_with_unknown_section_returns_201_with_errors(
         self, api_client, template
