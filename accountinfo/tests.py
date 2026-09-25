@@ -282,3 +282,82 @@ class TestAssetDetailUntouched:
 
         assert response.status_code == 200
         assert [row["name"] for row in rows(response)] == ["PC-1"]
+
+
+NETDEVICE_SLUG = "netdevice.netdevice"
+
+
+@pytest.fixture
+def netdevice_fields(db):
+    return {
+        "text": AccountinfoConfig.objects.create(
+            name="TAG", description="TAG", datatype="TEXT", datatarget="IPDISCOVER"
+        ),
+    }
+
+
+def make_netdevice(ip, netdevice_fields, tag):
+    from ipdiscover.netdevice.models import Netdevice
+    from ipdiscover.network.models import Network
+
+    network, _ = Network.objects.get_or_create(
+        netid="10.0.0.0", defaults={"mask": "255.255.255.0"}
+    )
+    device = Netdevice.objects.create(ip=ip, netname=ip, mac=ip, network=network)
+
+    AccountinfoData.objects.create(
+        accountdata={str(netdevice_fields["text"].id): tag},
+        object_slug=NETDEVICE_SLUG,
+        content_type=ContentType.objects.get_for_model(Netdevice),
+        object_id=device.id,
+    )
+    return device
+
+
+@pytest.mark.django_db
+class TestNetdeviceListingSearch:
+    """The netdevice listing shows the same columns, so it searches them too"""
+
+    def test_the_quick_search_reaches_the_displayed_columns(
+        self, api_client, netdevice_fields
+    ):
+        make_netdevice("10.0.0.1", netdevice_fields, tag="PRINTER-01")
+        make_netdevice("10.0.0.2", netdevice_fields, tag="SWITCH-02")
+
+        response = api_client.get(
+            "/netdevices/", {"accountinfo": "true", "search": "printer"}
+        )
+
+        assert [row["ip"] for row in rows(response)] == ["10.0.0.1"]
+
+    def test_the_device_own_fields_still_match(self, api_client, netdevice_fields):
+        make_netdevice("10.0.0.1", netdevice_fields, tag="PRINTER-01")
+        make_netdevice("10.0.0.2", netdevice_fields, tag="SWITCH-02")
+
+        response = api_client.get(
+            "/netdevices/", {"accountinfo": "true", "search": "10.0.0.2"}
+        )
+
+        assert [row["ip"] for row in rows(response)] == ["10.0.0.2"]
+
+    def test_nothing_changes_when_the_columns_are_not_displayed(
+        self, api_client, netdevice_fields
+    ):
+        make_netdevice("10.0.0.1", netdevice_fields, tag="PRINTER-01")
+
+        response = api_client.get("/netdevices/", {"search": "printer"})
+
+        assert rows(response) == []
+
+    def test_asset_data_does_not_leak_into_the_device_listing(
+        self, api_client, fields, netdevice_fields
+    ):
+        """Each listing only searches the data of its own target"""
+        make_asset("PC-1", fields, tag="shared-tag")
+        make_netdevice("10.0.0.1", netdevice_fields, tag="other")
+
+        response = api_client.get(
+            "/netdevices/", {"accountinfo": "true", "search": "shared-tag"}
+        )
+
+        assert rows(response) == []
