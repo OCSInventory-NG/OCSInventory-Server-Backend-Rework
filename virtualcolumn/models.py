@@ -32,6 +32,11 @@ class VirtualCol(RestrictVisibility):
     def __str__(self):
         return self.name
 
+    @property
+    def key(self):
+        """Identify the column in listings, a name may be shared or collide"""
+        return f"vc_{self.pk}"
+
     def field_ids(self):
         """Return the Field ids this column reads, whatever the template"""
         return [int(field_id) for field_id in self.mapping.values() if field_id]

@@ -58,8 +58,8 @@ class InventoryBaseSerializer(ExpandableFieldsMixin, ModelSerializer):
         if virtual_col_map is not None:
             values = virtual_col_map.get(instance.pk, {})
             representation["virtual_cols"] = {
-                name: values.get(name)
-                for name in self.context.get("virtual_col_names", [])
+                key: values.get(key)
+                for key in self.context.get("virtual_col_keys", [])
             }
 
         request = self.context.get("request")

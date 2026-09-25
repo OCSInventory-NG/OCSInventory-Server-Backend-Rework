@@ -77,7 +77,7 @@ class InventoryBaseViewSet(viewsets.OCSViewSet):
 
     def _build_virtual_col_map(self, columns, asset_ids):
         """
-        Return {asset_id: {"<column name>": value}}, one query for the page
+        Return {asset_id: {"<column key>": value}}, one query for the page
 
         A Field belongs to a single Template, so filtering on every mapped id
         at once gives each asset the entry of its own template and no other.
@@ -85,11 +85,11 @@ class InventoryBaseViewSet(viewsets.OCSViewSet):
         if not columns or not asset_ids:
             return {}
 
-        # field id -> column name, to walk the rows back
+        # field id -> column key, to walk the rows back
         column_by_field = {}
         for column in columns:
             for field_id in column.field_ids():
-                column_by_field[field_id] = column.name
+                column_by_field[field_id] = column.key
 
         if not column_by_field:
             return {}
@@ -103,14 +103,14 @@ class InventoryBaseViewSet(viewsets.OCSViewSet):
         extra_values = defaultdict(int)
 
         for asset_id, field_id, value in rows:
-            name = column_by_field[field_id]
-            if name in col_map[asset_id]:
-                extra_values[(asset_id, name)] += 1
+            key = column_by_field[field_id]
+            if key in col_map[asset_id]:
+                extra_values[(asset_id, key)] += 1
                 continue
-            col_map[asset_id][name] = value
+            col_map[asset_id][key] = value
 
-        for (asset_id, name), count in extra_values.items():
-            col_map[asset_id][name] = f"{col_map[asset_id][name]} (+{count})"
+        for (asset_id, key), count in extra_values.items():
+            col_map[asset_id][key] = f"{col_map[asset_id][key]} (+{count})"
 
         return col_map
 
@@ -118,14 +118,14 @@ class InventoryBaseViewSet(viewsets.OCSViewSet):
         """
         Return (column, descending) when the ordering asks for a virtual column
 
-        The header is sent as the ordering key, so it matches no model field
-        and DRF would silently drop it.
+        The column key is sent as the ordering key, so it matches no model
+        field and DRF would silently drop it.
         """
         ordering = self.request.query_params.get("ordering") or ""
         descending = ordering.startswith("-")
-        name = ordering[1:] if descending else ordering
+        key = ordering[1:] if descending else ordering
 
-        return next((column for column in columns if column.name == name), None), (
+        return next((column for column in columns if column.key == key), None), (
             descending
         )
 
@@ -223,7 +223,7 @@ class InventoryBaseViewSet(viewsets.OCSViewSet):
         context["virtual_col_map"] = self._build_virtual_col_map(
             columns, [asset.pk for asset in assets]
         )
-        context["virtual_col_names"] = [column.name for column in columns]
+        context["virtual_col_keys"] = [column.key for column in columns]
 
         serializer = self.get_serializer_class()(assets, many=True, context=context)
 

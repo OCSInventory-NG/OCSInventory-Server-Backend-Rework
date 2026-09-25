@@ -78,7 +78,7 @@ class TestVirtualCol:
 
         assert response.status_code == 200
         values = {
-            row["name"]: row["virtual_cols"]["BIOS NAME"] for row in rows(response)
+            row["name"]: row["virtual_cols"][column.key] for row in rows(response)
         }
         assert values == {"PC-WIN": "Dell Inc.", "PC-DEB": "Lenovo"}
 
@@ -91,7 +91,7 @@ class TestVirtualCol:
 
         response = api_client.get("/asset/bases/", {"virtual_cols": column.id})
 
-        assert rows(response)[0]["virtual_cols"] == {"BIOS NAME": None}
+        assert rows(response)[0]["virtual_cols"] == {column.key: None}
 
     def test_repeated_section_keeps_the_first_value_and_counts_the_others(
         self, api_client, admin_user, park
@@ -110,7 +110,7 @@ class TestVirtualCol:
 
         response = api_client.get("/asset/bases/", {"virtual_cols": column.id})
 
-        assert rows(response)[0]["virtual_cols"]["BIOS NAME"] == "first (+2)"
+        assert rows(response)[0]["virtual_cols"][column.key] == "first (+2)"
 
     def test_columns_are_omitted_when_not_requested(self, api_client, admin_user, park):
         make_asset(park, "win", "PC-WIN", "Dell Inc.")
@@ -296,7 +296,7 @@ class TestVirtualColOrdering:
         column = self.build_column(park, admin_user, ["win", "deb"])
 
         response = api_client.get(
-            "/asset/bases/", {"virtual_cols": column.id, "ordering": column.name}
+            "/asset/bases/", {"virtual_cols": column.id, "ordering": column.key}
         )
 
         assert [row["name"] for row in rows(response)] == ["PC-DEB", "PC-WIN"]
@@ -307,7 +307,7 @@ class TestVirtualColOrdering:
         column = self.build_column(park, admin_user, ["win", "deb"])
 
         response = api_client.get(
-            "/asset/bases/", {"virtual_cols": column.id, "ordering": "-" + column.name}
+            "/asset/bases/", {"virtual_cols": column.id, "ordering": "-" + column.key}
         )
 
         assert [row["name"] for row in rows(response)] == ["PC-WIN", "PC-DEB"]
@@ -320,7 +320,7 @@ class TestVirtualColOrdering:
         make_asset(park, "mac", "PC-MAC", "not mapped")
         column = self.build_column(park, admin_user, ["win", "deb"])
 
-        for ordering in (column.name, "-" + column.name):
+        for ordering in (column.key, "-" + column.key):
             response = api_client.get(
                 "/asset/bases/", {"virtual_cols": column.id, "ordering": ordering}
             )
@@ -341,11 +341,11 @@ class TestVirtualColOrdering:
         column = self.build_column(park, admin_user, ["win", "deb"])
 
         response = api_client.get(
-            "/asset/bases/", {"virtual_cols": column.id, "ordering": column.name}
+            "/asset/bases/", {"virtual_cols": column.id, "ordering": column.key}
         )
 
         listed = rows(response)
-        assert listed[0]["virtual_cols"]["BIOS NAME"] == "Alpha (+1)"
+        assert listed[0]["virtual_cols"][column.key] == "Alpha (+1)"
         assert [row["name"] for row in listed] == ["PC-WIN", "PC-DEB"]
 
     def test_ordering_on_a_native_column_is_untouched(
@@ -432,7 +432,7 @@ class TestVirtualColVisibility:
 class TestVirtualColEdgeCases:
     def column_for(self, park, owner, keys=("win",), **kwargs):
         return VirtualCol.objects.create(
-            name="BIOS NAME",
+            name=kwargs.pop("name", "BIOS NAME"),
             target="asset",
             mapping={
                 str(park[key]["template"].id): park[key]["field"].id for key in keys
@@ -463,7 +463,7 @@ class TestVirtualColEdgeCases:
         response = api_client.get("/asset/bases/", {"virtual_cols": column.id})
 
         assert response.status_code == 200
-        assert rows(response)[0]["virtual_cols"] == {"BIOS NAME": None}
+        assert rows(response)[0]["virtual_cols"] == {column.key: None}
 
     def test_a_column_whose_template_was_deleted_stays_empty_without_failing(
         self, api_client, admin_user, park
@@ -475,7 +475,7 @@ class TestVirtualColEdgeCases:
         response = api_client.get("/asset/bases/", {"virtual_cols": column.id})
 
         assert response.status_code == 200
-        assert rows(response)[0]["virtual_cols"]["BIOS NAME"] == "Lenovo"
+        assert rows(response)[0]["virtual_cols"][column.key] == "Lenovo"
 
     def test_a_column_with_an_empty_mapping_is_shown_but_never_filled(
         self, api_client, admin_user, park
@@ -491,7 +491,7 @@ class TestVirtualColEdgeCases:
 
         response = api_client.get("/asset/bases/", {"virtual_cols": column.id})
 
-        assert rows(response)[0]["virtual_cols"] == {"EMPTY": None}
+        assert rows(response)[0]["virtual_cols"] == {column.key: None}
 
     def test_ordering_on_an_unknown_name_falls_back_to_the_default(
         self, api_client, admin_user, park
@@ -517,7 +517,7 @@ class TestVirtualColEdgeCases:
             {
                 "virtual_cols": column.id,
                 "search": "dell",
-                "ordering": "-" + column.name,
+                "ordering": "-" + column.key,
             },
         )
 
@@ -532,12 +532,12 @@ class TestVirtualColEdgeCases:
 
         response = api_client.get(
             "/asset/bases/",
-            {"virtual_cols": column.id, "limit": 3, "ordering": column.name},
+            {"virtual_cols": column.id, "limit": 3, "ordering": column.key},
         )
 
         assert response.data["count"] == 7
         assert len(response.data["results"]) == 3
-        assert response.data["results"][0]["virtual_cols"]["BIOS NAME"] == "value-0"
+        assert response.data["results"][0]["virtual_cols"][column.key] == "value-0"
 
     def test_retrieving_a_single_asset_is_untouched(self, api_client, admin_user, park):
         asset = make_asset(park, "win", "PC-WIN", "Dell Inc.")
@@ -562,6 +562,17 @@ class TestVirtualColEdgeCases:
         )
 
         assert response.status_code == 400
+
+    def test_a_column_named_like_a_native_field_leaves_it_alone(
+        self, api_client, admin_user, park
+    ):
+        make_asset(park, "win", "PC-WIN", "Dell Inc.")
+        column = self.column_for(park, admin_user, name="name")
+
+        response = api_client.get("/asset/bases/", {"virtual_cols": column.id})
+
+        assert rows(response)[0]["name"] == "PC-WIN"
+        assert rows(response)[0]["virtual_cols"] == {column.key: "Dell Inc."}
 
     def test_asking_for_a_column_of_somebody_else_resolves_nothing(
         self, make_api_client, admin_user, park
