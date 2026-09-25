@@ -1,7 +1,9 @@
 import pytest
+from accountinfo.models import AccountinfoConfig, AccountinfoData
 from asset.inventory_base.models import InventoryBase
 from asset.inventory_field.models import InventoryField
 from asset.inventory_section.models import InventorySection
+from django.contrib.contenttypes.models import ContentType
 from django.db import connection
 from django.test.utils import CaptureQueriesContext
 from inventory.field.models import Field
@@ -263,6 +265,31 @@ class TestVirtualColSearch:
         )
 
         assert len(rows(response)) == 1
+
+    def test_the_search_still_reaches_the_administrative_data(
+        self, api_client, admin_user, park
+    ):
+        """Both searches are combined, a virtual column must not hide the other"""
+        config = AccountinfoConfig.objects.create(
+            name="TAG", description="TAG", datatype="TEXT", datatarget="ASSET"
+        )
+        tagged = make_asset(park, "win", "PC-WIN", "Dell Inc.")
+        AccountinfoData.objects.create(
+            accountdata={str(config.id): "Toulouse"},
+            object_slug="inventory_base.inventorybase",
+            content_type=ContentType.objects.get_for_model(InventoryBase),
+            object_id=tagged.id,
+        )
+        make_asset(park, "deb", "PC-DEB", "Toulouse Computers")
+        make_asset(park, "win", "PC-OTHER", "Lenovo")
+        column = self.build_column(park, admin_user, ["win", "deb"])
+
+        response = api_client.get(
+            "/asset/bases/",
+            {"virtual_cols": column.id, "accountinfo": "true", "search": "toulouse"},
+        )
+
+        assert sorted(row["name"] for row in rows(response)) == ["PC-DEB", "PC-WIN"]
 
     def test_a_column_that_is_not_displayed_is_not_searched(
         self, api_client, admin_user, park

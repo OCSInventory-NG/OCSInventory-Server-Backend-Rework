@@ -1,5 +1,6 @@
 from collections import defaultdict
 
+from accountinfo.viewsets import AccountinfoSearchMixin
 from asset.inventory_base.models import InventoryBase
 from asset.inventory_base.serializers import InventoryBaseSerializer
 from asset.inventory_field.models import InventoryField
@@ -12,7 +13,7 @@ from rest_framework.response import Response
 from virtualcolumn.models import VirtualCol
 
 
-class InventoryBaseViewSet(viewsets.OCSViewSet):
+class InventoryBaseViewSet(AccountinfoSearchMixin, viewsets.OCSViewSet):
     """
     This class will define the view behavior
 
@@ -26,6 +27,8 @@ class InventoryBaseViewSet(viewsets.OCSViewSet):
     queryset = InventoryBase.objects.all()
     serializer_class = InventoryBaseSerializer
     model = InventoryBase
+    accountinfo_slug = "inventory_base.inventorybase"
+    accountinfo_target = "ASSET"
     search_fields = [
         "name",
         "description",
@@ -177,25 +180,22 @@ class InventoryBaseViewSet(viewsets.OCSViewSet):
         if not field_ids and sorted_column is None:
             return super().filter_queryset(queryset)
 
-        # the other filters apply to both sides of the search
-        narrowed = DjangoFilterBackend().filter_queryset(self.request, queryset, self)
+        # the asset own fields and the administrative data, searched as usual
+        narrowed = super().filter_queryset(queryset)
 
         if field_ids:
-            on_base_fields = filters.SearchFilter().filter_queryset(
-                self.request, narrowed, self
-            )
-            in_columns = narrowed.filter(
-                inventory_sections__fields__template_field_id__in=field_ids,
-                inventory_sections__fields__value__icontains=term,
+            # the other filters apply to both sides of the search
+            in_columns = (
+                DjangoFilterBackend()
+                .filter_queryset(self.request, queryset, self)
+                .filter(
+                    inventory_sections__fields__template_field_id__in=field_ids,
+                    inventory_sections__fields__value__icontains=term,
+                )
             )
             # matching by primary key keeps the join from duplicating rows
             narrowed = queryset.filter(
-                Q(pk__in=on_base_fields.values("pk"))
-                | Q(pk__in=in_columns.values("pk"))
-            )
-        else:
-            narrowed = filters.SearchFilter().filter_queryset(
-                self.request, narrowed, self
+                Q(pk__in=narrowed.values("pk")) | Q(pk__in=in_columns.values("pk"))
             )
 
         if sorted_column is None:
