@@ -145,3 +145,79 @@ class TestAssetListingSearch:
         response = api_client.get("/asset/bases/", {"search": "toulouse"})
 
         assert rows(response) == []
+
+
+@pytest.mark.django_db
+class TestAssetListingUntouched:
+    """The override must stay invisible on every path it does not serve"""
+
+    def test_a_listing_without_search_is_unchanged(self, api_client, fields):
+        make_asset("PC-1", fields, location="Toulouse")
+        make_asset("PC-2", fields, location="Bordeaux")
+
+        response = api_client.get("/asset/bases/", {"accountinfo": "true"})
+
+        assert len(rows(response)) == 2
+
+    def test_a_term_matching_nothing_still_searches_the_asset_fields(
+        self, api_client, fields
+    ):
+        make_asset("PC-1", fields, location="Toulouse")
+
+        response = api_client.get(
+            "/asset/bases/", {"accountinfo": "true", "search": "PC-1"}
+        )
+
+        assert [row["name"] for row in rows(response)] == ["PC-1"]
+
+    def test_the_model_filters_still_narrow_the_result(self, api_client, fields):
+        toulouse = make_asset("PC-1", fields, location="Toulouse")
+        InventoryBase.objects.filter(id=toulouse.id).update(osname="Debian")
+        other = make_asset("PC-2", fields, location="Toulouse")
+        InventoryBase.objects.filter(id=other.id).update(osname="Windows")
+
+        response = api_client.get(
+            "/asset/bases/",
+            {"accountinfo": "true", "search": "toulouse", "osname": "Debian"},
+        )
+
+        assert [row["name"] for row in rows(response)] == ["PC-1"]
+
+    def test_ordering_still_applies(self, api_client, fields):
+        make_asset("PC-B", fields, location="Toulouse")
+        make_asset("PC-A", fields, location="Toulouse")
+
+        response = api_client.get(
+            "/asset/bases/",
+            {"accountinfo": "true", "search": "toulouse", "ordering": "-name"},
+        )
+
+        assert [row["name"] for row in rows(response)] == ["PC-B", "PC-A"]
+
+    def test_pagination_keeps_a_correct_count(self, api_client, fields):
+        for index in range(5):
+            make_asset(f"PC-{index}", fields, location="Toulouse")
+
+        response = api_client.get(
+            "/asset/bases/",
+            {"accountinfo": "true", "search": "toulouse", "limit": 2},
+        )
+
+        assert response.data["count"] == 5
+        assert len(response.data["results"]) == 2
+
+    def test_data_of_another_object_type_is_ignored(self, api_client, fields):
+        """A netdevice carrying the same value must not surface an asset"""
+        asset = make_asset("PC-1", fields, tag="only-on-the-asset")
+        AccountinfoData.objects.create(
+            accountdata={str(fields["text"].id): "netdevice-only"},
+            object_slug="netdevice.netdevice",
+            content_type=ContentType.objects.get_for_model(InventoryBase),
+            object_id=asset.id,
+        )
+
+        response = api_client.get(
+            "/asset/bases/", {"accountinfo": "true", "search": "netdevice-only"}
+        )
+
+        assert rows(response) == []

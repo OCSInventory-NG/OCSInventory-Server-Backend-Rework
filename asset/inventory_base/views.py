@@ -76,7 +76,8 @@ class InventoryBaseViewSet(viewsets.OCSViewSet):
         on_base_fields = filters.SearchFilter().filter_queryset(
             self.request, narrowed, self
         )
-        combined = queryset.filter(
+        # narrowed, not queryset : the model filters apply to both sides
+        combined = narrowed.filter(
             Q(pk__in=on_base_fields.values("pk")) | Q(pk__in=matched)
         )
 
