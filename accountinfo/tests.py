@@ -221,3 +221,64 @@ class TestAssetListingUntouched:
         )
 
         assert rows(response) == []
+
+
+@pytest.mark.django_db
+class TestAssetDetailUntouched:
+    """
+    filter_queryset also runs on retrieve, update and destroy
+
+    DRF filters the detail route through the same backends, so a search term
+    that misses already returns 404 without this override. What matters is that
+    the behaviour stays identical either way.
+    """
+
+    def test_the_detail_route_behaves_the_same_either_way(self, api_client, fields):
+        asset = make_asset("PC-1", fields, location="Toulouse")
+        url = f"/asset/bases/{asset.id}/"
+
+        assert api_client.get(url).status_code == 200
+        for params in (
+            {"search": "nowhere"},
+            {"search": "nowhere", "accountinfo": "true"},
+        ):
+            assert api_client.get(url, params).status_code == 404
+
+    def test_an_asset_found_through_its_data_is_reachable_on_detail(
+        self, api_client, fields
+    ):
+        asset = make_asset("PC-1", fields, location="Toulouse")
+
+        response = api_client.get(
+            f"/asset/bases/{asset.id}/",
+            {"search": "toulouse", "accountinfo": "true"},
+        )
+
+        assert response.status_code == 200
+
+    def test_deleting_is_not_narrowed_by_the_search(self, api_client, fields):
+        asset = make_asset("PC-1", fields, location="Toulouse")
+
+        response = api_client.delete(
+            f"/asset/bases/{asset.id}/?accountinfo=true&search=toulouse"
+        )
+
+        assert response.status_code == 204
+        assert not InventoryBase.objects.filter(id=asset.id).exists()
+
+    def test_malformed_data_does_not_break_the_listing(self, api_client, fields):
+        """accountdata is a free JSONField, one bad row must not fail the page"""
+        make_asset("PC-1", fields, tag="findme")
+        AccountinfoData.objects.create(
+            accountdata="not an object",
+            object_slug=SLUG,
+            content_type=ContentType.objects.get_for_model(InventoryBase),
+            object_id=999999,
+        )
+
+        response = api_client.get(
+            "/asset/bases/", {"accountinfo": "true", "search": "findme"}
+        )
+
+        assert response.status_code == 200
+        assert [row["name"] for row in rows(response)] == ["PC-1"]

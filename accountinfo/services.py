@@ -43,7 +43,9 @@ class AccountinfoSearch:
         )
 
         for object_id, data in rows.iterator(chunk_size=2000):
-            for key, value in (data or {}).items():
+            if not isinstance(data, dict):
+                continue
+            for key, value in data.items():
                 datatype = types.get(self._as_id(key))
                 if datatype and self._matches(datatype, value, needle, labels):
                     matched.add(object_id)
