@@ -74,6 +74,7 @@ from search.views import SearchView
 from snmp.scanner.routers import SnmpScannerRouter
 from snmp.snmp_config.routers import SnmpConfigRouter
 from user.routers import UserRouter
+from virtualcolumn.routers import VirtualColRouter
 
 # Routers provide a way of automatically determining the URL conf.
 defaultRouter = DefaultRouter()
@@ -202,6 +203,9 @@ authMappingRouter = authMappingRouter.defineRoutes(defaultRouter)
 # Add search declaration
 searchRouter = SearchRouter()
 searchRouter = searchRouter.defineRoutes(defaultRouter)
+
+virtualColRouter = VirtualColRouter()
+virtualColRouter = virtualColRouter.defineRoutes(defaultRouter)
 
 # Add AssetGroup declaration
 assetGroupRouter = AssetGroupRouter()
