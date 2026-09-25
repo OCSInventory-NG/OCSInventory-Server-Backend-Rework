@@ -7,7 +7,7 @@ class VirtualCol(RestrictVisibility):
     Virtual column model class definition
 
     The model will contain the following info
-    - Name (the column header, i.e. "BIOS NAME")
+    - Name (the column header, i.e. "BIOS VERSION")
     - Target (the table the column belongs to)
     - Mapping, {"<template id>": <field id>}
     """

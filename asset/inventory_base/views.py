@@ -85,29 +85,30 @@ class InventoryBaseViewSet(viewsets.OCSViewSet):
         if not columns or not asset_ids:
             return {}
 
-        # field id -> column key, to walk the rows back
-        column_by_field = {}
+        # field id -> column keys, to walk the rows back
+        # several columns may read the same field
+        columns_by_field = defaultdict(list)
         for column in columns:
             for field_id in column.field_ids():
-                column_by_field[field_id] = column.key
+                columns_by_field[field_id].append(column.key)
 
-        if not column_by_field:
+        if not columns_by_field:
             return {}
 
         rows = InventoryField.objects.filter(
             inventory_section__base_id__in=asset_ids,
-            template_field_id__in=column_by_field.keys(),
+            template_field_id__in=columns_by_field.keys(),
         ).values_list("inventory_section__base_id", "template_field_id", "value")
 
         col_map = defaultdict(dict)
         extra_values = defaultdict(int)
 
         for asset_id, field_id, value in rows:
-            key = column_by_field[field_id]
-            if key in col_map[asset_id]:
-                extra_values[(asset_id, key)] += 1
-                continue
-            col_map[asset_id][key] = value
+            for key in columns_by_field[field_id]:
+                if key in col_map[asset_id]:
+                    extra_values[(asset_id, key)] += 1
+                    continue
+                col_map[asset_id][key] = value
 
         for (asset_id, key), count in extra_values.items():
             col_map[asset_id][key] = f"{col_map[asset_id][key]} (+{count})"

@@ -57,7 +57,7 @@ def rows(response):
 class TestVirtualCol:
     def build_column(self, park, admin_user, keys):
         return VirtualCol.objects.create(
-            name="BIOS NAME",
+            name="BIOS VERSION",
             target="asset",
             mapping={
                 str(park[key]["template"].id): park[key]["field"].id for key in keys
@@ -162,7 +162,7 @@ class TestVirtualColApi:
         response = api_client.post(
             "/virtual_cols/",
             {
-                "name": "BIOS NAME",
+                "name": "BIOS VERSION",
                 "target": "asset",
                 "visibility": "public",
                 "mapping": {str(park["win"]["template"].id): park["win"]["field"].id},
@@ -171,7 +171,7 @@ class TestVirtualColApi:
         )
 
         assert response.status_code == 201, response.data
-        column = VirtualCol.objects.get(name="BIOS NAME")
+        column = VirtualCol.objects.get(name="BIOS VERSION")
         assert column.user == admin_user
 
     def test_the_payload_cannot_hand_the_column_to_someone_else(
@@ -182,7 +182,7 @@ class TestVirtualColApi:
         response = api_client.post(
             "/virtual_cols/",
             {
-                "name": "BIOS NAME",
+                "name": "BIOS VERSION",
                 "target": "asset",
                 "mapping": {str(park["win"]["template"].id): park["win"]["field"].id},
                 "user": other.id,
@@ -191,13 +191,13 @@ class TestVirtualColApi:
         )
 
         assert response.status_code == 201, response.data
-        assert VirtualCol.objects.get(name="BIOS NAME").user == admin_user
+        assert VirtualCol.objects.get(name="BIOS VERSION").user == admin_user
 
     def test_mapping_entries_are_normalised(self, api_client, park):
         response = api_client.post(
             "/virtual_cols/",
             {
-                "name": "BIOS NAME",
+                "name": "BIOS VERSION",
                 "target": "asset",
                 "mapping": {
                     str(park["win"]["template"].id): str(park["win"]["field"].id),
@@ -208,7 +208,7 @@ class TestVirtualColApi:
         )
 
         assert response.status_code == 201, response.data
-        assert VirtualCol.objects.get(name="BIOS NAME").mapping == {
+        assert VirtualCol.objects.get(name="BIOS VERSION").mapping == {
             str(park["win"]["template"].id): park["win"]["field"].id
         }
 
@@ -217,7 +217,7 @@ class TestVirtualColApi:
 class TestVirtualColSearch:
     def build_column(self, park, admin_user, keys):
         return VirtualCol.objects.create(
-            name="BIOS NAME",
+            name="BIOS VERSION",
             target="asset",
             mapping={
                 str(park[key]["template"].id): park[key]["field"].id for key in keys
@@ -279,7 +279,7 @@ class TestVirtualColSearch:
 class TestVirtualColOrdering:
     def build_column(self, park, admin_user, keys):
         return VirtualCol.objects.create(
-            name="BIOS NAME",
+            name="BIOS VERSION",
             target="asset",
             mapping={
                 str(park[key]["template"].id): park[key]["field"].id for key in keys
@@ -432,7 +432,7 @@ class TestVirtualColVisibility:
 class TestVirtualColEdgeCases:
     def column_for(self, park, owner, keys=("win",), **kwargs):
         return VirtualCol.objects.create(
-            name=kwargs.pop("name", "BIOS NAME"),
+            name=kwargs.pop("name", "BIOS VERSION"),
             target="asset",
             mapping={
                 str(park[key]["template"].id): park[key]["field"].id for key in keys
@@ -558,7 +558,7 @@ class TestVirtualColEdgeCases:
         client = make_api_client("add_virtualcol", username="other")
         response = client.post(
             "/virtual_cols/",
-            {"name": "BIOS NAME", "target": "asset", "mapping": {}},
+            {"name": "BIOS VERSION", "target": "asset", "mapping": {}},
             format="json",
         )
 
@@ -578,6 +578,22 @@ class TestVirtualColEdgeCases:
         assert rows(response)[0]["virtual_cols"] == {
             first.key: "Dell Inc.",
             second.key: None,
+        }
+
+    def test_columns_reading_the_same_field_are_all_filled(
+        self, api_client, admin_user, park
+    ):
+        make_asset(park, "win", "PC-WIN", "Dell Inc.")
+        first = self.column_for(park, admin_user)
+        second = self.column_for(park, admin_user, name="MAKER")
+
+        response = api_client.get(
+            "/asset/bases/", {"virtual_cols": f"{first.id},{second.id}"}
+        )
+
+        assert rows(response)[0]["virtual_cols"] == {
+            first.key: "Dell Inc.",
+            second.key: "Dell Inc.",
         }
 
     def test_a_column_named_like_a_native_field_leaves_it_alone(
