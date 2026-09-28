@@ -923,10 +923,10 @@ paths:
     get:
       operationId: asset_bases_list
       description: |-
-        This class will define the view behavior
+        The default listing, plus the virtual columns asked for in the URL
 
-        Args:
-            viewsets ([OCSVIewSet])
+        Values are resolved once for the page and passed by serializer context,
+        so a column costs one query and not one per asset.
       parameters:
       - in: query
         name: agent
@@ -14216,6 +14216,279 @@ paths:
       responses:
         '204':
           description: No response body
+  /virtual_cols/:
+    get:
+      operationId: virtual_cols_list
+      description: |-
+        Return the list of objects that the user can see (public,
+        private_personal, private_group)
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - xml
+      - in: query
+        name: id
+        schema:
+          type: integer
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: name
+        schema:
+          type: string
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: target
+        schema:
+          type: string
+          enum:
+          - asset
+        description: '* `asset` - Assets'
+      tags:
+      - virtual_cols
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedVirtualColList'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/PaginatedVirtualColList'
+          description: ''
+    post:
+      operationId: virtual_cols_create
+      description: |-
+        Handle post request, suitable for single and multi creation
+
+        Args:
+            request ([dict]): can be dict or list of dicts
+
+        Returns:
+            [type]: [description]
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - xml
+      tags:
+      - virtual_cols
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/VirtualCol'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VirtualCol'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VirtualCol'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/VirtualCol'
+        required: true
+      security:
+      - knoxApiToken: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VirtualCol'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/VirtualCol'
+          description: ''
+  /virtual_cols/{id}/:
+    get:
+      operationId: virtual_cols_retrieve
+      description: |-
+        This class will define the view behavior
+
+        Args:
+            viewsets ([RestrictVisibilityViewSet])
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - xml
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this virtual col.
+        required: true
+      tags:
+      - virtual_cols
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VirtualCol'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/VirtualCol'
+          description: ''
+    put:
+      operationId: virtual_cols_update
+      description: |-
+        User needs to either be the creator or part of the group
+        (if allow_group_modification is enabled) to modify a
+        visibility restricted object
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - xml
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this virtual col.
+        required: true
+      tags:
+      - virtual_cols
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/VirtualCol'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VirtualCol'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VirtualCol'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/VirtualCol'
+        required: true
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VirtualCol'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/VirtualCol'
+          description: ''
+    patch:
+      operationId: virtual_cols_partial_update
+      description: |-
+        This class will define the view behavior
+
+        Args:
+            viewsets ([RestrictVisibilityViewSet])
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - xml
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this virtual col.
+        required: true
+      tags:
+      - virtual_cols
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedVirtualCol'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedVirtualCol'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedVirtualCol'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/PatchedVirtualCol'
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VirtualCol'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/VirtualCol'
+          description: ''
+    delete:
+      operationId: virtual_cols_destroy
+      description: User needs to be the creator to delete a visibility restricted
+        object
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - xml
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this virtual col.
+        required: true
+      tags:
+      - virtual_cols
+      security:
+      - knoxApiToken: []
+      responses:
+        '204':
+          description: No response body
 components:
   schemas:
     AccountinfoConfig:
@@ -16450,6 +16723,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/User'
+    PaginatedVirtualColList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/VirtualCol'
     PaginatedWindowsBuildMappingList:
       type: object
       required:
@@ -17661,6 +17957,34 @@ components:
           items:
             type: integer
           description: Specific permissions for this user.
+    PatchedVirtualCol:
+      type: object
+      description: This serialize class provide the API representation
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        visibility:
+          $ref: '#/components/schemas/VisibilityEnum'
+        allow_group_modification:
+          type: boolean
+        name:
+          type: string
+          maxLength: 100
+        target:
+          $ref: '#/components/schemas/TargetEnum'
+        mapping: {}
+        last_updated:
+          type: string
+          format: date-time
+          readOnly: true
+        user:
+          type: integer
+          readOnly: true
+        groups:
+          type: array
+          items:
+            type: integer
     PatchedWindowsBuildMapping:
       type: object
       properties:
@@ -18316,6 +18640,11 @@ components:
       - id
       - section
       - template
+    TargetEnum:
+      enum:
+      - asset
+      type: string
+      description: '* `asset` - Assets'
     TargetOsEnum:
       enum:
       - WIN
@@ -18449,6 +18778,39 @@ components:
         * `1` - SNMPv1
         * `2c` - SNMPv2c
         * `3` - SNMPv3
+    VirtualCol:
+      type: object
+      description: This serialize class provide the API representation
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        visibility:
+          $ref: '#/components/schemas/VisibilityEnum'
+        allow_group_modification:
+          type: boolean
+        name:
+          type: string
+          maxLength: 100
+        target:
+          $ref: '#/components/schemas/TargetEnum'
+        mapping: {}
+        last_updated:
+          type: string
+          format: date-time
+          readOnly: true
+        user:
+          type: integer
+          readOnly: true
+        groups:
+          type: array
+          items:
+            type: integer
+      required:
+      - id
+      - last_updated
+      - name
+      - user
     VisibilityEnum:
       enum:
       - public
