@@ -43,6 +43,7 @@ from compliance.routers import ComplianceRouter
 from config.routers import ConfigRouter
 from dashboard.chart.routers import DashboardChartRouter
 from dashboard.layout.routers import DashboardLayoutRouter
+from debug.routers import DebugRouter
 from deployment.action.routers import ActionRouter
 from deployment.package.routers import PackageRouter
 from deployment.result.routers import ResultRouter
@@ -229,6 +230,8 @@ extensionRouter = extensionRouter.defineRoutes(defaultRouter)
 
 complianceRouter = ComplianceRouter()
 complianceRouter = complianceRouter.defineRoutes(defaultRouter)
+debugRouter = DebugRouter()
+debugRouter = debugRouter.defineRoutes(defaultRouter)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.

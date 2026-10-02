@@ -129,3 +129,54 @@ def test_non_api_view():
 
     assert call["access"] == "error"
     assert call["detail"] == "not_api_endpoint"
+
+
+RESOLVE_URL = "/debug/resolve/"
+
+
+@pytest.mark.django_db
+def test_resolve_endpoint_requires_debug_permission(make_api_client):
+    client = make_api_client("view_inventorybase")
+
+    response = client.post(RESOLVE_URL, {"calls": []}, format="json")
+
+    assert response.status_code == 403
+
+
+@pytest.mark.django_db
+def test_resolve_endpoint(make_api_client):
+    client = make_api_client("view_debugmode")
+
+    response = client.post(
+        RESOLVE_URL,
+        {"calls": [{"method": "GET", "path": "asset/bases/"}]},
+        format="json",
+    )
+
+    assert response.status_code == 200
+    assert response.data["calls"][0]["operation"] == "list"
+
+
+@pytest.mark.django_db
+def test_resolve_endpoint_rejects_invalid_payload(make_api_client):
+    client = make_api_client("view_debugmode")
+
+    response = client.post(
+        RESOLVE_URL, {"calls": [{"method": "FETCH", "path": ""}]}, format="json"
+    )
+
+    assert response.status_code == 400
+
+
+@pytest.mark.django_db
+def test_resolve_endpoint_describes_itself_as_custom(make_api_client):
+    client = make_api_client("view_debugmode")
+
+    response = client.post(
+        RESOLVE_URL,
+        {"calls": [{"method": "POST", "path": "debug/resolve/"}]},
+        format="json",
+    )
+
+    assert response.data["calls"][0]["access"] == "custom"
+    assert response.data["calls"][0]["detail"] == "HasDebugMode"
