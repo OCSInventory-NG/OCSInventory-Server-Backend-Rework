@@ -101,6 +101,7 @@ INSTALLED_APPS = [
     "filemanager.apps.FileManagerConfig",
     "extension.apps.ExtensionConfig",
     "compliance.apps.ComplianceConfig",
+    "debug.apps.DebugConfig",
 ]
 
 MIDDLEWARE = [
