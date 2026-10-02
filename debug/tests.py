@@ -1,6 +1,6 @@
 import pytest
-from django.contrib.auth.models import Group, Permission
 from debug.resolver import resolve_calls
+from django.contrib.auth.models import Group, Permission
 from mgmt.management.commands.migrate import Command as MigrateCommand
 
 
