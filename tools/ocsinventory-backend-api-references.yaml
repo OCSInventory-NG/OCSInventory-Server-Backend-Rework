@@ -7965,6 +7965,41 @@ paths:
       responses:
         '204':
           description: No response body
+  /debug/resolve/:
+    post:
+      operationId: debug_resolve_create
+      description: Resolve API calls made by a frontend page into the permissions
+        they require, used by the frontend debug mode.
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - xml
+      tags:
+      - debug
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DebugResolve'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DebugResolve'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DebugResolve'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/DebugResolve'
+        required: true
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          description: No response body
   /deployment/actions/:
     get:
       operationId: deployment_actions_list
@@ -15104,6 +15139,26 @@ components:
         * `TEXTAREA` - Textarea
         * `SELECT` - Select
         * `CHECKBOX` - Checkbox
+    DebugCall:
+      type: object
+      properties:
+        method:
+          $ref: '#/components/schemas/MethodEnum'
+        path:
+          type: string
+          maxLength: 2048
+      required:
+      - method
+      - path
+    DebugResolve:
+      type: object
+      properties:
+        calls:
+          type: array
+          items:
+            $ref: '#/components/schemas/DebugCall'
+      required:
+      - calls
     Extension:
       type: object
       description: This serialize class provide the API representation
@@ -15426,6 +15481,24 @@ components:
       - comment
       - id
       - timestamp
+    MethodEnum:
+      enum:
+      - GET
+      - POST
+      - PUT
+      - PATCH
+      - DELETE
+      - OPTIONS
+      - HEAD
+      type: string
+      description: |-
+        * `GET` - GET
+        * `POST` - POST
+        * `PUT` - PUT
+        * `PATCH` - PATCH
+        * `DELETE` - DELETE
+        * `OPTIONS` - OPTIONS
+        * `HEAD` - HEAD
     MyAccount:
       type: object
       description: |-
