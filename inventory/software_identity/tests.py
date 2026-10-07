@@ -9,7 +9,19 @@ from inventory.software_identity.cpe.matcher import (
 )
 from inventory.software_identity.cpe.sync import sync_cpe_index
 from inventory.software_identity.cpe.tokens import base_title, title_entries, tokens
+from inventory.software_identity.match_key import match_key
 from inventory.software_identity.models import CpeIndexState, CpeProduct, CpeToken
+from inventory.software_identity.normalizers import build_normalizers
+from inventory.software_identity.normalizers.base import (
+    MATCHED,
+    NONE,
+    REVIEW,
+    UNSUPPORTED,
+    VALIDATED,
+    EffectiveDecision,
+    SoftwareRecord,
+)
+from inventory.software_identity.normalizers.cpe import cpe_identifier
 
 
 def test_tokens_drop_versions_architectures_and_parentheses():
@@ -190,3 +202,221 @@ class TestCpeMatcher:
 
     def test_no_index_is_not_available(self, db):
         assert CpeMatcher().available is False
+
+
+class FakeMatcher:
+    def __init__(self, ranked):
+        self.ranked = ranked
+        self.calls = 0
+
+    def rank(self, name, publisher, version, limit=5):
+        self.calls += 1
+        return self.ranked
+
+
+@pytest.mark.parametrize(
+    "name, expected",
+    [
+        ("Mozilla Firefox (x64 fr)", "mozilla firefox"),
+        ("Ivanti Secure Access Client 22.6", "ivanti secure access client"),
+        (
+            "Microsoft Visual C++ 2015-2022 Redistributable (x64) - 14.51.36231",
+            "microsoft visual c++ 2015-2022 redistributable",
+        ),
+        ("Visual Studio Community 2026", "visual studio community 2026"),
+        (
+            "Microsoft .NET SDK 10.0.400 (x64) from Visual Studio",
+            "microsoft .net sdk from visual studio",
+        ),
+    ],
+)
+def test_match_key(name, expected):
+    assert match_key(name) == expected
+
+
+def windows_record(
+    name="Microsoft Edge", version="152.0.4191.53", publisher="Microsoft"
+):
+    return SoftwareRecord(
+        name=name,
+        publisher=publisher,
+        version=version,
+        platform_family="windows",
+        platform_key="windows",
+    )
+
+
+class TestCpeNormalizers:
+    def test_decision_wins_without_calling_the_matcher(self):
+        matcher = FakeMatcher([(1.2, "microsoft:edge")])
+        decisions = {
+            ("windows", "microsoft edge"): EffectiveDecision(
+                7, "microsoft:edge_chromium"
+            )
+        }
+
+        result = build_normalizers(matcher, decisions)["windows"].normalize(
+            windows_record()
+        )
+
+        assert result.status == VALIDATED
+        assert result.decision_id == 7
+        assert result.identifier == (
+            "cpe:2.3:a:microsoft:edge_chromium:152.0.4191.53:*:*:*:*:*:*:*"
+        )
+        assert matcher.calls == 0
+
+    def test_decision_for_no_cpe(self):
+        decisions = {("windows", "microsoft edge"): EffectiveDecision(8, None)}
+
+        result = build_normalizers(FakeMatcher([]), decisions)["windows"].normalize(
+            windows_record()
+        )
+
+        assert (result.status, result.reason, result.decision_id) == (
+            NONE,
+            "decided_none",
+            8,
+        )
+
+    @pytest.mark.parametrize(
+        "ranked, status",
+        [
+            ([(0.95, "a:b"), (0.80, "c:d")], MATCHED),
+            ([(0.95, "a:b"), (0.90, "c:d")], REVIEW),
+            ([(0.60, "a:b")], REVIEW),
+            ([(0.40, "a:b")], NONE),
+            ([], NONE),
+        ],
+    )
+    def test_thresholds(self, ranked, status):
+        result = build_normalizers(FakeMatcher(ranked), {})["windows"].normalize(
+            windows_record()
+        )
+
+        assert result.status == status
+        assert len(result.candidates) == min(len(ranked), 3)
+
+    def test_identifier_escaping_and_version_cleaning(self):
+        assert cpe_identifier("notepad-plus-plus:notepad++", "8.9.8") == (
+            r"cpe:2.3:a:notepad-plus-plus:notepad\+\+:8.9.8:*:*:*:*:*:*:*"
+        )
+        result = build_normalizers(FakeMatcher([(1.0, "tunnelblick:tunnelblick")]), {})[
+            "macos"
+        ].normalize(
+            SoftwareRecord(
+                name="Tunnelblick",
+                publisher="Identified Developer",
+                version="4.0.1 (build 5971)",
+                platform_family="macos",
+                platform_key="macos",
+            )
+        )
+        assert result.version == "4.0.1"
+        assert (
+            cpe_identifier("apple:pages", "") == "cpe:2.3:a:apple:pages:*:*:*:*:*:*:*:*"
+        )
+
+    def test_macos_apple_applications_are_os_components(self):
+        matcher = FakeMatcher([(1.0, "synology:contacts")])
+        normalizer = build_normalizers(matcher, {})["macos"]
+
+        result = normalizer.normalize(
+            SoftwareRecord(
+                name="Contacts",
+                publisher="Apple",
+                version="14.0",
+                platform_family="macos",
+                platform_key="macos",
+            )
+        )
+
+        assert (result.status, result.reason) == (UNSUPPORTED, "os_component")
+        assert matcher.calls == 0
+
+    @pytest.mark.django_db
+    def test_with_the_real_matcher(self, cpe_index):
+        normalizers = build_normalizers(CpeMatcher(), {})
+
+        firefox = normalizers["windows"].normalize(
+            windows_record("Mozilla Firefox (x64 fr)", "154.0.1", "Mozilla")
+        )
+        pages = normalizers["macos"].normalize(
+            SoftwareRecord(
+                name="Pages",
+                publisher="App Store",
+                version="13.1",
+                platform_family="macos",
+                platform_key="macos",
+            )
+        )
+        assert (firefox.status, firefox.product) == (MATCHED, "mozilla:firefox")
+        assert (pages.status, pages.product) == (MATCHED, "apple:pages")
+
+
+class TestLinuxNormalizer:
+    def normalize(self, **values):
+        record = SoftwareRecord(
+            **{"platform_family": "deb", "platform_key": "ubuntu:24.04", **values}
+        )
+        return build_normalizers(None, {})[record.platform_family].normalize(record)
+
+    def test_debian_purl(self):
+        result = self.normalize(
+            name="libssl3t64:amd64",
+            version="3.0.13-0ubuntu3.5",
+            architecture="amd64",
+            package_format="deb",
+            source_package="openssl",
+        )
+
+        assert result.status == MATCHED
+        assert result.identifier == (
+            "pkg:deb/ubuntu/openssl@3.0.13-0ubuntu3.5?arch=amd64&distro=ubuntu-24.04"
+        )
+        assert result.product == "pkg:deb/ubuntu/openssl"
+        assert result.match_key == "openssl"
+        assert result.reason == ""
+
+    def test_rpm_epoch_goes_in_a_qualifier(self):
+        result = self.normalize(
+            name="openssl",
+            version="1:3.0.7-27.el9",
+            architecture="x86_64",
+            source_package="openssl",
+            platform_family="rpm",
+            platform_key="rocky:9",
+        )
+
+        assert result.identifier == (
+            "pkg:rpm/rocky/openssl@3.0.7-27.el9?arch=x86_64&distro=rocky-9&epoch=1"
+        )
+        assert result.version == "1:3.0.7-27.el9"
+
+    def test_rpm_names_keep_their_case(self):
+        result = self.normalize(
+            name="NetworkManager",
+            version="1.46.0-8.el9",
+            source_package="NetworkManager",
+            platform_family="rpm",
+            platform_key="rocky:9",
+        )
+
+        assert result.product == "pkg:rpm/rocky/NetworkManager"
+        assert result.match_key == "networkmanager"
+
+    def test_source_falls_back_on_the_binary_name(self):
+        result = self.normalize(name="curl:amd64", version="8.5.0-2ubuntu10.13")
+
+        assert result.product == "pkg:deb/ubuntu/curl"
+        assert result.reason == "source_not_mapped"
+
+    def test_snap_packages_are_not_covered(self):
+        result = self.normalize(name="firefox", version="150.0", package_format="snap")
+
+        assert (result.status, result.reason) == (UNSUPPORTED, "package_format")
+
+    def test_unknown_release_is_not_covered(self):
+        result = self.normalize(name="curl", version="8.5.0", platform_key="")
+
+        assert (result.status, result.reason) == (UNSUPPORTED, "unknown_release")
