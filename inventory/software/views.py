@@ -53,6 +53,8 @@ class SoftwareDictionaryViewSet(viewsets.OCSViewSet):
         "major_version",
         "minor_version",
         "patch_version",
+        "platform_key",
+        "source_package",
     ]
     ordering_fields = [
         "id",
@@ -62,6 +64,11 @@ class SoftwareDictionaryViewSet(viewsets.OCSViewSet):
         "major_version",
         "minor_version",
         "patch_version",
+        "platform_family",
+        "platform_key",
+        "architecture",
+        "package_format",
+        "source_package",
         "installation_number",
     ]
     filterset_fields = [
@@ -72,6 +79,11 @@ class SoftwareDictionaryViewSet(viewsets.OCSViewSet):
         "major_version",
         "minor_version",
         "patch_version",
+        "platform_family",
+        "platform_key",
+        "architecture",
+        "package_format",
+        "source_package",
         "installation_number",
     ]
 

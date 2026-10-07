@@ -129,6 +129,11 @@ class SoftwareDictionary(models.Model):
     major_version = models.IntegerField(blank=True, null=True)
     minor_version = models.IntegerField(blank=True, null=True)
     patch_version = models.IntegerField(blank=True, null=True)
+    platform_family = models.CharField(max_length=16, blank=True, null=True)
+    platform_key = models.CharField(max_length=64, blank=True, null=True)
+    architecture = models.CharField(max_length=64, blank=True, null=True)
+    package_format = models.CharField(max_length=64, blank=True, null=True)
+    source_package = models.CharField(max_length=255, blank=True, null=True)
     installation_number = models.IntegerField(default=0)
     assets = models.ManyToManyField(
         InventoryBase,
@@ -142,6 +147,7 @@ class SoftwareDictionary(models.Model):
             models.Index(fields=["name"]),
             models.Index(fields=["publisher"]),
             models.Index(fields=["version"]),
+            models.Index(fields=["platform_key"]),
         ]
 
 
@@ -159,3 +165,21 @@ class DistroRelease(models.Model):
                 fields=["base", "codename"], name="unique_distro_release_codename"
             )
         ]
+
+
+class AssetPlatform(models.Model):
+    """
+    Platform of an asset, resolved from the OS values its software mapping points to
+    """
+
+    asset = models.OneToOneField(
+        InventoryBase, related_name="platform", on_delete=models.CASCADE
+    )
+    os_id = models.CharField(max_length=255, blank=True, default="")
+    os_like = models.CharField(max_length=255, blank=True, default="")
+    os_release = models.CharField(max_length=255, blank=True, default="")
+    os_codename = models.CharField(max_length=255, blank=True, default="")
+    running_kernel = models.CharField(max_length=255, blank=True, default="")
+    family = models.CharField(max_length=16, blank=True, default="")
+    key = models.CharField(max_length=64, blank=True, default="")
+    updated_at = models.DateTimeField(auto_now=True)

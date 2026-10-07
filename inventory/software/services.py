@@ -2,14 +2,46 @@ import logging
 from typing import Dict, Iterable, List, Optional, Tuple
 
 from asset.inventory_base.models import InventoryBase
+from asset.inventory_field.models import InventoryField
 from asset.inventory_section.models import InventorySection
 from config.models import Config
 from django.db import transaction
 from django.db.models import F
 from django.db.models.functions import Now
-from inventory.software.models import SoftwareDictionary, SoftwareMapping
+from inventory.software.models import (
+    AssetPlatform,
+    DistroRelease,
+    SoftwareDictionary,
+    SoftwareMapping,
+)
+from inventory.software.platform import resolve
 
 logger = logging.getLogger(__name__)
+
+# Mapping fields read once per machine, from any section of the template
+MACHINE_FIELDS = ("os_id", "os_like", "os_release", "os_codename", "running_kernel")
+# Mapping fields read per software row, from the mapping's section
+PACKAGE_FIELDS = ("architecture", "package_format", "source_package")
+SIGNATURE_FIELDS = (
+    "name",
+    "publisher",
+    "version",
+    "major_version",
+    "minor_version",
+    "patch_version",
+    "platform_family",
+    "platform_key",
+    "architecture",
+    "package_format",
+    "source_package",
+)
+
+
+def _fit(model, field: str, value: Optional[str]) -> Optional[str]:
+    """The value cut to the length of its column, as PostgreSQL rejects longer."""
+    if not value:
+        return value
+    return value[: model._meta.get_field(field).max_length]
 
 
 class SoftwareDictionaryService:
@@ -66,7 +98,7 @@ class SoftwareDictionaryService:
             return
 
         asset_id = asset.id
-        entries = cls._build_entries_for_asset(asset)
+        entries, platform = cls._build_entries_for_asset(asset)
 
         new_entries = {cls._signature_from_dict(entry): entry for entry in entries}
         existing_entries = cls._get_existing_entries(asset)
@@ -84,6 +116,9 @@ class SoftwareDictionaryService:
                 cls._attach_asset_entries(
                     asset, [new_entries[key] for key in keys_to_add]
                 )
+
+            if platform is not None:
+                AssetPlatform.objects.update_or_create(asset=asset, defaults=platform)
 
         logger.debug(
             "Asset %s software dictionary updated: %s extracted, %s added, %s removed",
@@ -109,25 +144,59 @@ class SoftwareDictionaryService:
         cls._cleanup_empty_entries(entry_ids_list)
 
     @classmethod
-    def _build_entries_for_asset(cls, asset: InventoryBase) -> List[Dict]:
-        """Extract normalized software entries from an asset inventory."""
+    def _build_entries_for_asset(
+        cls, asset: InventoryBase
+    ) -> Tuple[List[Dict], Optional[Dict]]:
+        """Extract normalized software entries and the asset platform."""
         if not asset.template_id:
-            return []
+            return [], None
 
-        mappings = SoftwareMapping.objects.filter(template_id=asset.template_id)
+        mappings = list(
+            SoftwareMapping.objects.filter(template_id=asset.template_id).order_by("id")
+        )
         if not mappings:
-            return []
+            return [], None
 
-        section_map = {mapping.section_id: mapping for mapping in mappings}
+        machine_values = cls._machine_values(asset, mappings)
+        releases = cls._distro_releases()
+        section_map = {}
+        asset_platform = None
+        for mapping in mappings:
+            values = {
+                name: machine_values.get(getattr(mapping, f"{name}_id")) or ""
+                for name in MACHINE_FIELDS
+            }
+            platform = resolve(
+                values["os_id"],
+                values["os_like"],
+                values["os_release"],
+                values["os_codename"],
+                releases,
+            )
+            section_map[mapping.section_id] = (mapping, platform)
+            if asset_platform is None and mapping.os_id_id:
+                asset_platform = {
+                    **{
+                        name: _fit(AssetPlatform, name, value)
+                        for name, value in values.items()
+                    },
+                    "family": _fit(AssetPlatform, "family", platform.family),
+                    "key": _fit(AssetPlatform, "key", platform.key),
+                }
+        if asset_platform is None:
+            asset_platform = {
+                **dict.fromkeys(MACHINE_FIELDS, ""),
+                "family": "",
+                "key": "",
+            }
+
         sections = InventorySection.objects.filter(
             base=asset, template_section_id__in=section_map.keys()
         ).prefetch_related("fields")
 
         entries: List[Dict] = []
         for section in sections:
-            mapping = section_map.get(section.template_section_id)
-            if not mapping:
-                continue
+            mapping, platform = section_map[section.template_section_id]
 
             value_map = {
                 field.template_field_id: cls._clean_value(field.value)
@@ -152,18 +221,26 @@ class SoftwareDictionaryService:
                         minor = str(minor_int) if minor_int is not None else None
                         patch = str(patch_int) if patch_int is not None else None
 
-            major = cls._parse_version_component(major)
-            minor = cls._parse_version_component(minor)
-            patch = cls._parse_version_component(patch)
-
             entry = {
                 "name": cls._value_for_field(mapping.name_id, value_map),
                 "publisher": cls._value_for_field(mapping.publisher_id, value_map),
                 "version": version_value,
-                "major_version": major,
-                "minor_version": minor,
-                "patch_version": patch,
+                "major_version": cls._parse_version_component(major),
+                "minor_version": cls._parse_version_component(minor),
+                "patch_version": cls._parse_version_component(patch),
+                "platform_family": _fit(
+                    SoftwareDictionary, "platform_family", platform.family or None
+                ),
+                "platform_key": _fit(
+                    SoftwareDictionary, "platform_key", platform.key or None
+                ),
             }
+            for name in PACKAGE_FIELDS:
+                entry[name] = _fit(
+                    SoftwareDictionary,
+                    name,
+                    cls._value_for_field(getattr(mapping, f"{name}_id"), value_map),
+                )
 
             if not entry["name"]:
                 # nothing useful extracted
@@ -171,7 +248,41 @@ class SoftwareDictionaryService:
 
             entries.append(entry)
 
-        return entries
+        return entries, asset_platform
+
+    @classmethod
+    def _machine_values(
+        cls, asset: InventoryBase, mappings
+    ) -> Dict[int, Optional[str]]:
+        """First value of each machine field of the mappings, in any section."""
+        field_ids = {
+            getattr(mapping, f"{name}_id")
+            for mapping in mappings
+            for name in MACHINE_FIELDS
+        } - {None}
+        if not field_ids:
+            return {}
+
+        values: Dict[int, Optional[str]] = {}
+        rows = (
+            InventoryField.objects.filter(
+                inventory_section__base=asset, template_field_id__in=field_ids
+            )
+            .order_by("inventory_section_id", "id")
+            .values_list("template_field_id", "value")
+        )
+        for field_id, value in rows:
+            values.setdefault(field_id, cls._clean_value(value))
+        return values
+
+    @staticmethod
+    def _distro_releases() -> Dict[Tuple[str, str], str]:
+        return {
+            (base, codename): version
+            for base, codename, version in DistroRelease.objects.values_list(
+                "base", "codename", "version"
+            )
+        }
 
     @staticmethod
     def _value_for_field(field_id: Optional[int], value_map: Dict[int, Optional[str]]):
@@ -228,38 +339,16 @@ class SoftwareDictionaryService:
         cls, asset: InventoryBase
     ) -> Dict[Tuple, SoftwareDictionary]:
         """Return a mapping of signature -> existing entry"""
-        entries = asset.software_dictionary_entries.all().only(
-            "id",
-            "name",
-            "publisher",
-            "version",
-            "major_version",
-            "minor_version",
-            "patch_version",
-        )
+        entries = asset.software_dictionary_entries.all().only("id", *SIGNATURE_FIELDS)
         return {cls._signature_from_entry(entry): entry for entry in entries}
 
     @staticmethod
     def _signature_from_entry(entry: SoftwareDictionary) -> Tuple:
-        return (
-            entry.name,
-            entry.publisher,
-            entry.version,
-            entry.major_version,
-            entry.minor_version,
-            entry.patch_version,
-        )
+        return tuple(getattr(entry, name) for name in SIGNATURE_FIELDS)
 
     @staticmethod
     def _signature_from_dict(entry: Dict) -> Tuple:
-        return (
-            entry.get("name"),
-            entry.get("publisher"),
-            entry.get("version"),
-            entry.get("major_version"),
-            entry.get("minor_version"),
-            entry.get("patch_version"),
-        )
+        return tuple(entry.get(name) for name in SIGNATURE_FIELDS)
 
     @classmethod
     def _detach_asset_entries(cls, asset_id: int, entry_ids: List[int]) -> None:
