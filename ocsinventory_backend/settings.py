@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     "inventory.field.apps.FieldConfig",
     "inventory.category.apps.CategoryConfig",
     "inventory.software.apps.SoftwareConfig",
+    "inventory.software_identity.apps.SoftwareIdentityConfig",
     "ipdiscover.netdevice.apps.NetdeviceConfig",
     "ipdiscover.network.apps.NetworkConfig",
     "ipdiscover.netgroup.apps.NetgroupConfig",
@@ -358,3 +359,7 @@ OCS_CUSTOM_AUTH_BACKENDS = {
 
 # Compliance
 EOL_API_BASE_URL = "https://endoflife.date/api"
+
+# Software identity: NVD CPE dictionary (can point to an internal mirror)
+NVD_CPE_FEED_URL = "https://nvd.nist.gov/feeds/json/cpe/2.0/nvdcpe-2.0.tar.gz"
+NVD_CPE_META_URL = "https://nvd.nist.gov/feeds/json/cpe/2.0/nvdcpe-2.0.meta"
