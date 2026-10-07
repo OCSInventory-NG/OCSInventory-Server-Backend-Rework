@@ -1,7 +1,15 @@
+import importlib
+import re
+import shutil
+import subprocess
+from pathlib import Path
+
 import pytest
 from asset.inventory_base.models import InventoryBase
 from asset.inventory_field.models import InventoryField
 from asset.inventory_section.models import InventorySection
+from django.db import connection
+from django.db.migrations.executor import MigrationExecutor
 from inventory.field.models import Field
 from inventory.section.models import Section
 from inventory.software.models import (
@@ -771,3 +779,181 @@ class TestSoftwareDictionaryPlatform:
 
         assert response.status_code == 200
         assert [row["source_package"] for row in response.data] == ["openssl"]
+
+
+needs_shell = pytest.mark.skipif(
+    shutil.which("bash") is None or shutil.which("awk") is None,
+    reason="bash and awk are needed to run the template commands",
+)
+
+FAKE_DPKG = r"""
+dpkg() {
+  if [ "$1" = "-l" ]; then
+    printf 'h\nh\nh\nh\nh\nii  libssl-dev:amd64 3.0.2 amd64 x\nii  bash 5.1 amd64 y\n'
+    return
+  fi
+  case "$2" in
+    libssl-dev:amd64) printf 'Package: libssl-dev\nSource: openssl (3.0.2-0ubuntu1.18)\nVersion: 3.0.2-0ubuntu1.18\nArchitecture: amd64\nDescription: SSL dev\n' ;;
+    bash) printf 'Package: bash\nVersion: 5.1-6ubuntu1.1\nArchitecture: amd64\nDescription: shell\n' ;;
+  esac
+}
+"""  # noqa: E501
+
+FAKE_RPM = r"""
+rpm() {
+  if [ "$1" = "-qa" ]; then printf 'vim-enhanced\nopenssl\ngpg-pubkey\n'; return; fi
+  case "$2" in
+    vim-enhanced) printf 'Name        : vim-enhanced\nEpoch       : 2\nVersion     : 8.2.2637\nRelease     : 20.el9_1\nArchitecture: x86_64\nSource RPM  : vim-8.2.2637-20.el9_1.src.rpm\nVendor      : Rocky\nSummary     : VIM\n' ;;
+    openssl) printf 'Name        : openssl\nVersion     : 3.0.7\nRelease     : 27.el9\nArchitecture: x86_64\nSource RPM  : openssl-3.0.7-27.el9.src.rpm\nVendor      : Rocky\nSummary     : TLS\n' ;;
+    gpg-pubkey) printf 'Name        : gpg-pubkey\nVersion     : 8483c65d\nRelease     : 5ccc5b19\nArchitecture: (none)\nSource RPM  : (none)\nSummary     : gpg(Rocky Enterprise Software Foundation)\n' ;;
+  esac
+}
+"""  # noqa: E501
+
+
+def default_target(template_name, section_name):
+    return Section.objects.get(template__name=template_name, name=section_name).target
+
+
+def default_field(template_name, section_name, field_name):
+    return Field.objects.get(
+        section__template__name=template_name,
+        section__name=section_name,
+        name=field_name,
+    )
+
+
+def run_bash(script):
+    return subprocess.run(
+        ["bash", "-c", script], capture_output=True, text=True, timeout=60, check=True
+    ).stdout
+
+
+@pytest.mark.django_db
+class TestDefaultTemplates:
+    @needs_shell
+    def test_debian_softwares_command_prints_the_source_package(self):
+        output = run_bash(
+            FAKE_DPKG + default_target("Linux (Debian based)", "SOFTWARES")
+        )
+
+        blocks = [block for block in output.split("---") if block.strip()]
+        assert "Source: openssl" in blocks[0]
+        assert "Source: bash" in blocks[1]
+
+    @needs_shell
+    def test_rhel_softwares_command_prints_epoch_and_source_package(self):
+        output = run_bash(FAKE_RPM + default_target("Linux (RHEL based)", "SOFTWARES"))
+
+        assert "Version: 2:8.2.2637-20.el9_1" in output
+        assert "Source: vim" in output
+        assert "Version: 3.0.7-27.el9" in output
+        assert "Source: openssl" in output
+        assert "Source: gpg-pubkey" in output
+
+    @needs_shell
+    @pytest.mark.skipif(
+        not Path("/etc/os-release").exists(), reason="needs /etc/os-release"
+    )
+    def test_os_release_command_prints_every_field(self):
+        output = run_bash(default_target("Linux (Debian based)", "OS RELEASE"))
+
+        for name in OS_RELEASE_FIELDS:
+            field = default_field("Linux (Debian based)", "OS RELEASE", name)
+            assert re.search(field.retrieval_value, output), name
+
+    def test_windows_major_and_minor_come_from_display_version(self):
+        target = default_target("Windows", "SOFTWARES")
+
+        assert "@{Name='DisplayVersionMajor'" in target
+        assert "@{Name='DisplayVersionMinor'" in target
+        assert target.count("-ExcludeProperty") == 1
+        assert default_field("Windows", "SOFTWARES", "MAJOR").retrieval_value == (
+            "DisplayVersionMajor"
+        )
+        assert default_field("Windows", "SOFTWARES", "MINOR").retrieval_value == (
+            "DisplayVersionMinor"
+        )
+
+    def test_windows_and_macos_have_an_operating_system_section(self):
+        windows_name = default_field("Windows", "OPERATING SYSTEM", "OS NAME")
+        assert windows_name.retrieval_value == "Caption"
+        macos_name = default_field("MacOS", "OPERATING SYSTEM", "OS NAME")
+        match = re.search(macos_name.retrieval_value, "ProductName:\t\tmacOS\n")
+        assert match.group(1) == "macOS"
+
+    @pytest.mark.parametrize(
+        "template_name, expected",
+        [
+            (
+                "Linux (Debian based)",
+                {
+                    "architecture": ("SOFTWARES", "ARCHITECTURE"),
+                    "package_format": ("SOFTWARES", "FROM"),
+                    "source_package": ("SOFTWARES", "SOURCE"),
+                    "os_id": ("OS RELEASE", "ID"),
+                    "os_like": ("OS RELEASE", "ID_LIKE"),
+                    "os_release": ("OS RELEASE", "VERSION_ID"),
+                    "os_codename": ("OS RELEASE", "CODENAME"),
+                    "running_kernel": ("OS RELEASE", "RUNNING_KERNEL"),
+                },
+            ),
+            (
+                "Windows",
+                {
+                    "os_id": ("OPERATING SYSTEM", "OS NAME"),
+                    "os_release": ("OPERATING SYSTEM", "OS VERSION"),
+                },
+            ),
+            (
+                "Legacy",
+                {
+                    "os_id": ("HARDWARE", "OPERATING SYSTEM"),
+                    "os_release": ("HARDWARE", "OS VERSION"),
+                    "architecture": ("SOFTWARES", "ARCHITECTURE"),
+                    "package_format": ("SOFTWARES", "FROM"),
+                },
+            ),
+        ],
+    )
+    def test_default_mappings_point_to_identity_fields(self, template_name, expected):
+        mapping = SoftwareMapping.objects.get(template__name=template_name)
+
+        for attribute, (section_name, field_name) in expected.items():
+            field = getattr(mapping, attribute)
+            assert (field.section.name, field.name) == (section_name, field_name)
+
+    def test_command_changes_reverse_to_the_original_commands(self):
+        migration = importlib.import_module(
+            "inventory.section.migrations.0015_software_identity_sections"
+        )
+        for template_name, changes in (
+            ("Linux (Debian based)", migration.DEBIAN_SOFTWARES),
+            ("Linux (RHEL based)", migration.RHEL_SOFTWARES),
+            ("Windows", migration.WINDOWS_SOFTWARES),
+        ):
+            target = default_target(template_name, "SOFTWARES")
+            original = migration.patch_command(
+                target, migration.reverse_changes(changes)
+            )
+            assert "Source:" not in original
+            assert "DisplayVersionMajor" not in original
+            assert migration.patch_command(original, changes) == target
+
+
+@pytest.mark.django_db(transaction=True, serialized_rollback=True)
+def test_identity_migrations_reverse_and_apply_again():
+    executor = MigrationExecutor(connection)
+    executor.migrate([("section", "0014_section_is_active")])
+
+    assert not Section.objects.filter(name="OS RELEASE").exists()
+    assert "Source:" not in default_target("Linux (Debian based)", "SOFTWARES")
+    major = default_field("Windows", "SOFTWARES", "MAJOR")
+    assert major.retrieval_value == "VersionMajor"
+
+    executor = MigrationExecutor(connection)
+    executor.migrate(executor.loader.graph.leaf_nodes())
+
+    assert Section.objects.filter(name="OS RELEASE").count() == 2
+    windows = SoftwareMapping.objects.get(template__name="Windows")
+    assert windows.os_id.name == "OS NAME"
