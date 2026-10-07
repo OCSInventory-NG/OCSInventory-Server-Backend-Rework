@@ -2,6 +2,11 @@ import tarfile
 
 import pytest
 from inventory.software_identity.conftest import FIXTURE_CPES, build_feed, fake_open
+from inventory.software_identity.cpe.matcher import (
+    CpeMatcher,
+    version_signal,
+    year_signal,
+)
 from inventory.software_identity.cpe.sync import sync_cpe_index
 from inventory.software_identity.cpe.tokens import base_title, title_entries, tokens
 from inventory.software_identity.models import CpeIndexState, CpeProduct, CpeToken
@@ -102,3 +107,86 @@ class TestCpeIndexSync:
 
         assert CpeIndexState.current().version == 1
         assert CpeProduct.objects.count() == 13
+
+
+def test_version_signal_levels():
+    known = ["152.0.4191.66", "151.0.1"]
+    assert version_signal("152.0.4191.66", known) == 0.15
+    assert version_signal("152.0.4191.53", known) == 0.12
+    assert version_signal("152.1", known) == 0.05
+    assert version_signal("97.0", known) is None
+    assert version_signal("", known) == 0.0
+
+
+def test_year_signal():
+    assert year_signal("visual_studio_2026", "Visual Studio Community 2026") == 0.1
+    assert year_signal("visual_studio_2022", "Visual Studio Community 2026") == -0.3
+    assert year_signal("visual_studio_2022", "Visual Studio Community") == -0.1
+    assert year_signal("visual_studio_community", "Visual Studio Community 2026") == 0.0
+
+
+@pytest.mark.django_db
+class TestCpeMatcher:
+    @pytest.mark.parametrize(
+        "name, publisher, version, expected",
+        [
+            (
+                "Mozilla Firefox (x64 fr)",
+                "Mozilla",
+                "154.0.1",
+                "mozilla:firefox",
+            ),
+            (
+                "Firefox",
+                "Identified Developer",
+                "149.0.2",
+                "mozilla:firefox",
+            ),
+            (
+                "Microsoft Edge",
+                "Microsoft Corporation",
+                "152.0.4191.53",
+                "microsoft:edge_chromium",
+            ),
+            (
+                "Visual Studio Community 2026",
+                "Microsoft Corporation",
+                "18.9.2",
+                "microsoft:visual_studio_2026",
+            ),
+            (
+                "Notepad++ (64-bit x64)",
+                "Notepad++ Team",
+                "8.9.8",
+                "notepad-plus-plus:notepad++",
+            ),
+            (
+                "7-Zip 24.08 (x64)",
+                "Igor Pavlov",
+                "24.08",
+                "7-zip:7-zip",
+            ),
+            (
+                "Git",
+                "The Git Development Community",
+                "2.55.0.5",
+                "git-scm:git",
+            ),
+        ],
+    )
+    def test_best_candidate(self, cpe_index, name, publisher, version, expected):
+        ranked = CpeMatcher().rank(name, publisher, version)
+
+        assert ranked[0][1] == expected
+
+    def test_unknown_name_has_no_candidate(self, cpe_index):
+        assert CpeMatcher().rank("Kyber", "Kyber SAS", "1.2") == []
+
+    def test_candidate_limit_bounds_the_products_loaded(self, cpe_index):
+        assert (
+            len(CpeMatcher(candidate_limit=1).rank("Microsoft Edge", "", "152.0"))
+            == 1
+        )
+
+    def test_no_index_is_not_available(self, db):
+        assert CpeMatcher().available is False
