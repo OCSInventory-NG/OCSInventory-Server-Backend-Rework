@@ -1,6 +1,9 @@
 import tarfile
 
 import pytest
+from automation.scheduler.models import Scheduler
+from django.db import IntegrityError
+from inventory.software.models import SoftwareDictionary
 from inventory.software_identity.conftest import FIXTURE_CPES, build_feed, fake_open
 from inventory.software_identity.cpe.matcher import (
     CpeMatcher,
@@ -10,7 +13,13 @@ from inventory.software_identity.cpe.matcher import (
 from inventory.software_identity.cpe.sync import sync_cpe_index
 from inventory.software_identity.cpe.tokens import base_title, title_entries, tokens
 from inventory.software_identity.match_key import match_key
-from inventory.software_identity.models import CpeIndexState, CpeProduct, CpeToken
+from inventory.software_identity.models import (
+    CpeIndexState,
+    CpeProduct,
+    CpeToken,
+    IdentityDecision,
+    SoftwareIdentity,
+)
 from inventory.software_identity.normalizers import build_normalizers
 from inventory.software_identity.normalizers.base import (
     MATCHED,
@@ -22,6 +31,7 @@ from inventory.software_identity.normalizers.base import (
     SoftwareRecord,
 )
 from inventory.software_identity.normalizers.cpe import cpe_identifier
+from inventory.software_identity.services import IdentityService
 
 
 def test_tokens_drop_versions_architectures_and_parentheses():
@@ -420,3 +430,206 @@ class TestLinuxNormalizer:
         result = self.normalize(name="curl", version="8.5.0", platform_key="")
 
         assert (result.status, result.reason) == (UNSUPPORTED, "unknown_release")
+
+
+def make_entry(name, version, family, key, installations=1, **values):
+    return SoftwareDictionary.objects.create(
+        name=name,
+        publisher=values.pop("publisher", ""),
+        version=version,
+        platform_family=family,
+        platform_key=key,
+        installation_number=installations,
+        **values,
+    )
+
+
+@pytest.mark.django_db
+class TestIdentityService:
+    def test_seeds(self):
+        tasks = Scheduler.objects.filter(
+            name__in=["cpeIndex.CpeIndexSync", "softwareIdentity.SoftwareIdentity"]
+        )
+        assert sorted(tasks.values_list("recurrence", "active")) == [
+            ("daily", False),
+            ("hourly", False),
+        ]
+        assert IdentityDecision.objects.filter(source="shipped").count() == 6
+
+    def test_linux_entries_are_identified_without_index(self):
+        entry = make_entry(
+            "curl", "8.14.1-2", "deb", "debian:13", source_package="curl"
+        )
+
+        counts = IdentityService.refresh()
+
+        identity = SoftwareIdentity.objects.get(entry=entry)
+        assert identity.status == "matched"
+        assert identity.identifier == "pkg:deb/debian/curl@8.14.1-2?distro=debian-13"
+        assert counts["matched"] == 1
+
+    def test_cpe_entries_wait_for_an_index(self):
+        make_entry("Mozilla Firefox (x64 fr)", "154.0.1", "windows", "windows")
+
+        counts = IdentityService.refresh()
+
+        assert SoftwareIdentity.objects.count() == 0
+        assert counts == {"pending": 1}
+
+    def test_unknown_platform_is_not_covered(self):
+        entry = make_entry("apache2", "2.4", None, None)
+
+        IdentityService.refresh()
+
+        identity = SoftwareIdentity.objects.get(entry=entry)
+        assert (identity.status, identity.reason) == ("unsupported", "unknown_platform")
+
+    def test_windows_entries_use_the_index_and_shipped_decisions(self, cpe_index):
+        firefox = make_entry(
+            "Mozilla Firefox (x64 fr)",
+            "154.0.1",
+            "windows",
+            "windows",
+            publisher="Mozilla",
+        )
+        edge = make_entry("Microsoft Edge", "152.0.4191.53", "windows", "windows")
+
+        IdentityService.refresh()
+
+        firefox_identity = SoftwareIdentity.objects.get(entry=firefox)
+        assert (firefox_identity.status, firefox_identity.product) == (
+            "matched",
+            "mozilla:firefox",
+        )
+        assert firefox_identity.index_version == 1
+        edge_identity = SoftwareIdentity.objects.get(entry=edge)
+        assert (edge_identity.status, edge_identity.product) == (
+            "validated",
+            "microsoft:edge_chromium",
+        )
+        assert edge_identity.decision.source == "shipped"
+
+    def test_a_new_index_recomputes_undecided_identities_only(self, cpe_index):
+        make_entry("Mozilla Firefox (x64 fr)", "154.0.1", "windows", "windows")
+        make_entry("Microsoft Edge", "152.0.4191.53", "windows", "windows")
+        IdentityService.refresh()
+        sync_cpe_index(open_url=fake_open(build_feed(), sha="9" * 64))
+
+        counts = IdentityService.refresh()
+
+        assert counts == {"matched": 1}
+        versions = SoftwareIdentity.objects.values_list("index_version", flat=True)
+        assert set(versions) == {1, 2}
+
+    def test_decide_applies_to_every_version(self, cpe_index, admin_user):
+        old = make_entry("Notepad++", "7", "windows", "windows")
+        new = make_entry("Notepad++ (64-bit x64)", "8.9.8", "windows", "windows")
+        IdentityService.refresh()
+
+        IdentityService.decide(
+            "windows", "notepad++", "notepad-plus-plus:notepad++", admin_user
+        )
+
+        identifiers = dict(
+            SoftwareIdentity.objects.values_list("entry_id", "identifier")
+        )
+        assert (
+            identifiers[old.id]
+            == r"cpe:2.3:a:notepad-plus-plus:notepad\+\+:7:*:*:*:*:*:*:*"
+        )
+        assert (
+            identifiers[new.id]
+            == r"cpe:2.3:a:notepad-plus-plus:notepad\+\+:8.9.8:*:*:*:*:*:*:*"
+        )
+        assert set(SoftwareIdentity.objects.values_list("status", flat=True)) == {
+            "validated"
+        }
+
+    def test_revert_falls_back_on_the_shipped_decision(self, cpe_index, admin_user):
+        entry = make_entry("Microsoft Edge", "152.0.4191.53", "windows", "windows")
+        IdentityService.refresh()
+        decision = IdentityService.decide("windows", "microsoft edge", None, admin_user)
+        assert SoftwareIdentity.objects.get(entry=entry).status == "none"
+
+        IdentityService.revert(decision)
+
+        identity = SoftwareIdentity.objects.get(entry=entry)
+        assert (identity.status, identity.decision.source) == ("validated", "shipped")
+
+    def test_shipped_decisions_cannot_be_reverted(self):
+        decision = IdentityDecision.objects.filter(source="shipped").first()
+
+        with pytest.raises(ValueError):
+            IdentityService.revert(decision)
+
+    def test_decide_and_revert_without_index(self, admin_user):
+        entry = make_entry("Kyber", "1.2", "windows", "windows")
+
+        decision = IdentityService.decide("windows", "kyber", None, admin_user)
+        IdentityService.refresh()
+        assert SoftwareIdentity.objects.get(entry=entry).status == "none"
+
+        IdentityService.revert(decision)
+        assert not SoftwareIdentity.objects.filter(entry=entry).exists()
+
+    def test_one_failing_entry_does_not_stop_the_run(self, monkeypatch):
+        good = make_entry("curl", "8.14.1-2", "deb", "debian:13")
+        bad = make_entry("broken", "1", "deb", "debian:13")
+        original = IdentityService._normalize
+
+        def flaky(entry, normalizers, matcher):
+            if entry.id == bad.id:
+                raise RuntimeError("boom")
+            return original(entry, normalizers, matcher)
+
+        monkeypatch.setattr(IdentityService, "_normalize", staticmethod(flaky))
+
+        counts = IdentityService.refresh()
+
+        assert counts == {"matched": 1, "error": 1}
+        assert SoftwareIdentity.objects.filter(entry=good).exists()
+
+    def test_a_failing_save_does_not_stop_the_run(self, monkeypatch):
+        good = make_entry("curl", "8.14.1-2", "deb", "debian:13")
+        bad = make_entry("broken", "1", "deb", "debian:13")
+        original = IdentityService._save
+
+        def flaky(entry, result, index_version):
+            if entry.id == bad.id:
+                raise IntegrityError("boom")
+            return original(entry, result, index_version)
+
+        monkeypatch.setattr(IdentityService, "_save", staticmethod(flaky))
+
+        counts = IdentityService.refresh()
+
+        assert counts == {"matched": 1, "error": 1}
+        assert SoftwareIdentity.objects.filter(entry=good).exists()
+        assert not SoftwareIdentity.objects.filter(entry=bad).exists()
+
+    def test_a_long_name_is_stored_with_a_match_key_that_fits(self, cpe_index):
+        entry = make_entry("x" * 300, "1", "windows", "windows")
+
+        IdentityService.refresh()
+
+        identity = SoftwareIdentity.objects.get(entry=entry)
+        assert len(identity.match_key) == 255
+
+    def test_a_new_index_keeps_unchanged_identities_untouched(self, cpe_index):
+        entry = make_entry(
+            "Mozilla Firefox (x64 fr)",
+            "154.0.1",
+            "windows",
+            "windows",
+            publisher="Mozilla",
+        )
+        IdentityService.refresh()
+        before = SoftwareIdentity.objects.get(entry=entry)
+        sync_cpe_index(open_url=fake_open(build_feed(), sha="9" * 64))
+
+        IdentityService.refresh()
+
+        after = SoftwareIdentity.objects.get(entry=entry)
+        assert before.index_version == 1
+        assert after.index_version == 2
+        assert after.updated_at == before.updated_at
