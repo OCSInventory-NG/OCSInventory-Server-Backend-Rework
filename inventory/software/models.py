@@ -143,3 +143,19 @@ class SoftwareDictionary(models.Model):
             models.Index(fields=["publisher"]),
             models.Index(fields=["version"]),
         ]
+
+
+class DistroRelease(models.Model):
+    """Debian family release, turns an os-release codename into a version"""
+
+    base = models.CharField(max_length=32)
+    version = models.CharField(max_length=16)
+    codename = models.CharField(max_length=32)
+
+    class Meta:
+        ordering = ["base", "version"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["base", "codename"], name="unique_distro_release_codename"
+            )
+        ]

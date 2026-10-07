@@ -1,5 +1,10 @@
-from inventory.software.models import SoftwareDictionary, SoftwareMapping
+from inventory.software.models import (
+    DistroRelease,
+    SoftwareDictionary,
+    SoftwareMapping,
+)
 from inventory.software.serializers import (
+    DistroReleaseSerializer,
     SoftwareDictionarySerializer,
     SoftwareMappingSerializer,
 )
@@ -69,3 +74,11 @@ class SoftwareDictionaryViewSet(viewsets.OCSViewSet):
         "patch_version",
         "installation_number",
     ]
+
+
+class DistroReleaseViewSet(viewsets.OCSViewSet):
+    permission_classes = [DefaultModelPermissions]
+    queryset = DistroRelease.objects.all()
+    serializer_class = DistroReleaseSerializer
+    model = DistroRelease
+    filterset_fields = ["id", "base", "version", "codename"]

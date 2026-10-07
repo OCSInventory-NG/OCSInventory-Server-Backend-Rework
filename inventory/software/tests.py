@@ -4,7 +4,12 @@ from asset.inventory_field.models import InventoryField
 from asset.inventory_section.models import InventorySection
 from inventory.field.models import Field
 from inventory.section.models import Section
-from inventory.software.models import SoftwareDictionary, SoftwareMapping
+from inventory.software.models import (
+    DistroRelease,
+    SoftwareDictionary,
+    SoftwareMapping,
+)
+from inventory.software.platform import resolve
 from inventory.software.services import SoftwareDictionaryService
 from inventory.template.models import Template
 
@@ -459,4 +464,76 @@ class TestSoftwareMappingIdentityFields:
             "Name",
             "Publisher",
             "Version",
+        ]
+
+
+RELEASES = {
+    ("debian", "bullseye"): "11",
+    ("debian", "bookworm"): "12",
+    ("debian", "trixie"): "13",
+    ("ubuntu", "focal"): "20.04",
+    ("ubuntu", "jammy"): "22.04",
+    ("ubuntu", "noble"): "24.04",
+}
+
+
+@pytest.mark.parametrize(
+    "os_id, os_like, os_release, os_codename, expected",
+    [
+        ("debian", "", "13", "trixie", ("deb", "debian:13")),
+        ('"debian"', "", '"13"', "", ("deb", "debian:13")),
+        ("debian", "", "12.5", "", ("deb", "debian:12")),
+        ("debian", "", "", "bookworm", ("deb", "debian:12")),
+        ("ubuntu", "debian", "24.04", "noble", ("deb", "ubuntu:24.04")),
+        ("ubuntu", "debian", "22.04", "jammy", ("deb", "ubuntu:22.04")),
+        ("pop", "ubuntu debian", "24.04", "noble", ("deb", "ubuntu:24.04")),
+        ("linuxmint", "ubuntu debian", "22.3", "noble", ("deb", "ubuntu:24.04")),
+        ("kali", "debian", "2026.3", "kali-rolling", ("deb", "")),
+        ("rocky", "rhel centos fedora", "9.4", "", ("rpm", "rocky:9")),
+        ("Ubuntu 20.04", "", "20.04", "", ("deb", "ubuntu:20.04")),
+        ("CentOS Linux release 7.9.2009", "", "3.10.0", "", ("rpm", "centos:7")),
+        ("Rocky Linux 9.4", "", "", "", ("rpm", "rocky:9")),
+        (
+            "Microsoft Windows 11 Professionnel",
+            "",
+            "10.0.26200",
+            "",
+            ("windows", "windows"),
+        ),
+        ("macOS", "", "26.1", "", ("macos", "macos")),
+        ("Mac OS X", "", "10.15.7", "", ("macos", "macos")),
+        ("", "", "", "", ("", "")),
+        ("freebsd", "", "14.1", "", ("", "")),
+        ("Debian GNU/Linux trixie/sid", "", "6.12.0", "", ("deb", "")),
+        (
+            "Debian GNU/Linux 12 (bookworm)",
+            "",
+            "6.1.0-18-amd64",
+            "",
+            ("deb", "debian:12"),
+        ),
+    ],
+)
+def test_resolve_platform(os_id, os_like, os_release, os_codename, expected):
+    platform = resolve(os_id, os_like, os_release, os_codename, RELEASES)
+
+    assert (platform.family, platform.key) == expected
+
+
+@pytest.mark.django_db
+class TestDistroRelease:
+    def test_default_releases_are_seeded(self):
+        assert DistroRelease.objects.filter(
+            base="ubuntu", codename="noble", version="24.04"
+        ).exists()
+        assert DistroRelease.objects.count() == 6
+
+    def test_api_lists_releases(self, api_client):
+        response = api_client.get("/distro_releases/?base=debian")
+
+        assert response.status_code == 200
+        assert sorted(row["codename"] for row in response.data) == [
+            "bookworm",
+            "bullseye",
+            "trixie",
         ]

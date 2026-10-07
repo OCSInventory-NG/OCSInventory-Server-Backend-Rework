@@ -1,6 +1,10 @@
 from inventory.field.serializers import FieldSerializer
 from inventory.section.serializers import SectionSerializer
-from inventory.software.models import SoftwareDictionary, SoftwareMapping
+from inventory.software.models import (
+    DistroRelease,
+    SoftwareDictionary,
+    SoftwareMapping,
+)
 from inventory.template.serializers import TemplateSerializer
 from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
 from rest_framework import serializers
@@ -70,3 +74,9 @@ class SoftwareDictionarySerializer(ModelSerializer):
             "updated_at",
             "installation_number",
         ]
+
+
+class DistroReleaseSerializer(ModelSerializer):
+    class Meta:
+        model = DistroRelease
+        fields = ["id", "base", "version", "codename"]
