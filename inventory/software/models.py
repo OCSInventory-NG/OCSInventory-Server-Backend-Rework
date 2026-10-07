@@ -60,6 +60,64 @@ class SoftwareMapping(models.Model):
         blank=True,
         on_delete=models.SET_NULL,
     )
+    # Read per software row, from a field of the mapping's section
+    architecture = models.ForeignKey(
+        Field,
+        related_name="software_architecture_mappings",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
+    package_format = models.ForeignKey(
+        Field,
+        related_name="software_package_format_mappings",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
+    source_package = models.ForeignKey(
+        Field,
+        related_name="software_source_package_mappings",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
+    # Read once per machine, from a field of any section of the template
+    os_id = models.ForeignKey(
+        Field,
+        related_name="software_os_id_mappings",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
+    os_like = models.ForeignKey(
+        Field,
+        related_name="software_os_like_mappings",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
+    os_release = models.ForeignKey(
+        Field,
+        related_name="software_os_release_mappings",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
+    os_codename = models.ForeignKey(
+        Field,
+        related_name="software_os_codename_mappings",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
+    running_kernel = models.ForeignKey(
+        Field,
+        related_name="software_running_kernel_mappings",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
 
 
 class SoftwareDictionary(models.Model):

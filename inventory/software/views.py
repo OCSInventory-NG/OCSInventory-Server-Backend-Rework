@@ -24,6 +24,14 @@ class SoftwareMappingViewSet(viewsets.OCSViewSet):
         "major_version",
         "minor_version",
         "patch_version",
+        "architecture",
+        "package_format",
+        "source_package",
+        "os_id",
+        "os_like",
+        "os_release",
+        "os_codename",
+        "running_kernel",
     ]
 
 

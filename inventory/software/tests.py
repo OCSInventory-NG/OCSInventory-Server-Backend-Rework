@@ -405,3 +405,58 @@ class TestSoftwareDictionaryApi:
 
         assert response.status_code == 200
         assert len(response.data) == 1
+
+
+@pytest.mark.django_db
+class TestSoftwareMappingIdentityFields:
+    def test_mapping_accepts_identity_fields_from_other_sections(
+        self, api_client, template, section, software_fields
+    ):
+        os_section = Section.objects.create(
+            name="OS RELEASE", target="os-release", template=template
+        )
+        os_id = Field.objects.create(name="ID", section=os_section, order=1)
+        architecture = Field.objects.create(
+            name="ARCHITECTURE", section=section, order=4
+        )
+
+        response = api_client.post(
+            "/software_mapping/",
+            {
+                "template": template.id,
+                "section": section.id,
+                "name": software_fields["name"].id,
+                "architecture": architecture.id,
+                "os_id": os_id.id,
+            },
+            format="json",
+        )
+
+        assert response.status_code == 201
+        mapping = SoftwareMapping.objects.get(template=template)
+        assert mapping.architecture == architecture
+        assert mapping.os_id == os_id
+        assert mapping.running_kernel is None
+
+    def test_fields_can_be_filtered_by_template(
+        self, api_client, template, section, software_fields
+    ):
+        os_section = Section.objects.create(
+            name="OS RELEASE", target="os-release", template=template
+        )
+        Field.objects.create(name="ID", section=os_section, order=1)
+        other_template = Template.objects.create(name="Other", os="WIN")
+        other_section = Section.objects.create(
+            name="SOFTWARES", target="softwares", template=other_template
+        )
+        Field.objects.create(name="NAME", section=other_section, order=1)
+
+        response = api_client.get(f"/fields/?template={template.id}")
+
+        assert response.status_code == 200
+        assert sorted(field["name"] for field in response.data) == [
+            "ID",
+            "Name",
+            "Publisher",
+            "Version",
+        ]

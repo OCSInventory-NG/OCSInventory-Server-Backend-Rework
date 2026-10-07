@@ -21,6 +21,14 @@ class SoftwareMappingSerializer(ExpandableFieldsMixin, ModelSerializer):
             "major_version",
             "minor_version",
             "patch_version",
+            "architecture",
+            "package_format",
+            "source_package",
+            "os_id",
+            "os_like",
+            "os_release",
+            "os_codename",
+            "running_kernel",
         ]
         expandable_fields = {
             "template": TemplateSerializer,
@@ -31,6 +39,14 @@ class SoftwareMappingSerializer(ExpandableFieldsMixin, ModelSerializer):
             "major_version": FieldSerializer,
             "minor_version": FieldSerializer,
             "patch_version": FieldSerializer,
+            "architecture": FieldSerializer,
+            "package_format": FieldSerializer,
+            "source_package": FieldSerializer,
+            "os_id": FieldSerializer,
+            "os_like": FieldSerializer,
+            "os_release": FieldSerializer,
+            "os_codename": FieldSerializer,
+            "running_kernel": FieldSerializer,
         }
 
 
