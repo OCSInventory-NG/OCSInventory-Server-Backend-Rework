@@ -59,6 +59,15 @@ class SoftwareDictionarySerializer(ModelSerializer):
 
     assets = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     installation_number = serializers.IntegerField(read_only=True)
+    identity_status = serializers.CharField(
+        source="identity.status", read_only=True, default=None
+    )
+    identity_product = serializers.CharField(
+        source="identity.product", read_only=True, default=None
+    )
+    identity_identifier = serializers.CharField(
+        source="identity.identifier", read_only=True, default=None
+    )
 
     class Meta:
         model = SoftwareDictionary
@@ -78,6 +87,9 @@ class SoftwareDictionarySerializer(ModelSerializer):
             "assets",
             "updated_at",
             "installation_number",
+            "identity_status",
+            "identity_product",
+            "identity_identifier",
         ]
 
 

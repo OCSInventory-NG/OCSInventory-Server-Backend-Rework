@@ -633,3 +633,163 @@ class TestIdentityService:
         assert before.index_version == 1
         assert after.index_version == 2
         assert after.updated_at == before.updated_at
+
+
+def make_identity(entry, status, match_key, candidates=None, family="windows"):
+    return SoftwareIdentity.objects.create(
+        entry=entry,
+        family=family,
+        match_key=match_key,
+        status=status,
+        candidates=candidates or [],
+    )
+
+
+@pytest.mark.django_db
+class TestIdentityApi:
+    def test_review_groups_versions_and_sorts_by_machines(self, api_client):
+        small = make_entry("WinFsp 2025", "2.0", "windows", "windows", installations=1)
+        make_identity(small, "review", "winfsp 2025")
+        v1 = make_entry("Insomnia", "9.1.1", "windows", "windows", installations=3)
+        v2 = make_entry("Insomnia", "9.2.0", "windows", "windows", installations=5)
+        make_identity(
+            v1, "review", "insomnia", [{"product": "konghq:insomnia", "score": 0.6}]
+        )
+        make_identity(
+            v2, "review", "insomnia", [{"product": "konghq:insomnia", "score": 0.7}]
+        )
+
+        response = api_client.get("/software_identities/review/?limit=10")
+
+        assert response.status_code == 200
+        first = response.data["results"][0]
+        assert (first["match_key"], first["entries"], first["machines"]) == (
+            "insomnia",
+            2,
+            8,
+        )
+        assert first["candidates"] == [{"product": "konghq:insomnia", "score": 0.7}]
+        assert response.data["count"] == 2
+
+    def test_summary(self, api_client):
+        make_identity(
+            make_entry("curl", "8", "deb", "debian:13"),
+            "matched",
+            "curl",
+            family="deb",
+        )
+        make_entry("waiting", "1", "windows", "windows")
+
+        response = api_client.get("/software_identities/summary/")
+
+        assert response.status_code == 200
+        assert response.data["counts"] == [
+            {"family": "deb", "status": "matched", "count": 1}
+        ]
+        assert response.data["pending"] == 1
+        assert response.data["index"]["version"] == 0
+
+    def test_create_decision_applies_it(self, api_client, cpe_index):
+        entry = make_entry("Insomnia", "9.1.1", "windows", "windows")
+        IdentityService.refresh()
+        assert SoftwareIdentity.objects.get(entry=entry).status == "none"
+        CpeProduct.objects.create(vendor="konghq", product="insomnia")
+
+        response = api_client.post(
+            "/software_identity_decisions/",
+            {
+                "family": "windows",
+                "match_key": "insomnia",
+                "product": "konghq:insomnia",
+            },
+            format="json",
+        )
+
+        assert response.status_code == 201
+        assert response.data["source"] == "admin"
+        assert SoftwareIdentity.objects.get(entry=entry).status == "validated"
+
+    def test_decision_on_an_unknown_product_is_rejected(self, api_client, cpe_index):
+        response = api_client.post(
+            "/software_identity_decisions/",
+            {
+                "family": "windows",
+                "match_key": "insomnia",
+                "product": "nobody:nothing",
+            },
+            format="json",
+        )
+
+        assert response.status_code == 400
+
+    def test_decision_without_product_is_rejected(self, api_client):
+        response = api_client.post(
+            "/software_identity_decisions/",
+            {"family": "windows", "match_key": "x"},
+            format="json",
+        )
+
+        assert response.status_code == 400
+        assert not IdentityDecision.objects.filter(match_key="x").exists()
+
+    def test_decision_with_a_null_product_means_no_cpe(self, api_client):
+        response = api_client.post(
+            "/software_identity_decisions/",
+            {"family": "windows", "match_key": "x", "product": None},
+            format="json",
+        )
+
+        assert response.status_code == 201
+        assert IdentityDecision.objects.get(match_key="x").product is None
+
+    def test_shipped_decisions_cannot_be_deleted(self, api_client):
+        shipped = IdentityDecision.objects.filter(source="shipped").first()
+
+        response = api_client.delete(f"/software_identity_decisions/{shipped.id}/")
+
+        assert response.status_code == 400
+        assert IdentityDecision.objects.filter(id=shipped.id).exists()
+
+    def test_admin_decisions_can_be_deleted(self, api_client, admin_user):
+        decision = IdentityService.decide("windows", "kyber", None, admin_user)
+
+        response = api_client.delete(f"/software_identity_decisions/{decision.id}/")
+
+        assert response.status_code == 204
+
+    def test_permissions(self, make_api_client):
+        viewer = make_api_client("view_softwareidentity", "view_identitydecision")
+
+        assert viewer.get("/software_identities/review/").status_code == 200
+        assert (
+            viewer.post(
+                "/software_identity_decisions/",
+                {"family": "windows", "match_key": "x", "product": None},
+                format="json",
+            ).status_code
+            == 403
+        )
+
+    def test_cpe_products_search(self, api_client, cpe_index):
+        response = api_client.get("/cpe_products/?search=edge")
+
+        assert response.status_code == 200
+        assert {row["key"] for row in response.data} == {
+            "microsoft:edge",
+            "microsoft:edge_chromium",
+        }
+
+    def test_dictionary_shows_and_filters_identity(self, api_client):
+        entry = make_entry("curl", "8", "deb", "debian:13")
+        make_identity(entry, "matched", "curl", family="deb")
+        make_entry("waiting", "1", "windows", "windows")
+
+        response = api_client.get("/software_dictionary/?identity__status=matched")
+
+        assert response.status_code == 200
+        assert [row["identity_status"] for row in response.data] == ["matched"]
+        everything = api_client.get("/software_dictionary/")
+        assert {row["identity_status"] for row in everything.data} == {
+            "matched",
+            None,
+        }

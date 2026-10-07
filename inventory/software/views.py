@@ -43,7 +43,7 @@ class SoftwareMappingViewSet(viewsets.OCSViewSet):
 class SoftwareDictionaryViewSet(viewsets.OCSViewSet):
     permission_classes = [DefaultModelPermissions]
 
-    queryset = SoftwareDictionary.objects.all()
+    queryset = SoftwareDictionary.objects.select_related("identity")
     serializer_class = SoftwareDictionarySerializer
     model = SoftwareDictionary
     search_fields = [
@@ -85,6 +85,7 @@ class SoftwareDictionaryViewSet(viewsets.OCSViewSet):
         "package_format",
         "source_package",
         "installation_number",
+        "identity__status",
     ]
 
 

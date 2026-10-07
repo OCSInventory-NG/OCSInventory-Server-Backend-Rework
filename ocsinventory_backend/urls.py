@@ -58,6 +58,7 @@ from inventory.category.routers import CategoryRouter
 from inventory.field.routers import FieldRouter
 from inventory.section.routers import SectionRouter
 from inventory.software.routers import SoftwareRouter
+from inventory.software_identity.routers import SoftwareIdentityRouter
 from inventory.template.routers import TemplateRouter
 from ipdiscover.netdevice.routers import NetdeviceRouter
 from ipdiscover.netgroup.routers import NetgroupRouter
@@ -132,6 +133,10 @@ categoryRouter = categoryRouter.defineRoutes(defaultRouter)
 # Add software router declaration
 softwareRouter = SoftwareRouter()
 softwareRouter = softwareRouter.defineRoutes(defaultRouter)
+
+# Add software identity router declaration
+softwareIdentityRouter = SoftwareIdentityRouter()
+softwareIdentityRouter = softwareIdentityRouter.defineRoutes(defaultRouter)
 
 # Add Netdevicce declaration
 netrouter = NetdeviceRouter()
