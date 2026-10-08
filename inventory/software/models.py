@@ -82,6 +82,13 @@ class SoftwareMapping(models.Model):
         blank=True,
         on_delete=models.SET_NULL,
     )
+    package_origin = models.ForeignKey(
+        Field,
+        related_name="software_package_origin_mappings",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
     # Read once per machine, from a field of any section of the template
     os_id = models.ForeignKey(
         Field,
@@ -134,6 +141,7 @@ class SoftwareDictionary(models.Model):
     architecture = models.CharField(max_length=64, blank=True, null=True)
     package_format = models.CharField(max_length=64, blank=True, null=True)
     source_package = models.CharField(max_length=255, blank=True, null=True)
+    package_origin = models.CharField(max_length=128, blank=True, null=True)
     installation_number = models.IntegerField(default=0)
     assets = models.ManyToManyField(
         InventoryBase,

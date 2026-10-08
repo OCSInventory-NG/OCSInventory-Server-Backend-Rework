@@ -781,6 +781,164 @@ class TestSoftwareDictionaryPlatform:
         assert [row["source_package"] for row in response.data] == ["openssl"]
 
 
+@pytest.fixture
+def origin_field(section):
+    return Field.objects.create(name="ORIGIN", section=section, order=7)
+
+
+@pytest.fixture
+def origin_mapping(identity_mapping, origin_field):
+    identity_mapping.package_origin = origin_field
+    identity_mapping.save()
+    return identity_mapping
+
+
+@pytest.mark.django_db
+class TestSoftwareDictionaryPackageOrigin:
+    def test_mapped_origin_is_stored(
+        self, template, section, identity_fields, origin_field, origin_mapping
+    ):
+        asset = make_asset(template, "docker-host")
+        add_os_release(asset, identity_fields, "ubuntu", "debian", "22.04", "jammy")
+        add_values(
+            asset,
+            section,
+            {
+                identity_fields["name"]: "docker-ce",
+                identity_fields["version"]: "5:29.8.0-1~ubuntu.22.04~jammy",
+                origin_field: "Docker",
+            },
+        )
+
+        SoftwareDictionaryService.refresh_asset(asset)
+
+        assert SoftwareDictionary.objects.get().package_origin == "Docker"
+
+    def test_mapped_origin_missing_or_empty_is_stored_empty(
+        self, template, section, identity_fields, origin_field, origin_mapping
+    ):
+        asset = make_asset(template, "local-packages")
+        add_os_release(asset, identity_fields, "ubuntu", "debian", "22.04", "jammy")
+        add_values(
+            asset,
+            section,
+            {
+                identity_fields["name"]: "ocsinventory-agent",
+                identity_fields["version"]: "3:3.0.0-1",
+                origin_field: "",
+            },
+        )
+        # An agent still on the previous template sends no Origin line at all
+        add_values(
+            asset,
+            section,
+            {
+                identity_fields["name"]: "old-template-row",
+                identity_fields["version"]: "1",
+            },
+        )
+
+        SoftwareDictionaryService.refresh_asset(asset)
+
+        assert sorted(
+            SoftwareDictionary.objects.values_list("name", "package_origin")
+        ) == [("ocsinventory-agent", ""), ("old-template-row", "")]
+
+    def test_origin_is_null_when_not_mapped(
+        self, template, section, identity_fields, identity_mapping
+    ):
+        asset = make_asset(template, "legacy-like")
+        add_os_release(asset, identity_fields, "debian", "", "13", "trixie")
+        add_package(asset, section, identity_fields, "curl", "8.14.1-2")
+
+        SoftwareDictionaryService.refresh_asset(asset)
+
+        assert SoftwareDictionary.objects.get().package_origin is None
+
+    def test_null_and_empty_origins_give_two_entries(
+        self, template, section, identity_fields, origin_field, origin_mapping
+    ):
+        first = make_asset(template, "first")
+        add_os_release(first, identity_fields, "debian", "", "13", "trixie")
+        add_package(first, section, identity_fields, "curl", "8.14.1-2")
+        SoftwareDictionaryService.refresh_asset(first)
+
+        origin_mapping.package_origin = None
+        origin_mapping.save()
+        second = make_asset(template, "second")
+        add_os_release(second, identity_fields, "debian", "", "13", "trixie")
+        add_package(second, section, identity_fields, "curl", "8.14.1-2")
+        SoftwareDictionaryService.refresh_asset(second)
+
+        origins = list(
+            SoftwareDictionary.objects.values_list("package_origin", flat=True)
+        )
+        assert len(origins) == 2
+        assert set(origins) == {"", None}
+
+    def test_long_origin_is_cut(
+        self, template, section, identity_fields, origin_field, origin_mapping
+    ):
+        asset = make_asset(template, "long-origin")
+        add_values(
+            asset,
+            section,
+            {identity_fields["name"]: "curl", origin_field: "o" * 300},
+        )
+
+        SoftwareDictionaryService.refresh_asset(asset)
+
+        assert SoftwareDictionary.objects.get().package_origin == "o" * 128
+
+    def test_api_filters_and_searches_by_origin(
+        self,
+        api_client,
+        template,
+        section,
+        identity_fields,
+        origin_field,
+        origin_mapping,
+    ):
+        asset = make_asset(template, "api")
+        add_os_release(asset, identity_fields, "ubuntu", "debian", "22.04", "jammy")
+        # containerd.io: a name that does not contain its origin, so the
+        # search can only find it through package_origin
+        for name, origin in (("containerd.io", "Docker"), ("curl", "Ubuntu")):
+            add_values(
+                asset,
+                section,
+                {identity_fields["name"]: name, origin_field: origin},
+            )
+        SoftwareDictionaryService.refresh_asset(asset)
+
+        filtered = api_client.get("/software_dictionary/?package_origin=Docker")
+        searched = api_client.get("/software_dictionary/?search=Docker")
+
+        assert filtered.status_code == 200
+        assert [row["name"] for row in filtered.data] == ["containerd.io"]
+        assert [row["name"] for row in searched.data] == ["containerd.io"]
+        assert filtered.data[0]["package_origin"] == "Docker"
+
+    def test_mapping_api_accepts_package_origin(
+        self, api_client, template, section, software_fields, origin_field
+    ):
+        response = api_client.post(
+            "/software_mapping/",
+            {
+                "template": template.id,
+                "section": section.id,
+                "name": software_fields["name"].id,
+                "package_origin": origin_field.id,
+            },
+            format="json",
+        )
+
+        assert response.status_code == 201
+        assert SoftwareMapping.objects.get(template=template).package_origin == (
+            origin_field
+        )
+
+
 needs_shell = pytest.mark.skipif(
     shutil.which("bash") is None or shutil.which("awk") is None,
     reason="bash and awk are needed to run the template commands",

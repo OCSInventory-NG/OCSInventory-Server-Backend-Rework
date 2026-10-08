@@ -34,6 +34,7 @@ SIGNATURE_FIELDS = (
     "architecture",
     "package_format",
     "source_package",
+    "package_origin",
 )
 
 
@@ -241,6 +242,17 @@ class SoftwareDictionaryService:
                     name,
                     cls._value_for_field(getattr(mapping, f"{name}_id"), value_map),
                 )
+            # Null: the template does not collect the origin. Empty: it does,
+            # and the package comes from no known repository.
+            entry["package_origin"] = (
+                _fit(
+                    SoftwareDictionary,
+                    "package_origin",
+                    cls._value_for_field(mapping.package_origin_id, value_map) or "",
+                )
+                if mapping.package_origin_id
+                else None
+            )
 
             if not entry["name"]:
                 # nothing useful extracted
