@@ -1,6 +1,9 @@
+import re
+
 from inventory.software_identity.models import (
     CpeProduct,
     IdentityDecision,
+    PackageOrigin,
     SoftwareIdentity,
 )
 from inventory.software_identity.services import IdentityService
@@ -75,3 +78,32 @@ class CpeProductSerializer(ModelSerializer):
     class Meta:
         model = CpeProduct
         fields = ["id", "vendor", "product", "key", "popularity"]
+
+
+# The distribution is a purl namespace
+DISTRIBUTION = re.compile(r"[a-z0-9][a-z0-9.-]*")
+
+
+class PackageOriginSerializer(ModelSerializer):
+    class Meta:
+        model = PackageOrigin
+        fields = ["id", "name", "distribution"]
+        # Uniqueness is checked without case in validate_name
+        validators = []
+
+    def validate_name(self, value):
+        value = value.strip()
+        duplicates = PackageOrigin.objects.filter(name__iexact=value)
+        if self.instance is not None:
+            duplicates = duplicates.exclude(pk=self.instance.pk)
+        if duplicates.exists():
+            raise serializers.ValidationError("This origin already exists")
+        return value
+
+    def validate_distribution(self, value):
+        value = value.strip().lower()
+        if not DISTRIBUTION.fullmatch(value):
+            raise serializers.ValidationError(
+                "Lowercase letters, digits, dots and hyphens only"
+            )
+        return value

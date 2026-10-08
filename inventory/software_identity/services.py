@@ -6,7 +6,11 @@ from django.db.models import Q
 from inventory.software.models import SoftwareDictionary
 from inventory.software_identity.cpe.matcher import CpeMatcher
 from inventory.software_identity.match_key import match_key
-from inventory.software_identity.models import IdentityDecision, SoftwareIdentity
+from inventory.software_identity.models import (
+    IdentityDecision,
+    PackageOrigin,
+    SoftwareIdentity,
+)
 from inventory.software_identity.normalizers import build_normalizers
 from inventory.software_identity.normalizers.base import (
     UNSUPPORTED,
@@ -18,6 +22,7 @@ from inventory.software_identity.normalizers.base import (
 logger = logging.getLogger(__name__)
 
 CPE_FAMILIES = ("windows", "macos")
+LINUX_FAMILIES = ("deb", "rpm")
 
 
 def _fit(field, value):
@@ -41,8 +46,11 @@ class IdentityService:
         pending = cls._pending(matcher)
         counts = Counter()
         for start in range(0, len(pending), batch_size):
-            # The catalog may change during a long run: read it again per batch
-            normalizers = build_normalizers(matcher, cls.effective_decisions())
+            # The catalog and the origins may change during a long run: read
+            # them again per batch
+            normalizers = build_normalizers(
+                matcher, cls.effective_decisions(), cls.known_origins()
+            )
             entries = (
                 SoftwareDictionary.objects.filter(
                     id__in=pending[start : start + batch_size]
@@ -100,6 +108,33 @@ class IdentityService:
         return decisions
 
     @staticmethod
+    def known_origins():
+        """{origin name lowercased: distribution}, from PackageOrigin."""
+        return {
+            name.strip().lower(): distribution
+            for name, distribution in PackageOrigin.objects.values_list(
+                "name", "distribution"
+            )
+        }
+
+    @staticmethod
+    def reset_origins(names):
+        """
+        Linux entries of these origins go back to pending: the next refresh
+        identifies them with the current PackageOrigin rows.
+        """
+        origins = {name.strip().lower() for name in names if name is not None}
+        if not origins:
+            return 0
+        query = Q()
+        for origin in origins:
+            query |= Q(entry__package_origin__iexact=origin)
+        deleted, _ = SoftwareIdentity.objects.filter(
+            query, family__in=LINUX_FAMILIES
+        ).delete()
+        return deleted
+
+    @staticmethod
     def _pending(matcher):
         """
         Ids to identify, ordered by name: the versions of a product follow each
@@ -138,6 +173,7 @@ class IdentityService:
             source_package=entry.source_package or "",
             platform_family=family,
             platform_key=entry.platform_key or "",
+            package_origin=entry.package_origin,
         )
         return normalizer.normalize(record)
 

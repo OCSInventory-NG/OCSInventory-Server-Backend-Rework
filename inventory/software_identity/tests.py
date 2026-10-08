@@ -1,6 +1,7 @@
 import tarfile
 
 import pytest
+from asset.inventory_base.models import InventoryBase
 from automation.scheduler.models import Scheduler
 from django.db import IntegrityError
 from inventory.software.models import SoftwareDictionary
@@ -901,3 +902,213 @@ class TestIdentityApi:
             "matched",
             None,
         }
+
+
+def make_machine(name):
+    return InventoryBase.objects.create(
+        name=name,
+        description="desc",
+        serial=f"SER-{name}",
+        osname="Linux",
+        osversion="1",
+        uuid=f"uuid-{name}",
+        domain="example",
+        agent="agent",
+    )
+
+
+@pytest.mark.django_db
+class TestPackageOrigins:
+    def test_refresh_uses_the_known_origins(self):
+        rocky = make_entry(
+            "openssl",
+            "1:3.0.7-27.el9",
+            "rpm",
+            "rocky:9",
+            source_package="openssl",
+            package_origin="Rocky Enterprise Software Foundation",
+        )
+        epel = make_entry(
+            "uwsgi",
+            "2.0.31-3.el9",
+            "rpm",
+            "rocky:9",
+            source_package="uwsgi",
+            package_origin="Fedora Project",
+        )
+
+        IdentityService.refresh()
+
+        assert SoftwareIdentity.objects.get(entry=rocky).product == (
+            "pkg:rpm/rocky/openssl"
+        )
+        epel_identity = SoftwareIdentity.objects.get(entry=epel)
+        assert (epel_identity.status, epel_identity.reason) == (
+            "unsupported",
+            "third_party",
+        )
+
+    def test_reset_origins_only_touches_those_origins(self):
+        epel = make_entry(
+            "uwsgi", "2.0.31-3.el9", "rpm", "rocky:9", package_origin="Fedora Project"
+        )
+        rocky = make_entry(
+            "openssl",
+            "1:3.0.7-27.el9",
+            "rpm",
+            "rocky:9",
+            package_origin="Rocky Enterprise Software Foundation",
+        )
+        IdentityService.refresh()
+
+        assert IdentityService.reset_origins(["fedora project", None]) == 1
+
+        assert not SoftwareIdentity.objects.filter(entry=epel).exists()
+        assert SoftwareIdentity.objects.filter(entry=rocky).exists()
+
+    def test_adding_an_origin_recomputes_its_entries(self, api_client):
+        epel = make_entry(
+            "uwsgi",
+            "2.0.31-3.el9",
+            "rpm",
+            "rocky:9",
+            source_package="uwsgi",
+            package_origin="Fedora Project",
+        )
+        IdentityService.refresh()
+
+        response = api_client.post(
+            "/package_origins/",
+            {"name": " Fedora Project ", "distribution": "Fedora"},
+            format="json",
+        )
+
+        assert response.status_code == 201
+        assert (response.data["name"], response.data["distribution"]) == (
+            "Fedora Project",
+            "fedora",
+        )
+        IdentityService.refresh()
+        assert SoftwareIdentity.objects.get(entry=epel).product == (
+            "pkg:rpm/fedora/uwsgi"
+        )
+
+    def test_renaming_an_origin_resets_both_names(self, api_client):
+        ubuntu = make_entry(
+            "curl",
+            "8.5.0-2ubuntu10.6",
+            "deb",
+            "ubuntu:24.04",
+            source_package="curl",
+            package_origin="Ubuntu",
+        )
+        mint = make_entry(
+            "firefox",
+            "157.0+linuxmint1",
+            "deb",
+            "ubuntu:24.04",
+            source_package="firefox",
+            package_origin="linuxmint",
+        )
+        IdentityService.refresh()
+        origin = PackageOrigin.objects.get(name="Ubuntu")
+
+        response = api_client.patch(
+            f"/package_origins/{origin.id}/", {"name": "linuxmint"}, format="json"
+        )
+
+        assert response.status_code == 200
+        assert not SoftwareIdentity.objects.filter(entry__in=[ubuntu, mint]).exists()
+        IdentityService.refresh()
+        assert SoftwareIdentity.objects.get(entry=ubuntu).reason == "third_party"
+        assert SoftwareIdentity.objects.get(entry=mint).product == (
+            "pkg:deb/ubuntu/firefox"
+        )
+
+    def test_deleting_an_origin_resets_its_entries(self, api_client):
+        debian = make_entry(
+            "curl",
+            "8.14.1-2",
+            "deb",
+            "debian:13",
+            source_package="curl",
+            package_origin="Debian",
+        )
+        IdentityService.refresh()
+        origin = PackageOrigin.objects.get(name="Debian")
+
+        response = api_client.delete(f"/package_origins/{origin.id}/")
+
+        assert response.status_code == 204
+        IdentityService.refresh()
+        assert SoftwareIdentity.objects.get(entry=debian).reason == "third_party"
+
+    def test_duplicate_origin_is_rejected(self, api_client):
+        response = api_client.post(
+            "/package_origins/",
+            {"name": " ubuntu ", "distribution": "ubuntu"},
+            format="json",
+        )
+
+        assert response.status_code == 400
+
+    def test_distribution_must_fit_a_purl(self, api_client):
+        response = api_client.post(
+            "/package_origins/",
+            {"name": "Oracle America", "distribution": "oracle linux"},
+            format="json",
+        )
+
+        assert response.status_code == 400
+
+    def test_summary_lists_the_origins_seen(self, api_client):
+        first, second = make_machine("first"), make_machine("second")
+        make_entry(
+            "curl", "8", "deb", "ubuntu:22.04", package_origin="Ubuntu"
+        ).assets.add(first, second)
+        make_entry(
+            "docker-ce", "5:29.8.0-1", "deb", "ubuntu:22.04", package_origin="Docker"
+        ).assets.add(first)
+        make_entry(
+            "ocsinventory-agent", "3:3.0.0-1", "deb", "ubuntu:22.04", package_origin=""
+        ).assets.add(first)
+        # not listed: origin not collected, or not a Linux entry
+        make_entry("legacy", "1", "deb", "ubuntu:20.04")
+        make_entry("Firefox", "150.0", "windows", "windows", package_origin="Mozilla")
+
+        response = api_client.get("/software_identities/summary/")
+
+        assert response.status_code == 200
+        assert response.data["origins"] == [
+            {
+                "package_origin": "Ubuntu",
+                "entries": 1,
+                "machines": 2,
+                "distribution": "ubuntu",
+            },
+            {
+                "package_origin": "",
+                "entries": 1,
+                "machines": 1,
+                "distribution": None,
+            },
+            {
+                "package_origin": "Docker",
+                "entries": 1,
+                "machines": 1,
+                "distribution": None,
+            },
+        ]
+
+    def test_permissions(self, make_api_client):
+        viewer = make_api_client("view_packageorigin")
+
+        assert viewer.get("/package_origins/").status_code == 200
+        assert (
+            viewer.post(
+                "/package_origins/",
+                {"name": "Oracle America", "distribution": "oracle"},
+                format="json",
+            ).status_code
+            == 403
+        )

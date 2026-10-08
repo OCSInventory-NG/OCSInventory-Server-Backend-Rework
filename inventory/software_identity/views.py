@@ -5,15 +5,17 @@ from inventory.software_identity.models import (
     CpeIndexState,
     CpeProduct,
     IdentityDecision,
+    PackageOrigin,
     SoftwareIdentity,
 )
 from inventory.software_identity.normalizers.base import REVIEW
 from inventory.software_identity.serializers import (
     CpeProductSerializer,
     IdentityDecisionSerializer,
+    PackageOriginSerializer,
     SoftwareIdentitySerializer,
 )
-from inventory.software_identity.services import IdentityService
+from inventory.software_identity.services import LINUX_FAMILIES, IdentityService
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
 from rest_framework.decorators import action
@@ -86,8 +88,29 @@ class SoftwareIdentityViewSet(viewsets.OCSViewSet):
                 "machines_unknown_platform": mapped_assets.filter(
                     Q(platform__isnull=True) | Q(platform__key="")
                 ).count(),
+                "origins": self._origins(),
             }
         )
+
+    @staticmethod
+    def _origins():
+        """Package origins seen on Linux entries, with the distribution they name."""
+        known = IdentityService.known_origins()
+        rows = (
+            SoftwareDictionary.objects.filter(
+                platform_family__in=LINUX_FAMILIES, package_origin__isnull=False
+            )
+            .values("package_origin")
+            .annotate(
+                entries=Count("id", distinct=True),
+                machines=Count("assets", distinct=True),
+            )
+            .order_by("-machines", "package_origin")
+        )
+        return [
+            {**row, "distribution": known.get(row["package_origin"].strip().lower())}
+            for row in rows
+        ]
 
 
 class IdentityDecisionViewSet(viewsets.OCSViewSet):
@@ -118,3 +141,27 @@ class CpeProductViewSet(viewsets.OCSViewSet):
     filterset_fields = ["vendor", "product"]
     search_fields = ["vendor", "product"]
     ordering = ["-popularity", "vendor", "product"]
+
+
+class PackageOriginViewSet(viewsets.OCSViewSet):
+    permission_classes = [DefaultModelPermissions]
+    queryset = PackageOrigin.objects.all()
+    serializer_class = PackageOriginSerializer
+    model = PackageOrigin
+    filterset_fields = ["id", "name", "distribution"]
+    search_fields = ["name", "distribution"]
+    ordering = ["name"]
+
+    def perform_create(self, serializer):
+        origin = serializer.save()
+        IdentityService.reset_origins([origin.name])
+
+    def perform_update(self, serializer):
+        previous = serializer.instance.name
+        origin = serializer.save()
+        IdentityService.reset_origins([previous, origin.name])
+
+    def perform_destroy(self, instance):
+        name = instance.name
+        instance.delete()
+        IdentityService.reset_origins([name])
