@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.db.models.functions import Lower
 from inventory.software.models import SoftwareDictionary
 from inventory.software_identity.normalizers.base import STATUSES
 
@@ -116,4 +117,20 @@ class SoftwareIdentity(models.Model):
             models.Index(fields=["family", "match_key"]),
             models.Index(fields=["status"]),
             models.Index(fields=["product"]),
+        ]
+
+
+class PackageOrigin(models.Model):
+    """
+    A package origin (RPM vendor, apt origin) whose packages a distribution's
+    advisories cover, and the distribution it names in purls. Packages from
+    any other origin are third party.
+    """
+
+    name = models.CharField(max_length=128)
+    distribution = models.CharField(max_length=32)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(Lower("name"), name="unique_package_origin_name")
         ]

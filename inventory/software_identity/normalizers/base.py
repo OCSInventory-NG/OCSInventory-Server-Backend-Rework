@@ -23,6 +23,8 @@ class SoftwareRecord:
     source_package: str = ""
     platform_family: str = ""
     platform_key: str = ""
+    # None: the mapping does not collect it; "": the package has no origin
+    package_origin: str | None = None
 
 
 @dataclass(frozen=True)

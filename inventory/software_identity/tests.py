@@ -18,6 +18,7 @@ from inventory.software_identity.models import (
     CpeProduct,
     CpeToken,
     IdentityDecision,
+    PackageOrigin,
     SoftwareIdentity,
 )
 from inventory.software_identity.normalizers import build_normalizers
@@ -364,12 +365,20 @@ class TestCpeNormalizers:
         assert (pages.status, pages.product) == (MATCHED, "apple:pages")
 
 
+ORIGINS = {
+    "ubuntu": "ubuntu",
+    "rocky enterprise software foundation": "rocky",
+    "red hat, inc.": "redhat",
+}
+
+
 class TestLinuxNormalizer:
     def normalize(self, **values):
         record = SoftwareRecord(
             **{"platform_family": "deb", "platform_key": "ubuntu:24.04", **values}
         )
-        return build_normalizers(None, {})[record.platform_family].normalize(record)
+        normalizers = build_normalizers(None, {}, ORIGINS)
+        return normalizers[record.platform_family].normalize(record)
 
     def test_debian_purl(self):
         result = self.normalize(
@@ -378,6 +387,7 @@ class TestLinuxNormalizer:
             architecture="amd64",
             package_format="deb",
             source_package="openssl",
+            package_origin="Ubuntu",
         )
 
         assert result.status == MATCHED
@@ -431,6 +441,91 @@ class TestLinuxNormalizer:
 
         assert (result.status, result.reason) == (UNSUPPORTED, "unknown_release")
 
+    @pytest.mark.parametrize(
+        "family, key, origin, status, reason, product, distro",
+        [
+            (
+                "rpm",
+                "rocky:9",
+                "Rocky Enterprise Software Foundation",
+                MATCHED,
+                "",
+                "pkg:rpm/rocky/openssl",
+                "distro=rocky-9",
+            ),
+            ("rpm", "rocky:9", "Fedora Project", UNSUPPORTED, "third_party", "", ""),
+            ("rpm", "rocky:9", "", UNSUPPORTED, "no_origin", "", ""),
+            (
+                "rpm",
+                "almalinux:9",
+                "Red Hat, Inc.",
+                MATCHED,
+                "",
+                "pkg:rpm/redhat/openssl",
+                "distro=almalinux-9",
+            ),
+            (
+                "deb",
+                "ubuntu:24.04",
+                "Ubuntu",
+                MATCHED,
+                "",
+                "pkg:deb/ubuntu/openssl",
+                "distro=ubuntu-24.04",
+            ),
+            ("deb", "ubuntu:24.04", "linuxmint", UNSUPPORTED, "third_party", "", ""),
+            ("deb", "ubuntu:22.04", "Docker", UNSUPPORTED, "third_party", "", ""),
+            (
+                "deb",
+                "ubuntu:20.04",
+                None,
+                MATCHED,
+                "origin_not_mapped",
+                "pkg:deb/ubuntu/openssl",
+                "distro=ubuntu-20.04",
+            ),
+        ],
+    )
+    def test_package_origin(self, family, key, origin, status, reason, product, distro):
+        result = self.normalize(
+            name="openssl",
+            version="3.0.7-27",
+            source_package="openssl",
+            platform_family=family,
+            platform_key=key,
+            package_origin=origin,
+        )
+
+        assert (result.status, result.reason, result.product) == (
+            status,
+            reason,
+            product,
+        )
+        assert distro in result.identifier
+        assert result.match_key == "openssl"
+
+    def test_missing_source_is_reported_before_missing_origin(self):
+        result = self.normalize(
+            name="curl", version="7.68.0-1ubuntu2.25", platform_key="ubuntu:20.04"
+        )
+
+        assert (result.status, result.reason) == (MATCHED, "source_not_mapped")
+        assert result.product == "pkg:deb/ubuntu/curl"
+
+    def test_origin_is_compared_without_case_and_spaces(self):
+        result = self.normalize(
+            name="curl", version="8", source_package="curl", package_origin="  UBUNTU "
+        )
+
+        assert (result.status, result.product) == (MATCHED, "pkg:deb/ubuntu/curl")
+
+    def test_unknown_release_comes_before_the_origin(self):
+        result = self.normalize(
+            name="curl", version="8", platform_key="", package_origin="Docker"
+        )
+
+        assert (result.status, result.reason) == (UNSUPPORTED, "unknown_release")
+
 
 def make_entry(name, version, family, key, installations=1, **values):
     return SoftwareDictionary.objects.create(
@@ -455,6 +550,19 @@ class TestIdentityService:
             ("hourly", False),
         ]
         assert IdentityDecision.objects.filter(source="shipped").count() == 6
+        origins = dict(PackageOrigin.objects.values_list("name", "distribution"))
+        assert origins == {
+            "Debian": "debian",
+            "Ubuntu": "ubuntu",
+            "Rocky Enterprise Software Foundation": "rocky",
+            "AlmaLinux": "almalinux",
+            "Red Hat, Inc.": "redhat",
+            "CentOS": "centos",
+        }
+
+    def test_origin_names_are_unique_without_case(self):
+        with pytest.raises(IntegrityError):
+            PackageOrigin.objects.create(name="ubuntu", distribution="ubuntu")
 
     def test_linux_entries_are_identified_without_index(self):
         entry = make_entry(
