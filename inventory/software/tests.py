@@ -969,6 +969,137 @@ rpm() {
 """  # noqa: E501
 
 
+FAKE_DPKG_ORIGINS = r"""
+dpkg() {
+  if [ "$1" = "-l" ]; then
+    printf 'h\nh\nh\nh\nh\nii  adduser 3.118ubuntu5 all a\nii  libc6:amd64 2.35-0ubuntu3.11 amd64 b\nii  docker-ce 5:29.8.0-1~ubuntu.22.04~jammy amd64 c\nii  ocsinventory-agent 3:3.0.0-1 all d\nii  example-tool 1.2-1 amd64 e\nii  libstdc++6:amd64 12.3.0-1ubuntu1~22.04.2 amd64 f\nii  gnome-shell 42.9-0ubuntu2.2 amd64 g\nii  libnss-systemd:amd64 249.11-0ubuntu3.12 amd64 h\n'
+    return
+  fi
+  printf 'Package: %s\nVersion: 1\nArchitecture: amd64\nDescription: x\n' "$2"
+}
+"""  # noqa: E501
+
+FAKE_APT = r"""
+apt-cache() {
+  if [ "$#" -eq 1 ]; then
+    cat <<'APT'
+Package files:
+ 100 /var/lib/dpkg/status
+     release a=now
+ 500 https://download.docker.com/linux/ubuntu jammy/stable amd64 Packages
+     release o=Docker,a=jammy,l=Docker CE,c=stable,b=amd64
+     origin download.docker.com
+ 500 http://archive.ubuntu.com/ubuntu jammy-security/main amd64 Packages
+     release v=22.04,o=Ubuntu,a=jammy-security,n=jammy,l=Ubuntu,c=main,b=amd64
+     origin archive.ubuntu.com
+ 500 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 Packages
+     release v=22.04,o=Ubuntu,a=jammy-updates,n=jammy,l=Ubuntu,c=main,b=amd64
+     origin archive.ubuntu.com
+ 500 http://archive.ubuntu.com/ubuntu jammy-updates/universe amd64 Packages
+     release v=22.04,o=Ubuntu,a=jammy-updates,n=jammy,l=Ubuntu,c=universe,b=amd64
+     origin archive.ubuntu.com
+ 500 http://archive.ubuntu.com/ubuntu jammy/main amd64 Packages
+     release v=22.04,o=Ubuntu,a=jammy,n=jammy,l=Ubuntu,c=main,b=amd64
+     origin archive.ubuntu.com
+ 500 http://archive.ubuntu.com/ubuntu jammy/universe amd64 Packages
+     release v=22.04,o=Ubuntu,a=jammy,n=jammy,l=Ubuntu,c=universe,b=amd64
+     origin archive.ubuntu.com
+ 500 http://repo.example.org/debian stable/main amd64 Packages
+     release a=stable,c=main,b=amd64
+     origin repo.example.org
+Pinned packages:
+APT
+    return
+  fi
+  cat <<'APT'
+adduser:
+  Installed: 3.118ubuntu5
+  Candidate: 3.118ubuntu5
+  Version table:
+ *** 3.118ubuntu5 500
+        500 http://archive.ubuntu.com/ubuntu jammy/main amd64 Packages
+        100 /var/lib/dpkg/status
+libc6:
+  Installed: 2.35-0ubuntu3.11
+  Candidate: 2.35-0ubuntu3.14
+  Version table:
+     2.35-0ubuntu3.14 500
+        500 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 Packages
+        500 http://archive.ubuntu.com/ubuntu jammy-security/main amd64 Packages
+ *** 2.35-0ubuntu3.11 100
+        100 /var/lib/dpkg/status
+     2.35-0ubuntu3 500
+        500 http://archive.ubuntu.com/ubuntu jammy/main amd64 Packages
+docker-ce:
+  Installed: 5:29.8.0-1~ubuntu.22.04~jammy
+  Candidate: 5:29.8.0-1~ubuntu.22.04~jammy
+  Version table:
+ *** 5:29.8.0-1~ubuntu.22.04~jammy 500
+        500 https://download.docker.com/linux/ubuntu jammy/stable amd64 Packages
+        100 /var/lib/dpkg/status
+     5:29.7.2-1~ubuntu.22.04~jammy 500
+        500 https://download.docker.com/linux/ubuntu jammy/stable amd64 Packages
+ocsinventory-agent:
+  Installed: 3:3.0.0-1
+  Candidate: 3:3.0.0-1
+  Version table:
+ *** 3:3.0.0-1 100
+        100 /var/lib/dpkg/status
+     2:2.8-2ubuntu1 500
+        500 http://archive.ubuntu.com/ubuntu jammy-updates/universe amd64 Packages
+     2:2.8-2 500
+        500 http://archive.ubuntu.com/ubuntu jammy/universe amd64 Packages
+libstdc++6:
+  Installed: 12.3.0-1ubuntu1~22.04.2
+  Candidate: 12.3.0-1ubuntu1~22.04.3
+  Version table:
+     12.3.0-1ubuntu1~22.04.3 500
+        500 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 Packages
+        500 http://archive.ubuntu.com/ubuntu jammy-security/main amd64 Packages
+ *** 12.3.0-1ubuntu1~22.04.2 100
+        100 /var/lib/dpkg/status
+gnome-shell:
+  Installed: 42.9-0ubuntu2.2
+  Candidate: 42.9-0ubuntu2.2
+  Version table:
+ *** 42.9-0ubuntu2.2 500 (phased 20%)
+        500 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 Packages
+        100 /var/lib/dpkg/status
+     42.0-2ubuntu1 500
+        500 http://archive.ubuntu.com/ubuntu jammy/main amd64 Packages
+libnss-systemd:
+  Installed: 249.11-0ubuntu3.12
+  Candidate: 249.11-0ubuntu3.12
+  Version table:
+     249.11-0ubuntu3.16 500 (phased 0%)
+        500 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 Packages
+ *** 249.11-0ubuntu3.12 100
+        100 /var/lib/dpkg/status
+     249.11-0ubuntu3 500
+        500 http://archive.ubuntu.com/ubuntu jammy/main amd64 Packages
+example-tool:
+  Installed: 1.2-1
+  Candidate: 1.2-1
+  Version table:
+ *** 1.2-1 500
+        500 http://repo.example.org/debian stable/main amd64 Packages
+        100 /var/lib/dpkg/status
+APT
+}
+"""
+
+
+def origins_by_package(output):
+    """{Name: Origin} of the blocks printed by a SOFTWARES command."""
+    origins = {}
+    for block in output.split("---"):
+        name = re.search(r"(?:^|\n)Name: (.*)", block)
+        if name:
+            origin = re.search(r"(?:^|\n)Origin:[ \t]*(.*)", block)
+            origins[name.group(1)] = origin.group(1) if origin else None
+    return origins
+
+
 def default_target(template_name, section_name):
     return Section.objects.get(template__name=template_name, name=section_name).target
 
@@ -1049,11 +1180,20 @@ class TestDefaultTemplates:
                     "architecture": ("SOFTWARES", "ARCHITECTURE"),
                     "package_format": ("SOFTWARES", "FROM"),
                     "source_package": ("SOFTWARES", "SOURCE"),
+                    "package_origin": ("SOFTWARES", "ORIGIN"),
                     "os_id": ("OS RELEASE", "ID"),
                     "os_like": ("OS RELEASE", "ID_LIKE"),
                     "os_release": ("OS RELEASE", "VERSION_ID"),
                     "os_codename": ("OS RELEASE", "CODENAME"),
                     "running_kernel": ("OS RELEASE", "RUNNING_KERNEL"),
+                },
+            ),
+            (
+                "Linux (RHEL based)",
+                {
+                    # The RPM Vendor, already collected as the publisher
+                    "package_origin": ("SOFTWARES", "PUBLISHER"),
+                    "source_package": ("SOFTWARES", "SOURCE"),
                 },
             ),
             (
@@ -1080,6 +1220,79 @@ class TestDefaultTemplates:
         for attribute, (section_name, field_name) in expected.items():
             field = getattr(mapping, attribute)
             assert (field.section.name, field.name) == (section_name, field_name)
+
+    @needs_shell
+    def test_debian_softwares_command_prints_the_package_origin(self):
+        output = run_bash(
+            FAKE_DPKG_ORIGINS
+            + FAKE_APT
+            + default_target("Linux (Debian based)", "SOFTWARES")
+        )
+
+        assert origins_by_package(output) == {
+            # installed version in a repository
+            "adduser": "Ubuntu",
+            # installed version in no repository any more: the candidate's
+            "libc6:amd64": "Ubuntu",
+            "libstdc++6:amd64": "Ubuntu",
+            "docker-ce": "Docker",
+            # installed by hand, Ubuntu only ships an older version
+            "ocsinventory-agent": "",
+            # repository without o=: the host of its origin line
+            "example-tool": "repo.example.org",
+            # Ubuntu phased update installed: "(phased 20%)" on its line
+            "gnome-shell": "Ubuntu",
+            # phased update held back: the candidate is the installed version,
+            # in no repository any more, the newest version tells the origin
+            "libnss-systemd:amd64": "Ubuntu",
+        }
+        field = default_field("Linux (Debian based)", "SOFTWARES", "ORIGIN")
+        match = re.search(field.retrieval_value, "Name: docker-ce\nOrigin: Docker\n")
+        assert match.group(1) == "Docker"
+
+    @needs_shell
+    def test_debian_origin_is_empty_without_apt_data(self):
+        output = run_bash(
+            FAKE_DPKG_ORIGINS
+            + "apt-cache() { :; }\n"
+            + default_target("Linux (Debian based)", "SOFTWARES")
+        )
+
+        origins = origins_by_package(output)
+        assert len(origins) == 8
+        assert set(origins.values()) == {""}
+
+    @needs_shell
+    def test_debian_origin_lookup_is_one_pass(self, tmp_path):
+        calls = tmp_path / "awk-calls"
+        count_awk = f'awk() {{ echo x >> "{calls}"; command awk "$@"; }}\n'
+
+        output = run_bash(
+            count_awk
+            + FAKE_DPKG_ORIGINS
+            + FAKE_APT
+            + default_target("Linux (Debian based)", "SOFTWARES")
+        )
+
+        # One awk per package for its dpkg -s block, the origins in a fixed
+        # number of passes: no lookup process per package
+        packages = len(origins_by_package(output))
+        assert len(calls.read_text().splitlines()) <= packages + 4
+
+    def test_package_origin_change_reverses_to_the_previous_command(self):
+        migration = importlib.import_module(
+            "inventory.section.migrations.0016_package_origin"
+        )
+        target = default_target("Linux (Debian based)", "SOFTWARES")
+
+        previous = migration.patch_command(
+            target, migration.reverse_changes(migration.DEBIAN_SOFTWARES)
+        )
+
+        assert "Origin:" not in previous
+        assert "apt-cache" not in previous
+        assert "Source:" in previous
+        assert migration.patch_command(previous, migration.DEBIAN_SOFTWARES) == target
 
     def test_command_changes_reverse_to_the_original_commands(self):
         migration = importlib.import_module(
@@ -1115,3 +1328,6 @@ def test_identity_migrations_reverse_and_apply_again():
     assert Section.objects.filter(name="OS RELEASE").count() == 2
     windows = SoftwareMapping.objects.get(template__name="Windows")
     assert windows.os_id.name == "OS NAME"
+    assert "Origin:" in default_target("Linux (Debian based)", "SOFTWARES")
+    debian = SoftwareMapping.objects.get(template__name="Linux (Debian based)")
+    assert debian.package_origin.name == "ORIGIN"
