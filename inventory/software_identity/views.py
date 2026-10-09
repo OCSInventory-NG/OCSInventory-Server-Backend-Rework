@@ -1,5 +1,5 @@
 from asset.inventory_base.models import InventoryBase
-from django.db.models import Count, Min, Q
+from django.db.models import Count, Min, Q, Sum
 from inventory.software.models import SoftwareDictionary
 from inventory.software_identity.models import (
     CpeIndexState,
@@ -108,23 +108,42 @@ class SoftwareIdentityViewSet(viewsets.OCSViewSet):
 
     @staticmethod
     def _origins():
-        """Package origins seen on Linux entries, with the distribution they name."""
+        """
+        Package origins seen on Linux entries, with the distribution they name:
+        covered origins first, then third parties, then no origin, each by
+        number of installed packages.
+        """
         known = IdentityService.known_origins()
-        rows = (
-            SoftwareDictionary.objects.filter(
-                platform_family__in=LINUX_FAMILIES, package_origin__isnull=False
+        entries = SoftwareDictionary.objects.filter(
+            platform_family__in=LINUX_FAMILIES, package_origin__isnull=False
+        ).values("package_origin")
+        # Two queries: summing installations over the machines join would
+        # count each entry once per machine
+        machines = dict(
+            entries.annotate(n=Count("assets", distinct=True)).values_list(
+                "package_origin", "n"
             )
-            .values("package_origin")
-            .annotate(
-                entries=Count("id", distinct=True),
-                machines=Count("assets", distinct=True),
-            )
-            .order_by("-machines", "package_origin")
         )
-        return [
-            {**row, "distribution": known.get(row["package_origin"].strip().lower())}
-            for row in rows
+        rows = [
+            {
+                **row,
+                "machines": machines.get(row["package_origin"], 0),
+                "distribution": known.get(row["package_origin"].strip().lower()),
+            }
+            for row in entries.annotate(
+                entries=Count("id"), installations=Sum("installation_number")
+            ).order_by()
         ]
+
+        def group(row):
+            if row["distribution"]:
+                return 0
+            return 1 if row["package_origin"] else 2
+
+        return sorted(
+            rows,
+            key=lambda row: (group(row), -row["installations"], row["package_origin"]),
+        )
 
 
 class IdentityDecisionViewSet(viewsets.OCSViewSet):

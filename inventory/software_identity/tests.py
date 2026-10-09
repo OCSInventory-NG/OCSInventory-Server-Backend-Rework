@@ -1166,14 +1166,22 @@ class TestPackageOrigins:
 
     def test_summary_lists_the_origins_seen(self, api_client):
         first, second = make_machine("first"), make_machine("second")
+        for version in ("8.5.0-2ubuntu10.6", "8.5.0-2ubuntu10.7"):
+            make_entry(
+                "curl", version, "deb", "ubuntu:24.04", 2, package_origin="Ubuntu"
+            ).assets.add(first, second)
         make_entry(
-            "curl", "8", "deb", "ubuntu:22.04", package_origin="Ubuntu"
+            "openssl", "1:3.0.7-27.el9", "rpm", "rocky:9", 1,
+            package_origin="Rocky Enterprise Software Foundation",
+        ).assets.add(first)
+        # A third party installed more widely still comes after covered origins
+        make_entry(
+            "docker-ce", "5:29.8.0-1", "deb", "ubuntu:24.04", 5,
+            package_origin="Docker",
         ).assets.add(first, second)
         make_entry(
-            "docker-ce", "5:29.8.0-1", "deb", "ubuntu:22.04", package_origin="Docker"
-        ).assets.add(first)
-        make_entry(
-            "ocsinventory-agent", "3:3.0.0-1", "deb", "ubuntu:22.04", package_origin=""
+            "ocsinventory-agent", "3:3.0.0-1", "deb", "ubuntu:24.04", 1,
+            package_origin="",
         ).assets.add(first)
         # not listed: origin not collected, or not a Linux entry
         make_entry("legacy", "1", "deb", "ubuntu:20.04")
@@ -1182,25 +1190,23 @@ class TestPackageOrigins:
         response = api_client.get("/software_identities/summary/")
 
         assert response.status_code == 200
-        assert response.data["origins"] == [
-            {
-                "package_origin": "Ubuntu",
-                "entries": 1,
-                "machines": 2,
-                "distribution": "ubuntu",
-            },
-            {
-                "package_origin": "",
-                "entries": 1,
-                "machines": 1,
-                "distribution": None,
-            },
-            {
-                "package_origin": "Docker",
-                "entries": 1,
-                "machines": 1,
-                "distribution": None,
-            },
+        assert [
+            (
+                row["package_origin"],
+                row["distribution"],
+                row["entries"],
+                row["installations"],
+                row["machines"],
+            )
+            for row in response.data["origins"]
+        ] == [
+            # covered, most installed first
+            ("Ubuntu", "ubuntu", 2, 4, 2),
+            ("Rocky Enterprise Software Foundation", "rocky", 1, 1, 1),
+            # third party
+            ("Docker", None, 1, 5, 2),
+            # no origin last
+            ("", None, 1, 1, 1),
         ]
 
     def test_permissions(self, make_api_client):
