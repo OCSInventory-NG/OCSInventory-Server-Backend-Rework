@@ -6,7 +6,8 @@ import pytest
 from automation.scheduler.models import Scheduler
 from django.db import IntegrityError
 from django.utils import timezone
-from inventory.software.models import SoftwareDictionary
+from asset.inventory_base.models import InventoryBase
+from inventory.software.models import AssetPlatform, SoftwareDictionary
 from inventory.software_identity.models import SoftwareIdentity
 from security.cvss import base_score, level
 from security.kernel import is_kernel, is_running_kernel
@@ -17,6 +18,7 @@ from security.models import (
     ProductCheck,
     Vulnerability,
 )
+from security import reading
 from security.services import ScanService
 
 
@@ -629,7 +631,9 @@ class TestScan:
         vulnerability = finding.vulnerability
         assert (vulnerability.source, vulnerability.cvss_score) == ("nvd", 5.5)
         assert vulnerability.url == "https://nvd.nist.gov/vuln/detail/CVE-2026-31893"
-        assert ProductCheck.objects.get(source="nvd").payload == TUNNELBLICK_CVES
+        product_check = ProductCheck.objects.get(key="tunnelblick:tunnelblick")
+        assert product_check.payload == TUNNELBLICK_CVES
+        assert ProductCheck.objects.filter(key="tunnelblick:tunnelblick|6.0").exists()
 
     def test_a_new_version_uses_the_cached_product(self):
         identify(
@@ -673,3 +677,533 @@ class TestScan:
         task = Scheduler.objects.get(name="vulnerabilityScan.VulnerabilityScan")
 
         assert (task.recurrence, task.active) == ("hourly", False)
+
+
+def machine(name, family="", running=""):
+    asset = InventoryBase.objects.create(
+        name=name,
+        description="desc",
+        serial=f"SER-{name}",
+        osname="Linux",
+        osversion="1",
+        uuid=f"uuid-{name}",
+        domain="example",
+        agent="agent",
+    )
+    AssetPlatform.objects.create(asset=asset, family=family, running_kernel=running)
+    return asset
+
+
+def vulnerability(vuln_id, score=None, rating="", source="osv"):
+    return Vulnerability.objects.create(
+        vuln_id=vuln_id,
+        summary=f"summary of {vuln_id}",
+        cvss_score=score,
+        cvss_version="3.1" if score else "",
+        cvss_vector="CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H" if score else "",
+        distro_rating=rating,
+        source=source,
+        url=f"https://example.test/{vuln_id}",
+    )
+
+
+def affect(entry, vuln, fixed="", method="osv", uncertain=False, advisory=""):
+    identity = entry.identity
+    return Finding.objects.create(
+        vulnerability=vuln,
+        scheme=identity.scheme,
+        product=identity.product,
+        version=identity.version,
+        advisory_id=advisory or vuln.vuln_id,
+        fixed_version=fixed,
+        affected_range=f"fixed {fixed}" if fixed else "introduced 0",
+        method=method,
+        uncertain=uncertain,
+    )
+
+
+def checked(source, key, error="", at=None):
+    return ProductCheck.objects.create(
+        source=source,
+        key=key,
+        checked_at=None if error else (at or timezone.now()),
+        error=error,
+    )
+
+
+@pytest.fixture
+def fleet(db):
+    """Two Ubuntu machines, a container, a Mac, and their identified software."""
+    ubuntu = machine("ubuntu", "deb", "6.8.0-87-generic")
+    other = machine("other", "deb", "6.8.0-90-generic")
+    container = machine("container", "deb", "6.17.2-1-pve")
+    mac = machine("mac", "macos")
+    curl = curl_identity()
+    curl.assets.add(ubuntu, other, container)
+    kernel = identify(
+        "linux-image-6.8.0-87-generic", "6.8.0-87.88", "deb", "ubuntu:24.04",
+        "purl", "pkg:deb/ubuntu/linux",
+    )
+    kernel.assets.add(ubuntu, other, container)
+    docker = identify(
+        "docker-ce", "5:29.8.0-1", "deb", "ubuntu:24.04", "", "",
+        status="unsupported", reason="third_party",
+    )
+    docker.assets.add(ubuntu)
+    tunnelblick = identify(
+        "Tunnelblick", "6.0", "macos", "macos", "cpe", "tunnelblick:tunnelblick"
+    )
+    tunnelblick.assets.add(mac)
+    review = identify(
+        "GitHub Desktop", "3.4", "macos", "macos", "", "", status="review"
+    )
+    review.assets.add(mac)
+    curl_vuln = vulnerability("CVE-2026-13608", score=7.4, rating="medium")
+    affect(
+        curl, curl_vuln, fixed="8.5.0-2ubuntu10.15", advisory="UBUNTU-CVE-2026-13608"
+    )
+    kernel_vuln = vulnerability("CVE-2026-0100", score=9.8)
+    affect(kernel, kernel_vuln, fixed="6.8.0-90.91")
+    mac_vuln = vulnerability("CVE-2026-31893", score=5.5, source="nvd")
+    affect(tunnelblick, mac_vuln, fixed="8.0.1", method="nvd_range")
+    seven_zip = vulnerability("CVE-2026-0200", rating="low", source="nvd")
+    affect(tunnelblick, seven_zip, method="nvd_all_versions", uncertain=True)
+    checked("osv", "Ubuntu:24.04:LTS|curl|8.5.0-2ubuntu10.13")
+    checked("osv", "Ubuntu:24.04:LTS|linux|6.8.0-87.88")
+    checked("nvd", "tunnelblick:tunnelblick")
+    checked("nvd", "tunnelblick:tunnelblick|6.0")
+    return {
+        "ubuntu": ubuntu, "other": other, "container": container, "mac": mac,
+        "curl": curl, "kernel": kernel, "tunnelblick": tunnelblick,
+    }
+
+
+def rows_by_id(response):
+    return {row["vuln_id"]: row for row in response.data}
+
+
+@pytest.mark.django_db
+class TestVulnerabilityApi:
+    def test_list_groups_by_vulnerability_and_counts_machines(self, api_client, fleet):
+        response = api_client.get("/vulnerabilities/")
+
+        assert response.status_code == 200
+        # highest score first, unknown scores last
+        assert [row["vuln_id"] for row in response.data] == [
+            "CVE-2026-0100",
+            "CVE-2026-13608",
+            "CVE-2026-31893",
+            "CVE-2026-0200",
+        ]
+        curl = rows_by_id(response)["CVE-2026-13608"]
+        assert (curl["machines"], curl["fix_available"], curl["level"]) == (
+            3,
+            True,
+            "high",
+        )
+        assert curl["products"] == [
+            {"product": "pkg:deb/ubuntu/curl", "version": "8.5.0-2ubuntu10.13"}
+        ]
+        assert curl["product_count"] == 1
+        assert curl["fixed_versions"] == ["8.5.0-2ubuntu10.15"]
+        assert rows_by_id(response)["CVE-2026-0200"]["fixed_versions"] == []
+        uncertain = rows_by_id(response)["CVE-2026-0200"]
+        assert (uncertain["uncertain"], uncertain["level"]) == (True, "low")
+
+    def test_only_the_running_kernel_counts(self, api_client, fleet):
+        response = api_client.get("/vulnerabilities/")
+
+        # installed on three machines, running on one: not on the newer
+        # kernel machine, not on the container (host kernel)
+        assert rows_by_id(response)["CVE-2026-0100"]["machines"] == 1
+
+    def test_findings_of_uncovered_products_are_not_shown(self, api_client, fleet):
+        docker = SoftwareDictionary.objects.get(name="docker-ce")
+        Finding.objects.create(
+            vulnerability=vulnerability("CVE-2026-0300", score=8.0),
+            scheme="purl",
+            product="pkg:deb/docker/docker-ce",
+            version=docker.version,
+            advisory_id="CVE-2026-0300",
+        )
+
+        response = api_client.get("/vulnerabilities/")
+
+        assert "CVE-2026-0300" not in rows_by_id(response)
+
+    @pytest.mark.parametrize(
+        "query, expected",
+        [
+            ("level=critical", ["CVE-2026-0100"]),
+            ("level=low", ["CVE-2026-0200"]),
+            ("fix=no", ["CVE-2026-0200"]),
+            ("family=macos", ["CVE-2026-31893", "CVE-2026-0200"]),
+            ("search=curl", ["CVE-2026-13608"]),
+            ("search=cve-2026-3189", ["CVE-2026-31893"]),
+            ("ordering=-machines", ["CVE-2026-13608", "CVE-2026-0100",
+                                    "CVE-2026-31893", "CVE-2026-0200"]),
+        ],
+    )
+    def test_filters(self, api_client, fleet, query, expected):
+        response = api_client.get(f"/vulnerabilities/?{query}")
+
+        assert [row["vuln_id"] for row in response.data] == expected
+
+    def test_machine_filter(self, api_client, fleet):
+        other = api_client.get(f"/vulnerabilities/?asset={fleet['other'].id}")
+        ubuntu = api_client.get(f"/vulnerabilities/?asset={fleet['ubuntu'].id}")
+
+        assert [row["vuln_id"] for row in other.data] == ["CVE-2026-13608"]
+        assert [row["vuln_id"] for row in ubuntu.data] == [
+            "CVE-2026-0100",
+            "CVE-2026-13608",
+        ]
+        assert rows_by_id(ubuntu)["CVE-2026-13608"]["machines"] == 1
+
+    @pytest.mark.parametrize(
+        "query", ["level=urgent", "fix=maybe", "asset=x", "ordering=name"]
+    )
+    def test_invalid_filters_are_refused(self, api_client, fleet, query):
+        assert api_client.get(f"/vulnerabilities/?{query}").status_code == 400
+
+    def test_pagination(self, api_client, fleet):
+        response = api_client.get("/vulnerabilities/?limit=2&offset=1")
+
+        assert response.data["count"] == 4
+        assert [row["vuln_id"] for row in response.data["results"]] == [
+            "CVE-2026-13608",
+            "CVE-2026-31893",
+        ]
+
+    def test_detail(self, api_client, fleet):
+        response = api_client.get("/vulnerabilities/CVE-2026-13608/")
+
+        assert response.status_code == 200
+        assert response.data["vuln_id"] == "CVE-2026-13608"
+        assert response.data["cvss_vector"].startswith("CVSS:3.1/")
+        [finding] = response.data["findings"]
+        assert finding["advisory_id"] == "UBUNTU-CVE-2026-13608"
+        assert finding["advisory_url"] == (
+            "https://osv.dev/vulnerability/UBUNTU-CVE-2026-13608"
+        )
+        assert finding["fixed_version"] == "8.5.0-2ubuntu10.15"
+        assert finding["identity_status"] == "matched"
+        assert sorted(m["name"] for m in finding["machines"]) == [
+            "container",
+            "other",
+            "ubuntu",
+        ]
+
+    def test_detail_of_an_nvd_vulnerability_links_to_the_nvd(self, api_client, fleet):
+        response = api_client.get("/vulnerabilities/CVE-2026-31893/")
+
+        [finding] = response.data["findings"]
+        assert finding["advisory_url"] == (
+            "https://nvd.nist.gov/vuln/detail/CVE-2026-31893"
+        )
+        assert [m["name"] for m in finding["machines"]] == ["mac"]
+
+    def test_unknown_vulnerability(self, api_client, fleet):
+        assert api_client.get("/vulnerabilities/CVE-1999-0001/").status_code == 404
+
+    def test_fleet_coverage(self, api_client, fleet):
+        identify(
+            "acl", "2.3.1-4.el9", "rpm", "rocky:9", "purl", "pkg:rpm/rocky/acl"
+        ).assets.add(machine("rocky", "rpm", "6.17.2-1-pve"))
+        failed = identify(
+            "zlib", "1:1.3", "deb", "ubuntu:24.04", "purl", "pkg:deb/ubuntu/zlib"
+        )
+        failed.assets.add(fleet["ubuntu"])
+        checked("osv", "Ubuntu:24.04:LTS|zlib|1:1.3", error="OSV unreachable")
+        identify(
+            "openssl", "1:3.0.7", "rpm", "almalinux:9", "purl",
+            "pkg:rpm/redhat/openssl",
+        ).assets.add(fleet["ubuntu"])
+
+        response = api_client.get("/vulnerabilities/coverage/")
+
+        assert response.status_code == 200
+        families = {row["family"]: row for row in response.data["families"]}
+        assert families["deb"]["entries"] == {
+            "checked": 2,
+            "check_failed": 1,
+            "third_party": 1,
+        }
+        # the kernel entry is checked, but running on one machine of three
+        assert families["deb"]["installations"] == {
+            "checked": 4,
+            "kernel_not_running": 2,
+            "check_failed": 1,
+            "third_party": 1,
+        }
+        assert families["rpm"]["entries"] == {"pending": 1, "not_handled": 1}
+        assert families["macos"]["entries"] == {"checked": 1, "no_identity": 1}
+        assert response.data["kernels"] == {
+            "checked": 1,
+            "host_or_custom": 3,
+        }
+        assert response.data["last_check"] is not None
+
+    def test_machine_coverage(self, api_client, fleet):
+        response = api_client.get(
+            f"/vulnerabilities/coverage/?asset={fleet['container'].id}"
+        )
+
+        assert response.data["kernel"] == "host_or_custom"
+        assert response.data["unchecked"] == 1
+        assert response.data["families"][0]["installations"] == {
+            "checked": 1,
+            "kernel_not_running": 1,
+        }
+
+    def test_permissions(self, make_api_client, fleet):
+        viewer = make_api_client("view_vulnerability")
+        nobody = make_api_client(username="nobody")
+
+        assert viewer.get("/vulnerabilities/").status_code == 200
+        assert viewer.get("/vulnerabilities/coverage/").status_code == 200
+        assert nobody.get("/vulnerabilities/").status_code == 403
+
+
+@pytest.mark.parametrize(
+    "product, expected",
+    [
+        ("pkg:deb/debian/curl", "curl"),
+        # signed kernel images are published under the kernel source
+        ("pkg:deb/debian/linux-signed-amd64", "linux"),
+        ("pkg:deb/ubuntu/linux-signed", "linux"),
+        ("pkg:deb/ubuntu/linux-signed-hwe-6.8", "linux-hwe-6.8"),
+        ("pkg:rpm/rocky/kernel", "kernel"),
+    ],
+)
+def test_osv_query_name(product, expected):
+    assert osv.query_name(product) == expected
+
+
+@pytest.mark.parametrize(
+    "name, family, source, expected",
+    [
+        # built from the kernel source but not the kernel itself
+        ("linux-libc-dev:amd64", "deb", "linux", True),
+        ("linux-tools-6.8.0-85-generic", "deb", "linux-hwe-6.8", True),
+        ("linux-image-6.12.48+deb13-amd64", "deb", "linux-signed-amd64", True),
+        ("perf", "rpm", "kernel", True),
+        ("bpftool", "rpm", "kernel", True),
+        ("curl", "deb", "curl", False),
+        ("linux-firmware", "deb", "linux-firmware", False),
+    ],
+)
+def test_kernel_packages_by_source(name, family, source, expected):
+    assert is_kernel(name, family, source) is expected
+
+
+@pytest.mark.parametrize(
+    "name, version, family, source",
+    [
+        ("linux-libc-dev:amd64", "6.8.0-87.88", "deb", "linux"),
+        ("linux-tools-common", "6.8.0-87.88", "deb", "linux"),
+        ("perf", "5.14.0-427.13.1.el9_4", "rpm", "kernel"),
+    ],
+)
+def test_kernel_source_packages_are_never_the_running_kernel(
+    name, version, family, source
+):
+    running = "6.8.0-87-generic" if family == "deb" else "5.14.0-427.13.1.el9_4.x86_64"
+
+    assert not is_running_kernel(name, version, family, running, source)
+
+
+@pytest.mark.django_db
+class TestReviewFixes:
+    def test_a_pair_that_comes_back_is_queried_again(self):
+        entry = curl_identity()
+        ScanService.refresh(FakeOsv(CURL_VULNS), FakeNvd())
+        entry.delete()
+        ScanService.refresh(FakeOsv({}), FakeNvd())
+        curl_identity()
+        osv_client = FakeOsv(CURL_VULNS)
+
+        ScanService.refresh(osv_client, FakeNvd())
+
+        assert osv_client.queried == [CURL]
+        assert Finding.objects.count() == 1
+
+    def test_a_new_version_of_a_checked_product_is_pending(self):
+        identify(
+            "Tunnelblick", "8.0.1", "macos", "macos", "cpe", "tunnelblick:tunnelblick"
+        )
+        ScanService.refresh(
+            FakeOsv({}), FakeNvd({"tunnelblick:tunnelblick": TUNNELBLICK_CVES})
+        )
+        identify(
+            "Tunnelblick", "6.0", "macos", "macos", "cpe", "tunnelblick:tunnelblick"
+        )
+
+        families = {row["family"]: row for row in reading.coverage()["families"]}
+
+        assert families["macos"]["entries"] == {"checked": 1, "pending": 1}
+
+    def test_a_rate_limit_still_evaluates_cached_products(self):
+        identify(
+            "Tunnelblick", "8.0.1", "macos", "macos", "cpe", "tunnelblick:tunnelblick"
+        )
+        ScanService.refresh(
+            FakeOsv({}), FakeNvd({"tunnelblick:tunnelblick": TUNNELBLICK_CVES})
+        )
+        identify(
+            "Tunnelblick", "6.0", "macos", "macos", "cpe", "tunnelblick:tunnelblick"
+        )
+        identify("A", "1.0", "windows", "windows", "cpe", "a:a")
+
+        ScanService.refresh(FakeOsv({}), FakeNvd(rate_limited={"a:a"}))
+
+        assert list(Finding.objects.values_list("version", flat=True)) == ["6.0"]
+
+    def test_signed_kernel_images_are_queried_under_the_kernel_source(self):
+        identify(
+            "linux-image-6.12.48+deb13-amd64", "6.12.48-1", "deb", "debian:13",
+            "purl", "pkg:deb/debian/linux-signed-amd64",
+        )
+        osv_client = FakeOsv({})
+
+        ScanService.refresh(osv_client, FakeNvd())
+
+        assert osv_client.queried == [("Debian:13", "linux", "6.12.48-1")]
+
+    def test_kernel_source_packages_do_not_count_in_a_container(self):
+        container = machine("container", "deb", "6.17.2-1-pve")
+        libc = identify(
+            "linux-libc-dev:amd64", "6.8.0-87.88", "deb", "ubuntu:24.04", "purl",
+            "pkg:deb/ubuntu/linux",
+        )
+        libc.assets.add(container)
+        affect(libc, vulnerability("CVE-2026-0100", score=9.8))
+
+        rows = reading.vulnerability_rows(asset_id=container.id)
+        status = reading.coverage(container.id)
+
+        assert rows == []
+        assert status["kernel"] == "host_or_custom"
+
+    def test_short_osv_answers_fail_the_missing_pairs(self):
+        curl_identity()
+
+        class Short(FakeOsv):
+            def query(self, pairs):
+                self.queried += pairs
+                return {}
+
+        counts = ScanService.refresh(Short({}), FakeNvd())
+
+        assert ProductCheck.objects.get().error != ""
+        assert counts["osv_failed"] == 1
+
+    def test_unicode_digits_are_not_a_machine_id(self, api_client):
+        assert api_client.get("/vulnerabilities/?asset=\u00b2").status_code == 400
+
+
+def test_nvd_criteria_split_on_unescaped_colons_only():
+    cve = {
+        "id": "CVE-2026-0003",
+        "configurations": [
+            {
+                "nodes": [
+                    {
+                        "cpeMatch": [
+                            {
+                                "vulnerable": True,
+                                "criteria": "cpe:2.3:a:acme:foo\\:bar:2.0:*:*:*:*:*:*:*",  # noqa: E501
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+    }
+
+    compact = nvd.compact(cve, "acme:foo:bar")
+
+    assert nvd.evaluate(compact, "2.0")["affected_range"] == "version 2.0"
+
+
+@pytest.mark.django_db
+class TestScanProgressAndSpeed:
+    def test_progress_is_reported_per_batch_and_per_product(self):
+        curl_identity()
+        identify(
+            "Tunnelblick", "6.0", "macos", "macos", "cpe", "tunnelblick:tunnelblick"
+        )
+        messages = []
+
+        ScanService.refresh(
+            FakeOsv(CURL_VULNS),
+            FakeNvd({"tunnelblick:tunnelblick": TUNNELBLICK_CVES}),
+            progress=messages.append,
+        )
+
+        assert any(m.startswith("OSV batch 1/1") for m in messages)
+        assert any("1 advisories fetched" in m for m in messages)
+        assert any(
+            m.startswith("NVD product 1/1") and "tunnelblick:tunnelblick" in m
+            for m in messages
+        )
+
+    def test_advisories_are_fetched_in_parallel(self):
+        import threading
+
+        ids = ["DEBIAN-CVE-2026-29167", "UBUNTU-CVE-2026-13608", "RLSA-2026:42736"]
+        identify(
+            "acl", "2.3.1-4.el9", "rpm", "rocky:9", "purl", "pkg:rpm/rocky/acl"
+        )
+        pair = ("Rocky Linux:9", "acl", "2.3.1-4.el9")
+        # answers only when the three advisories are asked at the same time
+        together = threading.Barrier(3, timeout=5)
+
+        class Parallel(FakeOsv):
+            def advisory(self, advisory_id):
+                together.wait()
+                return super().advisory(advisory_id)
+
+        vulns = {pair: [{"id": advisory_id, "modified": "1"} for advisory_id in ids]}
+        counts = ScanService.refresh(Parallel(vulns), FakeNvd())
+
+        assert counts.get("osv_failed", 0) == 0
+        assert OsvAdvisory.objects.count() == 3
+
+
+@pytest.mark.django_db
+def test_full_advisories_are_not_kept_while_a_batch_downloads():
+    """Kernel records are 350 to 700 KB of JSON: a batch must not hold them all."""
+    import threading
+    import weakref
+
+    from security import services
+
+    class Record(dict):
+        """A dict that can be watched while alive."""
+
+    alive, peak, lock = [0], [0], threading.Lock()
+
+    def released():
+        with lock:
+            alive[0] -= 1
+
+    curl = OSV_RECORDS["UBUNTU-CVE-2026-13608"]
+
+    class Watched(FakeOsv):
+        def advisory(self, advisory_id):
+            record = Record(curl, id=advisory_id)
+            with lock:
+                alive[0] += 1
+                peak[0] = max(peak[0], alive[0])
+            weakref.finalize(record, released)
+            return record
+
+    curl_identity()
+    ids = [f"UBUNTU-CVE-2026-{n:05d}" for n in range(80)]
+    many = {CURL: [{"id": advisory_id, "modified": "1"} for advisory_id in ids]}
+
+    ScanService.refresh(Watched(many), FakeNvd())
+
+    assert OsvAdvisory.objects.count() == 80
+    assert peak[0] <= services.FETCH_WORKERS

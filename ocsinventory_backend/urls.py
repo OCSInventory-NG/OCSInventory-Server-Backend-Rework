@@ -40,6 +40,7 @@ from automation.history.routers import HistoryRouter
 from automation.rule.routers import RuleRouter
 from automation.scheduler.routers import SchedulerRouter
 from compliance.routers import ComplianceRouter
+from security.routers import SecurityRouter
 from config.routers import ConfigRouter
 from dashboard.chart.routers import DashboardChartRouter
 from dashboard.layout.routers import DashboardLayoutRouter
@@ -235,6 +236,8 @@ extensionRouter = extensionRouter.defineRoutes(defaultRouter)
 
 complianceRouter = ComplianceRouter()
 complianceRouter = complianceRouter.defineRoutes(defaultRouter)
+securityRouter = SecurityRouter()
+securityRouter = securityRouter.defineRoutes(defaultRouter)
 debugRouter = DebugRouter()
 debugRouter = debugRouter.defineRoutes(defaultRouter)
 

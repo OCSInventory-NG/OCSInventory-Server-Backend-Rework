@@ -1,5 +1,6 @@
 import logging
 from collections import Counter
+from concurrent.futures import ThreadPoolExecutor
 from datetime import timedelta, timezone as dt_timezone
 
 from django.db import transaction
@@ -23,6 +24,9 @@ logger = logging.getLogger(__name__)
 
 # A product checked less than this ago is not asked again
 RECHECK = timedelta(hours=24)
+# OSV advisories downloaded at the same time: one by one, a fleet of ten
+# machines took more than an hour (about 3 advisories per second)
+FETCH_WORKERS = 16
 # Identity statuses whose products are checked, per scheme
 COVERED = {"purl": ("matched",), "cpe": ("matched", "validated")}
 
@@ -37,6 +41,11 @@ def covered_identities():
 
 def osv_key(pair):
     return "|".join(pair)
+
+
+def nvd_version_key(product, version):
+    """Check row of one installed version, evaluated against the product's CVEs."""
+    return f"{product}|{version}"
 
 
 def _date(value):
@@ -55,11 +64,17 @@ class ScanService:
     """Checks the covered products against OSV and the NVD, stores findings."""
 
     @classmethod
-    def refresh(cls, osv_client=None, nvd_client=None, now=None):
+    def refresh(cls, osv_client=None, nvd_client=None, now=None, progress=None):
+        """
+        Checks what is due and returns counts. progress receives a line per
+        OSV batch and per NVD product (the task's log by default; print in a
+        shell).
+        """
         now = now or timezone.now()
+        progress = progress or logger.info
         counts = Counter()
-        cls._scan_osv(osv_client or osv.OsvClient(), now, counts)
-        cls._scan_nvd(nvd_client or nvd.NvdClient(), now, counts)
+        cls._scan_osv(osv_client or osv.OsvClient(), now, counts, progress)
+        cls._scan_nvd(nvd_client or nvd.NvdClient(), now, counts, progress)
         cls._cleanup()
         return dict(counts)
 
@@ -128,16 +143,21 @@ class ScanService:
         ).values_list("product", "version", "entry__platform_key"):
             eco = osv.ecosystem(product, platform_key)
             if eco:
-                pairs[(eco, osv.package_name(product), version)] = (product, version)
+                pairs[(eco, osv.query_name(product), version)] = (product, version)
         return pairs
 
     @classmethod
-    def _scan_osv(cls, client, now, counts):
+    def _scan_osv(cls, client, now, counts, progress):
         pairs = cls._osv_pairs()
         fresh = cls._fresh(SOURCE_OSV, [osv_key(pair) for pair in pairs], now)
         due = [pair for pair in pairs if osv_key(pair) not in fresh]
         counts["osv_skipped"] += len(pairs) - len(due)
-        for start in range(0, len(due), osv.BATCH_SIZE):
+        batches = -(-len(due) // osv.BATCH_SIZE)
+        progress(
+            f"OSV: {len(due)} packages to check, {len(pairs) - len(due)} "
+            "checked less than 24 hours ago"
+        )
+        for number, start in enumerate(range(0, len(due), osv.BATCH_SIZE), 1):
             chunk = due[start : start + osv.BATCH_SIZE]
             try:
                 results = client.query(chunk)
@@ -145,7 +165,12 @@ class ScanService:
                 for pair in chunk:
                     cls._failed(SOURCE_OSV, osv_key(pair), error, counts, "osv_failed")
                 continue
-            advisories, missing = cls._advisories(client, results)
+            for pair in chunk:
+                if pair not in results:
+                    cls._failed(
+                        SOURCE_OSV, osv_key(pair), "no answer", counts, "osv_failed"
+                    )
+            advisories, missing, fetched = cls._advisories(client, results)
             for pair, vulns in results.items():
                 not_fetched = sorted({v["id"] for v in vulns} & missing)
                 if not_fetched:
@@ -161,38 +186,58 @@ class ScanService:
                         defaults={"checked_at": now, "error": ""},
                     )
                 counts["osv_checked"] += 1
+            progress(
+                f"OSV batch {number}/{batches}: {len(chunk)} packages, "
+                f"{fetched} advisories fetched, {len(advisories) - fetched} in cache, "
+                f"{len(missing)} failed"
+            )
 
     @staticmethod
     def _advisories(client, results):
         """
-        {advisory_id: OsvAdvisory} of the results, fetched when new or
-        modified, and the set of ids that could not be fetched.
+        {advisory_id: OsvAdvisory} of the results, fetched (in parallel) when
+        new or modified, the set of ids that could not be fetched, and how many
+        were fetched.
         """
         wanted = {v["id"]: v.get("modified", "") for vs in results.values() for v in vs}
         cached = {
             advisory.advisory_id: advisory
             for advisory in OsvAdvisory.objects.filter(advisory_id__in=wanted)
         }
-        missing = set()
-        for advisory_id, modified in wanted.items():
-            known = cached.get(advisory_id)
-            if known is not None and known.modified == modified:
-                continue
+        to_fetch = [
+            advisory_id
+            for advisory_id, modified in wanted.items()
+            if advisory_id not in cached or cached[advisory_id].modified != modified
+        ]
+
+        def fetch(advisory_id):
+            # Compacted in the thread: a kernel record is 350 to 700 KB of
+            # JSON, a batch must never hold the full records it downloads
             try:
                 record = client.advisory(advisory_id)
+                return advisory_id, osv.summary(record), osv.compact(record), None
             except Exception as error:
-                logger.warning("OSV advisory %s not fetched: %s", advisory_id, error)
-                missing.add(advisory_id)
-                continue
-            cached[advisory_id], _ = OsvAdvisory.objects.update_or_create(
-                advisory_id=advisory_id,
-                defaults={
-                    "modified": modified,
-                    "summary": osv.summary(record),
-                    "record": osv.compact(record),
-                },
-            )
-        return cached, missing
+                return advisory_id, "", None, error
+
+        missing = set()
+        # Only the downloads run in threads, the database writes stay here
+        with ThreadPoolExecutor(max_workers=FETCH_WORKERS) as pool:
+            for advisory_id, summary, compact, error in pool.map(fetch, to_fetch):
+                if error is not None:
+                    logger.warning(
+                        "OSV advisory %s not fetched: %s", advisory_id, error
+                    )
+                    missing.add(advisory_id)
+                    continue
+                cached[advisory_id], _ = OsvAdvisory.objects.update_or_create(
+                    advisory_id=advisory_id,
+                    defaults={
+                        "modified": wanted[advisory_id],
+                        "summary": summary,
+                        "record": compact,
+                    },
+                )
+        return cached, missing, len(to_fetch) - len(missing)
 
     @classmethod
     def _replace_osv_findings(cls, pair, product, version, vulns, advisories):
@@ -230,7 +275,7 @@ class ScanService:
     # NVD: Windows and macOS applications
 
     @classmethod
-    def _scan_nvd(cls, client, now, counts):
+    def _scan_nvd(cls, client, now, counts, progress):
         products = {}
         for product, version in covered_identities().filter(scheme="cpe").values_list(
             "product", "version"
@@ -242,14 +287,23 @@ class ScanService:
                 "key", "payload"
             )
         )
-        for product, versions in sorted(products.items()):
+        limited = False
+        for number, (product, versions) in enumerate(sorted(products.items()), 1):
+            progress(
+                f"NVD product {number}/{len(products)}: {product} "
+                f"({'cache' if product in cached else 'request'})"
+            )
             cves = cached.get(product)
             if cves is None:
+                if limited:
+                    # no more requests this run, cached products are still evaluated
+                    continue
                 try:
                     cves = client.product_cves(product)
                 except nvd.RateLimited as error:
                     cls._failed(SOURCE_NVD, product, error, counts, "nvd_rate_limited")
-                    break
+                    limited = True
+                    continue
                 except Exception as error:
                     cls._failed(SOURCE_NVD, product, error, counts, "nvd_failed")
                     continue
@@ -264,6 +318,11 @@ class ScanService:
             with transaction.atomic():
                 for version in versions:
                     cls._replace_nvd_findings(product, version, cves)
+                    ProductCheck.objects.update_or_create(
+                        source=SOURCE_NVD,
+                        key=nvd_version_key(product, version),
+                        defaults={"checked_at": now, "error": ""},
+                    )
 
     @classmethod
     def _replace_nvd_findings(cls, product, version, cves):
@@ -297,9 +356,12 @@ class ScanService:
                 },
             )
 
-    @staticmethod
-    def _cleanup():
-        """Findings of products no longer covered, vulnerabilities without findings."""
+    @classmethod
+    def _cleanup(cls):
+        """
+        Findings and checks of products no longer covered, vulnerabilities
+        without findings: a product that comes back is checked again.
+        """
         current = set(covered_identities().values_list("scheme", "product", "version"))
         stale = [
             finding_id
@@ -311,3 +373,20 @@ class ScanService:
         for start in range(0, len(stale), 1000):
             Finding.objects.filter(id__in=stale[start : start + 1000]).delete()
         Vulnerability.objects.filter(findings__isnull=True).delete()
+
+        keys = {(SOURCE_OSV, osv_key(pair)) for pair in cls._osv_pairs()}
+        for scheme, product, version in current:
+            if scheme == "cpe":
+                keys.add((SOURCE_NVD, product))
+                keys.add((SOURCE_NVD, nvd_version_key(product, version)))
+        stale_checks = [
+            check_id
+            for check_id, source, key in ProductCheck.objects.values_list(
+                "id", "source", "key"
+            )
+            if (source, key) not in keys
+        ]
+        for start in range(0, len(stale_checks), 1000):
+            ProductCheck.objects.filter(
+                id__in=stale_checks[start : start + 1000]
+            ).delete()
