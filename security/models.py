@@ -82,18 +82,3 @@ class ProductCheck(models.Model):
                 fields=["source", "key"], name="unique_product_check"
             )
         ]
-
-
-class OsvAdvisory(models.Model):
-    """
-    An OSV record, fetched again only when the "modified" that querybatch
-    returns changes.
-    """
-
-    advisory_id = models.CharField(max_length=64, unique=True)
-    # As querybatch returns it (its precision differs from the record's)
-    modified = models.CharField(max_length=64, blank=True, default="")
-    summary = models.TextField(blank=True, default="")
-    # Compact form: CVE ids, dates, severity, rating, affected ranges
-    record = models.JSONField(default=dict)
-    updated_at = models.DateTimeField(auto_now=True)

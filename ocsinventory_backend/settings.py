@@ -370,3 +370,8 @@ NVD_CPE_META_URL = "https://nvd.nist.gov/feeds/json/cpe/2.0/nvdcpe-2.0.meta"
 OSV_API_URL = "https://api.osv.dev/v1"
 NVD_CVE_API_URL = "https://services.nvd.nist.gov/rest/json/cves/2.0"
 NVD_API_KEY = os.getenv("NVD_API_KEY", "")
+# Above this resident memory, a vulnerability scan stops cleanly and the next
+# run resumes
+SECURITY_SCAN_MEMORY_LIMIT_MB = int(
+    os.getenv("SECURITY_SCAN_MEMORY_LIMIT_MB", "768")
+)

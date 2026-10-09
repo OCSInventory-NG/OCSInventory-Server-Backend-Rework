@@ -14,7 +14,6 @@ from security.kernel import is_kernel, is_running_kernel
 from security.sources import nvd, osv
 from security.models import (
     Finding,
-    OsvAdvisory,
     ProductCheck,
     Vulnerability,
 )
@@ -580,7 +579,8 @@ class TestScan:
         assert stale.queried == [CURL]
         # same "modified": the cached advisory is used
         assert stale.fetched == []
-        assert OsvAdvisory.objects.get().modified == "1"
+        # the pair remembers the advisories it was built from
+        assert ProductCheck.objects.get().payload == {"UBUNTU-CVE-2026-13608": "1"}
 
     def test_a_failing_advisory_keeps_the_previous_findings(self):
         curl_identity()
@@ -1168,7 +1168,7 @@ class TestScanProgressAndSpeed:
         counts = ScanService.refresh(Parallel(vulns), FakeNvd())
 
         assert counts.get("osv_failed", 0) == 0
-        assert OsvAdvisory.objects.count() == 3
+        assert Finding.objects.count() == 4
 
 
 @pytest.mark.django_db
@@ -1205,5 +1205,72 @@ def test_full_advisories_are_not_kept_while_a_batch_downloads():
 
     ScanService.refresh(Watched(many), FakeNvd())
 
-    assert OsvAdvisory.objects.count() == 80
+    assert len(ProductCheck.objects.get().payload) == 80
     assert peak[0] <= services.FETCH_WORKERS
+
+
+@pytest.mark.django_db
+class TestNoAdvisoryCache:
+    """The findings keep what is needed: advisories are downloaded, used, dropped."""
+
+    def test_an_advisory_shared_by_packages_is_downloaded_once_per_run(self):
+        curl_identity()
+        identify(
+            "curl", "8.5.0-2ubuntu10.14", "deb", "ubuntu:24.04", "purl",
+            "pkg:deb/ubuntu/curl",
+        )
+        newer = ("Ubuntu:24.04:LTS", "curl", "8.5.0-2ubuntu10.14")
+        shared = [{"id": "UBUNTU-CVE-2026-13608", "modified": "1"}]
+        osv_client = FakeOsv({CURL: shared, newer: shared})
+
+        ScanService.refresh(osv_client, FakeNvd())
+
+        assert osv_client.fetched == ["UBUNTU-CVE-2026-13608"]
+        assert Finding.objects.count() == 2
+
+    def test_a_changed_advisory_is_downloaded_again_and_replaces_its_findings(self):
+        curl_identity()
+        ScanService.refresh(FakeOsv(CURL_VULNS), FakeNvd())
+        ProductCheck.objects.update(checked_at=timezone.now() - timedelta(hours=25))
+        changed = dict(OSV_RECORDS)
+        changed["UBUNTU-CVE-2026-13608"] = json.loads(
+            json.dumps(OSV_RECORDS["UBUNTU-CVE-2026-13608"]).replace(
+                "8.5.0-2ubuntu10.15", "8.5.0-2ubuntu10.16"
+            )
+        )
+        osv_client = FakeOsv(
+            {CURL: [{"id": "UBUNTU-CVE-2026-13608", "modified": "2"}]}, changed
+        )
+
+        ScanService.refresh(osv_client, FakeNvd())
+
+        assert osv_client.fetched == ["UBUNTU-CVE-2026-13608"]
+        assert Finding.objects.get().fixed_version == "8.5.0-2ubuntu10.16"
+
+    def test_an_advisory_no_longer_listed_removes_its_findings(self):
+        curl_identity()
+        ScanService.refresh(FakeOsv(CURL_VULNS), FakeNvd())
+        ProductCheck.objects.update(checked_at=timezone.now() - timedelta(hours=25))
+
+        ScanService.refresh(FakeOsv({CURL: []}), FakeNvd())
+
+        assert not Finding.objects.exists()
+        assert ProductCheck.objects.get().payload == {}
+
+    def test_the_memory_guard_stops_the_scan_cleanly(self):
+        curl_identity()
+        identify(
+            "Tunnelblick", "6.0", "macos", "macos", "cpe", "tunnelblick:tunnelblick"
+        )
+        osv_client = FakeOsv(CURL_VULNS)
+        nvd_client = FakeNvd({"tunnelblick:tunnelblick": TUNNELBLICK_CVES})
+        messages = []
+
+        counts = ScanService.refresh(
+            osv_client, nvd_client, progress=messages.append, memory=lambda: 10_000
+        )
+
+        assert counts["stopped_memory"] == 1
+        assert nvd_client.asked == []
+        assert not ProductCheck.objects.filter(checked_at__isnull=False).exists()
+        assert any("memory" in message for message in messages)

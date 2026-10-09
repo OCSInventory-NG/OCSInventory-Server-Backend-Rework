@@ -1,8 +1,11 @@
 import logging
+import os
+import resource
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 from datetime import timedelta, timezone as dt_timezone
 
+from django.conf import settings
 from django.db import transaction
 from django.db.models import Q
 from django.utils import timezone
@@ -14,7 +17,6 @@ from security.models import (
     SOURCE_NVD,
     SOURCE_OSV,
     Finding,
-    OsvAdvisory,
     ProductCheck,
     Vulnerability,
 )
@@ -60,21 +62,52 @@ def _cvss_version(vector):
     return prefix.split(":", 1)[1] if prefix.startswith("CVSS:") else ""
 
 
+class MemoryLimitReached(Exception):
+    """The scan went over its memory ceiling: it stops, the next run resumes."""
+
+
+def memory_mb():
+    """Resident memory of this process in MB (Linux), else its peak."""
+    try:
+        with open("/proc/self/statm") as statm:
+            pages = int(statm.read().split()[1])
+        return pages * os.sysconf("SC_PAGE_SIZE") // 2**20
+    except (OSError, ValueError, IndexError):
+        return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss // 1024
+
+
 class ScanService:
     """Checks the covered products against OSV and the NVD, stores findings."""
 
     @classmethod
-    def refresh(cls, osv_client=None, nvd_client=None, now=None, progress=None):
+    def refresh(
+        cls, osv_client=None, nvd_client=None, now=None, progress=None, memory=None
+    ):
         """
         Checks what is due and returns counts. progress receives a line per
         OSV batch and per NVD product (the task's log by default; print in a
-        shell).
+        shell). Above SECURITY_SCAN_MEMORY_LIMIT_MB the scan stops cleanly:
+        what is done stays done, the next run resumes.
         """
         now = now or timezone.now()
         progress = progress or logger.info
+        memory = memory or memory_mb
+        limit = settings.SECURITY_SCAN_MEMORY_LIMIT_MB
         counts = Counter()
-        cls._scan_osv(osv_client or osv.OsvClient(), now, counts, progress)
-        cls._scan_nvd(nvd_client or nvd.NvdClient(), now, counts, progress)
+
+        def guard():
+            used = memory()
+            if used > limit:
+                raise MemoryLimitReached(f"{used} MB used, limit {limit} MB")
+
+        try:
+            cls._scan_osv(osv_client or osv.OsvClient(), now, counts, progress, guard)
+            cls._scan_nvd(nvd_client or nvd.NvdClient(), now, counts, progress, guard)
+        except MemoryLimitReached as error:
+            logger.warning("Vulnerability scan stopped: %s", error)
+            progress(f"Scan stopped, memory limit reached ({error}): next run resumes")
+            counts["stopped_memory"] = 1
+            return dict(counts)
         cls._cleanup()
         return dict(counts)
 
@@ -132,7 +165,12 @@ class ScanService:
                 vulnerability.save()
         return vulnerability
 
-    # OSV: Linux packages
+    # OSV: Linux packages. Advisories are not kept: an Ubuntu kernel advisory
+    # is 350 to 700 KB of JSON listing every kernel flavor of every release,
+    # and keeping them took the scan to 1.8 GB. Each one is downloaded, turned
+    # into the findings of the packages that need it, and dropped; each
+    # package remembers its advisories and their "modified" (in its check's
+    # payload) so that an unchanged advisory is not downloaded again.
 
     @classmethod
     def _osv_pairs(cls):
@@ -147,7 +185,7 @@ class ScanService:
         return pairs
 
     @classmethod
-    def _scan_osv(cls, client, now, counts, progress):
+    def _scan_osv(cls, client, now, counts, progress, guard):
         pairs = cls._osv_pairs()
         fresh = cls._fresh(SOURCE_OSV, [osv_key(pair) for pair in pairs], now)
         due = [pair for pair in pairs if osv_key(pair) not in fresh]
@@ -158,6 +196,7 @@ class ScanService:
             "checked less than 24 hours ago"
         )
         for number, start in enumerate(range(0, len(due), osv.BATCH_SIZE), 1):
+            guard()
             chunk = due[start : start + osv.BATCH_SIZE]
             try:
                 results = client.query(chunk)
@@ -170,93 +209,113 @@ class ScanService:
                     cls._failed(
                         SOURCE_OSV, osv_key(pair), "no answer", counts, "osv_failed"
                     )
-            advisories, missing, fetched = cls._advisories(client, results)
+            known = dict(
+                ProductCheck.objects.filter(
+                    source=SOURCE_OSV, key__in=[osv_key(pair) for pair in results]
+                ).values_list("key", "payload")
+            )
+            needed = {}
             for pair, vulns in results.items():
-                not_fetched = sorted({v["id"] for v in vulns} & missing)
+                done = known.get(osv_key(pair)) or {}
+                for vuln in vulns:
+                    if done.get(vuln["id"]) != vuln.get("modified", ""):
+                        needed.setdefault(vuln["id"], []).append(pair)
+            found, headers, missing = cls._download(client, needed, guard)
+            for pair, vulns in results.items():
+                guard()
+                listed = {vuln["id"]: vuln.get("modified", "") for vuln in vulns}
+                not_fetched = sorted(set(listed) & missing)
                 if not_fetched:
                     error = "advisories not fetched: " + ", ".join(not_fetched)
                     cls._failed(SOURCE_OSV, osv_key(pair), error, counts, "osv_failed")
                     continue
                 product, version = pairs[pair]
                 with transaction.atomic():
-                    cls._replace_osv_findings(pair, product, version, vulns, advisories)
+                    cls._update_osv_findings(
+                        pair, product, version, listed, found, headers
+                    )
                     ProductCheck.objects.update_or_create(
                         source=SOURCE_OSV,
                         key=osv_key(pair),
-                        defaults={"checked_at": now, "error": ""},
+                        defaults={"checked_at": now, "error": "", "payload": listed},
                     )
                 counts["osv_checked"] += 1
             progress(
                 f"OSV batch {number}/{batches}: {len(chunk)} packages, "
-                f"{fetched} advisories fetched, {len(advisories) - fetched} in cache, "
+                f"{len(needed) - len(missing)} advisories fetched, "
                 f"{len(missing)} failed"
             )
 
     @staticmethod
-    def _advisories(client, results):
+    def _download(client, needed, guard):
         """
-        {advisory_id: OsvAdvisory} of the results, fetched (in parallel) when
-        new or modified, the set of ids that could not be fetched, and how many
-        were fetched.
+        Downloads the advisories in parallel. Returns {(pair, advisory_id):
+        findings}, {advisory_id: header} and the ids that failed.
         """
-        wanted = {v["id"]: v.get("modified", "") for vs in results.values() for v in vs}
-        cached = {
-            advisory.advisory_id: advisory
-            for advisory in OsvAdvisory.objects.filter(advisory_id__in=wanted)
-        }
-        to_fetch = [
-            advisory_id
-            for advisory_id, modified in wanted.items()
-            if advisory_id not in cached or cached[advisory_id].modified != modified
-        ]
 
         def fetch(advisory_id):
-            # Compacted in the thread: a kernel record is 350 to 700 KB of
-            # JSON, a batch must never hold the full records it downloads
+            # Turned into findings in the thread: only small results come back
             try:
                 record = client.advisory(advisory_id)
-                return advisory_id, osv.summary(record), osv.compact(record), None
+                compact = osv.compact(record)
+                header = {
+                    "summary": osv.summary(record),
+                    "published": compact["published"],
+                    "modified": compact["modified"],
+                    "vector": compact["vector"],
+                }
+                per_pair = {
+                    pair: osv.findings(compact, pair[0], pair[1])
+                    for pair in needed[advisory_id]
+                }
+                return advisory_id, header, per_pair, None
             except Exception as error:
-                return advisory_id, "", None, error
+                return advisory_id, None, None, error
 
-        missing = set()
-        # Only the downloads run in threads, the database writes stay here
-        with ThreadPoolExecutor(max_workers=FETCH_WORKERS) as pool:
-            for advisory_id, summary, compact, error in pool.map(fetch, to_fetch):
+        found, headers, missing = {}, {}, set()
+        pool = ThreadPoolExecutor(max_workers=FETCH_WORKERS)
+        try:
+            for advisory_id, header, per_pair, error in pool.map(fetch, needed):
                 if error is not None:
                     logger.warning(
                         "OSV advisory %s not fetched: %s", advisory_id, error
                     )
                     missing.add(advisory_id)
                     continue
-                cached[advisory_id], _ = OsvAdvisory.objects.update_or_create(
-                    advisory_id=advisory_id,
-                    defaults={
-                        "modified": wanted[advisory_id],
-                        "summary": summary,
-                        "record": compact,
-                    },
-                )
-        return cached, missing, len(to_fetch) - len(missing)
+                headers[advisory_id] = header
+                for pair, findings in per_pair.items():
+                    found[(pair, advisory_id)] = findings
+                guard()
+        finally:
+            # A stop must not wait for the downloads still queued
+            pool.shutdown(wait=True, cancel_futures=True)
+        return found, headers, missing
 
     @classmethod
-    def _replace_osv_findings(cls, pair, product, version, vulns, advisories):
-        eco, name, _ = pair
-        Finding.objects.filter(scheme="purl", product=product, version=version).delete()
-        for vuln in vulns:
-            advisory = advisories[vuln["id"]]
-            record = advisory.record
-            for found in osv.findings(record, eco, name):
+    def _update_osv_findings(cls, pair, product, version, listed, found, headers):
+        """
+        Keeps the findings of unchanged advisories, removes those of advisories
+        no longer listed, writes those of the advisories just downloaded.
+        """
+        unchanged = [aid for aid in listed if (pair, aid) not in found]
+        Finding.objects.filter(scheme="purl", product=product, version=version).exclude(
+            advisory_id__in=unchanged
+        ).delete()
+        for advisory_id in listed:
+            if (pair, advisory_id) not in found:
+                continue
+            header = headers[advisory_id]
+            for result in found[(pair, advisory_id)]:
                 vulnerability = cls._vulnerability(
-                    found["cve"],
+                    result["cve"],
                     SOURCE_OSV,
-                    osv.advisory_url(advisory.advisory_id),
-                    advisory.summary,
-                    record.get("published"),
-                    record.get("modified"),
-                    record.get("vector"),
-                    base_score(record.get("vector")),
-                    found["rating"],
+                    osv.advisory_url(advisory_id),
+                    header["summary"],
+                    header["published"],
+                    header["modified"],
+                    header["vector"],
+                    base_score(header["vector"]),
+                    result["rating"],
                 )
                 Finding.objects.update_or_create(
                     scheme="purl",
@@ -264,9 +323,9 @@ class ScanService:
                     version=version,
                     vulnerability=vulnerability,
                     defaults={
-                        "advisory_id": advisory.advisory_id,
-                        "fixed_version": found["fixed_version"][:255],
-                        "affected_range": found["affected_range"][:255],
+                        "advisory_id": advisory_id,
+                        "fixed_version": result["fixed_version"][:255],
+                        "affected_range": result["affected_range"][:255],
                         "method": METHOD_OSV,
                         "uncertain": False,
                     },
@@ -275,25 +334,24 @@ class ScanService:
     # NVD: Windows and macOS applications
 
     @classmethod
-    def _scan_nvd(cls, client, now, counts, progress):
+    def _scan_nvd(cls, client, now, counts, progress, guard):
         products = {}
         for product, version in covered_identities().filter(scheme="cpe").values_list(
             "product", "version"
         ):
             products.setdefault(product, set()).add(version)
         fresh = cls._fresh(SOURCE_NVD, list(products), now)
-        cached = dict(
-            ProductCheck.objects.filter(source=SOURCE_NVD, key__in=fresh).values_list(
-                "key", "payload"
-            )
-        )
         limited = False
         for number, (product, versions) in enumerate(sorted(products.items()), 1):
+            guard()
             progress(
                 f"NVD product {number}/{len(products)}: {product} "
-                f"({'cache' if product in cached else 'request'})"
+                f"({'cache' if product in fresh else 'request'})"
             )
-            cves = cached.get(product)
+            # One product's CVE list at a time: large products hold thousands
+            cves = None
+            if product in fresh:
+                cves = ProductCheck.objects.get(source=SOURCE_NVD, key=product).payload
             if cves is None:
                 if limited:
                     # no more requests this run, cached products are still evaluated
