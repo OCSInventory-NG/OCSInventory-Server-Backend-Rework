@@ -1,6 +1,7 @@
 import pytest
 from django.db import IntegrityError
 from security.cvss import base_score, level
+from security.kernel import is_kernel, is_running_kernel
 from security.models import Finding, ProductCheck, Vulnerability
 
 
@@ -80,3 +81,44 @@ def test_cvss_without_a_3x_base_score(vector):
 )
 def test_level(score, rating, expected):
     assert level(score, rating) == expected
+
+
+@pytest.mark.parametrize(
+    "name, family, expected",
+    [
+        ("linux-image-6.8.0-87-generic", "deb", True),
+        ("linux-modules-extra-6.8.0-87-generic:amd64", "deb", True),
+        ("linux-headers-6.8.0-87-generic", "deb", True),
+        ("linux-image-generic", "deb", True),
+        ("linux-firmware", "deb", False),
+        ("libc6:amd64", "deb", False),
+        ("kernel-core", "rpm", True),
+        ("kernel", "rpm", True),
+        ("kernelshark", "rpm", False),
+        ("linux-image-6.8.0-87-generic", "rpm", False),
+    ],
+)
+def test_kernel_packages(name, family, expected):
+    assert is_kernel(name, family) is expected
+
+
+@pytest.mark.parametrize(
+    "name, version, family, running, expected",
+    [
+        # the running kernel and its modules count
+        ("linux-image-6.8.0-87-generic", "6.8.0-87.88", "deb", "6.8.0-87-generic", True),  # noqa: E501
+        ("linux-modules-6.8.0-87-generic:amd64", "6.8.0-87.88", "deb", "6.8.0-87-generic", True),  # noqa: E501
+        # an older kernel left installed, a meta package
+        ("linux-image-6.8.0-85-generic", "6.8.0-85.85", "deb", "6.8.0-87-generic", False),  # noqa: E501
+        ("linux-image-generic", "6.8.0.87.88", "deb", "6.8.0-87-generic", False),
+        # a container runs the host kernel: no installed package is it
+        ("linux-image-6.8.0-87-generic", "6.8.0-87.88", "deb", "6.17.2-1-pve", False),
+        ("linux-image-6.8.0-87-generic", "6.8.0-87.88", "deb", "", False),
+        ("kernel-core", "5.14.0-427.13.1.el9_4", "rpm", "5.14.0-427.13.1.el9_4.x86_64", True),  # noqa: E501
+        ("kernel-core", "0:5.14.0-427.13.1.el9_4", "rpm", "5.14.0-427.13.1.el9_4.x86_64", True),  # noqa: E501
+        ("kernel-core", "5.14.0-362.8.1.el9_3", "rpm", "5.14.0-427.13.1.el9_4.x86_64", False),  # noqa: E501
+        ("kernel-core", "5.14.0-427.13.1.el9_4", "rpm", "6.17.2-1-pve", False),
+    ],
+)
+def test_running_kernel(name, version, family, running, expected):
+    assert is_running_kernel(name, version, family, running) is expected
