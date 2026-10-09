@@ -1,14 +1,7 @@
 from django.db import migrations
 
-# Generic corrections found while measuring on the dev fleet
-SHIPPED_DECISIONS = [
-    ("windows", "microsoft edge", "microsoft:edge_chromium"),
-    ("macos", "microsoft edge", "microsoft:edge_chromium"),
-    ("windows", "git", "git-scm:git"),
-    ("windows", "microsoft .net sdk from visual studio", "microsoft:.net"),
-    ("macos", "idle", "python:python"),
-    ("macos", "python launcher", "python:python"),
-]
+# No shipped decision for now: whether a release ships a sample of
+# decisions is decided before the release.
 
 TASKS = [
     {
@@ -27,15 +20,6 @@ TASKS = [
 
 
 def seed(apps, schema_editor):
-    IdentityDecision = apps.get_model("software_identity", "IdentityDecision")
-    IdentityDecision.objects.bulk_create(
-        [
-            IdentityDecision(
-                family=family, match_key=key, product=product, source="shipped"
-            )
-            for family, key, product in SHIPPED_DECISIONS
-        ]
-    )
     Scheduler = apps.get_model("scheduler", "Scheduler")
     for task in TASKS:
         Scheduler.objects.create(
@@ -49,9 +33,6 @@ def seed(apps, schema_editor):
 
 
 def unseed(apps, schema_editor):
-    apps.get_model("software_identity", "IdentityDecision").objects.filter(
-        source="shipped"
-    ).delete()
     apps.get_model("scheduler", "Scheduler").objects.filter(
         name__in=[task["name"] for task in TASKS]
     ).delete()
