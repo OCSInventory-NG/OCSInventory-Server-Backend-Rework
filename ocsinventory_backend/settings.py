@@ -102,6 +102,7 @@ INSTALLED_APPS = [
     "filemanager.apps.FileManagerConfig",
     "extension.apps.ExtensionConfig",
     "compliance.apps.ComplianceConfig",
+    "security.apps.SecurityConfig",
     "debug.apps.DebugConfig",
 ]
 
@@ -363,3 +364,9 @@ EOL_API_BASE_URL = "https://endoflife.date/api"
 # Software identity: NVD CPE dictionary (can point to an internal mirror)
 NVD_CPE_FEED_URL = "https://nvd.nist.gov/feeds/json/cpe/2.0/nvdcpe-2.0.tar.gz"
 NVD_CPE_META_URL = "https://nvd.nist.gov/feeds/json/cpe/2.0/nvdcpe-2.0.meta"
+
+# Security: vulnerability sources (can point to internal mirrors). An NVD
+# API key raises the NVD rate limit from 5 to 50 requests per 30 seconds.
+OSV_API_URL = "https://api.osv.dev/v1"
+NVD_CVE_API_URL = "https://services.nvd.nist.gov/rest/json/cves/2.0"
+NVD_API_KEY = os.getenv("NVD_API_KEY", "")
