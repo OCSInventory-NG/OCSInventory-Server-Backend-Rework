@@ -1,12 +1,23 @@
 import json
+from datetime import timedelta
 from pathlib import Path
 
 import pytest
+from automation.scheduler.models import Scheduler
 from django.db import IntegrityError
+from django.utils import timezone
+from inventory.software.models import SoftwareDictionary
+from inventory.software_identity.models import SoftwareIdentity
 from security.cvss import base_score, level
 from security.kernel import is_kernel, is_running_kernel
 from security.sources import nvd, osv
-from security.models import Finding, ProductCheck, Vulnerability
+from security.models import (
+    Finding,
+    OsvAdvisory,
+    ProductCheck,
+    Vulnerability,
+)
+from security.services import ScanService
 
 
 @pytest.mark.django_db
@@ -420,3 +431,245 @@ class TestNvd:
 
         with pytest.raises(nvd.RateLimited):
             client.product_cves("a:b")
+
+
+def identify(
+    name, version, family, key, scheme, product, status="matched", reason=""
+):
+    """A dictionary entry and its identity."""
+    entry = SoftwareDictionary.objects.create(
+        name=name,
+        version=version,
+        platform_family=family,
+        platform_key=key,
+        installation_number=1,
+    )
+    SoftwareIdentity.objects.create(
+        entry=entry,
+        family=family,
+        match_key=name.lower(),
+        status=status,
+        reason=reason,
+        scheme=scheme,
+        product=product,
+        version=version,
+    )
+    return entry
+
+
+class FakeOsv:
+    """OSV answering from the real records of the tests."""
+
+    def __init__(self, vulns, records=OSV_RECORDS, failing=()):
+        self.vulns = vulns
+        self.records = records
+        self.failing = set(failing)
+        self.queried, self.fetched = [], []
+
+    def query(self, pairs):
+        self.queried += pairs
+        return {pair: self.vulns.get(pair, []) for pair in pairs}
+
+    def advisory(self, advisory_id):
+        self.fetched.append(advisory_id)
+        if advisory_id in self.failing:
+            raise OSError("connection reset")
+        return self.records[advisory_id]
+
+
+class FakeNvd:
+    def __init__(self, cves=None, rate_limited=()):
+        self.cves = cves or {}
+        self.rate_limited = set(rate_limited)
+        self.asked = []
+
+    def product_cves(self, product):
+        self.asked.append(product)
+        if product in self.rate_limited:
+            raise nvd.RateLimited("NVD answered 403")
+        return self.cves.get(product, [])
+
+
+CURL = ("Ubuntu:24.04:LTS", "curl", "8.5.0-2ubuntu10.13")
+CURL_VULNS = {CURL: [{"id": "UBUNTU-CVE-2026-13608", "modified": "1"}]}
+TUNNELBLICK_CVES = [
+    nvd.compact(item["cve"], "tunnelblick:tunnelblick")
+    for item in NVD_TUNNELBLICK["vulnerabilities"]
+]
+
+
+def curl_identity():
+    return identify(
+        "curl", "8.5.0-2ubuntu10.13", "deb", "ubuntu:24.04", "purl",
+        "pkg:deb/ubuntu/curl",
+    )
+
+
+@pytest.mark.django_db
+class TestScan:
+    def test_osv_findings_with_their_details(self):
+        curl_identity()
+
+        counts = ScanService.refresh(FakeOsv(CURL_VULNS), FakeNvd())
+
+        finding = Finding.objects.get()
+        assert (finding.scheme, finding.product, finding.version) == (
+            "purl",
+            "pkg:deb/ubuntu/curl",
+            "8.5.0-2ubuntu10.13",
+        )
+        assert finding.fixed_version == "8.5.0-2ubuntu10.15"
+        assert finding.advisory_id == "UBUNTU-CVE-2026-13608"
+        vulnerability = finding.vulnerability
+        assert vulnerability.vuln_id == "CVE-2026-13608"
+        assert (vulnerability.cvss_version, vulnerability.cvss_score) == ("3.1", 7.4)
+        assert vulnerability.distro_rating == "medium"
+        assert vulnerability.url == (
+            "https://osv.dev/vulnerability/UBUNTU-CVE-2026-13608"
+        )
+        assert vulnerability.summary.startswith("A flaw in the libcurl")
+        check = ProductCheck.objects.get(source="osv")
+        assert check.key == "Ubuntu:24.04:LTS|curl|8.5.0-2ubuntu10.13"
+        assert check.checked_at is not None and check.error == ""
+        assert counts["osv_checked"] == 1
+
+    def test_a_rocky_advisory_gives_one_finding_per_cve(self):
+        identify(
+            "acl", "2.3.1-4.el9", "rpm", "rocky:9", "purl", "pkg:rpm/rocky/acl"
+        )
+        pair = ("Rocky Linux:9", "acl", "2.3.1-4.el9")
+
+        ScanService.refresh(
+            FakeOsv({pair: [{"id": "RLSA-2026:42736", "modified": "1"}]}), FakeNvd()
+        )
+
+        found = Finding.objects.values_list("vulnerability__vuln_id", flat=True)
+        assert sorted(found) == ["CVE-2026-54369", "CVE-2026-54370"]
+        assert set(Vulnerability.objects.values_list("distro_rating", flat=True)) == {
+            "Important"
+        }
+
+    def test_uncovered_packages_are_not_queried(self):
+        identify(
+            "docker-ce", "5:29.8.0-1", "deb", "ubuntu:22.04", "", "",
+            status="unsupported", reason="third_party",
+        )
+        identify(
+            "openssl", "1:3.0.7-27.el9", "rpm", "almalinux:9", "purl",
+            "pkg:rpm/redhat/openssl",
+        )
+        osv_client = FakeOsv({})
+
+        ScanService.refresh(osv_client, FakeNvd())
+
+        assert osv_client.queried == []
+
+    def test_fresh_checks_and_unchanged_advisories_are_not_asked_again(self):
+        curl_identity()
+        ScanService.refresh(FakeOsv(CURL_VULNS), FakeNvd())
+        again = FakeOsv(CURL_VULNS)
+
+        ScanService.refresh(again, FakeNvd())
+        assert again.queried == []
+
+        ProductCheck.objects.update(checked_at=timezone.now() - timedelta(hours=25))
+        stale = FakeOsv(CURL_VULNS)
+        ScanService.refresh(stale, FakeNvd())
+        assert stale.queried == [CURL]
+        # same "modified": the cached advisory is used
+        assert stale.fetched == []
+        assert OsvAdvisory.objects.get().modified == "1"
+
+    def test_a_failing_advisory_keeps_the_previous_findings(self):
+        curl_identity()
+        ScanService.refresh(FakeOsv(CURL_VULNS), FakeNvd())
+        ProductCheck.objects.update(checked_at=timezone.now() - timedelta(hours=25))
+        changed = {CURL: [{"id": "UBUNTU-CVE-2026-13608", "modified": "2"}]}
+
+        counts = ScanService.refresh(
+            FakeOsv(changed, failing={"UBUNTU-CVE-2026-13608"}), FakeNvd()
+        )
+
+        assert Finding.objects.count() == 1
+        assert "UBUNTU-CVE-2026-13608" in ProductCheck.objects.get().error
+        assert counts["osv_failed"] == 1
+
+    def test_a_failing_batch_is_recorded_on_its_pairs(self):
+        curl_identity()
+
+        class Down(FakeOsv):
+            def query(self, pairs):
+                raise OSError("OSV unreachable")
+
+        counts = ScanService.refresh(Down({}), FakeNvd())
+
+        check = ProductCheck.objects.get()
+        assert check.checked_at is None and "OSV unreachable" in check.error
+        assert counts["osv_failed"] == 1
+
+    def test_nvd_findings_per_installed_version(self):
+        identify(
+            "Tunnelblick", "6.0", "macos", "macos", "cpe", "tunnelblick:tunnelblick"
+        )
+        identify(
+            "Tunnelblick", "8.0.1", "macos", "macos", "cpe", "tunnelblick:tunnelblick",
+            status="validated",
+        )
+
+        ScanService.refresh(
+            FakeOsv({}), FakeNvd({"tunnelblick:tunnelblick": TUNNELBLICK_CVES})
+        )
+
+        finding = Finding.objects.get()
+        assert (finding.version, finding.fixed_version, finding.method) == (
+            "6.0",
+            "8.0.1",
+            "nvd_range",
+        )
+        vulnerability = finding.vulnerability
+        assert (vulnerability.source, vulnerability.cvss_score) == ("nvd", 5.5)
+        assert vulnerability.url == "https://nvd.nist.gov/vuln/detail/CVE-2026-31893"
+        assert ProductCheck.objects.get(source="nvd").payload == TUNNELBLICK_CVES
+
+    def test_a_new_version_uses_the_cached_product(self):
+        identify(
+            "Tunnelblick", "8.0.1", "macos", "macos", "cpe", "tunnelblick:tunnelblick"
+        )
+        ScanService.refresh(
+            FakeOsv({}), FakeNvd({"tunnelblick:tunnelblick": TUNNELBLICK_CVES})
+        )
+        identify(
+            "Tunnelblick", "3.5.3", "macos", "macos", "cpe", "tunnelblick:tunnelblick"
+        )
+        nvd_client = FakeNvd()
+
+        ScanService.refresh(FakeOsv({}), nvd_client)
+
+        assert nvd_client.asked == []
+        assert list(Finding.objects.values_list("version", flat=True)) == ["3.5.3"]
+
+    def test_a_rate_limit_stops_the_nvd_part(self):
+        identify("A", "1.0", "windows", "windows", "cpe", "a:a")
+        identify("B", "1.0", "windows", "windows", "cpe", "b:b")
+        nvd_client = FakeNvd(rate_limited={"a:a"})
+
+        counts = ScanService.refresh(FakeOsv({}), nvd_client)
+
+        assert nvd_client.asked == ["a:a"]
+        assert "403" in ProductCheck.objects.get(key="a:a").error
+        assert counts["nvd_rate_limited"] == 1
+
+    def test_findings_of_versions_no_longer_installed_are_removed(self):
+        entry = curl_identity()
+        ScanService.refresh(FakeOsv(CURL_VULNS), FakeNvd())
+        entry.delete()
+
+        ScanService.refresh(FakeOsv({}), FakeNvd())
+
+        assert not Finding.objects.exists()
+        assert not Vulnerability.objects.exists()
+
+    def test_the_scan_task_is_seeded_inactive(self):
+        task = Scheduler.objects.get(name="vulnerabilityScan.VulnerabilityScan")
+
+        assert (task.recurrence, task.active) == ("hourly", False)
