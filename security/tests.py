@@ -5,7 +5,7 @@ import pytest
 from django.db import IntegrityError
 from security.cvss import base_score, level
 from security.kernel import is_kernel, is_running_kernel
-from security.sources import osv
+from security.sources import nvd, osv
 from security.models import Finding, ProductCheck, Vulnerability
 
 
@@ -249,3 +249,174 @@ def test_osv_advisory_without_cve_keeps_its_own_id():
 
     assert (finding["cve"], finding["fixed_version"]) == ("DEBIAN-TEMP-0001", "")
     assert finding["affected_range"] == "introduced 0"
+
+
+# Real NVD CVE API answer for tunnelblick:tunnelblick (2026-10-09), trimmed
+NVD_TUNNELBLICK = json.loads(
+    (Path(__file__).parent / "test_data" / "nvd_tunnelblick.json").read_text()
+)
+
+
+def nvd_cve(*matches):
+    """A compact NVD CVE holding the given cpeMatch bounds."""
+    return {
+        "id": "CVE-2026-0001",
+        "matches": [
+            {"criteria": criteria, **bounds} for criteria, bounds in matches
+        ],
+    }
+
+
+class TestNvd:
+    def test_compact_keeps_the_product_matches_and_the_primary_cvss(self):
+        [cve] = [
+            nvd.compact(item["cve"], "tunnelblick:tunnelblick")
+            for item in NVD_TUNNELBLICK["vulnerabilities"]
+        ]
+
+        assert cve["id"] == "CVE-2026-31893"
+        # NVD's own 3.1 score before the CNA's 4.0 one
+        assert (cve["cvss_version"], cve["cvss_score"]) == ("3.1", 5.5)
+        assert cve["cvss_vector"] == "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N"
+        assert cve["description"].startswith("Tunnelblick is an open source")
+        assert len(cve["matches"]) == 6
+
+    @pytest.mark.parametrize(
+        "version, expected",
+        [
+            ("6.0", ("nvd_range", "8.0.1", "from 3.5.3 up to 8.0.1 excluded")),
+            ("3.5.3", ("nvd_range", "8.0.1", "from 3.5.3 up to 8.0.1 excluded")),
+            # exact versions that name a pre-release only match that one
+            ("3.3", None),
+            ("3.3beta26", ("nvd_range", "", "version 3.3 beta26")),
+            ("9.0", None),
+            ("9.0beta01", ("nvd_range", "", "version 9.0 beta01")),
+            ("8.0.1", None),
+            ("9.1 (build 6150)", None),
+        ],
+    )
+    def test_evaluate_the_installed_version(self, version, expected):
+        cve = nvd.compact(
+            NVD_TUNNELBLICK["vulnerabilities"][0]["cve"], "tunnelblick:tunnelblick"
+        )
+
+        result = nvd.evaluate(cve, version)
+
+        if expected is None:
+            assert result is None
+        else:
+            assert (
+                result["method"],
+                result["fixed_version"],
+                result["affected_range"],
+            ) == expected
+            assert result["uncertain"] is False
+
+    def test_all_versions_is_uncertain_and_a_real_range_wins(self):
+        everything = ("cpe:2.3:a:7-zip:7-zip:*:*:*:*:*:*:*:*", {})
+        bounded = (
+            "cpe:2.3:a:7-zip:7-zip:*:*:*:*:*:*:*:*",
+            {"versionEndIncluding": "24.08"},
+        )
+
+        uncertain = nvd.evaluate(nvd_cve(everything), "24.08")
+        definite = nvd.evaluate(nvd_cve(everything, bounded), "24.08")
+
+        assert (uncertain["method"], uncertain["uncertain"]) == (
+            "nvd_all_versions",
+            True,
+        )
+        assert uncertain["affected_range"] == "all versions"
+        # "up to ... included": no known fix
+        assert (definite["method"], definite["fixed_version"]) == ("nvd_range", "")
+        assert definite["affected_range"] == "up to 24.08 included"
+
+    def test_matches_of_other_products_are_ignored_and_names_unescaped(self):
+        cve = {
+            "id": "CVE-2026-0002",
+            "configurations": [
+                {
+                    "nodes": [
+                        {
+                            "cpeMatch": [
+                                {
+                                    "vulnerable": True,
+                                    "criteria": "cpe:2.3:a:notepad-plus-plus:"
+                                    "notepad\\+\\+:8.9.8:*:*:*:*:*:*:*",
+                                },
+                                {
+                                    "vulnerable": True,
+                                    "criteria": "cpe:2.3:a:other:product"
+                                    ":*:*:*:*:*:*:*:*",
+                                },
+                                {
+                                    "vulnerable": False,
+                                    "criteria": "cpe:2.3:o:microsoft:windows"
+                                    ":-:*:*:*:*:*:*:*",
+                                },
+                            ]
+                        }
+                    ]
+                }
+            ],
+        }
+
+        compact = nvd.compact(cve, "notepad-plus-plus:notepad++")
+
+        assert len(compact["matches"]) == 1
+        assert nvd.evaluate(compact, "8.9.8")["affected_range"] == "version 8.9.8"
+
+    def test_client_pages_and_spaces_its_requests(self):
+        pages = [
+            {"resultsPerPage": 1, "startIndex": 0, "totalResults": 2,
+             "vulnerabilities": NVD_TUNNELBLICK["vulnerabilities"]},
+            {"resultsPerPage": 1, "startIndex": 1, "totalResults": 2,
+             "vulnerabilities": NVD_TUNNELBLICK["vulnerabilities"]},
+        ]
+        calls, sleeps = [], []
+
+        def get(url, params, headers):
+            calls.append((params, headers))
+            return pages[len(calls) - 1]
+
+        client = nvd.NvdClient(
+            get=get, sleep=sleeps.append, api_key="", base_url="https://nvd.test"
+        )
+
+        cves = client.product_cves("tunnelblick:tunnelblick")
+
+        assert len(cves) == 2
+        assert [params["startIndex"] for params, _ in calls] == [0, 1]
+        assert calls[0][0]["virtualMatchString"].startswith(
+            "cpe:2.3:a:tunnelblick:tunnelblick:"
+        )
+        # no wait before the first request, 6.5 s without a key after it
+        assert sleeps == [6.5]
+        assert calls[0][1] == {}
+
+    def test_an_api_key_is_sent_and_shortens_the_spacing(self):
+        sleeps, headers_seen = [], []
+
+        def get(url, params, headers):
+            headers_seen.append(headers)
+            return {"resultsPerPage": 0, "totalResults": 0, "vulnerabilities": []}
+
+        client = nvd.NvdClient(
+            get=get, sleep=sleeps.append, api_key="secret", base_url="https://nvd.test"
+        )
+        client.product_cves("a:b")
+        client.product_cves("c:d")
+
+        assert headers_seen == [{"apiKey": "secret"}, {"apiKey": "secret"}]
+        assert sleeps == [0.7]
+
+    def test_rate_limit_answers_raise(self):
+        def get(url, params, headers):
+            raise nvd.RateLimited("403")
+
+        client = nvd.NvdClient(
+            get=get, sleep=lambda _: None, base_url="https://nvd.test"
+        )
+
+        with pytest.raises(nvd.RateLimited):
+            client.product_cves("a:b")
