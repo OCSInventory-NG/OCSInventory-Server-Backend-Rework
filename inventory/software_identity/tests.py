@@ -744,13 +744,16 @@ class TestIdentityService:
         assert after.updated_at == before.updated_at
 
 
-def make_identity(entry, status, match_key, candidates=None, family="windows"):
+def make_identity(
+    entry, status, match_key, candidates=None, family="windows", product=""
+):
     return SoftwareIdentity.objects.create(
         entry=entry,
         family=family,
         match_key=match_key,
         status=status,
         candidates=candidates or [],
+        product=product,
     )
 
 
@@ -767,6 +770,11 @@ class TestIdentityApi:
         make_identity(
             v2, "review", "insomnia", [{"product": "konghq:insomnia", "score": 0.7}]
         )
+        machines = [make_machine(f"m{number}") for number in range(5)]
+        small.assets.add(machines[0])
+        v1.assets.add(*machines[:3])
+        # m2 has both versions: it counts once
+        v2.assets.add(*machines[2:])
 
         response = api_client.get("/software_identities/review/?limit=10")
 
@@ -775,10 +783,89 @@ class TestIdentityApi:
         assert (first["match_key"], first["entries"], first["machines"]) == (
             "insomnia",
             2,
-            8,
+            5,
         )
         assert first["candidates"] == [{"product": "konghq:insomnia", "score": 0.7}]
         assert response.data["count"] == 2
+
+    def test_review_counts_a_machine_with_two_versions_once(self, api_client):
+        machine = make_machine("pc")
+        for name in ("Visual C++ (x64)", "Visual C++ (x86)"):
+            entry = make_entry(name, "14.51", "windows", "windows")
+            entry.assets.add(machine)
+            make_identity(entry, "review", "microsoft visual c++")
+
+        response = api_client.get("/software_identities/review/")
+
+        assert [(row["entries"], row["machines"]) for row in response.data] == [
+            (2, 1)
+        ]
+
+    def test_matched_tab_lists_cpe_products_identified_automatically(
+        self, api_client
+    ):
+        copilot = make_entry("Copilot", "154.0.4258.62", "windows", "windows")
+        make_identity(
+            copilot,
+            "matched",
+            "copilot",
+            [{"product": "microsoft:365_copilot", "score": 1.05}],
+            product="microsoft:365_copilot",
+        )
+        make_identity(
+            make_entry("Firefox", "149.0.2", "macos", "macos"),
+            "matched",
+            "firefox",
+            product="mozilla:firefox",
+            family="macos",
+        )
+        # not listed: Linux packages have no catalog, decided products are done
+        make_identity(
+            make_entry("curl", "8", "deb", "debian:13"),
+            "matched",
+            "curl",
+            product="pkg:deb/debian/curl",
+            family="deb",
+        )
+        make_identity(
+            make_entry("Git", "2.45.0", "windows", "windows"),
+            "validated",
+            "git",
+            product="git-scm:git",
+        )
+
+        response = api_client.get("/software_identities/review/?status=matched")
+
+        assert response.status_code == 200
+        assert sorted(
+            (row["family"], row["match_key"], row["product"]) for row in response.data
+        ) == [
+            ("macos", "firefox", "mozilla:firefox"),
+            ("windows", "copilot", "microsoft:365_copilot"),
+        ]
+
+    def test_review_refuses_an_unknown_status(self, api_client):
+        response = api_client.get("/software_identities/review/?status=none")
+
+        assert response.status_code == 400
+
+    def test_a_decision_on_a_matched_product_applies_at_once(self, api_client):
+        copilot = make_entry("Copilot", "154.0.4258.62", "windows", "windows")
+        make_identity(copilot, "matched", "copilot", product="microsoft:365_copilot")
+        listed = api_client.get("/software_identities/review/?status=matched")
+        assert [row["match_key"] for row in listed.data] == ["copilot"]
+
+        response = api_client.post(
+            "/software_identity_decisions/",
+            {"family": "windows", "match_key": "copilot", "product": None},
+            format="json",
+        )
+
+        assert response.status_code == 201
+        identity = SoftwareIdentity.objects.get(entry=copilot)
+        assert (identity.status, identity.reason) == ("none", "decided_none")
+        after = api_client.get("/software_identities/review/?status=matched")
+        assert after.data == []
 
     def test_summary(self, api_client):
         make_identity(

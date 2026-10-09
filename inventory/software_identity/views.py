@@ -1,5 +1,5 @@
 from asset.inventory_base.models import InventoryBase
-from django.db.models import Count, Min, Q, Sum
+from django.db.models import Count, Min, Q
 from inventory.software.models import SoftwareDictionary
 from inventory.software_identity.models import (
     CpeIndexState,
@@ -8,14 +8,18 @@ from inventory.software_identity.models import (
     PackageOrigin,
     SoftwareIdentity,
 )
-from inventory.software_identity.normalizers.base import REVIEW
+from inventory.software_identity.normalizers.base import MATCHED, REVIEW
 from inventory.software_identity.serializers import (
     CpeProductSerializer,
     IdentityDecisionSerializer,
     PackageOriginSerializer,
     SoftwareIdentitySerializer,
 )
-from inventory.software_identity.services import LINUX_FAMILIES, IdentityService
+from inventory.software_identity.services import (
+    CPE_FAMILIES,
+    LINUX_FAMILIES,
+    IdentityService,
+)
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
 from rest_framework.decorators import action
@@ -36,29 +40,39 @@ class SoftwareIdentityViewSet(viewsets.OCSViewSet):
 
     @action(detail=False, methods=["get"])
     def review(self, request):
-        """Products waiting for an admin, one row per key, most installed first."""
+        """
+        Products to check, one row per key, on most machines first: waiting
+        for an admin (status review, the default) or identified automatically
+        (status matched, Windows and macOS: Linux packages have no catalog).
+        """
+        status = request.query_params.get("status", REVIEW)
+        if status not in (REVIEW, MATCHED):
+            raise ValidationError({"status": f"{REVIEW} or {MATCHED}"})
+        identities = SoftwareIdentity.objects.filter(status=status)
+        if status == MATCHED:
+            identities = identities.filter(family__in=CPE_FAMILIES)
         groups = (
-            SoftwareIdentity.objects.filter(status=REVIEW)
-            .values("family", "match_key")
+            identities.values("family", "match_key")
             .annotate(
                 name=Min("entry__name"),
-                entries=Count("id"),
-                machines=Sum("entry__installation_number"),
+                entries=Count("id", distinct=True),
+                # Two versions on one machine count once
+                machines=Count("entry__assets", distinct=True),
             )
             .order_by("-machines", "family", "match_key")
         )
         page = self.paginate_queryset(groups)
         rows = page if page is not None else list(groups)
         for row in rows:
-            row["candidates"] = (
-                SoftwareIdentity.objects.filter(
-                    status=REVIEW, family=row["family"], match_key=row["match_key"]
-                )
+            top = (
+                identities.filter(family=row["family"], match_key=row["match_key"])
                 .order_by("-entry__installation_number", "id")
-                .values_list("candidates", flat=True)
+                .values("candidates", "product")
                 .first()
-                or []
+                or {}
             )
+            row["candidates"] = top.get("candidates") or []
+            row["product"] = top.get("product", "")
         if page is not None:
             return self.get_paginated_response(rows)
         return Response(rows)
