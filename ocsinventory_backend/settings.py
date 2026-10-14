@@ -21,8 +21,8 @@ load_dotenv()
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Backend version
-BACKEND_VERSION = "3.0.0-rc2"
+# Backend version, replaced by the release tag in .github/workflows/release.yml
+BACKEND_VERSION = "dev"
 
 
 # Quick-start development settings - unsuitable for production
