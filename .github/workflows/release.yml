@@ -25,9 +25,15 @@ jobs:
           fetch-depth: 0
 
       - name: Build release tarball
+        env:
+          VERSION: ${{ github.ref_name }}
         run: |
-          git archive --format=tar.gz --prefix="${PKG}/" \
-            -o "${PKG}-${{ github.ref_name }}.tar.gz" HEAD
+          set -euo pipefail
+          git archive --format=tar --prefix="${PKG}/" HEAD | tar -x
+          settings="${PKG}/ocsinventory_backend/settings.py"
+          sed -i "s/^BACKEND_VERSION = .*/BACKEND_VERSION = \"${VERSION}\"/" "${settings}"
+          grep -qxF "BACKEND_VERSION = \"${VERSION}\"" "${settings}"
+          tar -czf "${PKG}-${VERSION}.tar.gz" "${PKG}"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3
