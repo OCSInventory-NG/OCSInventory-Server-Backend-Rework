@@ -9,7 +9,7 @@ from django.test.utils import CaptureQueriesContext
 from inventory.field.models import Field
 from inventory.section.models import Section
 from inventory.template.models import Template
-from virtualcolumn.models import VirtualCol
+from virtualcolumn.models import ColumnLayout, VirtualCol
 
 
 @pytest.fixture
@@ -714,3 +714,317 @@ class TestVirtualColGroupModification:
         client = self.member_client(make_api_client, django_user_model, group)
 
         assert client.delete(f"/virtual_cols/{column.id}/").status_code == 403
+
+
+@pytest.mark.django_db
+class TestColumnLayoutApi:
+    def post(self, client, **payload):
+        payload.setdefault("name", "Support view")
+        payload.setdefault("columns", ["name", "osname"])
+        return client.post("/column_layouts/", payload, format="json")
+
+    def test_creating_a_layout_makes_the_creator_its_owner(
+        self, api_client, admin_user
+    ):
+        response = self.post(api_client, columns=["name", "vc_3", "osname"])
+
+        assert response.status_code == 201, response.data
+        layout = ColumnLayout.objects.get(name="Support view")
+        assert layout.user == admin_user
+        assert layout.target == "asset"
+        assert layout.visibility == "private_personal"
+        assert layout.columns == ["name", "vc_3", "osname"]
+
+    def test_the_payload_cannot_hand_the_layout_to_someone_else(
+        self, api_client, admin_user, django_user_model
+    ):
+        other = django_user_model.objects.create_user(username="someone-else")
+
+        response = self.post(api_client, user=other.id)
+
+        assert response.status_code == 201, response.data
+        assert ColumnLayout.objects.get().user == admin_user
+
+    def test_duplicate_keys_are_dropped_keeping_the_first_position(self, api_client):
+        response = self.post(api_client, columns=["vc_1", "name", "vc_1", "name"])
+
+        assert response.status_code == 201, response.data
+        assert response.data["columns"] == ["vc_1", "name"]
+
+    def test_unknown_keys_are_accepted(self, api_client):
+        """A column may be gone or not resolved yet, the client skips it"""
+        response = self.post(api_client, columns=["vc_999999", "not_a_field"])
+
+        assert response.status_code == 201, response.data
+
+    @pytest.mark.parametrize(
+        "columns",
+        [
+            [],
+            "name",
+            {"name": True},
+            [""],
+            ["   "],
+            [None],
+            [3],
+            ["x" * 101],
+            [f"col_{index}" for index in range(201)],
+        ],
+    )
+    def test_malformed_columns_are_refused(self, api_client, columns):
+        response = self.post(api_client, columns=columns)
+
+        assert response.status_code == 400
+        assert "columns" in response.data["error"]
+
+    def test_columns_are_required(self, api_client):
+        response = api_client.post(
+            "/column_layouts/", {"name": "Support view"}, format="json"
+        )
+
+        assert response.status_code == 400
+        assert "columns" in response.data["error"]
+
+    def test_the_limits_themselves_are_accepted(self, api_client):
+        response = self.post(
+            api_client, columns=["x" * 100] + [f"col_{index}" for index in range(199)]
+        )
+
+        assert response.status_code == 201, response.data
+        assert len(response.data["columns"]) == 200
+
+    def test_two_layouts_may_share_a_name(self, api_client):
+        assert self.post(api_client).status_code == 201
+        assert self.post(api_client).status_code == 201
+
+    def test_an_unknown_target_is_refused(self, api_client):
+        response = self.post(api_client, target="computers")
+
+        assert response.status_code == 400
+
+    def test_updating_the_columns_keeps_the_owner(self, api_client, admin_user):
+        layout_id = self.post(api_client).data["id"]
+
+        response = api_client.patch(
+            f"/column_layouts/{layout_id}/",
+            {"columns": ["vc_2", "name"]},
+            format="json",
+        )
+
+        assert response.status_code == 200, response.data
+        layout = ColumnLayout.objects.get(id=layout_id)
+        assert layout.columns == ["vc_2", "name"]
+        assert layout.user == admin_user
+
+    def test_listing_can_be_filtered_by_target(self, api_client, admin_user):
+        self.post(api_client, name="Support view")
+
+        listed = api_client.get("/column_layouts/", {"target": "asset"}).data
+
+        assert [layout["name"] for layout in listed] == ["Support view"]
+
+
+@pytest.mark.django_db
+class TestColumnLayoutVisibility:
+    def layout_for(self, owner, **kwargs):
+        return ColumnLayout.objects.create(
+            name=kwargs.pop("name", "Support view"),
+            columns=["name", "vc_1"],
+            user=owner,
+            **kwargs,
+        )
+
+    def test_a_private_layout_stays_with_its_owner(self, admin_user, make_api_client):
+        self.layout_for(admin_user, visibility="private_personal")
+
+        listed = (
+            make_api_client("view_columnlayout", username="nosy")
+            .get("/column_layouts/")
+            .data
+        )
+
+        assert listed == []
+
+    def test_a_public_layout_reaches_everyone(self, admin_user, make_api_client):
+        self.layout_for(admin_user, visibility="public")
+
+        listed = (
+            make_api_client("view_columnlayout", username="reader")
+            .get("/column_layouts/")
+            .data
+        )
+
+        assert [layout["name"] for layout in listed] == ["Support view"]
+
+    def test_a_group_layout_reaches_the_members_of_that_group(
+        self, admin_user, make_api_client, django_user_model
+    ):
+        from django.contrib.auth.models import Group
+
+        group = Group.objects.create(name="support")
+        layout = self.layout_for(admin_user, visibility="private_group")
+        layout.groups.add(group)
+
+        member = make_api_client("view_columnlayout", username="member")
+        django_user_model.objects.get(username="member").groups.add(group)
+
+        listed = member.get("/column_layouts/").data
+        assert [layout["name"] for layout in listed] == ["Support view"]
+
+    def test_a_member_may_edit_only_when_the_author_allows_it(
+        self, admin_user, make_api_client, django_user_model
+    ):
+        from django.contrib.auth.models import Group
+
+        group = Group.objects.create(name="support")
+        locked = self.layout_for(admin_user, visibility="private_group")
+        locked.groups.add(group)
+        opened = self.layout_for(
+            admin_user,
+            name="Hardware view",
+            visibility="private_group",
+            allow_group_modification=True,
+        )
+        opened.groups.add(group)
+
+        member = make_api_client(
+            "view_columnlayout",
+            "change_columnlayout",
+            "delete_columnlayout",
+            username="member",
+        )
+        django_user_model.objects.get(username="member").groups.add(group)
+
+        payload = {"columns": ["osname"]}
+        assert (
+            member.patch(
+                f"/column_layouts/{locked.id}/", payload, format="json"
+            ).status_code
+            == 403
+        )
+        assert (
+            member.patch(
+                f"/column_layouts/{opened.id}/", payload, format="json"
+            ).status_code
+            == 200
+        )
+        assert member.delete(f"/column_layouts/{opened.id}/").status_code == 403
+
+
+@pytest.mark.django_db
+class TestRestrictedDetailRoutes:
+    """The detail routes hide what the listing hides"""
+
+    def private_layout(self, owner, **kwargs):
+        return ColumnLayout.objects.create(
+            name="Support view", columns=["name"], user=owner, **kwargs
+        )
+
+    def outsider(self, make_api_client):
+        return make_api_client(
+            "view_columnlayout",
+            "change_columnlayout",
+            "delete_columnlayout",
+            "view_virtualcol",
+            username="outsider",
+        )
+
+    def test_a_private_layout_cannot_be_read_by_id(self, admin_user, make_api_client):
+        layout = self.private_layout(admin_user)
+
+        response = self.outsider(make_api_client).get(f"/column_layouts/{layout.id}/")
+
+        assert response.status_code == 404
+
+    def test_a_private_layout_cannot_be_changed_or_deleted_by_id(
+        self, admin_user, make_api_client
+    ):
+        layout = self.private_layout(admin_user)
+        client = self.outsider(make_api_client)
+
+        patched = client.patch(
+            f"/column_layouts/{layout.id}/", {"name": "taken"}, format="json"
+        )
+        deleted = client.delete(f"/column_layouts/{layout.id}/")
+
+        assert patched.status_code == 404
+        assert deleted.status_code == 404
+        layout.refresh_from_db()
+        assert layout.name == "Support view"
+
+    def test_a_private_virtual_column_cannot_be_read_by_id(
+        self, admin_user, make_api_client, park
+    ):
+        column = VirtualCol.objects.create(
+            name="BIOS VERSION", mapping={}, user=admin_user
+        )
+
+        response = self.outsider(make_api_client).get(f"/virtual_cols/{column.id}/")
+
+        assert response.status_code == 404
+
+    def test_the_owner_still_reads_a_private_layout_by_id(self, api_client, admin_user):
+        layout = self.private_layout(admin_user)
+
+        assert api_client.get(f"/column_layouts/{layout.id}/").status_code == 200
+
+    def test_a_public_layout_is_readable_by_id(self, admin_user, make_api_client):
+        layout = self.private_layout(admin_user, visibility="public")
+
+        response = self.outsider(make_api_client).get(f"/column_layouts/{layout.id}/")
+
+        assert response.status_code == 200
+
+
+@pytest.mark.django_db
+class TestGroupsOnlyCountForGroupVisibility:
+    """Groups left on a personal item must not share it"""
+
+    def member(self, make_api_client, django_user_model, group):
+        client = make_api_client(
+            "view_columnlayout",
+            "view_virtualcol",
+            "view_inventorybase",
+            username="member",
+        )
+        django_user_model.objects.get(username="member").groups.add(group)
+        return client
+
+    def test_a_personal_layout_with_groups_stays_personal(
+        self, admin_user, make_api_client, django_user_model
+    ):
+        from django.contrib.auth.models import Group
+
+        group = Group.objects.create(name="support")
+        layout = ColumnLayout.objects.create(
+            name="Support view",
+            columns=["name"],
+            user=admin_user,
+            visibility="private_personal",
+        )
+        layout.groups.add(group)
+        client = self.member(make_api_client, django_user_model, group)
+
+        assert client.get("/column_layouts/").data == []
+        assert client.get(f"/column_layouts/{layout.id}/").status_code == 404
+
+    def test_a_personal_column_with_groups_is_not_resolved_in_the_listing(
+        self, admin_user, make_api_client, django_user_model, park
+    ):
+        from django.contrib.auth.models import Group
+
+        group = Group.objects.create(name="support")
+        make_asset(park, "win", "PC-WIN", "Dell Inc.")
+        column = VirtualCol.objects.create(
+            name="BIOS VERSION",
+            mapping={str(park["win"]["template"].id): park["win"]["field"].id},
+            user=admin_user,
+            visibility="private_personal",
+        )
+        column.groups.add(group)
+        client = self.member(make_api_client, django_user_model, group)
+
+        response = client.get("/asset/bases/", {"virtual_cols": column.id})
+
+        assert response.status_code == 200
+        assert "virtual_cols" not in rows(response)[0]
