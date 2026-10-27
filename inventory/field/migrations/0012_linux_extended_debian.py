@@ -1530,7 +1530,7 @@ def create_linux_extended_debian_fields(apps, schema_editor):
         {
             "name": "COMMENT",
             "order": 8,
-            "retrieval_value": "COMMENT=(\\S+)",
+            "retrieval_value": "COMMENT=(.*?) OTHER=",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
