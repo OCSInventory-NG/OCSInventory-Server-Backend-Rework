@@ -1751,7 +1751,7 @@ def create_linux_extended_debian_fields(apps, schema_editor):
         {
             "name": "TTY",
             "order": 6,
-            "retrieval_value": "TTY=(\\S)",
+            "retrieval_value": "TTY=(\\S+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
