@@ -1553,7 +1553,7 @@ def create_linux_extended_debian_fields(apps, schema_editor):
         {
             "name": "LOG DATE",
             "order": 2,
-            "retrieval_value": "LOG DATE=(.+)",
+            "retrieval_value": "LOG_DATE=(.+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
