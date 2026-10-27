@@ -188,7 +188,7 @@ def create_linux_extended_rhel_sections(apps, schema_editor):
             "name": "SECURITY CERTIFICATE",
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
-            "target": 'for cert in /etc/ssl/certs/*.pem /etc/ssl/certs/*.crt; do [ -f "$cert" ] && info=$(openssl x509 -in "$cert" -text 2>/dev/null) && issuer=$(echo "$info" | grep "Issuer:" | sed \'s/.*Issuer: //\') && datestart=$(echo "$info" | grep "Not Before:" | sed \'s/.*Not Before: //\') && dateend=$(echo "$info" | grep "Not After :" | sed \'s/.*Not After : //\') && [ -n "$issuer$datestart$dateend" ] && printf "NAME=%s\\nAUTORITY=%s\\nDATESTART=%s\\nEXPIRATION=%s\\n---\\n" "$(basename $cert)" "$issuer" "$datestart" "$dateend"; done',
+            "target": 'for cert in /etc/ssl/certs/*.pem /etc/ssl/certs/*.crt; do [ -f "$cert" ] && info=$(openssl x509 -in "$cert" -text 2>/dev/null) && issuer=$(echo "$info" | grep "Issuer:" | sed \'s/.*Issuer: //\') && datestart=$(echo "$info" | grep "Not Before:" | sed \'s/.*Not Before: //\') && dateend=$(echo "$info" | grep "Not After :" | sed \'s/.*Not After : //\') && [ -n "$issuer$datestart$dateend" ] && printf "NAME=%s\\nAUTHORITY=%s\\nDATESTART=%s\\nEXPIRATION=%s\\n---\\n" "$(basename $cert)" "$issuer" "$datestart" "$dateend"; done',
             "options": {"multiple": False, "separator": "NAME"},
             "template": template,
         },
