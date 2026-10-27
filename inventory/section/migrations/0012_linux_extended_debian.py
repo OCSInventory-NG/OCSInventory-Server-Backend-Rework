@@ -204,7 +204,7 @@ def create_linux_extended_debian_sections(apps, schema_editor):
             "name": "CRON TAB TASKS",
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
-            "target": "grep -rh --include=\"*\" -E \"^[^#]\" /etc/cron.d/ /etc/crontab /var/spool/cron/ /var/spool/cron/crontabs/ 2>/dev/null | grep -v \"^$\" | while read line; do echo \"$line\" | python3 -c \"import sys,re; l=sys.stdin.read().strip(); f=l.split(); is_sys=len(f)>=6 and not re.match(r'^[\\*0-9,\\-/]+$',f[5] if len(f)>5 else ''); m,h,dom,month,dow=(f[0],f[1],f[2],f[3],f[4]) if len(f)>=5 else ('','','','',''); user=f[5] if is_sys and len(f)>5 else ''; cmd=' '.join(f[6:]) if is_sys and len(f)>6 else ' '.join(f[5:]) if len(f)>5 else ''; print(f'MINUTE={m} HOUR={h} DOM={dom} MONTH={month} DOW={dow} USER={user} CRON={cmd}') if len(f)>=5 else None\"; done",
+            "target": "grep -rh --include=\"*\" -E \"^[^#]\" /etc/cron.d/ /etc/crontab /var/spool/cron/ 2>/dev/null | grep -v \"^$\" | while read line; do echo \"$line\" | python3 -c \"import sys,re; l=sys.stdin.read().strip(); f=l.split(); is_sys=len(f)>=6 and not re.match(r'^[\\*0-9,\\-/]+$',f[5] if len(f)>5 else ''); m,h,dom,month,dow=(f[0],f[1],f[2],f[3],f[4]) if len(f)>=5 else ('','','','',''); user=f[5] if is_sys and len(f)>5 else ''; cmd=' '.join(f[6:]) if is_sys and len(f)>6 else ' '.join(f[5:]) if len(f)>5 else ''; print(f'MINUTE={m} HOUR={h} DOM={dom} MONTH={month} DOW={dow} USER={user} CRON={cmd}') if len(f)>=5 else None\"; done",
             "options": {"multiple": False, "separator": "MINUTE"},
             "template": template,
         },
