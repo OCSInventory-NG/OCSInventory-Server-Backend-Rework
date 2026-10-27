@@ -1740,7 +1740,7 @@ def create_linux_extended_debian_fields(apps, schema_editor):
         {
             "name": "PROCESS MEMORY",
             "order": 5,
-            "retrieval_value": "PROCESSMEMORY=(.+)",
+            "retrieval_value": "PROCESSMEMORY=(\\S+)",
             "override_target": False,
             "new_target": None,
             "retrieval_method": None,
