@@ -212,7 +212,7 @@ def create_linux_extended_debian_sections(apps, schema_editor):
             "name": "RUNNING PROCESS",
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
-            "target": "ps aux | tail -n +2 | python3 -c \"import sys,datetime; months={'Jan':'01','Feb':'02','Mar':'03','Apr':'04','May':'05','Jun':'06','Jul':'07','Aug':'08','Sep':'09','Oct':'10','Nov':'11','Dec':'12'}; now=datetime.datetime.now(); [print('USERNAME='+f[0]+' PROCESSID='+f[1]+' CPUUSAGE='+f[2]+' PROCESSMEMORY='+f[3]+' VIRTUALMEMORY='+f[4]+' TTY='+f[6]+' STARTED='+(now.strftime('%Y-')+months.get(f[8][:3],'00')+'-'+f[8][3:]+' '+f[9] if f[8][:3] in months else now.strftime('%Y-%m-%d')+' '+f[8])+' COMMANDLINE='+' '.join(f[10:])) for line in sys.stdin for f in [line.split()] if len(f)>=11]\"",
+            "target": "LC_ALL=C ps -eo user=,pid=,pcpu=,pmem=,vsz=,tty=,lstart=,args= | python3 -c \"import sys,datetime; [print('USERNAME='+f[0]+' PROCESSID='+f[1]+' CPUUSAGE='+f[2]+' PROCESSMEMORY='+f[3]+' VIRTUALMEMORY='+f[4]+' TTY='+f[5]+' STARTED='+datetime.datetime.strptime(' '.join(f[7:11]),'%b %d %H:%M:%S %Y').strftime('%Y-%m-%d %H:%M')+' COMMANDLINE='+' '.join(f[11:])) for line in sys.stdin for f in [line.split()] if len(f)>=12]\"",
             "options": {"multiple": False, "separator": "USERNAME"},
             "template": template,
         },
