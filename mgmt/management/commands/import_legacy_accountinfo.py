@@ -26,8 +26,8 @@ class Command(BaseCommand):
         parser.add_argument(
             "--legacy-url",
             required=True,
-            help="mysql://user:password@host:3306/ocsweb, the password may come "
-            "from OCS_LEGACY_PASSWORD instead",
+            help="mysql://user@host:3306/ocsweb, the password comes from "
+            "OCS_LEGACY_PASSWORD",
         )
         parser.add_argument(
             "--dry-run",

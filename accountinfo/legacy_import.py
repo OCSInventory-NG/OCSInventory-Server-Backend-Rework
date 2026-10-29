@@ -92,10 +92,10 @@ class LegacyDatabase:
 
     @classmethod
     def from_url(cls, url, password=None):
-        """Open a read-only session from mysql://user:pass@host:3306/base"""
+        """Open a read-only session from mysql://user@host:3306/base"""
         parsed = urlparse(url)
         if parsed.scheme not in cls.SCHEMES or not parsed.path.strip("/"):
-            raise ValueError("expected mysql://user:password@host:3306/database")
+            raise ValueError("expected mysql://user@host:3306/database")
 
         base = parsed.path.strip("/")
         host = parsed.hostname or "localhost"

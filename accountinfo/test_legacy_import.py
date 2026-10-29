@@ -1,5 +1,6 @@
 import csv
 import io
+import os
 import sqlite3
 from unittest import mock
 
@@ -447,7 +448,7 @@ class TestCommand:
             call_command(
                 "import_legacy_accountinfo",
                 "--legacy-url",
-                "mysql://ocs:s3cret@legacy:3306/ocsweb",
+                "mysql://ocs@legacy:3306/ocsweb",
                 "--report",
                 str(tmp_path / "report.csv"),
                 *args,
@@ -472,8 +473,6 @@ class TestCommand:
             "SNMP accountinfo: 1 fields, 2 devices - not migrated",
             f"Report: {tmp_path / 'report.csv'}",
         ]
-        assert "s3cret" not in output
-        assert "s3cret" not in (tmp_path / "report.csv").read_text()
 
     def test_a_report_is_never_replaced(self, legacy, tmp_path):
         (tmp_path / "report.csv").write_text("previous")
@@ -500,11 +499,14 @@ class TestCommand:
         assert error.value.returncode == 1
 
     def test_an_unreachable_database(self):
-        with pytest.raises(CommandError) as error:
+        with (
+            mock.patch.dict(os.environ, {"OCS_LEGACY_PASSWORD": "s3cret"}),
+            pytest.raises(CommandError) as error,
+        ):
             call_command(
                 "import_legacy_accountinfo",
                 "--legacy-url",
-                "mysql://ocs:pw@127.0.0.1:1/ocsweb",
+                "mysql://ocs@127.0.0.1:1/ocsweb",
             )
         assert error.value.returncode == 2
-        assert "pw" not in str(error.value)
+        assert "s3cret" not in str(error.value)
