@@ -71,12 +71,11 @@ class InventoryBaseViewSet(AccountinfoSearchMixin, viewsets.OCSViewSet):
         if not ids:
             return []
 
-        user = request.user
-        columns = VirtualCol.objects.filter(id__in=ids, target="asset").filter(
-            Q(visibility="public") | Q(user=user) | Q(groups__in=user.groups.all())
+        columns = VirtualCol.objects.filter(id__in=ids, target="asset").visible_to(
+            request.user
         )
 
-        return list(columns.distinct())
+        return list(columns)
 
     def _build_virtual_col_map(self, columns, asset_ids):
         """
