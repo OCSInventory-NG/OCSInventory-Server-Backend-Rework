@@ -1,4 +1,4 @@
-from virtualcolumn.views import VirtualColViewSet
+from virtualcolumn.views import ColumnLayoutViewSet, VirtualColViewSet
 
 
 class VirtualColRouter:
@@ -19,4 +19,5 @@ class VirtualColRouter:
             [DefaultRouter]: Updated router with app's dedicated routes
         """
         defaultRouter.register(r"virtual_cols", VirtualColViewSet)
+        defaultRouter.register(r"column_layouts", ColumnLayoutViewSet)
         return defaultRouter

@@ -23,4 +23,6 @@ class DashboardLayoutSerializer(ExpandableFieldsMixin, ModelSerializer):
             "name",
             "layout",
         ]
+        # owner is set by the viewset, a client must not name it
+        extra_kwargs = {"user": {"read_only": True}}
         expandable_fields = {}

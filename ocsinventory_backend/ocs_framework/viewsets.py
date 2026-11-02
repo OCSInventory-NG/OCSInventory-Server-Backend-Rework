@@ -1,9 +1,11 @@
 import logging
 
-from django.db.models import Q
+from django.db import transaction
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
 from rest_framework import filters, serializers, status, viewsets
+from rest_framework.exceptions import PermissionDenied
+from rest_framework.permissions import DjangoModelPermissions
 from rest_framework.response import Response
 
 
@@ -64,20 +66,17 @@ class OCSViewSet(viewsets.ModelViewSet):
         Returns:
             [type]: [description]
         """
+        if request.query_params.get("delete"):
+            return self.bulk_destroy(request)
+
         # 'many' allows multi creation but any error
         # will fail the whole transaction
         try:
-            if request.query_params.get("delete"):
-                for id in request.data["ids"]:
-                    instance = self.model.objects.get(id=id)
-                    self.perform_destroy(instance)
-                return Response(status=status.HTTP_204_NO_CONTENT)
-            else:
-                serializer = self.get_serializer(
-                    data=request.data, many=isinstance(request.data, list)
-                )
-                serializer.is_valid(raise_exception=True)
-                self.perform_create(serializer)
+            serializer = self.get_serializer(
+                data=request.data, many=isinstance(request.data, list)
+            )
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
         except Exception as e:
             # serializer.errors may return more details
             return Response(
@@ -86,6 +85,60 @@ class OCSViewSet(viewsets.ModelViewSet):
             )
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def bulk_destroy(self, request):
+        """
+        Handle POST ?delete=1 with {"ids": [...]}, all or nothing
+
+        Each id goes through the checks of a DELETE on a single object : the
+        delete permission, the objects the user can reach, and
+        check_destroy_allowed
+        """
+        self.check_delete_permission(request)
+
+        ids = request.data.get("ids") if isinstance(request.data, dict) else None
+        try:
+            ids = {int(id) for id in ids} if isinstance(ids, list) else None
+        except (TypeError, ValueError):
+            ids = None
+        if not ids:
+            return Response(
+                {"failed": request.data, "error": "ids must be a list of object ids"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        instances = list(self.get_queryset().filter(id__in=ids))
+        missing = ids - {instance.id for instance in instances}
+        if missing:
+            return Response(
+                {"detail": "Not found.", "ids": sorted(missing)},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        for instance in instances:
+            self.check_destroy_allowed(instance)
+
+        with transaction.atomic():
+            for instance in instances:
+                self.perform_destroy(instance)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def check_delete_permission(self, request):
+        """
+        A bulk delete travels as a POST, require what a DELETE would
+        """
+        model = self.get_queryset().model
+        for permission in self.get_permissions():
+            if isinstance(permission, DjangoModelPermissions):
+                required = permission.get_required_permissions("DELETE", model)
+                if not request.user.has_perms(required):
+                    raise PermissionDenied()
+
+    def check_destroy_allowed(self, instance):
+        """
+        Hook to refuse the deletion of a reachable object, raise PermissionDenied
+        """
 
     def get_reconciliation_filter(self, elem):
         """
@@ -176,36 +229,26 @@ class RestrictVisibilityViewSet(OCSViewSet):
 
         return super().update(request, *args, **kwargs)
 
-    def list(self, request, *args, **kwargs):
+    def get_queryset(self):
         """
-        Return the list of objects that the user can see (public,
-        private_personal, private_group)
+        Restrict every route, list and detail alike, to the objects the user
+        can see (public, private_personal, private_group)
         """
-        user = request.user
-        queryset = self.filter_queryset(self.get_queryset())
-        queryset = queryset.filter(
-            Q(visibility="public") | Q(user=user) | Q(groups__in=user.groups.all())
-        ).distinct()
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        return super().get_queryset().visible_to(self.request.user)
 
     def destroy(self, request, *args, **kwargs):
         """
         User needs to be the creator to delete a visibility restricted object
         """
-        search = self.get_object()
-        user = request.user
-        if search.user == user:
-            return super().destroy(request, *args, **kwargs)
-        return Response(
-            {"detail": "You do not have permission to delete this item."},
-            status=status.HTTP_403_FORBIDDEN,
-        )
+        instance = self.get_object()
+        self.check_destroy_allowed(instance)
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def check_destroy_allowed(self, instance):
+        """Only the creator deletes, single or bulk"""
+        if instance.user != self.request.user:
+            raise PermissionDenied("You do not have permission to delete this item.")
 
 
 class ExpandableFieldsMixin:

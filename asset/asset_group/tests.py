@@ -94,7 +94,8 @@ class TestAssetGroupUpdate:
             f"/asset/groups/{group.id}/", {"name": "Renamed"}, format="json"
         )
 
-        assert response.status_code == 403
+        # a private group is invisible to them, it is not even found
+        assert response.status_code == 404
         group.refresh_from_db()
         assert group.name == "My group"
 
@@ -134,7 +135,8 @@ class TestAssetGroupDelete:
 
         response = client.delete(f"/asset/groups/{group.id}/")
 
-        assert response.status_code == 403
+        # a private group is invisible to them, it is not even found
+        assert response.status_code == 404
         assert AssetGroup.objects.filter(id=group.id).exists()
 
 

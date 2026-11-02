@@ -71,6 +71,20 @@ class Command(MigrateCommand):
                     "add_log",
                 ]
             },
+            "SnmpScanner": {
+                "patterns": [
+                    "view_config",
+                    "view_snmpconfig",
+                    "view_snmpscanner",
+                    "add_snmpscanner",
+                    "change_snmpscanner",
+                    "add_inventorybase",
+                    "change_inventorybase",
+                    "view_inventorybase",
+                    "view_template",
+                    "add_log",
+                ]
+            },
         }
 
     def get_filtered_permissions(self, patterns):
