@@ -1,7 +1,13 @@
 from django.db import migrations
 
-# Fragments of the default SOFTWARES commands changed here, as (current, new)
-DEBIAN_SOFTWARES = [
+# Software identity: the default templates collect the source package (name,
+# version, epoch), the package origin and the platform (os-release, uname -r;
+# OS name and version on Windows and macOS). The SOFTWARES commands are patched
+# fragment by fragment, as (current, new), in order: each list applies to the
+# command as the lists before it left it.
+
+# Source package name, with the RPM epoch
+DEBIAN_SOURCE = [
     (r'major="";minor=""}', r'major="";minor="";source=""}'),
     (
         r" END {size=size_kb*1024;",
@@ -11,7 +17,7 @@ DEBIAN_SOFTWARES = [
     (r'printf("---\n") }', r'printf("Source: %s\n", source); printf("---\n") }'),
 ]
 
-RHEL_SOFTWARES = [
+RHEL_SOURCE = [
     (
         r" /^Summary/",
         r' /^Epoch/ {epoch=substr($0,index($0,":")+2)}'
@@ -42,9 +48,90 @@ WINDOWS_SOFTWARES = [
     ),
 ]
 
+# Origin of every installed package, computed once before the package loop:
+# the first repository of its installed version, else of its candidate
+# version (the installed one is in no repository any more), else of the
+# newest version listed when it is not the installed one (an Ubuntu phased
+# update held back keeps the installed version as candidate), else empty.
+# A repository's origin is the o= of its release line, else its host.
+# Version lines may end with "(phased N%)". LC_ALL=C because apt translates
+# its output.
+ORIGINS = (
+    r"""pkgs=$(dpkg -l | awk 'NR>5 {print $2}');"""
+    r""" origins=$( { LC_ALL=C apt-cache policy; echo @@; LC_ALL=C apt-cache policy $pkgs; } 2>/dev/null | awk '"""  # noqa: E501
+    r"""function flush() { if (name != "") print name "\t" (io != "" ? io : (co != "" ? co : no)) }"""  # noqa: E501
+    r""" $0 == "@@" { part = 2; next }"""
+    r""" part != 2 { if (match($0, /^ *-?[0-9]+ /)) { src = ""; if ($NF == "Packages") { src = substr($0, RLENGTH + 1); sub(/ Packages$/, "", src) } }"""  # noqa: E501
+    r""" else if ($1 == "release" && src != "") { n = split(substr($0, index($0, "release ") + 8), kv, ","); for (i = 1; i <= n; i++) if (kv[i] ~ /^o=/) org[src] = substr(kv[i], 3) }"""  # noqa: E501
+    r""" else if ($1 == "origin" && src != "" && org[src] == "") org[src] = $2; next }"""
+    r""" /^[^ ].*:$/ { flush(); name = substr($0, 1, length($0) - 1); inst = ""; cand = ""; io = ""; co = ""; no = ""; ver = ""; nv = 0; next }"""  # noqa: E501
+    r""" $1 == "Installed:" { inst = $2; next }"""
+    r""" $1 == "Candidate:" { cand = $2; next }"""
+    r""" $NF == "Packages" && match($0, /^ *-?[0-9]+ /) { s = substr($0, RLENGTH + 1); sub(/ Packages$/, "", s); if (ver == inst && io == "") io = org[s]; if (ver == cand && co == "") co = org[s]; if (nv == 1 && ver != inst && no == "") no = org[s]; next }"""  # noqa: E501
+    r""" $1 == "***" { ver = $2; nv++; next }"""
+    r""" $2 ~ /^-?[0-9]+$/ { ver = $1; nv++; next }"""
+    r""" END { flush() }');"""
+)
+# One pass joins the package list with the origins, the loop reads both.
+# apt drops the native architecture from names: "libc6:amd64" is "libc6".
+JOIN = r""" { printf '%s\n' "$origins"; echo @@; printf '%s\n' "$pkgs"; } | awk -F '\t' '$0 == "@@" { p = 1; next } !p { org[$1] = $2; next } { b = $1; sub(/:[^:]*$/, "", b); print $1 "\t" (($1 in org) ? org[$1] : ((b in org) ? org[b] : "")) }' | while IFS="$(printf '\t')" read -r pkg origin; do"""  # noqa: E501
+LOOP = r"""dpkg -l | awk 'NR>5 {print $2}' | while read -r pkg; do"""
+
+# The package origin (apt), joined to the package loop
+DEBIAN_ORIGIN = [
+    (LOOP + " install_date=", ORIGINS + JOIN + " install_date="),
+    (
+        r"""-v id="$install_date" 'BEGIN""",
+        r"""-v id="$install_date" -v origin="$origin" 'BEGIN""",
+    ),
+    (
+        r'if(patch!="") printf("Patch: %s\n", patch);',
+        r'if(patch!="") printf("Patch: %s\n", patch); printf("Origin: %s\n", origin);',
+    ),
+]
+
+# The version of the source package, next to its name. Debian: the version in
+# parentheses of the Source line ("samba (2:4.22.11+dfsg-1)"), else the
+# package's own version. RHEL: the version-release of the Source RPM, with the
+# package's epoch.
+DEBIAN_SOURCE_VERSION = [
+    (r'minor="";source=""}', r'minor="";source="";srcver=""}'),
+    (
+        r'/^Source[[:space:]]*:/ {source=substr($0,index($0,":")+2); sub(/ .*/, "", source)}',  # noqa: E501
+        r'/^Source[[:space:]]*:/ {source=substr($0,index($0,":")+2); if(match(source,/\(.*\)/)) srcver=substr(source,RSTART+1,RLENGTH-2); sub(/ .*/, "", source)}',  # noqa: E501
+    ),
+    (
+        r'if(source==""){source=name; sub(/:.*/, "", source)}',
+        r'if(source==""){source=name; sub(/:.*/, "", source)} if(srcver=="") srcver=version;',  # noqa: E501
+    ),
+    (
+        r'printf("Source: %s\n", source);',
+        r'printf("Source: %s\n", source); printf("SourceVersion: %s\n", srcver);',
+    ),
+]
+
+RHEL_SOURCE_VERSION = [
+    (
+        r'/^Source RPM/ {source=substr($0,index($0,":")+2); sub(/-[^-]+-[^-]+\.src\.rpm$/, "", source)}',  # noqa: E501
+        r'/^Source RPM/ {source=substr($0,index($0,":")+2); srpm=source; sub(/-[^-]+-[^-]+\.src\.rpm$/, "", source); srcver=substr(srpm, length(source)+2); sub(/\.src\.rpm$/, "", srcver)}',  # noqa: E501
+    ),
+    (
+        r'END {if(epoch!="" && epoch!="(none)") full_version=epoch":"full_version;',
+        r'END {if(srcver=="" || source=="(none)") srcver=version"-"release;'
+        r' if(epoch!="" && epoch!="(none)") {full_version=epoch":"full_version; srcver=epoch":"srcver}',  # noqa: E501
+    ),
+    (
+        r'Patch: %s\nSource: %s\n---\n", name,',
+        r'Patch: %s\nSource: %s\nSourceVersion: %s\n---\n", name,',
+    ),
+    (r"major, minor, patch, source}", r"major, minor, patch, source, srcver}"),
+]
+
 SOFTWARES_CHANGES = {
-    ("Linux (Debian based)", "DEB"): DEBIAN_SOFTWARES,
-    ("Linux (RHEL based)", "RHEL"): RHEL_SOFTWARES,
+    ("Linux (Debian based)", "DEB"): DEBIAN_SOURCE
+    + DEBIAN_ORIGIN
+    + DEBIAN_SOURCE_VERSION,
+    ("Linux (RHEL based)", "RHEL"): RHEL_SOURCE + RHEL_SOURCE_VERSION,
     ("Windows", "WIN"): WINDOWS_SOFTWARES,
 }
 

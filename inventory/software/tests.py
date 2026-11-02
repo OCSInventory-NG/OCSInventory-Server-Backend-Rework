@@ -1122,19 +1122,6 @@ def origins_by_package(output):
     return origins
 
 
-SOURCE_VERSION_MIGRATION = "inventory.section.migrations.0017_source_version"
-
-
-def before_source_version(template_name):
-    """The default SOFTWARES command as it was before 0017 (source version)."""
-    migration = importlib.import_module(SOURCE_VERSION_MIGRATION)
-    target = default_target(template_name, "SOFTWARES")
-    for (name, _), changes in migration.SOFTWARES_CHANGES.items():
-        if name == template_name:
-            return migration.patch_command(target, migration.reverse_changes(changes))
-    return target
-
-
 def values_by_package(output, field_name, template_name):
     """{Name: value} of a default SOFTWARES field, read with its own regex."""
     regex = default_field(template_name, "SOFTWARES", field_name).retrieval_value
@@ -1352,54 +1339,18 @@ class TestDefaultTemplates:
         packages = len(origins_by_package(output))
         assert len(calls.read_text().splitlines()) <= packages + 4
 
-    def test_source_version_change_reverses_to_the_previous_command(self):
-        migration = importlib.import_module(SOURCE_VERSION_MIGRATION)
-        for template_name in ("Linux (Debian based)", "Linux (RHEL based)"):
-            target = default_target(template_name, "SOFTWARES")
-
-            previous = before_source_version(template_name)
-
-            assert "SourceVersion" not in previous
-            assert "srcver" not in previous
-            assert "Source:" in previous
-            changes = migration.SOFTWARES_CHANGES[
-                next(
-                    key
-                    for key in migration.SOFTWARES_CHANGES
-                    if key[0] == template_name
-                )
-            ]
-            assert migration.patch_command(previous, changes) == target
-
-    def test_package_origin_change_reverses_to_the_previous_command(self):
-        migration = importlib.import_module(
-            "inventory.section.migrations.0016_package_origin"
-        )
-        target = before_source_version("Linux (Debian based)")
-
-        previous = migration.patch_command(
-            target, migration.reverse_changes(migration.DEBIAN_SOFTWARES)
-        )
-
-        assert "Origin:" not in previous
-        assert "apt-cache" not in previous
-        assert "Source:" in previous
-        assert migration.patch_command(previous, migration.DEBIAN_SOFTWARES) == target
-
     def test_command_changes_reverse_to_the_original_commands(self):
         migration = importlib.import_module(
             "inventory.section.migrations.0015_software_identity_sections"
         )
-        for template_name, changes in (
-            ("Linux (Debian based)", migration.DEBIAN_SOFTWARES),
-            ("Linux (RHEL based)", migration.RHEL_SOFTWARES),
-            ("Windows", migration.WINDOWS_SOFTWARES),
-        ):
-            target = before_source_version(template_name)
+        for (template_name, _), changes in migration.SOFTWARES_CHANGES.items():
+            target = default_target(template_name, "SOFTWARES")
             original = migration.patch_command(
                 target, migration.reverse_changes(changes)
             )
-            assert "Source:" not in original
+            for added in ("Source:", "Origin:", "SourceVersion", "srcver"):
+                assert added not in original
+            assert "apt-cache" not in original
             assert "DisplayVersionMajor" not in original
             assert migration.patch_command(original, changes) == target
 
@@ -1423,3 +1374,5 @@ def test_identity_migrations_reverse_and_apply_again():
     assert "Origin:" in default_target("Linux (Debian based)", "SOFTWARES")
     debian = SoftwareMapping.objects.get(template__name="Linux (Debian based)")
     assert debian.package_origin.name == "ORIGIN"
+    assert debian.source_version.name == "SOURCE VERSION"
+    assert "SourceVersion" in default_target("Linux (RHEL based)", "SOFTWARES")

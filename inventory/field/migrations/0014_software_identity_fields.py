@@ -1,15 +1,17 @@
 from django.db import migrations
 
-SOURCE_FIELD = [("SOURCE", r"(?:^|\n)Source:[ \t]*(.*)")]
 # Anchored on a line start: the agent compiles regexes without multiline mode
+SOURCE = ("SOURCE", r"(?:^|\n)Source:[ \t]*(.*)")
+ORIGIN = ("ORIGIN", r"(?:^|\n)Origin:[ \t]*(.*)")
+SOURCE_VERSION = ("SOURCE VERSION", r"(?:^|\n)SourceVersion:[ \t]*(.*)")
 OS_RELEASE_FIELDS = [
     (name, rf"(?:^|\n){name}=(.*)")
     for name in ("ID", "ID_LIKE", "VERSION_ID", "CODENAME", "RUNNING_KERNEL")
 ]
 
 NEW_FIELDS = {
-    ("Linux (Debian based)", "DEB", "SOFTWARES"): SOURCE_FIELD,
-    ("Linux (RHEL based)", "RHEL", "SOFTWARES"): SOURCE_FIELD,
+    ("Linux (Debian based)", "DEB", "SOFTWARES"): [SOURCE, ORIGIN, SOURCE_VERSION],
+    ("Linux (RHEL based)", "RHEL", "SOFTWARES"): [SOURCE, SOURCE_VERSION],
     ("Linux (Debian based)", "DEB", "OS RELEASE"): OS_RELEASE_FIELDS,
     ("Linux (RHEL based)", "RHEL", "OS RELEASE"): OS_RELEASE_FIELDS,
     ("Windows", "WIN", "OPERATING SYSTEM"): [
@@ -57,8 +59,10 @@ def add_identity_fields(apps, schema_editor):
     for (template_name, os_type, section_name), fields in NEW_FIELDS.items():
         section = _section(Section, template_name, os_type, section_name)
         order = (
-            Field.objects.filter(section=section).order_by("-order")
-            .values_list("order", flat=True).first()
+            Field.objects.filter(section=section)
+            .order_by("-order")
+            .values_list("order", flat=True)
+            .first()
             or 0
         )
         for name, retrieval_value in fields:
@@ -101,7 +105,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(
-            add_identity_fields, reverse_code=remove_identity_fields
-        ),
+        migrations.RunPython(add_identity_fields, reverse_code=remove_identity_fields),
     ]

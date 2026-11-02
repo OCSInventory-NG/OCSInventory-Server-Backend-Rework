@@ -44,7 +44,7 @@ def unseed(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("security", "0001_vulnerabilities"),
+        ("security", "0001_initial"),
         ("scheduler", "0001_initial"),
     ]
 
