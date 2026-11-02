@@ -92,7 +92,7 @@ def sort_rows(rows, order):
     return rows
 
 
-def vulnerability_rows(
+def _rows(
     level_filter=None,
     fix=None,
     family=None,
@@ -100,12 +100,12 @@ def vulnerability_rows(
     search="",
     kev=None,
     show=(),
-    ordering=None,
     now=None,
 ):
     """
-    (rows, hidden counts, active order): one row per vulnerability open on at
-    least one machine, exclusions applied, noise hidden unless shown.
+    (rows, hidden counts): one row per vulnerability open on at least one
+    machine, exclusions applied, noise hidden unless shown, filters applied;
+    each row keeps the ids of its machines under "asset_ids".
     """
     exclusions = active_exclusions(now)
     exposures = Exposure.objects.filter(closed_at__isnull=True)
@@ -198,6 +198,7 @@ def vulnerability_rows(
             "uncertain": not group["certain"],
             "noise": row_noise(group["noise"]),
             "first_seen": group["first_seen"],
+            "asset_ids": group["machines"],
         }
         if level_filter and row["level"] != level_filter:
             continue
@@ -215,8 +216,36 @@ def vulnerability_rows(
         ):
             continue
         rows.append(row)
+    return rows, dict(hidden)
+
+
+def vulnerability_rows(ordering=None, **filters):
+    """
+    (rows, hidden counts, active order): the vulnerabilities shown by the
+    list, in the active priority order. Filters as _rows.
+    """
+    rows, hidden = _rows(**filters)
+    for row in rows:
+        del row["asset_ids"]
     order = priority(ordering)
-    return sort_rows(rows, order), dict(hidden), order
+    return sort_rows(rows, order), hidden, order
+
+
+def vulnerability_summary(**filters):
+    """
+    Totals of the vulnerabilities the list shows with the same filters: per
+    level, exploited, with a fix, and the distinct machines impacted.
+    """
+    rows, hidden = _rows(**filters)
+    levels = Counter(row["level"] for row in rows)
+    return {
+        "total": len(rows),
+        "levels": {name: levels[name] for name in LEVELS},
+        "kev": sum(1 for row in rows if row["kev"]),
+        "fix_available": sum(1 for row in rows if row["fix_available"]),
+        "machines": len(set().union(*(row["asset_ids"] for row in rows))),
+        "hidden": hidden,
+    }
 
 
 def references(vulnerability):

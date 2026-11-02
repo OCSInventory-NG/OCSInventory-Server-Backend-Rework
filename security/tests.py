@@ -1392,6 +1392,7 @@ class TestReading:
         Exclusion.objects.create(group=group, comment="lab")
         rows, _, _ = reading.vulnerability_rows(now=NOW)
         assert rows == []
+        assert reading.vulnerability_summary(now=NOW)["total"] == 0
         # exclusions are never stored on the exposures
         assert Exposure.objects.filter(closed_at__isnull=True).count() == 4
 
@@ -1445,6 +1446,45 @@ class TestApi:
     )
     def test_invalid_parameters(self, api_client, params):
         assert api_client.get(f"/vulnerabilities/?{params}").status_code == 400
+        if not params.startswith("ordering"):
+            assert (
+                api_client.get(f"/vulnerabilities/summary/?{params}").status_code
+                == 400
+            )
+
+    def test_summary_counts_what_the_list_shows(self, api_client, debian_data):
+        KevEntry.objects.create(cve="CVE-2026-1")
+        first, second, third = make_asset("a"), make_asset("b"), make_asset("c")
+        for asset in (first, second, third):
+            install(asset, "curl", "8.0-1", CURL)
+        ScanService.run(now=NOW)
+        Exclusion.objects.create(asset=third, comment="lab machine")
+
+        for params in ("", "show=minor_distro", "kev=no", "level=critical"):
+            summary = api_client.get(f"/vulnerabilities/summary/?{params}")
+            listed = api_client.get(f"/vulnerabilities/?{params}").data
+            assert summary.status_code == 200
+            assert summary.data["total"] == listed["count"]
+            assert summary.data["hidden"] == listed["hidden"]
+            assert sum(summary.data["levels"].values()) == listed["count"]
+            assert summary.data["kev"] == sum(r["kev"] for r in listed["results"])
+            assert summary.data["fix_available"] == sum(
+                r["fix_available"] for r in listed["results"]
+            )
+            assert "asset_ids" not in (listed["results"] or [{}])[0]
+
+        summary = api_client.get("/vulnerabilities/summary/").data
+        assert (summary["total"], summary["kev"], summary["machines"]) == (1, 1, 2)
+        assert list(summary["levels"]) == list(reading.LEVELS)
+        assert summary["hidden"] == {"minor_distro": 2}
+        assert api_client.get("/vulnerabilities/summary/?kev=no").data == {
+            "total": 0,
+            "levels": dict.fromkeys(reading.LEVELS, 0),
+            "kev": 0,
+            "fix_available": 0,
+            "machines": 0,
+            "hidden": {"minor_distro": 2},
+        }
 
     def test_exposures_need_a_machine(self, api_client):
         assert api_client.get("/vulnerability_exposures/").status_code == 400

@@ -52,6 +52,19 @@ def _list(params, name, choices):
     return values
 
 
+def _filters(params):
+    """The filters of the vulnerability list, shared by its summary."""
+    return {
+        "level_filter": _choice(params, "level", reading.LEVELS),
+        "fix": _yes_no(params, "fix"),
+        "family": _choice(params, "family", FAMILIES),
+        "asset_id": _asset(params),
+        "search": params.get("search", ""),
+        "kev": _yes_no(params, "kev"),
+        "show": _list(params, "show", reading.NOISE),
+    }
+
+
 class VulnerabilityViewSet(viewsets.OCSViewSet):
     """
     Vulnerabilities open on the fleet's machines, from their exposures,
@@ -70,14 +83,8 @@ class VulnerabilityViewSet(viewsets.OCSViewSet):
     def list(self, request, *args, **kwargs):
         params = request.query_params
         rows, hidden, order = reading.vulnerability_rows(
-            level_filter=_choice(params, "level", reading.LEVELS),
-            fix=_yes_no(params, "fix"),
-            family=_choice(params, "family", FAMILIES),
-            asset_id=_asset(params),
-            search=params.get("search", ""),
-            kev=_yes_no(params, "kev"),
-            show=_list(params, "show", reading.NOISE),
             ordering=_list(params, "ordering", PRIORITY_CRITERIA) or None,
+            **_filters(params),
         )
         page = self.paginate_queryset(rows)
         if page is not None:
@@ -90,6 +97,11 @@ class VulnerabilityViewSet(viewsets.OCSViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         return Response(reading.vulnerability_detail(self.get_object()))
+
+    @action(detail=False, methods=["get"])
+    def summary(self, request):
+        """Totals of the list with the same filters, in one request."""
+        return Response(reading.vulnerability_summary(**_filters(request.query_params)))
 
     @action(detail=False, methods=["get"])
     def coverage(self, request):
