@@ -15,6 +15,7 @@ from django.db import transaction
 from django.utils import timezone
 from inventory.software.models import DistroRelease
 from inventory.software_identity.models import CpeAlias, PackageOrigin
+from security import config as security_config
 from security.cvss import base_score, normalize_rating
 from security.models import (
     CHANNEL_STANDARD,
@@ -30,7 +31,6 @@ from security.models import (
     NvdMatch,
     OsvAdvisoryCve,
     OsvAffected,
-    SecuritySettings,
     Vulnerability,
 )
 from security.sources import nvd, osv
@@ -54,7 +54,7 @@ class Context:
 
     def __init__(self, now=None):
         self.now = now or timezone.now()
-        self.settings = SecuritySettings.current()
+        self.settings = security_config.current()
         self.syncs = source_syncs()
         self.states = {
             source: source_state(sync, self.now) for source, sync in self.syncs.items()

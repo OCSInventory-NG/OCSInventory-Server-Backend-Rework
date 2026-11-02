@@ -113,10 +113,9 @@ class IdentityService:
     @staticmethod
     def thresholds():
         """(CPE match score, review score) of the security settings."""
-        from security.models import SecuritySettings
+        from security.config import current
 
-        settings = SecuritySettings.current()
-        return settings.cpe_match_score, settings.cpe_review_score
+        return current().thresholds
 
     @staticmethod
     def rematch_cpe():

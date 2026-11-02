@@ -345,30 +345,6 @@ class Exclusion(models.Model):
         ]
 
 
-PRIORITY_CRITERIA = ("kev", "score", "epss", "machines")
-
-
-def default_priority():
-    return list(PRIORITY_CRITERIA)
-
-
-class SecuritySettings(models.Model):
-    """Single row: what the scan loads and how the vulnerabilities are ordered."""
-
-    # NVD: the years of CVE identifiers loaded, the current one included
-    nvd_years = models.PositiveSmallIntegerField(default=3)
-    # Order of the vulnerability list, first criterion first
-    priority = models.JSONField(default=default_priority)
-    # Windows and macOS identities: CPE match above, review between
-    cpe_match_score = models.FloatField(default=0.9)
-    cpe_review_score = models.FloatField(default=0.5)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    @classmethod
-    def current(cls):
-        return cls.objects.order_by("id").first() or cls()
-
-
 class ScanLock(models.Model):
     """One synchronization or scan at a time; a lock older than 12 h is taken over."""
 

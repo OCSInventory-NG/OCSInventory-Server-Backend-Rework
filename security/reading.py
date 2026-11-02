@@ -8,17 +8,17 @@ from collections import Counter, defaultdict
 
 from asset.inventory_base.models import InventoryBase
 from django.db.models import Max
+from security import config as security_config
+from security.config import PRIORITY_CRITERIA
 from security.cvss import level
 from security.evaluation import Context
 from security.exclusions import active_exclusions
 from security.models import (
     METHOD_OSV,
-    PRIORITY_CRITERIA,
     SOURCES,
     Exposure,
     OsvAdvisoryCve,
     ScanState,
-    SecuritySettings,
     Vulnerability,
 )
 from security.scan import (
@@ -67,7 +67,7 @@ def priority(ordering=None):
     if ordering:
         return list(ordering)
     configured = [
-        c for c in SecuritySettings.current().priority if c in PRIORITY_CRITERIA
+        c for c in security_config.current().priority if c in PRIORITY_CRITERIA
     ]
     return configured or list(PRIORITY_CRITERIA)
 

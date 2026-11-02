@@ -19,6 +19,8 @@ from inventory.software_identity.models import (
     PackageOrigin,
     SoftwareIdentity,
 )
+from config.models import Config
+from security import config as security_config
 from security import reading
 from security.cvss import base_score, level
 from security.evaluation import Context, EvaluationKey, affected_by
@@ -40,7 +42,6 @@ from security.models import (
     OsvAdvisoryCve,
     OsvAffected,
     ScanLock,
-    SecuritySettings,
     SourceSync,
     Vulnerability,
 )
@@ -733,7 +734,7 @@ class TestSync:
     def test_nvd_loads_the_window_with_matches_and_older_years_scores(
         self, osv_test_url, tmp_path
     ):
-        SecuritySettings.objects.update_or_create(id=1, defaults={"nvd_years": 2})
+        set_config(nvd_years=2)
         files = {}
         for year in range(2002, 2027):
             item = nvd_item(
@@ -764,7 +765,7 @@ class TestSync:
         ]
 
         # a wider window loads 2024 with its matches
-        SecuritySettings.objects.update(nvd_years=3)
+        set_config(nvd_years=3)
         SyncService.run([SOURCE_NVD], now=NOW + timedelta(days=2), get=server)
         assert NvdCve.objects.get(year=2024).full
 
@@ -808,6 +809,16 @@ def test_download_raises_unchanged_on_304():
 
 
 # Scan
+
+
+def set_config(**values):
+    """Changes items of the security section of the general configuration."""
+    section = Config.objects.get(name=security_config.SECTION)
+    section.value = [
+        {**item, "value": values.get(item["name"], item["value"])}
+        for item in section.value
+    ]
+    section.save()
 
 
 def make_asset(name, family="deb", key="debian:12", running=""):
@@ -1186,7 +1197,7 @@ class TestScan:
 class TestNvdScan:
     @pytest.fixture
     def nvd_data(self, tmp_path):
-        SecuritySettings.objects.update_or_create(id=1, defaults={"nvd_years": 3})
+        set_config(nvd_years=3)
         loaded(SOURCE_NVD)
         nvd.load_year(
             2026,
@@ -1261,7 +1272,7 @@ class TestNvdScan:
         )
         ScanService.run(now=NOW)
 
-        SecuritySettings.objects.update(nvd_years=2)
+        set_config(nvd_years=2)
         loaded(SOURCE_NVD, at=NOW + timedelta(hours=24))
         ScanService.run(now=NOW + timedelta(hours=25))
 
@@ -1468,23 +1479,46 @@ class TestApi:
             User.objects.get(username="test-superuser"),
         )
 
-    def test_settings(self, api_client):
-        current = api_client.get("/security_settings/").data
-        assert current["priority"] == ["kev", "score", "epss", "machines"]
+    def test_settings_are_a_section_of_the_general_configuration(self, api_client):
+        section = api_client.get("/config/security/").data
+        items = {item["name"]: item for item in section["value"]}
+        assert items["priority"]["type"] == "ordered list"
+        assert items["priority"]["options"] == ["kev", "score", "epss", "machines"]
 
-        bad = api_client.patch(
-            f"/security_settings/{current['id']}/",
-            {"priority": ["kev", "x"]},
-            format="json",
+        def put(**values):
+            value = [
+                {**item, "value": values.get(item["name"], item["value"])}
+                for item in section["value"]
+            ]
+            return api_client.put(
+                "/config/security/", {"name": "security", "value": value}, format="json"
+            )
+
+        assert put(priority=["kev", "kev", "score", "epss"]).status_code == 400
+        assert put(nvd_years=0).status_code == 400
+        assert put(cpe_review_score=0.95).status_code == 400
+        response = put(nvd_years=5, priority=["epss", "kev", "score", "machines"])
+        assert response.status_code == 200, response.data
+        assert security_config.current().nvd_years == 5
+        assert reading.priority() == ["epss", "kev", "score", "machines"]
+
+    def test_new_cpe_thresholds_match_windows_software_again(self, api_client):
+        asset = make_asset("w", family="windows", key="windows")
+        entry = install(
+            asset,
+            "Zoom",
+            "6.1",
+            "zoom:zoom",
+            family="windows",
+            key="windows",
+            origin=None,
         )
-        assert bad.status_code == 400
-        response = api_client.patch(
-            f"/security_settings/{current['id']}/",
-            {"nvd_years": 5, "cpe_match_score": 0.95},
-            format="json",
-        )
-        assert response.status_code == 200
-        assert SecuritySettings.current().nvd_years == 5
+        SoftwareIdentity.objects.filter(entry=entry).update(index_version=4)
+
+        set_config(nvd_years=4)
+        assert SoftwareIdentity.objects.get(entry=entry).index_version == 4
+        set_config(cpe_match_score=0.95)
+        assert SoftwareIdentity.objects.get(entry=entry).index_version == 0
 
     def test_a_user_without_permission_is_refused(self, make_api_client):
         nobody = make_api_client()
@@ -1505,7 +1539,7 @@ def test_seeds():
         "securitySync.SecuritySync": False,
         "vulnerabilityScan.VulnerabilityScan": False,
     }
-    assert SecuritySettings.objects.count() == 1
+    assert security_config.current() == security_config.SecurityConfig()
     assert DistroRelease.objects.filter(standard_support_end__isnull=False).exists()
     assert PackageOrigin.objects.filter(extended=True).count() == 2
 

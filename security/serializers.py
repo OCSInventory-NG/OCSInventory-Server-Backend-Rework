@@ -3,10 +3,8 @@ from django.utils import timezone
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 from security.models import (
-    PRIORITY_CRITERIA,
     Exclusion,
     Exposure,
-    SecuritySettings,
     Vulnerability,
 )
 
@@ -121,46 +119,4 @@ class ExclusionSerializer(ModelSerializer):
         expires_at = attrs.get("expires_at")
         if expires_at is not None and expires_at <= timezone.now():
             raise serializers.ValidationError({"expires_at": "A date to come"})
-        return attrs
-
-
-class SecuritySettingsSerializer(ModelSerializer):
-    class Meta:
-        model = SecuritySettings
-        fields = [
-            "id",
-            "nvd_years",
-            "priority",
-            "cpe_match_score",
-            "cpe_review_score",
-            "updated_at",
-        ]
-        read_only_fields = ["id", "updated_at"]
-
-    def validate_nvd_years(self, value):
-        if not 1 <= value <= 25:
-            raise serializers.ValidationError("Between 1 and 25 years")
-        return value
-
-    def validate_priority(self, value):
-        if (
-            not isinstance(value, list)
-            or not value
-            or len(set(value)) != len(value)
-            or any(criterion not in PRIORITY_CRITERIA for criterion in value)
-        ):
-            raise serializers.ValidationError(
-                "Distinct criteria among " + ", ".join(PRIORITY_CRITERIA)
-            )
-        return value
-
-    def validate(self, attrs):
-        match = attrs.get(
-            "cpe_match_score", getattr(self.instance, "cpe_match_score", 0.9)
-        )
-        review = attrs.get(
-            "cpe_review_score", getattr(self.instance, "cpe_review_score", 0.5)
-        )
-        if not 0 < review < match <= 1:
-            raise serializers.ValidationError("0 < review score < match score <= 1")
         return attrs

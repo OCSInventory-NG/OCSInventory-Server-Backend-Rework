@@ -1,23 +1,20 @@
 from django.db.models import Q
 from django.utils import timezone
-from inventory.software_identity.services import IdentityService
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from security import reading
+from security.config import PRIORITY_CRITERIA
 from security.models import (
-    PRIORITY_CRITERIA,
     Exclusion,
     Exposure,
-    SecuritySettings,
     Vulnerability,
 )
 from security.serializers import (
     ExclusionSerializer,
     ExposureSerializer,
-    SecuritySettingsSerializer,
     VulnerabilitySerializer,
 )
 
@@ -159,27 +156,3 @@ class ExclusionViewSet(viewsets.OCSViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-
-
-class SecuritySettingsViewSet(viewsets.OCSViewSet):
-    """The single settings row: GET the list route, PUT or PATCH its id."""
-
-    permission_classes = [DefaultModelPermissions]
-    http_method_names = ["get", "put", "patch", "head", "options"]
-    queryset = SecuritySettings.objects.all()
-    serializer_class = SecuritySettingsSerializer
-    model = SecuritySettings
-    filterset_fields = ["id"]
-
-    def list(self, request, *args, **kwargs):
-        current = SecuritySettings.current()
-        if current.pk is None:
-            current.save()
-        return Response(self.get_serializer(current).data)
-
-    def perform_update(self, serializer):
-        before = serializer.instance
-        thresholds = (before.cpe_match_score, before.cpe_review_score)
-        settings = serializer.save()
-        if (settings.cpe_match_score, settings.cpe_review_score) != thresholds:
-            IdentityService.rematch_cpe()

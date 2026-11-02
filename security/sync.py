@@ -20,9 +20,9 @@ from security.models import (
     SOURCES,
     NvdCve,
     ScanLock,
-    SecuritySettings,
     SourceSync,
 )
+from security import config as security_config
 from security.sources import epss, fetch, kev, nvd, osv
 
 logger = logging.getLogger(__name__)
@@ -134,7 +134,7 @@ def _load_nvd(sync, get, now):
     downloaded when its .meta sha256 changed or it moves in or out of the
     window.
     """
-    years_window = set(nvd.window(SecuritySettings.current().nvd_years, now))
+    years_window = set(nvd.window(security_config.current().nvd_years, now))
     previous = (sync.fingerprint or {}).get("years", {})
     years = {}
     for year in range(nvd.FIRST_YEAR, now.year + 1):

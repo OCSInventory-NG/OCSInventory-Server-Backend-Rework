@@ -16,6 +16,18 @@ class ConfigSerializer(ExpandableFieldsMixin, ModelSerializer):
         fields = ["name", "value"]
         expandable_fields = {}
 
+    def validate(self, attrs):
+        """Sections with rules of their own are checked by their app."""
+        from security import config as security_config
+
+        name = attrs.get("name", getattr(self.instance, "name", None))
+        if name == security_config.SECTION and "value" in attrs:
+            try:
+                security_config.check(security_config.values_of(attrs["value"]))
+            except security_config.InvalidSecurityConfig as error:
+                raise serializers.ValidationError({"value": error.errors})
+        return attrs
+
 
 class ServerInfoSerializer(serializers.Serializer):
     backend_version = serializers.CharField(allow_null=True)
