@@ -24,6 +24,10 @@ class LinuxNormalizer:
 
         platform_distro, release = record.platform_key.split(":", 1)
         reason = "" if record.source_package else "source_not_mapped"
+        if record.source_version is None and not reason:
+            # The binary version stands for the source's: right for most
+            # packages, wrong for those versioned apart from their source
+            reason = "source_version_not_mapped"
         if record.package_origin is None:
             # The template does not collect the origin: the OS tells it
             distro = platform_distro
@@ -39,7 +43,8 @@ class LinuxNormalizer:
         # purl: rpm names are case sensitive, deb names are lowercase
         name = source if self.family == "rpm" else key
         product = f"pkg:{self.family}/{distro}/{quote(name, safe='')}"
-        version = record.version
+        # Advisories name the source package and its version
+        version = record.source_version or record.version
         qualifiers = {"distro": f"{platform_distro}-{release}"}
         if record.architecture:
             qualifiers["arch"] = record.architecture.lower()
@@ -59,5 +64,5 @@ class LinuxNormalizer:
             scheme="purl",
             identifier=f"{product}{at_version}?{query}",
             product=product,
-            version=record.version,
+            version=record.source_version or record.version,
         )

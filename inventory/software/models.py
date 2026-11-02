@@ -82,6 +82,15 @@ class SoftwareMapping(models.Model):
         blank=True,
         on_delete=models.SET_NULL,
     )
+    # Version of the source package: a binary package can carry another
+    # version than its source (libldb2 2:2.11.0+samba4.22.11 from samba 2:4.22.11)
+    source_version = models.ForeignKey(
+        Field,
+        related_name="software_source_version_mappings",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
     package_origin = models.ForeignKey(
         Field,
         related_name="software_package_origin_mappings",
@@ -141,6 +150,7 @@ class SoftwareDictionary(models.Model):
     architecture = models.CharField(max_length=64, blank=True, null=True)
     package_format = models.CharField(max_length=64, blank=True, null=True)
     source_package = models.CharField(max_length=255, blank=True, null=True)
+    source_version = models.CharField(max_length=128, blank=True, null=True)
     package_origin = models.CharField(max_length=128, blank=True, null=True)
     installation_number = models.IntegerField(default=0)
     assets = models.ManyToManyField(
@@ -165,6 +175,9 @@ class DistroRelease(models.Model):
     base = models.CharField(max_length=32)
     version = models.CharField(max_length=16)
     codename = models.CharField(max_length=32)
+    # End of the standard support (Ubuntu): from then on, the release's
+    # packages are also checked against its Ubuntu Pro advisories
+    standard_support_end = models.DateField(null=True, blank=True)
 
     class Meta:
         ordering = ["base", "version"]

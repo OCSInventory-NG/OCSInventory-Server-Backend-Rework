@@ -28,6 +28,7 @@ class SoftwareMappingSerializer(ExpandableFieldsMixin, ModelSerializer):
             "architecture",
             "package_format",
             "source_package",
+            "source_version",
             "package_origin",
             "os_id",
             "os_like",
@@ -47,6 +48,7 @@ class SoftwareMappingSerializer(ExpandableFieldsMixin, ModelSerializer):
             "architecture": FieldSerializer,
             "package_format": FieldSerializer,
             "source_package": FieldSerializer,
+            "source_version": FieldSerializer,
             "package_origin": FieldSerializer,
             "os_id": FieldSerializer,
             "os_like": FieldSerializer,
@@ -86,6 +88,7 @@ class SoftwareDictionarySerializer(ModelSerializer):
             "architecture",
             "package_format",
             "source_package",
+            "source_version",
             "package_origin",
             "assets",
             "updated_at",
@@ -99,4 +102,4 @@ class SoftwareDictionarySerializer(ModelSerializer):
 class DistroReleaseSerializer(ModelSerializer):
     class Meta:
         model = DistroRelease
-        fields = ["id", "base", "version", "codename"]
+        fields = ["id", "base", "version", "codename", "standard_support_end"]

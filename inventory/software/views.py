@@ -32,6 +32,7 @@ class SoftwareMappingViewSet(viewsets.OCSViewSet):
         "architecture",
         "package_format",
         "source_package",
+        "source_version",
         "package_origin",
         "os_id",
         "os_like",
@@ -56,6 +57,7 @@ class SoftwareDictionaryViewSet(viewsets.OCSViewSet):
         "patch_version",
         "platform_key",
         "source_package",
+        "source_version",
         "package_origin",
     ]
     ordering_fields = [
@@ -71,6 +73,7 @@ class SoftwareDictionaryViewSet(viewsets.OCSViewSet):
         "architecture",
         "package_format",
         "source_package",
+        "source_version",
         "package_origin",
         "installation_number",
     ]
@@ -87,6 +90,7 @@ class SoftwareDictionaryViewSet(viewsets.OCSViewSet):
         "architecture",
         "package_format",
         "source_package",
+        "source_version",
         "package_origin",
         "installation_number",
         "identity__status",

@@ -21,6 +21,8 @@ class SoftwareRecord:
     architecture: str = ""
     package_format: str = ""
     source_package: str = ""
+    # None: the mapping does not collect it
+    source_version: str | None = None
     platform_family: str = ""
     platform_key: str = ""
     # None: the mapping does not collect it; "": the package has no origin

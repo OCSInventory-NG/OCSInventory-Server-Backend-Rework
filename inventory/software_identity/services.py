@@ -171,6 +171,7 @@ class IdentityService:
             architecture=entry.architecture or "",
             package_format=entry.package_format or "",
             source_package=entry.source_package or "",
+            source_version=entry.source_version,
             platform_family=family,
             platform_key=entry.platform_key or "",
             package_origin=entry.package_origin,

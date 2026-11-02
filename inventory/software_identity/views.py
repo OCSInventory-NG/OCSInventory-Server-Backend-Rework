@@ -2,6 +2,7 @@ from asset.inventory_base.models import InventoryBase
 from django.db.models import Count, Min, Q, Sum
 from inventory.software.models import SoftwareDictionary
 from inventory.software_identity.models import (
+    CpeAlias,
     CpeIndexState,
     CpeProduct,
     IdentityDecision,
@@ -10,6 +11,7 @@ from inventory.software_identity.models import (
 )
 from inventory.software_identity.normalizers.base import MATCHED, REVIEW
 from inventory.software_identity.serializers import (
+    CpeAliasSerializer,
     CpeProductSerializer,
     IdentityDecisionSerializer,
     PackageOriginSerializer,
@@ -198,3 +200,20 @@ class PackageOriginViewSet(viewsets.OCSViewSet):
         name = instance.name
         instance.delete()
         IdentityService.reset_origins([name])
+
+
+class CpeAliasViewSet(viewsets.OCSViewSet):
+    """Other NVD names of CPE products, read by the vulnerability scan."""
+
+    permission_classes = [DefaultModelPermissions]
+    queryset = CpeAlias.objects.all()
+    serializer_class = CpeAliasSerializer
+    model = CpeAlias
+    filterset_fields = ["id", "product", "alias", "source"]
+    search_fields = ["product", "alias"]
+    ordering = ["product", "alias"]
+
+    def perform_destroy(self, instance):
+        if instance.source != CpeAlias.SOURCE_ADMIN:
+            raise ValidationError("Shipped aliases cannot be deleted")
+        instance.delete()

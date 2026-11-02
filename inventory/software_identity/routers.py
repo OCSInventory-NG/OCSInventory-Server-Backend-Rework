@@ -1,4 +1,5 @@
 from inventory.software_identity.views import (
+    CpeAliasViewSet,
     CpeProductViewSet,
     IdentityDecisionViewSet,
     PackageOriginViewSet,
@@ -15,4 +16,5 @@ class SoftwareIdentityRouter:
         defaultRouter.register(r"software_identity_decisions", IdentityDecisionViewSet)
         defaultRouter.register(r"cpe_products", CpeProductViewSet)
         defaultRouter.register(r"package_origins", PackageOriginViewSet)
+        defaultRouter.register(r"cpe_aliases", CpeAliasViewSet)
         return defaultRouter

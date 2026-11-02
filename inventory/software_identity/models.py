@@ -129,8 +129,37 @@ class PackageOrigin(models.Model):
 
     name = models.CharField(max_length=128)
     distribution = models.CharField(max_length=32)
+    # An extended support repository (Ubuntu Pro): its packages are checked
+    # against the distribution's extended advisories too
+    extended = models.BooleanField(default=False)
 
     class Meta:
         constraints = [
             models.UniqueConstraint(Lower("name"), name="unique_package_origin_name")
+        ]
+
+
+class CpeAlias(models.Model):
+    """
+    Another NVD name of a CPE product (a renamed product keeps its CVEs under
+    its former name): the CVEs of the alias are read for the product too.
+    """
+
+    SOURCE_SHIPPED = "shipped"
+    SOURCE_ADMIN = "admin"
+    SOURCE_CHOICES = ((SOURCE_SHIPPED, SOURCE_SHIPPED), (SOURCE_ADMIN, SOURCE_ADMIN))
+
+    # vendor:product of the identity
+    product = models.CharField(max_length=511)
+    # vendor:product whose CVEs are read for it
+    alias = models.CharField(max_length=511)
+    source = models.CharField(
+        max_length=8, choices=SOURCE_CHOICES, default=SOURCE_ADMIN
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["product", "alias"], name="unique_cpe_alias"
+            )
         ]

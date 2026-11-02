@@ -1,3 +1,4 @@
+import datetime
 import importlib
 import re
 import shutil
@@ -499,6 +500,11 @@ RELEASES = {
         ("linuxmint", "ubuntu debian", "22.3", "noble", ("deb", "ubuntu:24.04")),
         ("kali", "debian", "2026.3", "kali-rolling", ("deb", "")),
         ("rocky", "rhel centos fedora", "9.4", "", ("rpm", "rocky:9")),
+        ("almalinux", "rhel centos fedora", "9.5", "", ("rpm", "almalinux:9")),
+        # A derivative unknown to its base keeps its own name: never its base's
+        ("ol", "fedora", "9.4", "", ("rpm", "ol:9")),
+        ("debian", "", "", "forky", ("deb", "")),
+        ("zorin", "ubuntu debian", "17.2", "", ("deb", "")),
         ("Ubuntu 20.04", "", "20.04", "", ("deb", "ubuntu:20.04")),
         ("CentOS Linux release 7.9.2009", "", "3.10.0", "", ("rpm", "centos:7")),
         ("Rocky Linux 9.4", "", "", "", ("rpm", "rocky:9")),
@@ -535,7 +541,13 @@ class TestDistroRelease:
         assert DistroRelease.objects.filter(
             base="ubuntu", codename="noble", version="24.04"
         ).exists()
-        assert DistroRelease.objects.count() == 6
+        assert DistroRelease.objects.count() == 12
+        # Ubuntu Pro advisories are read after the end of standard support
+        bionic = DistroRelease.objects.get(base="ubuntu", codename="bionic")
+        assert bionic.standard_support_end == datetime.date(2023, 5, 31)
+        assert not DistroRelease.objects.filter(
+            base="debian", standard_support_end__isnull=False
+        ).exists()
 
     def test_api_lists_releases(self, api_client):
         response = api_client.get("/distro_releases/?base=debian")
@@ -544,6 +556,7 @@ class TestDistroRelease:
         assert sorted(row["codename"] for row in response.data) == [
             "bookworm",
             "bullseye",
+            "buster",
             "trixie",
         ]
 
@@ -566,6 +579,9 @@ def identity_fields(section, software_fields, template):
     fields["source_package"] = Field.objects.create(
         name="SOURCE", section=section, order=6
     )
+    fields["source_version"] = Field.objects.create(
+        name="SOURCE VERSION", section=section, order=7
+    )
     for order, name in enumerate(OS_RELEASE_FIELDS, 1):
         fields[name] = Field.objects.create(name=name, section=os_section, order=order)
     fields["os_section"] = os_section
@@ -583,6 +599,7 @@ def identity_mapping(template, section, identity_fields):
         architecture=identity_fields["architecture"],
         package_format=identity_fields["package_format"],
         source_package=identity_fields["source_package"],
+        source_version=identity_fields["source_version"],
         os_id=identity_fields["ID"],
         os_like=identity_fields["ID_LIKE"],
         os_release=identity_fields["VERSION_ID"],
@@ -616,7 +633,9 @@ def add_values(asset, section, values):
         )
 
 
-def add_package(asset, section, fields, name, version, source="openssl"):
+def add_package(
+    asset, section, fields, name, version, source="openssl", source_version=None
+):
     add_values(
         asset,
         section,
@@ -627,6 +646,7 @@ def add_package(asset, section, fields, name, version, source="openssl"):
             fields["architecture"]: "amd64",
             fields["package_format"]: "deb",
             fields["source_package"]: source,
+            fields["source_version"]: source_version or version,
         },
     )
 
@@ -666,6 +686,7 @@ class TestSoftwareDictionaryPlatform:
         assert entry.architecture == "amd64"
         assert entry.package_format == "deb"
         assert entry.source_package == "openssl"
+        assert entry.source_version == "3.0.13-0ubuntu3.5"
         platform = AssetPlatform.objects.get(asset=asset)
         assert (platform.family, platform.key) == ("deb", "ubuntu:24.04")
         assert platform.os_id == "linuxmint"
@@ -947,10 +968,11 @@ needs_shell = pytest.mark.skipif(
 FAKE_DPKG = r"""
 dpkg() {
   if [ "$1" = "-l" ]; then
-    printf 'h\nh\nh\nh\nh\nii  libssl-dev:amd64 3.0.2 amd64 x\nii  bash 5.1 amd64 y\n'
+    printf 'h\nh\nh\nh\nh\nii  libssl-dev:amd64 3.0.2 amd64 x\nii  bash 5.1 amd64 y\nii  libldb2:amd64 2.4.4 amd64 z\n'
     return
   fi
   case "$2" in
+    libldb2:amd64) printf 'Package: libldb2\nSource: samba (2:4.15.13+dfsg-0ubuntu1.6)\nVersion: 2:2.4.4-0ubuntu0.22.04.1\nArchitecture: amd64\nDescription: LDB\n' ;;
     libssl-dev:amd64) printf 'Package: libssl-dev\nSource: openssl (3.0.2-0ubuntu1.18)\nVersion: 3.0.2-0ubuntu1.18\nArchitecture: amd64\nDescription: SSL dev\n' ;;
     bash) printf 'Package: bash\nVersion: 5.1-6ubuntu1.1\nArchitecture: amd64\nDescription: shell\n' ;;
   esac
@@ -1100,6 +1122,31 @@ def origins_by_package(output):
     return origins
 
 
+SOURCE_VERSION_MIGRATION = "inventory.section.migrations.0017_source_version"
+
+
+def before_source_version(template_name):
+    """The default SOFTWARES command as it was before 0017 (source version)."""
+    migration = importlib.import_module(SOURCE_VERSION_MIGRATION)
+    target = default_target(template_name, "SOFTWARES")
+    for (name, _), changes in migration.SOFTWARES_CHANGES.items():
+        if name == template_name:
+            return migration.patch_command(target, migration.reverse_changes(changes))
+    return target
+
+
+def values_by_package(output, field_name, template_name):
+    """{Name: value} of a default SOFTWARES field, read with its own regex."""
+    regex = default_field(template_name, "SOFTWARES", field_name).retrieval_value
+    values = {}
+    for block in output.split("---"):
+        name = re.search(r"(?:^|\n)Name\s*: (.*)", block)
+        if name:
+            value = re.search(regex, block)
+            values[name.group(1).strip()] = value.group(1) if value else None
+    return values
+
+
 def default_target(template_name, section_name):
     return Section.objects.get(template__name=template_name, name=section_name).target
 
@@ -1129,6 +1176,30 @@ class TestDefaultTemplates:
         blocks = [block for block in output.split("---") if block.strip()]
         assert "Source: openssl" in blocks[0]
         assert "Source: bash" in blocks[1]
+
+    @needs_shell
+    def test_debian_softwares_command_prints_the_source_version(self):
+        output = run_bash(
+            FAKE_DPKG + default_target("Linux (Debian based)", "SOFTWARES")
+        )
+
+        assert values_by_package(output, "SOURCE VERSION", "Linux (Debian based)") == {
+            "libssl-dev:amd64": "3.0.2-0ubuntu1.18",
+            # no version on the Source line: the package's own
+            "bash": "5.1-6ubuntu1.1",
+            # libldb2 is versioned apart from samba, its source
+            "libldb2:amd64": "2:4.15.13+dfsg-0ubuntu1.6",
+        }
+
+    @needs_shell
+    def test_rhel_softwares_command_prints_the_source_version(self):
+        output = run_bash(FAKE_RPM + default_target("Linux (RHEL based)", "SOFTWARES"))
+
+        assert values_by_package(output, "SOURCE VERSION", "Linux (RHEL based)") == {
+            "vim-enhanced": "2:8.2.2637-20.el9_1",
+            "openssl": "3.0.7-27.el9",
+            "gpg-pubkey": "8483c65d-5ccc5b19",
+        }
 
     @needs_shell
     def test_rhel_softwares_command_prints_epoch_and_source_package(self):
@@ -1180,6 +1251,7 @@ class TestDefaultTemplates:
                     "architecture": ("SOFTWARES", "ARCHITECTURE"),
                     "package_format": ("SOFTWARES", "FROM"),
                     "source_package": ("SOFTWARES", "SOURCE"),
+                    "source_version": ("SOFTWARES", "SOURCE VERSION"),
                     "package_origin": ("SOFTWARES", "ORIGIN"),
                     "os_id": ("OS RELEASE", "ID"),
                     "os_like": ("OS RELEASE", "ID_LIKE"),
@@ -1194,6 +1266,7 @@ class TestDefaultTemplates:
                     # The RPM Vendor, already collected as the publisher
                     "package_origin": ("SOFTWARES", "PUBLISHER"),
                     "source_package": ("SOFTWARES", "SOURCE"),
+                    "source_version": ("SOFTWARES", "SOURCE VERSION"),
                 },
             ),
             (
@@ -1279,11 +1352,30 @@ class TestDefaultTemplates:
         packages = len(origins_by_package(output))
         assert len(calls.read_text().splitlines()) <= packages + 4
 
+    def test_source_version_change_reverses_to_the_previous_command(self):
+        migration = importlib.import_module(SOURCE_VERSION_MIGRATION)
+        for template_name in ("Linux (Debian based)", "Linux (RHEL based)"):
+            target = default_target(template_name, "SOFTWARES")
+
+            previous = before_source_version(template_name)
+
+            assert "SourceVersion" not in previous
+            assert "srcver" not in previous
+            assert "Source:" in previous
+            changes = migration.SOFTWARES_CHANGES[
+                next(
+                    key
+                    for key in migration.SOFTWARES_CHANGES
+                    if key[0] == template_name
+                )
+            ]
+            assert migration.patch_command(previous, changes) == target
+
     def test_package_origin_change_reverses_to_the_previous_command(self):
         migration = importlib.import_module(
             "inventory.section.migrations.0016_package_origin"
         )
-        target = default_target("Linux (Debian based)", "SOFTWARES")
+        target = before_source_version("Linux (Debian based)")
 
         previous = migration.patch_command(
             target, migration.reverse_changes(migration.DEBIAN_SOFTWARES)
@@ -1303,7 +1395,7 @@ class TestDefaultTemplates:
             ("Linux (RHEL based)", migration.RHEL_SOFTWARES),
             ("Windows", migration.WINDOWS_SOFTWARES),
         ):
-            target = default_target(template_name, "SOFTWARES")
+            target = before_source_version(template_name)
             original = migration.patch_command(
                 target, migration.reverse_changes(changes)
             )

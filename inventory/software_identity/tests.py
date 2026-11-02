@@ -15,6 +15,7 @@ from inventory.software_identity.cpe.sync import sync_cpe_index
 from inventory.software_identity.cpe.tokens import base_title, title_entries, tokens
 from inventory.software_identity.match_key import match_key
 from inventory.software_identity.models import (
+    CpeAlias,
     CpeIndexState,
     CpeProduct,
     CpeToken,
@@ -208,8 +209,7 @@ class TestCpeMatcher:
 
     def test_candidate_limit_bounds_the_products_loaded(self, cpe_index):
         assert (
-            len(CpeMatcher(candidate_limit=1).rank("Microsoft Edge", "", "152.0"))
-            == 1
+            len(CpeMatcher(candidate_limit=1).rank("Microsoft Edge", "", "152.0")) == 1
         )
 
     def test_no_index_is_not_available(self, db):
@@ -375,6 +375,9 @@ ORIGINS = {
 
 class TestLinuxNormalizer:
     def normalize(self, **values):
+        if "source_package" in values:
+            # A template that collects the source collects its version
+            values.setdefault("source_version", values.get("version", ""))
         record = SoftwareRecord(
             **{"platform_family": "deb", "platform_key": "ubuntu:24.04", **values}
         )
@@ -398,6 +401,33 @@ class TestLinuxNormalizer:
         assert result.product == "pkg:deb/ubuntu/openssl"
         assert result.match_key == "openssl"
         assert result.reason == ""
+
+    def test_the_source_version_is_compared_not_the_binary_one(self):
+        # libldb2 is built from samba: samba's advisories name samba's version
+        result = self.normalize(
+            name="libldb2:amd64",
+            version="2:2.11.0+samba4.22.11+dfsg-1~deb13u1",
+            source_package="samba",
+            source_version="2:4.22.11+dfsg-1~deb13u1",
+            package_origin="Ubuntu",
+        )
+
+        assert result.product == "pkg:deb/ubuntu/samba"
+        assert result.version == "2:4.22.11+dfsg-1~deb13u1"
+        assert "@2%3A4.22.11%2Bdfsg-1~deb13u1?" in result.identifier
+        assert result.reason == ""
+
+    def test_without_source_version_the_binary_version_stands_for_it(self):
+        result = self.normalize(
+            name="libldb2:amd64",
+            version="2:2.11.0+samba4.22.11+dfsg-1~deb13u1",
+            source_package="samba",
+            source_version=None,
+            package_origin="Ubuntu",
+        )
+
+        assert result.version == "2:2.11.0+samba4.22.11+dfsg-1~deb13u1"
+        assert result.reason == "source_version_not_mapped"
 
     def test_rpm_epoch_goes_in_a_qualifier(self):
         result = self.normalize(
@@ -542,12 +572,9 @@ def make_entry(name, version, family, key, installations=1, **values):
 
 @pytest.fixture
 def shipped_edge(db):
-    """A shipped decision, as a release could carry: none is seeded for now."""
-    return IdentityDecision.objects.create(
-        family="windows",
-        match_key="microsoft edge",
-        product="microsoft:edge_chromium",
-        source="shipped",
+    """The shipped decision for Edge: Chromium Edge, not EdgeHTML."""
+    return IdentityDecision.objects.get(
+        family="windows", match_key="microsoft edge", source="shipped"
     )
 
 
@@ -561,16 +588,34 @@ class TestIdentityService:
             ("daily", False),
             ("hourly", False),
         ]
-        # Whether a release ships a sample of decisions is decided later
-        assert not IdentityDecision.objects.filter(source="shipped").exists()
-        origins = dict(PackageOrigin.objects.values_list("name", "distribution"))
+        # Edge is Chromium Edge: microsoft:edge is EdgeHTML
+        assert sorted(
+            IdentityDecision.objects.filter(source="shipped").values_list(
+                "family", "match_key", "product"
+            )
+        ) == [
+            ("macos", "microsoft edge", "microsoft:edge_chromium"),
+            ("windows", "microsoft edge", "microsoft:edge_chromium"),
+        ]
+        assert sorted(CpeAlias.objects.values_list("product", "alias")) == [
+            ("zoom:meetings", "zoom:zoom"),
+            ("zoom:zoom", "zoom:meetings"),
+        ]
+        origins = {
+            name: (distribution, extended)
+            for name, distribution, extended in PackageOrigin.objects.values_list(
+                "name", "distribution", "extended"
+            )
+        }
         assert origins == {
-            "Debian": "debian",
-            "Ubuntu": "ubuntu",
-            "Rocky Enterprise Software Foundation": "rocky",
-            "AlmaLinux": "almalinux",
-            "Red Hat, Inc.": "redhat",
-            "CentOS": "centos",
+            "Debian": ("debian", False),
+            "Ubuntu": ("ubuntu", False),
+            "Rocky Enterprise Software Foundation": ("rocky", False),
+            "AlmaLinux": ("almalinux", False),
+            "Red Hat, Inc.": ("redhat", False),
+            "CentOS": ("centos", False),
+            "UbuntuESM": ("ubuntu", True),
+            "UbuntuESMApps": ("ubuntu", True),
         }
 
     def test_origin_names_are_unique_without_case(self):
@@ -813,13 +858,9 @@ class TestIdentityApi:
 
         response = api_client.get("/software_identities/review/")
 
-        assert [(row["entries"], row["machines"]) for row in response.data] == [
-            (2, 1)
-        ]
+        assert [(row["entries"], row["machines"]) for row in response.data] == [(2, 1)]
 
-    def test_matched_tab_lists_cpe_products_identified_automatically(
-        self, api_client
-    ):
+    def test_matched_tab_lists_cpe_products_identified_automatically(self, api_client):
         copilot = make_entry("Copilot", "154.0.4258.62", "windows", "windows")
         make_identity(
             copilot,
@@ -955,9 +996,7 @@ class TestIdentityApi:
         assert IdentityDecision.objects.get(match_key="x").product is None
 
     def test_shipped_decisions_cannot_be_deleted(self, api_client, shipped_edge):
-        response = api_client.delete(
-            f"/software_identity_decisions/{shipped_edge.id}/"
-        )
+        response = api_client.delete(f"/software_identity_decisions/{shipped_edge.id}/")
 
         assert response.status_code == 400
         assert IdentityDecision.objects.filter(id=shipped_edge.id).exists()
@@ -1171,16 +1210,28 @@ class TestPackageOrigins:
                 "curl", version, "deb", "ubuntu:24.04", 2, package_origin="Ubuntu"
             ).assets.add(first, second)
         make_entry(
-            "openssl", "1:3.0.7-27.el9", "rpm", "rocky:9", 1,
+            "openssl",
+            "1:3.0.7-27.el9",
+            "rpm",
+            "rocky:9",
+            1,
             package_origin="Rocky Enterprise Software Foundation",
         ).assets.add(first)
         # A third party installed more widely still comes after covered origins
         make_entry(
-            "docker-ce", "5:29.8.0-1", "deb", "ubuntu:24.04", 5,
+            "docker-ce",
+            "5:29.8.0-1",
+            "deb",
+            "ubuntu:24.04",
+            5,
             package_origin="Docker",
         ).assets.add(first, second)
         make_entry(
-            "ocsinventory-agent", "3:3.0.0-1", "deb", "ubuntu:24.04", 1,
+            "ocsinventory-agent",
+            "3:3.0.0-1",
+            "deb",
+            "ubuntu:24.04",
+            1,
             package_origin="",
         ).assets.add(first)
         # not listed: origin not collected, or not a Linux entry
@@ -1221,3 +1272,43 @@ class TestPackageOrigins:
             ).status_code
             == 403
         )
+
+
+# Names of default template sections and fields: only SoftwareMapping points
+# to them, the code never does
+TEMPLATE_NAMES = {
+    "SOFTWARES",
+    "OS RELEASE",
+    "OPERATING SYSTEM",
+    "HARDWARE",
+    "SOURCE",
+    "SOURCE VERSION",
+    "ORIGIN",
+    "ID_LIKE",
+    "VERSION_ID",
+    "CODENAME",
+    "RUNNING_KERNEL",
+    "OS NAME",
+    "OS VERSION",
+}
+MAPPING_READERS = ("inventory/software", "inventory/software_identity", "security")
+
+
+def test_only_the_software_mapping_names_template_sections_and_fields():
+    import ast
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[2]
+    found = []
+    for folder in MAPPING_READERS:
+        for path in sorted((root / folder).rglob("*.py")):
+            relative = path.relative_to(root)
+            if "migrations" in relative.parts or path.name.startswith(
+                ("tests", "test_", "conftest")
+            ):
+                continue
+            for node in ast.walk(ast.parse(path.read_text())):
+                if isinstance(node, ast.Constant) and node.value in TEMPLATE_NAMES:
+                    found.append(f"{relative}:{node.lineno} {node.value!r}")
+
+    assert found == []

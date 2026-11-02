@@ -21,7 +21,12 @@ logger = logging.getLogger(__name__)
 # Mapping fields read once per machine, from any section of the template
 MACHINE_FIELDS = ("os_id", "os_like", "os_release", "os_codename", "running_kernel")
 # Mapping fields read per software row, from the mapping's section
-PACKAGE_FIELDS = ("architecture", "package_format", "source_package")
+PACKAGE_FIELDS = (
+    "architecture",
+    "package_format",
+    "source_package",
+    "source_version",
+)
 SIGNATURE_FIELDS = (
     "name",
     "publisher",
@@ -34,6 +39,7 @@ SIGNATURE_FIELDS = (
     "architecture",
     "package_format",
     "source_package",
+    "source_version",
     "package_origin",
 )
 

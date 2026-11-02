@@ -1,6 +1,7 @@
 import re
 
 from inventory.software_identity.models import (
+    CpeAlias,
     CpeProduct,
     IdentityDecision,
     PackageOrigin,
@@ -87,7 +88,7 @@ DISTRIBUTION = re.compile(r"[a-z0-9][a-z0-9.-]*")
 class PackageOriginSerializer(ModelSerializer):
     class Meta:
         model = PackageOrigin
-        fields = ["id", "name", "distribution"]
+        fields = ["id", "name", "distribution", "extended"]
         # Uniqueness is checked without case in validate_name
         validators = []
 
@@ -107,3 +108,31 @@ class PackageOriginSerializer(ModelSerializer):
                 "Lowercase letters, digits, dots and hyphens only"
             )
         return value
+
+
+CPE_PRODUCT = re.compile(r"[^:\s]+:[^:\s]+")
+
+
+class CpeAliasSerializer(ModelSerializer):
+    class Meta:
+        model = CpeAlias
+        fields = ["id", "product", "alias", "source"]
+        read_only_fields = ["source"]
+
+    @staticmethod
+    def _product(value):
+        value = value.strip().lower()
+        if not CPE_PRODUCT.fullmatch(value):
+            raise serializers.ValidationError("vendor:product")
+        return value
+
+    def validate_product(self, value):
+        return self._product(value)
+
+    def validate_alias(self, value):
+        return self._product(value)
+
+    def validate(self, attrs):
+        if attrs.get("product") == attrs.get("alias"):
+            raise serializers.ValidationError("A product is not its own alias")
+        return attrs
