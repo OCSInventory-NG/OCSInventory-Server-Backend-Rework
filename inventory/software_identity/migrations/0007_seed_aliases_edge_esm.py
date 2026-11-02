@@ -28,7 +28,10 @@ def seed(apps, schema_editor):
         )
     for family, key, product in DECISIONS:
         IdentityDecision.objects.get_or_create(
-            family=family, match_key=key, source="shipped", defaults={"product": product}
+            family=family,
+            match_key=key,
+            source="shipped",
+            defaults={"product": product},
         )
     for name, distribution in EXTENDED_ORIGINS:
         if not PackageOrigin.objects.filter(name__iexact=name).exists():

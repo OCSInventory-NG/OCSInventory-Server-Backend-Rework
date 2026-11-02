@@ -365,13 +365,16 @@ EOL_API_BASE_URL = "https://endoflife.date/api"
 NVD_CPE_FEED_URL = "https://nvd.nist.gov/feeds/json/cpe/2.0/nvdcpe-2.0.tar.gz"
 NVD_CPE_META_URL = "https://nvd.nist.gov/feeds/json/cpe/2.0/nvdcpe-2.0.meta"
 
-# Security: vulnerability sources (can point to internal mirrors). An NVD
-# API key raises the NVD rate limit from 5 to 50 requests per 30 seconds.
-OSV_API_URL = "https://api.osv.dev/v1"
-NVD_CVE_API_URL = "https://services.nvd.nist.gov/rest/json/cves/2.0"
-NVD_API_KEY = os.getenv("NVD_API_KEY", "")
+# Security: vulnerability data, downloaded daily and read locally (each can
+# point to an internal mirror). OSV: <base>/<ecosystem>/all.zip; NVD: one
+# feed per year, its .meta next to it.
+OSV_DATA_URL = "https://osv-vulnerabilities.storage.googleapis.com"
+NVD_CVE_FEED_URL = "https://nvd.nist.gov/feeds/json/cve/2.0/nvdcve-2.0-{year}.json.gz"
+KEV_URL = (
+    "https://www.cisa.gov/sites/default/files/feeds/"
+    "known_exploited_vulnerabilities.json"
+)
+EPSS_URL = "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
 # Above this resident memory, a vulnerability scan stops cleanly and the next
 # run resumes
-SECURITY_SCAN_MEMORY_LIMIT_MB = int(
-    os.getenv("SECURITY_SCAN_MEMORY_LIMIT_MB", "768")
-)
+SECURITY_SCAN_MEMORY_LIMIT_MB = int(os.getenv("SECURITY_SCAN_MEMORY_LIMIT_MB", "768"))

@@ -1,29 +1,62 @@
+from inventory.software_identity.services import IdentityService
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from security import reading
-from security.models import Vulnerability
-from security.serializers import VulnerabilitySerializer
+from security.models import (
+    PRIORITY_CRITERIA,
+    Exclusion,
+    Exposure,
+    SecuritySettings,
+    Vulnerability,
+)
+from security.serializers import (
+    ExclusionSerializer,
+    ExposureSerializer,
+    SecuritySettingsSerializer,
+    VulnerabilitySerializer,
+)
 
 READ_ONLY = ["get", "head", "options"]
 FAMILIES = ("deb", "rpm", "windows", "macos")
 
 
-def _asset(params):
+def _asset(params, required=False):
     value = params.get("asset")
     if value in (None, ""):
+        if required:
+            raise ValidationError({"asset": "A machine id"})
         return None
     if not value.isdecimal() or not value.isascii():
         raise ValidationError({"asset": "A machine id"})
     return int(value)
 
 
+def _choice(params, name, choices):
+    value = params.get(name) or None
+    if value is not None and value not in choices:
+        raise ValidationError({name: ", ".join(choices)})
+    return value
+
+
+def _yes_no(params, name):
+    value = _choice(params, name, ("yes", "no"))
+    return None if value is None else value == "yes"
+
+
+def _list(params, name, choices):
+    values = [v.strip() for v in (params.get(name) or "").split(",") if v.strip()]
+    if any(value not in choices for value in values) or len(set(values)) != len(values):
+        raise ValidationError({name: "Comma separated, among " + ", ".join(choices)})
+    return values
+
+
 class VulnerabilityViewSet(viewsets.OCSViewSet):
     """
-    Vulnerabilities of the fleet's identified software. Rows are computed from
-    the findings and the machines, not read from one table.
+    Vulnerabilities open on the fleet's machines, from their exposures,
+    exclusions applied, in the active priority order.
     """
 
     permission_classes = [DefaultModelPermissions]
@@ -31,36 +64,30 @@ class VulnerabilityViewSet(viewsets.OCSViewSet):
     queryset = Vulnerability.objects.all()
     serializer_class = VulnerabilitySerializer
     model = Vulnerability
-    filterset_fields = ["vuln_id", "source"]
+    filterset_fields = ["vuln_id"]
     lookup_field = "vuln_id"
     lookup_value_regex = "[^/]+"
 
     def list(self, request, *args, **kwargs):
         params = request.query_params
-        level = params.get("level") or None
-        if level is not None and level not in reading.LEVELS:
-            raise ValidationError({"level": ", ".join(reading.LEVELS)})
-        fix = params.get("fix") or None
-        if fix not in (None, "yes", "no"):
-            raise ValidationError({"fix": "yes or no"})
-        family = params.get("family") or None
-        if family is not None and family not in FAMILIES:
-            raise ValidationError({"family": ", ".join(FAMILIES)})
-        ordering = params.get("ordering") or "-cvss_score"
-        if ordering not in reading.ORDERINGS:
-            raise ValidationError({"ordering": ", ".join(reading.ORDERINGS)})
-        rows = reading.vulnerability_rows(
-            level_filter=level,
-            fix=None if fix is None else fix == "yes",
-            family=family,
+        rows, hidden, order = reading.vulnerability_rows(
+            level_filter=_choice(params, "level", reading.LEVELS),
+            fix=_yes_no(params, "fix"),
+            family=_choice(params, "family", FAMILIES),
             asset_id=_asset(params),
             search=params.get("search", ""),
-            ordering=ordering,
+            kev=_yes_no(params, "kev"),
+            show=_list(params, "show", reading.NOISE),
+            ordering=_list(params, "ordering", PRIORITY_CRITERIA) or None,
         )
         page = self.paginate_queryset(rows)
         if page is not None:
-            return self.get_paginated_response(page)
-        return Response(rows)
+            response = self.get_paginated_response(page)
+        else:
+            response = Response({"count": len(rows), "results": rows})
+        response.data["ordering"] = order
+        response.data["hidden"] = hidden
+        return response
 
     def retrieve(self, request, *args, **kwargs):
         return Response(reading.vulnerability_detail(self.get_object()))
@@ -68,3 +95,75 @@ class VulnerabilityViewSet(viewsets.OCSViewSet):
     @action(detail=False, methods=["get"])
     def coverage(self, request):
         return Response(reading.coverage(_asset(request.query_params)))
+
+    @action(detail=False, methods=["get"])
+    def sources(self, request):
+        return Response(reading.sources())
+
+
+class ExposureViewSet(viewsets.OCSViewSet):
+    """A machine's exposures, open or closed, and the state of its software."""
+
+    permission_classes = [DefaultModelPermissions]
+    http_method_names = READ_ONLY
+    queryset = Exposure.objects.all()
+    serializer_class = ExposureSerializer
+    model = Exposure
+    filterset_fields = ["asset", "vulnerability", "resolution"]
+
+    def list(self, request, *args, **kwargs):
+        params = request.query_params
+        rows = reading.asset_exposures(
+            _asset(params, required=True),
+            status=_choice(params, "status", ("open", "closed", "all")) or "open",
+        )
+        page = self.paginate_queryset(rows)
+        if page is not None:
+            return self.get_paginated_response(page)
+        return Response(rows)
+
+    @action(detail=False, methods=["get"])
+    def software(self, request):
+        """The software of a machine with the state of each installation."""
+        rows = reading.asset_software_states(_asset(request.query_params, True))
+        page = self.paginate_queryset(rows)
+        if page is not None:
+            return self.get_paginated_response(page)
+        return Response(rows)
+
+
+class ExclusionViewSet(viewsets.OCSViewSet):
+    permission_classes = [DefaultModelPermissions]
+    queryset = Exclusion.objects.all()
+    serializer_class = ExclusionSerializer
+    model = Exclusion
+    filterset_fields = ["id", "vuln_id", "asset", "group", "user"]
+    search_fields = ["vuln_id", "comment"]
+    ordering = ["-created_at"]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class SecuritySettingsViewSet(viewsets.OCSViewSet):
+    """The single settings row: GET the list route, PUT or PATCH its id."""
+
+    permission_classes = [DefaultModelPermissions]
+    http_method_names = ["get", "put", "patch", "head", "options"]
+    queryset = SecuritySettings.objects.all()
+    serializer_class = SecuritySettingsSerializer
+    model = SecuritySettings
+    filterset_fields = ["id"]
+
+    def list(self, request, *args, **kwargs):
+        current = SecuritySettings.current()
+        if current.pk is None:
+            current.save()
+        return Response(self.get_serializer(current).data)
+
+    def perform_update(self, serializer):
+        before = serializer.instance
+        thresholds = (before.cpe_match_score, before.cpe_review_score)
+        settings = serializer.save()
+        if (settings.cpe_match_score, settings.cpe_review_score) != thresholds:
+            IdentityService.rematch_cpe()

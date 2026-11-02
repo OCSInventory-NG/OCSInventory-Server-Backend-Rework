@@ -49,7 +49,10 @@ class IdentityService:
             # The catalog and the origins may change during a long run: read
             # them again per batch
             normalizers = build_normalizers(
-                matcher, cls.effective_decisions(), cls.known_origins()
+                matcher,
+                cls.effective_decisions(),
+                cls.known_origins(),
+                cls.thresholds(),
             )
             entries = (
                 SoftwareDictionary.objects.filter(
@@ -106,6 +109,24 @@ class IdentityService:
                     decision.id, decision.product
                 )
         return decisions
+
+    @staticmethod
+    def thresholds():
+        """(CPE match score, review score) of the security settings."""
+        from security.models import SecuritySettings
+
+        settings = SecuritySettings.current()
+        return settings.cpe_match_score, settings.cpe_review_score
+
+    @staticmethod
+    def rematch_cpe():
+        """
+        Windows and macOS identities without catalog decision are matched again
+        at the next refresh (after a change of the CPE thresholds).
+        """
+        return SoftwareIdentity.objects.filter(
+            family__in=CPE_FAMILIES, decision__isnull=True
+        ).update(index_version=0)
 
     @staticmethod
     def known_origins():
@@ -216,7 +237,9 @@ class IdentityService:
         Entries not identified yet get it at the next refresh.
         """
         matcher = CpeMatcher()
-        normalizers = build_normalizers(matcher, cls.effective_decisions())
+        normalizers = build_normalizers(
+            matcher, cls.effective_decisions(), cls.known_origins(), cls.thresholds()
+        )
         identities = SoftwareIdentity.objects.filter(
             family=family, match_key=key
         ).select_related("entry")

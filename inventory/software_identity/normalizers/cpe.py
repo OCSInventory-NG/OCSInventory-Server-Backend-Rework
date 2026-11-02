@@ -36,9 +36,11 @@ class CpeNormalizer:
 
     family = ""
 
-    def __init__(self, matcher, decisions):
+    def __init__(self, matcher, decisions, thresholds=None):
         self.matcher = matcher
         self.decisions = decisions
+        # (match score, review score), from the security settings
+        self.match_score, self.review_score = thresholds or (MATCH_SCORE, REVIEW_SCORE)
 
     def is_os_component(self, record):
         return False
@@ -69,7 +71,7 @@ class CpeNormalizer:
             {"product": product, "score": score} for score, product in ranked[:3]
         ]
         best = ranked[0][0] if ranked else None
-        if best is None or best < REVIEW_SCORE:
+        if best is None or best < self.review_score:
             return IdentityResult(
                 NONE,
                 key,
@@ -79,7 +81,7 @@ class CpeNormalizer:
                 candidates=candidates,
             )
         second = ranked[1][0] if len(ranked) > 1 else 0.0
-        if best >= MATCH_SCORE and best - second >= MATCH_LEAD:
+        if best >= self.match_score and best - second >= MATCH_LEAD:
             return self._identity(
                 MATCHED, key, ranked[0][1], version, score=best, candidates=candidates
             )

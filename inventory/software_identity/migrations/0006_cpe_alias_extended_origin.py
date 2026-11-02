@@ -6,25 +6,44 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('software_identity', '0005_seed_package_origins'),
+        ("software_identity", "0005_seed_package_origins"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='packageorigin',
-            name='extended',
+            model_name="packageorigin",
+            name="extended",
             field=models.BooleanField(default=False),
         ),
         migrations.CreateModel(
-            name='CpeAlias',
+            name="CpeAlias",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('product', models.CharField(max_length=511)),
-                ('alias', models.CharField(max_length=511)),
-                ('source', models.CharField(choices=[('shipped', 'shipped'), ('admin', 'admin')], default='admin', max_length=8)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("product", models.CharField(max_length=511)),
+                ("alias", models.CharField(max_length=511)),
+                (
+                    "source",
+                    models.CharField(
+                        choices=[("shipped", "shipped"), ("admin", "admin")],
+                        default="admin",
+                        max_length=8,
+                    ),
+                ),
             ],
             options={
-                'constraints': [models.UniqueConstraint(fields=('product', 'alias'), name='unique_cpe_alias')],
+                "constraints": [
+                    models.UniqueConstraint(
+                        fields=("product", "alias"), name="unique_cpe_alias"
+                    )
+                ],
             },
         ),
     ]

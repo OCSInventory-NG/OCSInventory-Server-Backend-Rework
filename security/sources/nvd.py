@@ -1,22 +1,32 @@
 """
-Windows and macOS vulnerabilities through the NVD CVE API: every CVE of a CPE
-product, then the installed version compared with the configuration ranges
-(as measured in cve-poc/cpe_cves.py).
+Windows and macOS vulnerabilities from the NVD yearly JSON 2.0 feeds
+(nvdcve-2.0-<year>.json.gz), loaded locally: the years of the window with
+their CPE matches, older years with their scores only.
 """
 
+import gzip
+import io
+import json
 import re
-import time
+from datetime import timedelta
+from datetime import timezone as dt_timezone
 
-import requests
-from django.conf import settings
-from inventory.software_identity.normalizers.cpe import cpe_identifier, cpe_version
-from security.models import METHOD_NVD_ALL_VERSIONS, METHOD_NVD_RANGE
+from django.db import transaction
+from django.utils import timezone
+from django.utils.dateparse import parse_datetime
+from inventory.software_identity.normalizers.cpe import cpe_version
+from security.models import (
+    METHOD_NVD_ALL_VERSIONS,
+    METHOD_NVD_EXACT,
+    METHOD_NVD_RANGE,
+    NvdCve,
+    NvdMatch,
+)
 
-TIMEOUT = 120
-PAGE_SIZE = 2000
-# NVD rate limits: 5 requests per 30 seconds without a key, 50 with one
-SPACING = 6.5
-SPACING_WITH_KEY = 0.7
+FIRST_YEAR = 2002
+BATCH = 2000
+# Years outside the window (scores only) are checked again after this
+SCORE_YEARS_RECHECK = timedelta(days=7)
 _BOUNDS = (
     "versionStartIncluding",
     "versionStartExcluding",
@@ -25,90 +35,136 @@ _BOUNDS = (
 )
 _ESCAPED = re.compile(r"\\(.)")
 _UNESCAPED_COLON = re.compile(r"(?<!\\):")
+_DECODER = json.JSONDecoder()
 
 
-class RateLimited(Exception):
-    """The NVD refused the request (403 or 429): stop until the next run."""
+def window(years, today=None):
+    """The years whose CVEs are loaded with their matches, the current one included."""
+    current = (today or timezone.now()).year
+    return list(range(current - max(years, 1) + 1, current + 1))
 
 
-def http_get(url, params, headers):
-    response = requests.get(url, params=params, headers=headers, timeout=TIMEOUT)
-    if response.status_code in (403, 429):
-        raise RateLimited(f"NVD answered {response.status_code}")
-    response.raise_for_status()
-    return response.json()
+def cve_year(cve_id):
+    parts = (cve_id or "").split("-")
+    return int(parts[1]) if len(parts) > 2 and parts[1].isdigit() else 0
 
 
-class NvdClient:
-    def __init__(self, get=http_get, sleep=time.sleep, api_key=None, base_url=None):
-        self.get = get
-        self.sleep = sleep
-        self.api_key = settings.NVD_API_KEY if api_key is None else api_key
-        self.base_url = base_url or settings.NVD_CVE_API_URL
-        self.spacing = SPACING_WITH_KEY if self.api_key else SPACING
-        self._requests = 0
+def cve_url(cve_id):
+    return f"https://nvd.nist.gov/vuln/detail/{cve_id}"
 
-    def product_cves(self, vendor_product):
-        """Every CVE of a vendor:product, in compact form."""
-        headers = {"apiKey": self.api_key} if self.api_key else {}
-        cves, start = [], 0
+
+def parse_meta(text):
+    meta = {}
+    for line in text.splitlines():
+        key, _, value = line.partition(":")
+        meta[key.strip()] = value.strip()
+    return meta
+
+
+def iter_items(stream, key="vulnerabilities", chunk=1 << 20):
+    """
+    The items of the top level array `key` of a JSON document, decoded one at
+    a time: a year of the NVD is several hundred MB of JSON.
+    """
+    buffer = ""
+    position = 0
+    eof = False
+
+    def more():
+        nonlocal buffer, position, eof
+        data = stream.read(chunk)
+        if not data:
+            eof = True
+            return False
+        buffer = buffer[position:] + data
+        position = 0
+        return True
+
+    marker = f'"{key}"'
+    while True:
+        found = buffer.find(marker, position)
+        if found >= 0:
+            position = found + len(marker)
+            break
+        position = max(0, len(buffer) - len(marker))
+        if not more():
+            return
+    while True:
+        bracket = buffer.find("[", position)
+        if bracket >= 0:
+            position = bracket + 1
+            break
+        position = len(buffer)
+        if not more():
+            return
+    while True:
         while True:
-            if self._requests:
-                self.sleep(self.spacing)
-            self._requests += 1
-            body = self.get(
-                self.base_url,
-                {
-                    "virtualMatchString": cpe_identifier(vendor_product, ""),
-                    "resultsPerPage": PAGE_SIZE,
-                    "startIndex": start,
-                },
-                headers,
-            )
-            cves += [
-                compact(item["cve"], vendor_product)
-                for item in body.get("vulnerabilities", [])
-            ]
-            start += body.get("resultsPerPage", 0)
-            if not body.get("resultsPerPage") or start >= body.get("totalResults", 0):
-                return cves
+            while position < len(buffer) and buffer[position] in " \t\r\n,":
+                position += 1
+            if position < len(buffer) or not more():
+                break
+        if position >= len(buffer) or buffer[position] == "]":
+            return
+        try:
+            item, end = _DECODER.raw_decode(buffer, position)
+        except json.JSONDecodeError:
+            if eof or not more():
+                raise
+            continue
+        position = end
+        yield item
 
 
 def _unescape(value):
     return _ESCAPED.sub(r"\1", value)
 
 
-def _cvss(metrics):
-    """NVD's own score first, 3.1 then 3.0 then 4.0."""
-    for key in ("cvssMetricV31", "cvssMetricV30", "cvssMetricV40"):
+def _metric(metrics, keys):
+    for key in keys:
         entries = metrics.get(key) or []
         if entries:
-            entry = next(
-                (e for e in entries if e.get("type") == "Primary"), entries[0]
-            )
+            entry = next((e for e in entries if e.get("type") == "Primary"), entries[0])
             data = entry.get("cvssData") or {}
-            return (
-                data.get("version", ""),
-                data.get("vectorString", ""),
-                data.get("baseScore"),
-            )
-    return "", "", None
+            return data.get("vectorString", ""), data.get("baseScore")
+    return "", None
 
 
-def compact(cve, vendor_product):
-    """What the findings need from an NVD CVE, for one vendor:product."""
-    version, vector, score = _cvss(cve.get("metrics") or {})
+def vendor_product(criteria):
+    parts = _UNESCAPED_COLON.split(criteria or "")
+    if len(parts) < 6:
+        return ""
+    return _unescape(f"{parts[3]}:{parts[4]}")
+
+
+def compact(cve):
+    """What the local data keeps of an NVD CVE."""
+    metrics = cve.get("metrics") or {}
+    cvss3_vector, cvss3_score = _metric(metrics, ("cvssMetricV31", "cvssMetricV30"))
+    cvss4_vector, cvss4_score = _metric(metrics, ("cvssMetricV40",))
     matches = []
     for configuration in cve.get("configurations") or []:
-        for node in configuration.get("nodes") or []:
+        nodes = configuration.get("nodes") or []
+        # An AND with a non vulnerable product: vulnerable on that platform only
+        conditional = configuration.get("operator") == "AND" and any(
+            not match.get("vulnerable")
+            for node in nodes
+            for match in node.get("cpeMatch") or []
+        )
+        for node in nodes:
             for match in node.get("cpeMatch") or []:
-                parts = _UNESCAPED_COLON.split(match.get("criteria", ""))
-                if not match.get("vulnerable") or len(parts) < 6:
+                if not match.get("vulnerable"):
                     continue
-                if _unescape(f"{parts[3]}:{parts[4]}") != vendor_product:
+                product = vendor_product(match.get("criteria", ""))
+                if not product:
                     continue
-                bounds = {b: match[b] for b in _BOUNDS if match.get(b)}
-                matches.append({"criteria": match["criteria"], **bounds})
+                matches.append(
+                    {
+                        "product": product,
+                        "criteria": match["criteria"],
+                        "bounds": {b: match[b] for b in _BOUNDS if match.get(b)},
+                        "conditional": conditional,
+                    }
+                )
     description = next(
         (d["value"] for d in cve.get("descriptions") or [] if d.get("lang") == "en"),
         "",
@@ -117,12 +173,89 @@ def compact(cve, vendor_product):
         "id": cve["id"],
         "published": cve.get("published", ""),
         "modified": cve.get("lastModified", ""),
+        "rejected": cve.get("vulnStatus") == "Rejected",
         "description": description,
-        "cvss_version": version,
-        "cvss_vector": vector,
-        "cvss_score": score,
+        "cvss3_vector": cvss3_vector,
+        "cvss3_score": cvss3_score,
+        "cvss4_vector": cvss4_vector,
+        "cvss4_score": cvss4_score,
         "matches": matches,
     }
+
+
+def _date(value):
+    parsed = parse_datetime(value) if value else None
+    if parsed is not None and timezone.is_naive(parsed):
+        parsed = parsed.replace(tzinfo=dt_timezone.utc)
+    return parsed
+
+
+def _flush(year, full, cves):
+    NvdCve.objects.bulk_create(
+        NvdCve(
+            cve_id=cve["id"],
+            year=year,
+            full=full,
+            rejected=cve["rejected"],
+            published=_date(cve["published"]),
+            modified=_date(cve["modified"]),
+            description=cve["description"] if full else "",
+            cvss3_vector=cve["cvss3_vector"][:255],
+            cvss3_score=cve["cvss3_score"],
+            cvss4_vector=cve["cvss4_vector"][:255],
+            cvss4_score=cve["cvss4_score"],
+        )
+        for cve in cves
+    )
+    if not full:
+        return
+    pk = dict(
+        NvdCve.objects.filter(cve_id__in=[cve["id"] for cve in cves]).values_list(
+            "cve_id", "id"
+        )
+    )
+    NvdMatch.objects.bulk_create(
+        NvdMatch(
+            cve_id=pk[cve["id"]],
+            vendor_product=match["product"][:511],
+            criteria=match["criteria"][:1024],
+            bounds=match["bounds"],
+            conditional=match["conditional"],
+        )
+        for cve in cves
+        for match in cve["matches"]
+    )
+
+
+def load_year(year, path, full):
+    """
+    Replaces a year's CVEs from its gzip feed, in one transaction: a feed that
+    fails to read leaves the year as it was. Returns the CVE count.
+    """
+    count = 0
+    with transaction.atomic():
+        NvdMatch.objects.filter(cve__year=year).delete()
+        NvdCve.objects.filter(year=year).delete()
+        with gzip.open(path, "rb") as raw:
+            stream = io.TextIOWrapper(raw, encoding="utf-8")
+            batch, seen = [], set()
+            for item in iter_items(stream):
+                cve = compact(item.get("cve") or {})
+                if cve["id"] in seen or cve_year(cve["id"]) != year:
+                    continue
+                seen.add(cve["id"])
+                batch.append(cve)
+                if len(batch) >= BATCH:
+                    _flush(year, full, batch)
+                    count += len(batch)
+                    batch = []
+            if batch:
+                _flush(year, full, batch)
+                count += len(batch)
+    return count
+
+
+# Evaluation
 
 
 def _vkey(version):
@@ -162,17 +295,19 @@ def _words(bounds):
     return " ".join(words)
 
 
-def evaluate(cve, version):
+def evaluate(matches, installed):
     """
-    How the installed version is affected by a compact CVE, None when it is
-    not. A range or an exact version wins over an "all versions" entry.
+    How an installed version is affected by the matches of one CVE, None when
+    it is not. A range or an exact version wins over an "all versions" entry;
+    "all versions" and a condition on another product are uncertain.
     """
-    installed = version or ""
-    version = cpe_version(installed)
+    version = cpe_version(installed or "")
     all_versions = None
-    for match in cve["matches"]:
-        bounds = {bound: match[bound] for bound in _BOUNDS if match.get(bound)}
+    for match in matches:
+        bounds = match["bounds"]
         parts = _UNESCAPED_COLON.split(match["criteria"])
+        if len(parts) < 7:
+            continue
         exact, update = _unescape(parts[5]), _unescape(parts[6])
         if bounds:
             if version and _within(version, bounds):
@@ -180,7 +315,7 @@ def evaluate(cve, version):
                     "method": METHOD_NVD_RANGE,
                     "fixed_version": bounds.get("versionEndExcluding", ""),
                     "affected_range": _words(bounds),
-                    "uncertain": False,
+                    "uncertain": match["conditional"],
                 }
         elif exact not in ("*", "-"):
             # "9.0" with update "beta01" is that pre-release, not 9.0 itself
@@ -188,15 +323,15 @@ def evaluate(cve, version):
             if (
                 version
                 and vcmp(exact, version) == 0
-                and (not pre_release or update.lower() in installed.lower())
+                and (not pre_release or update.lower() in (installed or "").lower())
             ):
                 return {
-                    "method": METHOD_NVD_RANGE,
+                    "method": METHOD_NVD_EXACT,
                     "fixed_version": "",
                     "affected_range": " ".join(
                         ["version", exact] + ([update] if pre_release else [])
                     ),
-                    "uncertain": False,
+                    "uncertain": match["conditional"],
                 }
         elif exact == "*" and all_versions is None:
             all_versions = {
@@ -206,7 +341,3 @@ def evaluate(cve, version):
                 "uncertain": True,
             }
     return all_versions
-
-
-def cve_url(cve_id):
-    return f"https://nvd.nist.gov/vuln/detail/{cve_id}"

@@ -1,357 +1,386 @@
 """
-Reading the findings: machines are found through the identity triple
-(scheme, product, version), the dictionary and its machines, minus kernel
-packages that are not the machine's running kernel. Computed per request:
-fine at the maquette's scale, the full feature will need an aggregated table.
+What the API shows: the open exposures grouped per vulnerability, ordered by
+the priority criteria, exclusions applied; a machine's exposures and the
+state of its software; the coverage of the fleet.
 """
 
 from collections import Counter, defaultdict
 
 from asset.inventory_base.models import InventoryBase
 from django.db.models import Max
-from inventory.software.models import AssetPlatform, SoftwareDictionary
-from inventory.software_identity.models import SoftwareIdentity
 from security.cvss import level
-from security.kernel import is_kernel, is_running_kernel
+from security.evaluation import Context
+from security.exclusions import active_exclusions
 from security.models import (
     METHOD_OSV,
-    SOURCE_NVD,
-    SOURCE_OSV,
-    Finding,
-    ProductCheck,
+    PRIORITY_CRITERIA,
+    SOURCES,
+    Exposure,
+    OsvAdvisoryCve,
+    ScanState,
+    SecuritySettings,
     Vulnerability,
 )
-from security.services import COVERED, nvd_version_key, osv_key
+from security.scan import CHECKED, STATES, Installations
 from security.sources import nvd, osv
+from security.sync import source_state, source_syncs
 
 LEVELS = ("critical", "high", "medium", "low", "unknown")
-ORDERINGS = ("-cvss_score", "-machines")
 PRODUCTS_SHOWN = 5
 
-
-def _source(scheme, product):
-    """The source package of a Linux identity, for the kernel rule."""
-    return osv.package_name(product) if scheme == "purl" and product else ""
-
-
-# When the running kernel's packages disagree, the least covered state wins
-_KERNEL_PRIORITY = (
-    "check_failed",
-    "pending",
-    "not_handled",
-    "third_party",
-    "no_origin",
-    "no_identity",
-    "not_supported",
-    "checked",
-)
+# Findings faithful to their source but hidden by default (counted)
+NOISE_MINOR_DISTRO = "minor_distro"
+NOISE_KERNEL_UNFIXED = "kernel_unfixed"
+NOISE = (NOISE_MINOR_DISTRO, NOISE_KERNEL_UNFIXED)
+# Debian urgencies that tell a vulnerability is minor or not triaged yet
+MINOR_RATINGS = ("unimportant", "not yet assigned")
 
 
-class Installations:
-    """Covered entries and the machines they count for, read once."""
-
-    def __init__(self, asset_id=None):
-        identities = SoftwareIdentity.objects.filter(
-            status__in=COVERED["purl"] + COVERED["cpe"]
-        ).values_list("entry_id", "scheme", "product", "version", "status")
-        self.entries_of = defaultdict(list)
-        self.status_of = {}
-        self.source_of = {}
-        for entry_id, scheme, product, version, status in identities:
-            if status not in COVERED.get(scheme, ()):
-                continue
-            self.entries_of[(scheme, product, version)].append(entry_id)
-            self.status_of[(scheme, product, version)] = status
-            self.source_of[entry_id] = _source(scheme, product)
-        entry_ids = [e for entries in self.entries_of.values() for e in entries]
-        self.entries = {
-            entry_id: (name, version, family)
-            for entry_id, name, version, family in SoftwareDictionary.objects.filter(
-                id__in=entry_ids
-            ).values_list("id", "name", "version", "platform_family")
-        }
-        links = SoftwareDictionary.assets.through.objects.filter(
-            softwaredictionary_id__in=entry_ids
-        )
-        if asset_id is not None:
-            links = links.filter(inventorybase_id=asset_id)
-        self.assets_of = defaultdict(set)
-        for entry_id, asset in links.values_list(
-            "softwaredictionary_id", "inventorybase_id"
-        ):
-            self.assets_of[entry_id].add(asset)
-        self.running = dict(
-            AssetPlatform.objects.values_list("asset_id", "running_kernel")
-        )
-
-    def counts(self, entry_id, asset):
-        """Whether an installed entry counts for this machine (kernel rule)."""
-        name, version, family = self.entries[entry_id]
-        source = self.source_of.get(entry_id, "")
-        if not is_kernel(name, family, source):
-            return True
-        running = self.running.get(asset, "")
-        return is_running_kernel(name, version, family, running, source)
-
-    def machines(self, triple):
-        """The machines a finding of this identity triple counts for."""
-        return {
-            asset
-            for entry_id in self.entries_of.get(triple, ())
-            for asset in self.assets_of[entry_id]
-            if self.counts(entry_id, asset)
-        }
-
-    def families(self, triple):
-        return {self.entries[e][2] for e in self.entries_of.get(triple, ())}
+def noise_of(exposure):
+    """The noise category of an open exposure, "" when it is not noise."""
+    if (exposure["rating"] or "").strip().lower() in MINOR_RATINGS:
+        return NOISE_MINOR_DISTRO
+    if exposure["kernel"] and not exposure["fixed_version"]:
+        return NOISE_KERNEL_UNFIXED
+    return ""
 
 
-def advisory_url(finding):
-    if finding.method == METHOD_OSV:
-        return osv.advisory_url(finding.advisory_id)
-    return nvd.cve_url(finding.advisory_id)
+def priority(ordering=None):
+    """The active order: the given criteria, else the settings', first first."""
+    if ordering:
+        return list(ordering)
+    configured = [
+        c for c in SecuritySettings.current().priority if c in PRIORITY_CRITERIA
+    ]
+    return configured or list(PRIORITY_CRITERIA)
+
+
+def _criterion(row, criterion):
+    """Larger first, unknown last."""
+    value = {
+        "kev": row["kev"],
+        "score": row["cvss_score"],
+        "epss": row["epss"],
+        "machines": row["machines"],
+    }[criterion]
+    if value is None:
+        return (1, 0)
+    return (0, -float(value))
+
+
+def sort_rows(rows, order):
+    rows.sort(
+        key=lambda row: tuple(_criterion(row, c) for c in order) + (row["vuln_id"],)
+    )
+    return rows
 
 
 def vulnerability_rows(
-    level_filter=None, fix=None, family=None, asset_id=None, search="",
-    ordering="-cvss_score",
+    level_filter=None,
+    fix=None,
+    family=None,
+    asset_id=None,
+    search="",
+    kev=None,
+    show=(),
+    ordering=None,
+    now=None,
 ):
-    """One row per vulnerability that affects at least one machine."""
-    installations = Installations(asset_id)
-    search = (search or "").strip().lower()
-    grouped = defaultdict(
-        lambda: {"machines": set(), "products": [], "fixed": set(), "certain": False}
+    """
+    (rows, hidden counts, active order): one row per vulnerability open on at
+    least one machine, exclusions applied, noise hidden unless shown.
+    """
+    exclusions = active_exclusions(now)
+    exposures = Exposure.objects.filter(closed_at__isnull=True)
+    if asset_id is not None:
+        exposures = exposures.filter(asset_id=asset_id)
+    if family:
+        exposures = exposures.filter(platform_family=family)
+    vuln_names = dict(
+        Vulnerability.objects.filter(
+            id__in=exposures.values("vulnerability_id")
+        ).values_list("id", "vuln_id")
     )
-    for finding in Finding.objects.values(
-        "vulnerability_id", "scheme", "product", "version", "fixed_version",
+    hidden = Counter()
+    grouped = defaultdict(
+        lambda: {
+            "machines": set(),
+            "products": {},
+            "fixed": set(),
+            "channels": set(),
+            "certain": False,
+            "methods": set(),
+            "first_seen": None,
+        }
+    )
+    for exposure in exposures.values(
+        "asset_id",
+        "vulnerability_id",
+        "product",
+        "software_name",
+        "version",
+        "fixed_version",
+        "fix_channel",
         "uncertain",
+        "method",
+        "rating",
+        "kernel",
+        "first_seen",
     ):
-        triple = (finding["scheme"], finding["product"], finding["version"])
-        machines = installations.machines(triple)
-        if not machines:
+        vuln_id = vuln_names.get(exposure["vulnerability_id"], "")
+        if exclusions.excludes(exposure["asset_id"], vuln_id):
             continue
-        if family and family not in installations.families(triple):
+        noise = noise_of(exposure)
+        if noise and noise not in show:
+            hidden[noise] += 1
             continue
-        group = grouped[finding["vulnerability_id"]]
-        group["machines"] |= machines
-        group["products"].append(
-            {"product": finding["product"], "version": finding["version"]}
-        )
-        if finding["fixed_version"]:
-            group["fixed"].add(finding["fixed_version"])
-        group["certain"] |= not finding["uncertain"]
+        group = grouped[exposure["vulnerability_id"]]
+        group["machines"].add(exposure["asset_id"])
+        group["products"][(exposure["product"], exposure["version"])] = exposure[
+            "software_name"
+        ]
+        if exposure["fixed_version"]:
+            group["fixed"].add(exposure["fixed_version"])
+            group["channels"].add(exposure["fix_channel"])
+        group["certain"] |= not exposure["uncertain"]
+        group["methods"].add(exposure["method"])
+        if group["first_seen"] is None or exposure["first_seen"] < group["first_seen"]:
+            group["first_seen"] = exposure["first_seen"]
 
+    search = (search or "").strip().lower()
     rows = []
-    for vuln in Vulnerability.objects.filter(id__in=grouped):
-        group = grouped[vuln.id]
-        products = sorted(group["products"], key=lambda p: (p["product"], p["version"]))
+    for vulnerability in Vulnerability.objects.filter(id__in=list(grouped)):
+        group = grouped[vulnerability.id]
+        products = sorted(
+            (
+                {"product": product, "version": version, "name": name}
+                for (product, version), name in group["products"].items()
+            ),
+            key=lambda p: (p["product"], p["version"]),
+        )
         row = {
-            "vuln_id": vuln.vuln_id,
-            "summary": vuln.summary,
-            "cvss_score": vuln.cvss_score,
-            "cvss_version": vuln.cvss_version,
-            "level": level(vuln.cvss_score, vuln.distro_rating),
-            "distro_rating": vuln.distro_rating,
-            "source": vuln.source,
+            "vuln_id": vulnerability.vuln_id,
+            "summary": vulnerability.summary,
+            "kev": vulnerability.kev,
+            "kev_date_added": vulnerability.kev_date_added,
+            "cvss_score": vulnerability.cvss_score,
+            "cvss_version": vulnerability.cvss_version,
+            "epss": vulnerability.epss,
+            "epss_percentile": vulnerability.epss_percentile,
+            "level": level(vulnerability.cvss_score, vulnerability.distro_rating),
+            "distro_rating": vulnerability.distro_rating,
+            "source": "osv" if group["methods"] == {METHOD_OSV} else "nvd",
             "machines": len(group["machines"]),
             "products": products[:PRODUCTS_SHOWN],
             "product_count": len(products),
             "fix_available": bool(group["fixed"]),
             "fixed_versions": sorted(group["fixed"])[:PRODUCTS_SHOWN],
+            "fix_channels": sorted(c or "standard" for c in group["channels"]),
             "uncertain": not group["certain"],
+            "first_seen": group["first_seen"],
         }
         if level_filter and row["level"] != level_filter:
             continue
         if fix is not None and row["fix_available"] != fix:
             continue
-        if search and search not in vuln.vuln_id.lower() and not any(
-            search in p["product"].lower() for p in products
+        if kev is not None and row["kev"] != kev:
+            continue
+        if (
+            search
+            and search not in vulnerability.vuln_id.lower()
+            and not any(
+                search in p["product"].lower() or search in (p["name"] or "").lower()
+                for p in products
+            )
         ):
             continue
         rows.append(row)
-
-    def by_score(row):
-        score = row["cvss_score"]
-        return (score is None, -(score or 0), row["vuln_id"])
-
-    if ordering == "-machines":
-        rows.sort(key=lambda row: (-row["machines"], *by_score(row)))
-    else:
-        rows.sort(key=by_score)
-    return rows
+    order = priority(ordering)
+    return sort_rows(rows, order), dict(hidden), order
 
 
-def vulnerability_detail(vuln):
-    """The vulnerability, its findings, and the machines of each finding."""
-    installations = Installations()
-    findings = list(vuln.findings.all().order_by("product", "version"))
-    asset_ids = set()
-    machines_of = {}
-    for finding in findings:
-        triple = (finding.scheme, finding.product, finding.version)
-        machines_of[finding.id] = installations.machines(triple)
-        asset_ids |= machines_of[finding.id]
-    assets = {
-        asset_id: (name, last_update)
-        for asset_id, name, last_update in InventoryBase.objects.filter(
-            id__in=asset_ids
-        ).values_list("id", "name", "last_update")
-    }
-    return {
-        "vuln_id": vuln.vuln_id,
-        "summary": vuln.summary,
-        "published": vuln.published,
-        "modified": vuln.modified,
-        "cvss_version": vuln.cvss_version,
-        "cvss_vector": vuln.cvss_vector,
-        "cvss_score": vuln.cvss_score,
-        "level": level(vuln.cvss_score, vuln.distro_rating),
-        "distro_rating": vuln.distro_rating,
-        "source": vuln.source,
-        "url": vuln.url,
-        "findings": [
+def references(vulnerability):
+    """The advisories that name the vulnerability, and its NVD page."""
+    refs = [
+        {"id": advisory_id, "url": osv.advisory_url(advisory_id), "source": source}
+        for advisory_id, source in OsvAdvisoryCve.objects.filter(
+            cve=vulnerability.vuln_id
+        )
+        .values_list("advisory__advisory_id", "advisory__source")
+        .order_by("advisory__advisory_id")
+    ]
+    if vulnerability.vuln_id.startswith("CVE-"):
+        refs.append(
             {
-                "scheme": finding.scheme,
-                "product": finding.product,
-                "version": finding.version,
-                "identity_status": installations.status_of.get(
-                    (finding.scheme, finding.product, finding.version), ""
-                ),
-                "affected_range": finding.affected_range,
-                "fixed_version": finding.fixed_version,
-                "advisory_id": finding.advisory_id,
-                "advisory_url": advisory_url(finding),
-                "method": finding.method,
-                "uncertain": finding.uncertain,
-                "machines": sorted(
-                    (
-                        {
-                            "id": asset_id,
-                            "name": assets[asset_id][0],
-                            "last_inventory": assets[asset_id][1],
-                        }
-                        for asset_id in machines_of[finding.id]
-                    ),
-                    key=lambda machine: machine["name"],
-                ),
+                "id": vulnerability.vuln_id,
+                "url": nvd.cve_url(vulnerability.vuln_id),
+                "source": "nvd",
             }
-            for finding in findings
+        )
+    return refs
+
+
+def _exposure_row(exposure, names, excluded):
+    return {
+        "asset": exposure.asset_id,
+        "asset_name": names.get(exposure.asset_id, ""),
+        "software_name": exposure.software_name,
+        "scheme": exposure.scheme,
+        "product": exposure.product,
+        "version": exposure.version,
+        "advisory_id": exposure.advisory_id,
+        "advisory_url": (
+            osv.advisory_url(exposure.advisory_id)
+            if exposure.method == METHOD_OSV
+            else nvd.cve_url(exposure.advisory_id)
+        ),
+        "fixed_version": exposure.fixed_version,
+        "fix_channel": exposure.fix_channel or "standard",
+        "method": exposure.method,
+        "uncertain": exposure.uncertain,
+        "rating": exposure.rating,
+        "kernel": exposure.kernel,
+        "first_seen": exposure.first_seen,
+        "last_seen": exposure.last_seen,
+        "closed_at": exposure.closed_at,
+        "resolution": exposure.resolution,
+        "excluded": excluded,
+    }
+
+
+def vulnerability_detail(vulnerability, now=None):
+    exclusions = active_exclusions(now)
+    exposures = list(
+        Exposure.objects.filter(vulnerability=vulnerability).order_by(
+            "closed_at", "asset_id", "product"
+        )
+    )
+    names = dict(
+        InventoryBase.objects.filter(
+            id__in={e.asset_id for e in exposures}
+        ).values_list("id", "name")
+    )
+    return {
+        "vuln_id": vulnerability.vuln_id,
+        "summary": vulnerability.summary,
+        "published": vulnerability.published,
+        "modified": vulnerability.modified,
+        "cvss_version": vulnerability.cvss_version,
+        "cvss_vector": vulnerability.cvss_vector,
+        "cvss_score": vulnerability.cvss_score,
+        "level": level(vulnerability.cvss_score, vulnerability.distro_rating),
+        "distro_rating": vulnerability.distro_rating,
+        "kev": vulnerability.kev,
+        "kev_date_added": vulnerability.kev_date_added,
+        "epss": vulnerability.epss,
+        "epss_percentile": vulnerability.epss_percentile,
+        "url": vulnerability.url,
+        "references": references(vulnerability),
+        "open": [
+            _exposure_row(
+                e, names, exclusions.excludes(e.asset_id, vulnerability.vuln_id)
+            )
+            for e in exposures
+            if e.closed_at is None
+        ],
+        "closed": [
+            _exposure_row(e, names, False) for e in exposures if e.closed_at is not None
         ],
     }
 
 
-def _entry_state(identity, platform_key, checks):
-    """Coverage state of a dictionary entry, from its identity and checks."""
-    if identity is None:
-        return "no_identity"
-    status, reason, scheme, product, version = identity
-    if status in ("review", "none"):
-        return "no_identity"
-    if status == "unsupported":
-        return reason if reason in ("third_party", "no_origin") else "not_supported"
-    if status not in COVERED.get(scheme, ()):
-        return "not_supported"
-    if scheme == "purl":
-        eco = osv.ecosystem(product, platform_key)
-        if eco is None:
-            return "not_handled"
-        key = (SOURCE_OSV, osv_key((eco, osv.query_name(product), version)))
-        if key not in checks:
-            return "pending"
-        return "check_failed" if checks[key] else "checked"
-    # NVD: the product's CVEs are fetched once, each version evaluated
-    if checks.get((SOURCE_NVD, product)):
-        return "check_failed"
-    if (SOURCE_NVD, nvd_version_key(product, version)) in checks:
-        return "checked"
-    return "pending"
-
-
-def coverage(asset_id=None):
-    """
-    What is checked and what is not, per platform family, over entries and
-    installations; the machines per kernel status (or one machine's).
-    """
-    entries = SoftwareDictionary.objects.exclude(platform_family__isnull=True).exclude(
-        platform_family=""
+def asset_exposures(asset_id, status="open", now=None):
+    """A machine's exposures, open or closed, exclusions marked."""
+    exclusions = active_exclusions(now)
+    exposures = Exposure.objects.filter(asset_id=asset_id).select_related(
+        "vulnerability"
     )
-    if asset_id is not None:
-        entries = entries.filter(assets__id=asset_id)
-    entries = {
-        entry_id: (name, version, family, key)
-        for entry_id, name, version, family, key in entries.values_list(
-            "id", "name", "version", "platform_family", "platform_key"
+    if status == "open":
+        exposures = exposures.filter(closed_at__isnull=True)
+    elif status == "closed":
+        exposures = exposures.filter(closed_at__isnull=False)
+    names = dict(InventoryBase.objects.filter(id=asset_id).values_list("id", "name"))
+    rows = []
+    for exposure in exposures:
+        vulnerability = exposure.vulnerability
+        row = _exposure_row(
+            exposure,
+            names,
+            exclusions.excludes(asset_id, vulnerability.vuln_id),
         )
-    }
-    identities = {
-        entry_id: rest
-        for entry_id, *rest in SoftwareIdentity.objects.filter(
-            entry_id__in=entries
-        ).values_list("entry_id", "status", "reason", "scheme", "product", "version")
-    }
-    checks = {
-        (source, key): bool(error)
-        for source, key, error in ProductCheck.objects.values_list(
-            "source", "key", "error"
+        row.update(
+            {
+                "vuln_id": vulnerability.vuln_id,
+                "summary": vulnerability.summary,
+                "cvss_score": vulnerability.cvss_score,
+                "level": level(vulnerability.cvss_score, vulnerability.distro_rating),
+                "kev": vulnerability.kev,
+                "epss": vulnerability.epss,
+                "noise": noise_of(
+                    {
+                        "rating": exposure.rating,
+                        "kernel": exposure.kernel,
+                        "fixed_version": exposure.fixed_version,
+                    }
+                ),
+            }
         )
-    }
-    state = {
-        entry_id: _entry_state(identities.get(entry_id), key, checks)
-        for entry_id, (_, _, _, key) in entries.items()
-    }
-    links = SoftwareDictionary.assets.through.objects.filter(
-        softwaredictionary_id__in=entries
-    )
-    if asset_id is not None:
-        links = links.filter(inventorybase_id=asset_id)
-    platforms = {
-        asset: (family, running)
-        for asset, family, running in AssetPlatform.objects.values_list(
-            "asset_id", "family", "running_kernel"
-        )
-    }
+        rows.append(row)
+    order = priority()
+    for row in rows:
+        row["machines"] = 1
+    return sort_rows(rows, order)
 
-    per_family = defaultdict(lambda: {"entries": Counter(), "installations": Counter()})
-    for entry_id, (_, _, family, _) in entries.items():
-        per_family[family]["entries"][state[entry_id]] += 1
-    running_kernel_states = defaultdict(set)
-    for entry_id, asset in links.values_list(
-        "softwaredictionary_id", "inventorybase_id"
-    ):
-        name, version, family, _ = entries[entry_id]
-        identity = identities.get(entry_id)
-        source = _source(identity[2], identity[3]) if identity else ""
-        installation = state[entry_id]
-        if is_kernel(name, family, source):
-            running = platforms.get(asset, ("", ""))[1]
-            if is_running_kernel(name, version, family, running, source):
-                running_kernel_states[asset].add(state[entry_id])
-            else:
-                installation = "kernel_not_running"
-        per_family[family]["installations"][installation] += 1
-    running_kernel_state = {
-        asset: min(states, key=_KERNEL_PRIORITY.index)
-        for asset, states in running_kernel_states.items()
-    }
 
+def sources(now=None):
+    """Each source's state: never loaded, stale or fresh, with its last runs."""
+    syncs = source_syncs()
+    return [
+        {
+            "source": source,
+            "state": source_state(syncs[source], now),
+            "last_attempt": syncs[source].last_attempt,
+            "last_success": syncs[source].last_success,
+            "error": syncs[source].error,
+            "record_count": syncs[source].record_count,
+            "details": syncs[source].details,
+        }
+        for source in SOURCES
+    ]
+
+
+def coverage(asset_id=None, now=None):
+    """
+    What is checked and what is not: installations per family and state (the
+    first test that fails), running kernels per state, the sources.
+    """
+    context = Context(now)
+    installations = Installations(context, None if asset_id is None else [asset_id])
+    installations.load_evaluations()
+    per_family = defaultdict(Counter)
+    for asset, entry_ids in installations.entries_of.items():
+        for entry_id in entry_ids:
+            family = installations.entries[entry_id][2] or ""
+            if not family:
+                continue
+            per_family[family][installations.state(entry_id, asset)] += 1
     linux_assets = [
         asset
-        for asset, (family, _) in platforms.items()
-        if family in ("deb", "rpm") and (asset_id is None or asset == asset_id)
+        for asset, (family, _, _) in installations.platforms.items()
+        if family in ("deb", "rpm")
     ]
-    kernels = Counter(
-        running_kernel_state.get(asset, "host_or_custom") for asset in linux_assets
-    )
+    kernels = Counter(installations.running_kernel_state(a) for a in linux_assets)
+    state = ScanState.objects.order_by("id").first()
     result = {
+        "states": list(STATES),
         "families": [
-            {
-                "family": family,
-                "entries": dict(counts["entries"]),
-                "installations": dict(counts["installations"]),
-            }
+            {"family": family, "installations": dict(counts)}
             for family, counts in sorted(per_family.items())
         ],
-        "last_check": ProductCheck.objects.aggregate(last=Max("checked_at"))["last"],
+        "sources": sources(now),
+        "last_full_scan": state.last_full_scan if state else None,
+        "last_incremental_scan": state.last_incremental_scan if state else None,
+        "last_exposure": Exposure.objects.aggregate(last=Max("last_seen"))["last"],
     }
     if asset_id is None:
         result["kernels"] = dict(kernels)
@@ -360,7 +389,29 @@ def coverage(asset_id=None):
         result["unchecked"] = sum(
             n
             for counts in per_family.values()
-            for state_name, n in counts["installations"].items()
-            if state_name != "checked"
+            for state_name, n in counts.items()
+            if state_name != CHECKED
         )
     return result
+
+
+def asset_software_states(asset_id, now=None):
+    """A machine's software with the state of each installation."""
+    context = Context(now)
+    installations = Installations(context, [asset_id])
+    installations.load_evaluations()
+    rows = []
+    for entry_id in installations.entries_of.get(asset_id, ()):
+        name, version, family, _, _ = installations.entries[entry_id]
+        identity = installations.identities.get(entry_id)
+        rows.append(
+            {
+                "entry": entry_id,
+                "name": name,
+                "version": version,
+                "family": family,
+                "product": identity[3] if identity else "",
+                "state": installations.state(entry_id, asset_id),
+            }
+        )
+    return sorted(rows, key=lambda row: (STATES.index(row["state"]), row["name"] or ""))
