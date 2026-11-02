@@ -21,11 +21,18 @@ from security.models import (
     SecuritySettings,
     Vulnerability,
 )
-from security.scan import CHECKED, STATES, Installations
+from security.scan import (
+    CHECKED,
+    EXCLUDED,
+    KERNEL_NOT_RUNNING,
+    STATES,
+    Installations,
+)
 from security.sources import nvd, osv
 from security.sync import source_state, source_syncs
 
 LEVELS = ("critical", "high", "medium", "low", "unknown")
+NOT_UNCHECKED = (CHECKED, EXCLUDED, KERNEL_NOT_RUNNING)
 PRODUCTS_SHOWN = 5
 
 # Findings faithful to their source but hidden by default (counted)
@@ -43,6 +50,16 @@ def noise_of(exposure):
     if exposure["kernel"] and not exposure["fixed_version"]:
         return NOISE_KERNEL_UNFIXED
     return ""
+
+
+def row_noise(categories):
+    """
+    The noise category of a vulnerability row: the one of all its detections
+    shown, "" as soon as one of them is not noise.
+    """
+    if not categories or "" in categories:
+        return ""
+    return next(category for category in NOISE if category in categories)
 
 
 def priority(ordering=None):
@@ -111,6 +128,7 @@ def vulnerability_rows(
             "certain": False,
             "methods": set(),
             "first_seen": None,
+            "noise": set(),
         }
     )
     for exposure in exposures.values(
@@ -135,6 +153,7 @@ def vulnerability_rows(
             hidden[noise] += 1
             continue
         group = grouped[exposure["vulnerability_id"]]
+        group["noise"].add(noise)
         group["machines"].add(exposure["asset_id"])
         group["products"][(exposure["product"], exposure["version"])] = exposure[
             "software_name"
@@ -177,6 +196,7 @@ def vulnerability_rows(
             "fixed_versions": sorted(group["fixed"])[:PRODUCTS_SHOWN],
             "fix_channels": sorted(c or "standard" for c in group["channels"]),
             "uncertain": not group["certain"],
+            "noise": row_noise(group["noise"]),
             "first_seen": group["first_seen"],
         }
         if level_filter and row["level"] != level_filter:
@@ -382,16 +402,19 @@ def coverage(asset_id=None, now=None):
         "last_incremental_scan": state.last_incremental_scan if state else None,
         "last_exposure": Exposure.objects.aggregate(last=Max("last_seen"))["last"],
     }
+    totals = Counter()
+    for counts in per_family.values():
+        totals.update(counts)
+    # Not checked: every state but checked, the excluded machines (left out
+    # on purpose, counted apart) and the kernels not running (out of scope)
+    result["unchecked"] = sum(
+        n for state_name, n in totals.items() if state_name not in NOT_UNCHECKED
+    )
+    result["excluded"] = totals.get(EXCLUDED, 0)
     if asset_id is None:
         result["kernels"] = dict(kernels)
     else:
         result["kernel"] = next(iter(kernels), "not_applicable")
-        result["unchecked"] = sum(
-            n
-            for counts in per_family.values()
-            for state_name, n in counts.items()
-            if state_name != CHECKED
-        )
     return result
 
 

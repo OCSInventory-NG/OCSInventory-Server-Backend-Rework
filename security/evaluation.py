@@ -15,7 +15,7 @@ from django.db import transaction
 from django.utils import timezone
 from inventory.software.models import DistroRelease
 from inventory.software_identity.models import CpeAlias, PackageOrigin
-from security.cvss import base_score
+from security.cvss import base_score, normalize_rating
 from security.models import (
     CHANNEL_STANDARD,
     CHANNEL_UBUNTU_PRO,
@@ -259,7 +259,7 @@ def evaluate_osv(key, context):
                     "affected_range": words,
                     "method": METHOD_OSV,
                     "uncertain": False,
-                    "rating": advisory.rating or urgency,
+                    "rating": normalize_rating(advisory.rating or urgency),
                     "summary": advisory.summary,
                     "published": advisory.published,
                     "vector": advisory.cvss_vector,

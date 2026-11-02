@@ -1,3 +1,5 @@
+from django.db.models import Q
+from django.utils import timezone
 from inventory.software_identity.services import IdentityService
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
@@ -133,13 +135,27 @@ class ExposureViewSet(viewsets.OCSViewSet):
 
 
 class ExclusionViewSet(viewsets.OCSViewSet):
+    """Exclusions; ?active=true|false keeps those in force, or the expired ones."""
+
     permission_classes = [DefaultModelPermissions]
-    queryset = Exclusion.objects.all()
+    queryset = Exclusion.objects.select_related("asset", "group", "user")
     serializer_class = ExclusionSerializer
     model = Exclusion
     filterset_fields = ["id", "vuln_id", "asset", "group", "user"]
     search_fields = ["vuln_id", "comment"]
     ordering = ["-created_at"]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        active = _choice(self.request.query_params, "active", ("true", "false"))
+        if active is None:
+            return queryset
+        in_force = Q(expires_at__isnull=True) | Q(expires_at__gt=timezone.now())
+        return (
+            queryset.filter(in_force)
+            if active == "true"
+            else queryset.exclude(in_force)
+        )
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)

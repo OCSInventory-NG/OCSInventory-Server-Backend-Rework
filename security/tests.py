@@ -1558,3 +1558,61 @@ def test_incremental_scan_takes_machines_whose_software_got_an_identity(debian_d
     ScanService.incremental(now=NOW + timedelta(hours=1))
 
     assert len(open_exposures(asset)) == 2
+
+
+@pytest.mark.parametrize(
+    "value, expected",
+    [
+        ("Important", "important"),
+        ("  Not Yet  Assigned ", "not yet assigned"),
+        ("low**", "low"),
+        ("", ""),
+    ],
+)
+def test_ratings_are_normalized(value, expected):
+    from security.cvss import RATINGS, normalize_rating
+
+    assert normalize_rating(value) == expected
+    assert not expected or expected in RATINGS
+
+
+@pytest.mark.django_db
+def test_rows_tell_their_noise_and_coverage_counts_unchecked(debian_data):
+    asset = make_asset("a")
+    install(asset, "curl", "8.0-1", CURL)
+    install(asset, "nginx", "1.0", "", status="review")
+    ScanService.run(now=NOW)
+
+    rows, _, _ = reading.vulnerability_rows(show=["minor_distro"], now=NOW)
+    assert {row["vuln_id"]: row["noise"] for row in rows} == {
+        "CVE-2026-1": "",
+        "CVE-2026-2": "minor_distro",
+    }
+
+    Exclusion.objects.create(asset=make_asset("b"), comment="lab")
+    install(InventoryBase.objects.get(name="b"), "curl", "8.0-1", CURL)
+    fleet = reading.coverage(now=NOW)
+    machine = reading.coverage(asset.id, now=NOW)
+    # nginx has no identity; the excluded machine is counted apart
+    assert (fleet["unchecked"], fleet["excluded"]) == (1, 1)
+    assert (machine["unchecked"], machine["excluded"]) == (1, 0)
+
+
+@pytest.mark.django_db
+def test_exclusions_carry_names_and_filter_on_active(api_client, admin_user):
+    asset = make_asset("srv-01")
+    group = AssetGroup.objects.create(name="lab", user=admin_user, visibility="public")
+    Exclusion.objects.create(asset=asset, comment="x", user=admin_user)
+    Exclusion.objects.create(
+        group=group, comment="y", expires_at=NOW - timedelta(days=1)
+    )
+
+    rows = api_client.get("/vulnerability_exclusions/?active=true").data
+    assert [(r["asset_name"], r["group_name"], r["user_name"]) for r in rows] == [
+        ("srv-01", "", "test-superuser")
+    ]
+    rows = api_client.get("/vulnerability_exclusions/?active=false").data
+    assert [(r["asset_name"], r["group_name"], r["user_name"]) for r in rows] == [
+        ("", "lab", "")
+    ]
+    assert api_client.get("/vulnerability_exclusions/?active=maybe").status_code == 400

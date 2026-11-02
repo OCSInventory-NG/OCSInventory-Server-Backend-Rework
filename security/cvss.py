@@ -27,6 +27,30 @@ _RATINGS = {
 }
 
 
+# Every rating the sources give, normalized: Debian urgency (unimportant,
+# low, medium, high, not yet assigned, end-of-life), Ubuntu priority
+# (negligible, low, medium, high, critical, untriaged), Rocky and Alma
+# severity (low, moderate, important, critical)
+RATINGS = (
+    "critical",
+    "important",
+    "high",
+    "moderate",
+    "medium",
+    "low",
+    "negligible",
+    "unimportant",
+    "not yet assigned",
+    "untriaged",
+    "end-of-life",
+)
+
+
+def normalize_rating(value):
+    """A source's rating lowercased, without the Debian tracker's asterisks."""
+    return " ".join((value or "").strip().rstrip("*").lower().split())
+
+
 def _roundup(value):
     """Smallest one decimal number not below value, without float artifacts."""
     integer = round(value * 100000)

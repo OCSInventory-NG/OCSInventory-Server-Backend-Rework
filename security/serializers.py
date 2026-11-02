@@ -63,6 +63,11 @@ class ExposureSerializer(ModelSerializer):
 class ExclusionSerializer(ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(read_only=True)
     active = serializers.SerializerMethodField()
+    asset_name = serializers.CharField(source="asset.name", read_only=True, default="")
+    group_name = serializers.CharField(source="group.name", read_only=True, default="")
+    user_name = serializers.CharField(
+        source="user.username", read_only=True, default=""
+    )
 
     class Meta:
         model = Exclusion
@@ -70,14 +75,24 @@ class ExclusionSerializer(ModelSerializer):
             "id",
             "vuln_id",
             "asset",
+            "asset_name",
             "group",
+            "group_name",
             "comment",
             "expires_at",
             "user",
+            "user_name",
             "created_at",
             "active",
         ]
-        read_only_fields = ["user", "created_at", "active"]
+        read_only_fields = [
+            "asset_name",
+            "group_name",
+            "user",
+            "user_name",
+            "created_at",
+            "active",
+        ]
 
     def get_active(self, exclusion) -> bool:
         return exclusion.expires_at is None or exclusion.expires_at > timezone.now()
