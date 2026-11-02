@@ -79,7 +79,7 @@ class ExclusionSerializer(ModelSerializer):
         ]
         read_only_fields = ["user", "created_at", "active"]
 
-    def get_active(self, exclusion):
+    def get_active(self, exclusion) -> bool:
         return exclusion.expires_at is None or exclusion.expires_at > timezone.now()
 
     def validate_comment(self, value):
