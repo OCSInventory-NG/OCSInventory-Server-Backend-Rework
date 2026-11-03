@@ -38,7 +38,12 @@ class InventoryBaseSerializer(ExpandableFieldsMixin, ModelSerializer):
         expandable_fields = {
             "template": TemplateSerializer,
         }
-        extra_kwargs = {"last_update": {"read_only": True}}
+        extra_kwargs = {
+            "last_update": {"read_only": True},
+            # SNMP devices (printers, voice gateways) often have no
+            # ENTITY-MIB serial; allow creating the asset without it.
+            "serial": {"required": False, "allow_blank": True},
+        }
         http_method_names = ["get", "post", "patch", "delete"]
 
     def get_matched(self, obj):
