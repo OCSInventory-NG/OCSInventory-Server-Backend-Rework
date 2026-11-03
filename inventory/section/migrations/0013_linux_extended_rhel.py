@@ -228,7 +228,7 @@ def create_linux_extended_rhel_sections(apps, schema_editor):
             "name": "RUNNING PROCESS",
             "retrieval_method": "BASH",
             "retrieval_output": "REGX",
-            "target": 'ps aux 2>/dev/null | tail -n +2 | while read user pid cpu mem vsz rss tty stat started time cmd; do year=$(date +%Y); mon=$(date +%m); day=$(date +%d); if echo "$started" | grep -qE "^[A-Za-z]{3}"; then m=$(echo "$started" | cut -c1-3); d=$(echo "$started" | cut -c4-); m=$(echo "$m" | awk \'BEGIN{split("Jan 01 Feb 02 Mar 03 Apr 04 May 05 Jun 06 Jul 07 Aug 08 Sep 09 Oct 10 Nov 11 Dec 12",a); for(i=1;i<=24;i+=2)m[a[i]]=a[i+1]}{print m[$1]}\'); begin="${year}-${m}-${d} ${time}"; else begin="${year}-${mon}-${day} ${started}"; fi; printf "USERNAME=%s\\nPROCESSID=%s\\nCPUUSAGE=%s\\nPROCESSMEMORY=%s\\nVIRTUALMEMORY=%s\\nTTY=%s\\nSTARTED=%s\\nCOMMANDLINE=%s\\n---\\n" "$user" "$pid" "$cpu" "$mem" "$vsz" "$tty" "$begin" "$cmd"; done',
+            "target": 'LC_ALL=C ps -eo user=,pid=,pcpu=,pmem=,vsz=,tty=,lstart=,args= 2>/dev/null | while read user pid cpu mem vsz tty wday month day clock year cmd; do begin=$(date -d "$month $day $year $clock" "+%Y-%m-%d %H:%M"); printf "USERNAME=%s\\nPROCESSID=%s\\nCPUUSAGE=%s\\nPROCESSMEMORY=%s\\nVIRTUALMEMORY=%s\\nTTY=%s\\nSTARTED=%s\\nCOMMANDLINE=%s\\n---\\n" "$user" "$pid" "$cpu" "$mem" "$vsz" "$tty" "$begin" "$cmd"; done',
             "options": {"multiple": False, "separator": "USERNAME"},
             "template": template,
         },
