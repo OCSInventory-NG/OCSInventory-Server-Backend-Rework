@@ -1803,8 +1803,10 @@ paths:
     get:
       operationId: asset_groups_list
       description: |-
-        Return the list of objects that the user can see (public,
-        private_personal, private_group)
+        AssetGroup ViewSet
+
+        Inherits from RestrictVisibilityViewSet to restrict the visibility of the
+        Search objects based on user and group membership
       parameters:
       - in: query
         name: assets
@@ -5257,6 +5259,281 @@ paths:
       responses:
         '204':
           description: No response body
+  /column_layouts/:
+    get:
+      operationId: column_layouts_list
+      description: |-
+        This class will define the view behavior
+
+        Args:
+            viewsets ([RestrictVisibilityViewSet])
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - xml
+      - in: query
+        name: id
+        schema:
+          type: integer
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: name
+        schema:
+          type: string
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: target
+        schema:
+          type: string
+          enum:
+          - asset
+        description: '* `asset` - Assets'
+      tags:
+      - column_layouts
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedColumnLayoutList'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/PaginatedColumnLayoutList'
+          description: ''
+    post:
+      operationId: column_layouts_create
+      description: |-
+        Handle post request, suitable for single and multi creation
+
+        Args:
+            request ([dict]): can be dict or list of dicts
+
+        Returns:
+            [type]: [description]
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - xml
+      tags:
+      - column_layouts
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ColumnLayout'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ColumnLayout'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ColumnLayout'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/ColumnLayout'
+        required: true
+      security:
+      - knoxApiToken: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ColumnLayout'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ColumnLayout'
+          description: ''
+  /column_layouts/{id}/:
+    get:
+      operationId: column_layouts_retrieve
+      description: |-
+        This class will define the view behavior
+
+        Args:
+            viewsets ([RestrictVisibilityViewSet])
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - xml
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this column layout.
+        required: true
+      tags:
+      - column_layouts
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ColumnLayout'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ColumnLayout'
+          description: ''
+    put:
+      operationId: column_layouts_update
+      description: |-
+        User needs to either be the creator or part of the group
+        (if allow_group_modification is enabled) to modify a
+        visibility restricted object
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - xml
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this column layout.
+        required: true
+      tags:
+      - column_layouts
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ColumnLayout'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ColumnLayout'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ColumnLayout'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/ColumnLayout'
+        required: true
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ColumnLayout'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ColumnLayout'
+          description: ''
+    patch:
+      operationId: column_layouts_partial_update
+      description: |-
+        This class will define the view behavior
+
+        Args:
+            viewsets ([RestrictVisibilityViewSet])
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - xml
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this column layout.
+        required: true
+      tags:
+      - column_layouts
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedColumnLayout'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedColumnLayout'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedColumnLayout'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/PatchedColumnLayout'
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ColumnLayout'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ColumnLayout'
+          description: ''
+    delete:
+      operationId: column_layouts_destroy
+      description: User needs to be the creator to delete a visibility restricted
+        object
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - xml
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this column layout.
+        required: true
+      tags:
+      - column_layouts
+      security:
+      - knoxApiToken: []
+      responses:
+        '204':
+          description: No response body
   /compliance/eol-extended-support/:
     get:
       operationId: compliance_eol_extended_support_list
@@ -7847,8 +8124,9 @@ paths:
     put:
       operationId: dashboard_layout_update
       description: |-
-        this class will permit the frontend server to manage configuration
-        for the dashboard.
+        User needs to either be the creator or part of the group
+        (if allow_group_modification is enabled) to modify a
+        visibility restricted object
       parameters:
       - in: query
         name: format
@@ -7941,9 +8219,8 @@ paths:
           description: ''
     delete:
       operationId: dashboard_layout_destroy
-      description: |-
-        this class will permit the frontend server to manage configuration
-        for the dashboard.
+      description: User needs to be the creator to delete a visibility restricted
+        object
       parameters:
       - in: query
         name: format
@@ -11487,8 +11764,13 @@ paths:
     get:
       operationId: search_save_list
       description: |-
-        Return the list of objects that the user can see (public,
-        private_personal, private_group)
+        This class will define the view behavior
+
+        Inherits from RestrictVisibilityViewSet to restrict the visibility of the
+        Search objects based on user and group membership
+
+        Args:
+            viewsets ([OCSVIewSet])
       parameters:
       - in: query
         name: description
@@ -14255,8 +14537,10 @@ paths:
     get:
       operationId: virtual_cols_list
       description: |-
-        Return the list of objects that the user can see (public,
-        private_personal, private_group)
+        This class will define the view behavior
+
+        Args:
+            viewsets ([RestrictVisibilityViewSet])
       parameters:
       - in: query
         name: format
@@ -14913,6 +15197,40 @@ components:
       required:
       - id
       - message
+    ColumnLayout:
+      type: object
+      description: This serialize class provide the API representation
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        visibility:
+          $ref: '#/components/schemas/VisibilityEnum'
+        allow_group_modification:
+          type: boolean
+        name:
+          type: string
+          maxLength: 100
+        target:
+          $ref: '#/components/schemas/TargetEnum'
+        columns: {}
+        last_updated:
+          type: string
+          format: date-time
+          readOnly: true
+        user:
+          type: integer
+          readOnly: true
+        groups:
+          type: array
+          items:
+            type: integer
+      required:
+      - columns
+      - id
+      - last_updated
+      - name
+      - user
     ComplianceResult:
       type: object
       description: |-
@@ -15104,6 +15422,7 @@ components:
           $ref: '#/components/schemas/VisibilityEnum'
         user:
           type: integer
+          readOnly: true
         groups:
           type: array
           items:
@@ -15968,6 +16287,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Category'
+    PaginatedColumnLayoutList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ColumnLayout'
     PaginatedComplianceResultList:
       type: object
       required:
@@ -17058,6 +17400,34 @@ components:
             type: integer
         is_protected:
           type: boolean
+    PatchedColumnLayout:
+      type: object
+      description: This serialize class provide the API representation
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        visibility:
+          $ref: '#/components/schemas/VisibilityEnum'
+        allow_group_modification:
+          type: boolean
+        name:
+          type: string
+          maxLength: 100
+        target:
+          $ref: '#/components/schemas/TargetEnum'
+        columns: {}
+        last_updated:
+          type: string
+          format: date-time
+          readOnly: true
+        user:
+          type: integer
+          readOnly: true
+        groups:
+          type: array
+          items:
+            type: integer
     PatchedComplianceResult:
       type: object
       description: |-
@@ -17180,6 +17550,7 @@ components:
           $ref: '#/components/schemas/VisibilityEnum'
         user:
           type: integer
+          readOnly: true
         groups:
           type: array
           items:
