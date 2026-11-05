@@ -311,18 +311,63 @@ def _words(bounds):
     return " ".join(words)
 
 
-def evaluate(matches, installed):
+# Operating systems named by the target_sw field of a CPE, and those each
+# platform runs: a CPE for another system is not the installed software
+# (FortiClient for macOS, Firefox for iOS). Other target_sw values name a
+# runtime or a host application (node.js, wordpress) and never exclude.
+OPERATING_SYSTEMS = {
+    "windows",
+    "macos",
+    "mac_os",
+    "mac_os_x",
+    "os_x",
+    "unix",
+    "linux",
+    "linux_kernel",
+    "android",
+    "iphone_os",
+    "ipados",
+    "ios",
+    "chrome_os",
+    "aix",
+    "freebsd",
+    "solaris",
+    "esxi",
+    "suse_linux_enterprise",
+}
+PLATFORM_SYSTEMS = {
+    "windows": {"windows"},
+    "macos": {"macos", "mac_os", "mac_os_x", "os_x", "unix"},
+}
+
+
+def for_platform(criteria, platform):
+    """
+    Whether a CPE criteria can describe software of this platform: its
+    target_sw is any, not an operating system, or one the platform runs.
+    An unknown platform keeps every criteria.
+    """
+    systems = PLATFORM_SYSTEMS.get(platform)
+    if systems is None:
+        return True
+    parts = _UNESCAPED_COLON.split(criteria)
+    target = _unescape(parts[10]).lower() if len(parts) > 10 else "*"
+    return target not in OPERATING_SYSTEMS or target in systems
+
+
+def evaluate(matches, installed, platform=""):
     """
     How an installed version is affected by the matches of one CVE, None when
     it is not. A range or an exact version wins over an "all versions" entry;
-    "all versions" and a condition on another product are uncertain.
+    "all versions" and a condition on another product are uncertain. Matches
+    for another operating system than the platform's are skipped.
     """
     version = cpe_version(installed or "")
     all_versions = None
     for match in matches:
         bounds = match["bounds"]
         parts = _UNESCAPED_COLON.split(match["criteria"])
-        if len(parts) < 7:
+        if len(parts) < 7 or not for_platform(match["criteria"], platform):
             continue
         exact, update = _unescape(parts[5]), _unescape(parts[6])
         if bounds:

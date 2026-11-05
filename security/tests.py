@@ -1,4 +1,5 @@
 import gzip
+import importlib
 import io
 import json
 import shutil
@@ -620,6 +621,49 @@ def test_nvd_all_versions_and_conditions_are_uncertain():
     assert nvd.evaluate([everything], "24.08")["uncertain"] is True
     result = nvd.evaluate([everything, conditional], "24.08")
     assert (result["method"], result["uncertain"]) == ("nvd_range", True)
+
+
+def forticlient(target_sw, end="7.4.4"):
+    return {
+        "criteria": f"cpe:2.3:a:fortinet:forticlient:*:*:*:*:*:{target_sw}:*:*",
+        "bounds": {"versionStartIncluding": "7.4.0", "versionEndExcluding": end},
+        "conditional": False,
+    }
+
+
+@pytest.mark.parametrize(
+    "target_sw, platform, affected",
+    [
+        ("*", "windows", True),
+        ("-", "macos", True),
+        ("windows", "windows", True),
+        ("macos", "windows", False),
+        ("linux", "windows", False),
+        ("iphone_os", "macos", False),
+        ("android", "macos", False),
+        ("mac_os_x", "macos", True),
+        ("unix", "macos", True),
+        ("windows", "macos", False),
+        # a runtime or a host application, not an operating system
+        ("node.js", "windows", True),
+        ("wordpress", "macos", True),
+        # no platform known: nothing is skipped
+        ("macos", "", True),
+    ],
+)
+def test_nvd_skips_the_cpes_of_another_operating_system(
+    target_sw, platform, affected
+):
+    result = nvd.evaluate([forticlient(target_sw)], "7.4.3.1790", platform)
+
+    assert (result is not None) == affected
+
+
+def test_nvd_keeps_the_match_of_the_platform_among_others():
+    matches = [forticlient("macos", "7.4.9"), forticlient("windows")]
+
+    assert nvd.evaluate(matches, "7.4.3", "windows")["fixed_version"] == "7.4.4"
+    assert nvd.evaluate(matches, "7.4.3", "macos")["fixed_version"] == "7.4.9"
 
 
 @pytest.mark.django_db
@@ -1281,6 +1325,46 @@ class TestNvdScan:
             product="zoom:zoom", alias="zoom:meetings"
         ).exists()
 
+    def test_a_cpe_for_another_system_is_not_reported(self, nvd_data, tmp_path):
+        nvd.load_year(
+            2025,
+            nvd_feed(
+                tmp_path / "2025.gz",
+                [
+                    nvd_item(
+                        "CVE-2025-0200",
+                        "cpe:2.3:a:zoom:zoom:*:*:*:*:*:macos:*:*",
+                        {"versionEndExcluding": "7.0"},
+                    )
+                ],
+            ),
+            full=True,
+        )
+        windows = make_asset("w", family="windows", key="windows")
+        mac = make_asset("m", family="macos", key="macos")
+        for asset, family in ((windows, "windows"), (mac, "macos")):
+            install(
+                asset,
+                "Zoom Workplace",
+                "6.1.5",
+                "zoom:zoom",
+                family=family,
+                key=family,
+                origin=None,
+            )
+
+        ScanService.run(now=NOW)
+
+        def found(asset):
+            return set(
+                Exposure.objects.filter(asset=asset).values_list(
+                    "vulnerability__vuln_id", flat=True
+                )
+            )
+
+        assert "CVE-2025-0200" not in found(windows)
+        assert "CVE-2025-0200" in found(mac)
+
     def test_a_year_out_of_the_window_closes_its_exposures(self, nvd_data):
         asset = make_asset("w", family="windows", key="windows")
         install(
@@ -1760,3 +1844,35 @@ def test_demo_data_shows_every_state_and_resolution(admin_user):
     call_command("security_demo", "--reset", stdout=io.StringIO())
     assert not InventoryBase.objects.filter(uuid__startswith="demo-security-").exists()
     assert not Vulnerability.objects.exists()
+
+
+@pytest.mark.django_db
+def test_the_cpe_evaluations_are_made_again_after_the_platform_filter():
+    from django.apps import apps as django_apps
+
+    migration = importlib.import_module(
+        "security.migrations.0004_reevaluate_cpe_platform"
+    )
+    sources = {"nvd": NOW.isoformat()}
+    cpe = Evaluation.objects.create(
+        scheme="cpe",
+        product="zoom:zoom",
+        version="6.1.5",
+        platform_key="windows",
+        evaluated_at=NOW,
+        sources=sources,
+    )
+    purl = Evaluation.objects.create(
+        scheme="purl",
+        product="pkg:deb/debian/curl",
+        version="8.0-1",
+        platform_key="debian:12",
+        evaluated_at=NOW,
+        sources=sources,
+    )
+
+    migration.reevaluate_cpe(django_apps, None)
+
+    cpe.refresh_from_db()
+    purl.refresh_from_db()
+    assert (cpe.sources, purl.sources) == ({}, sources)

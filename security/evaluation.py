@@ -300,7 +300,7 @@ class NvdProducts:
 def evaluate_nvd(key, products):
     findings = []
     for cve_id, matches in sorted(products.matches(key.product).items()):
-        result = nvd.evaluate(matches, key.version)
+        result = nvd.evaluate(matches, key.version, key.platform_key)
         if result is None:
             continue
         findings.append(
