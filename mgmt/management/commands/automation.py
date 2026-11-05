@@ -73,6 +73,10 @@ class Command(BaseCommand):
 
         def updateHistory(task, comment, status):
             """Update history with task and comment"""
+            # an error message can exceed the column, keep its beginning
+            size = History._meta.get_field("comment").max_length
+            if len(comment) > size:
+                comment = comment[: size - 1] + "…"
             h = History(scheduler=task, comment=comment, status=status)
             h.save()
             logger.debug(f"History updated for task {task.name}: {comment}")
