@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 from django.conf import settings
 from django.db import IntegrityError, transaction
 from django.utils import timezone
+from security import config as security_config
 from security.models import (
     OSV_SOURCES,
     SOURCE_EPSS,
@@ -22,7 +23,6 @@ from security.models import (
     ScanLock,
     SourceSync,
 )
-from security import config as security_config
 from security.sources import epss, fetch, kev, nvd, osv
 
 logger = logging.getLogger(__name__)

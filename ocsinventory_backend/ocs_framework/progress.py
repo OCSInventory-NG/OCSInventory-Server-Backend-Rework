@@ -46,9 +46,7 @@ class Progress:
     def advance(self, amount=1):
         self.done += amount
         now = self.clock()
-        if now - self.last >= self.interval and self.logger.isEnabledFor(
-            logging.DEBUG
-        ):
+        if now - self.last >= self.interval and self.logger.isEnabledFor(logging.DEBUG):
             self.last = now
             self.logger.debug(self.message())
 

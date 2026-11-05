@@ -12,6 +12,7 @@ import pytest
 from asset.asset_group.models import AssetGroup
 from asset.inventory_base.models import InventoryBase
 from automation.scheduler.models import Scheduler
+from config.models import Config
 from django.contrib.auth.models import User
 from inventory.software.models import AssetPlatform, DistroRelease, SoftwareDictionary
 from inventory.software_identity.models import (
@@ -19,7 +20,6 @@ from inventory.software_identity.models import (
     PackageOrigin,
     SoftwareIdentity,
 )
-from config.models import Config
 from security import config as security_config
 from security import reading
 from security.cvss import base_score, level
@@ -1470,8 +1470,7 @@ class TestApi:
         assert api_client.get(f"/vulnerabilities/?{params}").status_code == 400
         if not params.startswith("ordering"):
             assert (
-                api_client.get(f"/vulnerabilities/summary/?{params}").status_code
-                == 400
+                api_client.get(f"/vulnerabilities/summary/?{params}").status_code == 400
             )
 
     def test_summary_counts_what_the_list_shows(self, api_client, debian_data):

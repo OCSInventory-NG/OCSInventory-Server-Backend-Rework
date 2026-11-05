@@ -71,9 +71,7 @@ def base_score(vector):
         if values["S"] not in ("U", "C"):
             return None
         iss = 1 - (
-            (1 - _CIA[values["C"]])
-            * (1 - _CIA[values["I"]])
-            * (1 - _CIA[values["A"]])
+            (1 - _CIA[values["C"]]) * (1 - _CIA[values["I"]]) * (1 - _CIA[values["A"]])
         )
         privileges = (_PR_CHANGED if changed else _PR_UNCHANGED)[values["PR"]]
         exploitability = (
