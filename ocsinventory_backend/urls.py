@@ -40,7 +40,6 @@ from automation.history.routers import HistoryRouter
 from automation.rule.routers import RuleRouter
 from automation.scheduler.routers import SchedulerRouter
 from compliance.routers import ComplianceRouter
-from security.routers import SecurityRouter
 from config.routers import ConfigRouter
 from dashboard.chart.routers import DashboardChartRouter
 from dashboard.layout.routers import DashboardLayoutRouter
@@ -74,6 +73,7 @@ from permission.routers import PermissionRouter
 from rest_framework.routers import DefaultRouter
 from search.routers import SearchRouter
 from search.views import SearchView
+from security.routers import SecurityRouter
 from snmp.scanner.routers import SnmpScannerRouter
 from snmp.snmp_config.routers import SnmpConfigRouter
 from user.routers import UserRouter
