@@ -29,6 +29,8 @@ logger = logging.getLogger(__name__)
 
 FIRST_YEAR = 2002
 BATCH = 2000
+# Rows per INSERT: a CVE can carry thousands of CPE matches
+WRITE_BATCH = 1000
 # Years outside the window (scores only) are checked again after this
 SCORE_YEARS_RECHECK = timedelta(days=7)
 _BOUNDS = (
@@ -196,20 +198,23 @@ def _date(value):
 
 def _flush(year, full, cves):
     NvdCve.objects.bulk_create(
-        NvdCve(
-            cve_id=cve["id"],
-            year=year,
-            full=full,
-            rejected=cve["rejected"],
-            published=_date(cve["published"]),
-            modified=_date(cve["modified"]),
-            description=cve["description"] if full else "",
-            cvss3_vector=cve["cvss3_vector"][:255],
-            cvss3_score=cve["cvss3_score"],
-            cvss4_vector=cve["cvss4_vector"][:255],
-            cvss4_score=cve["cvss4_score"],
-        )
-        for cve in cves
+        (
+            NvdCve(
+                cve_id=cve["id"],
+                year=year,
+                full=full,
+                rejected=cve["rejected"],
+                published=_date(cve["published"]),
+                modified=_date(cve["modified"]),
+                description=cve["description"] if full else "",
+                cvss3_vector=cve["cvss3_vector"][:255],
+                cvss3_score=cve["cvss3_score"],
+                cvss4_vector=cve["cvss4_vector"][:255],
+                cvss4_score=cve["cvss4_score"],
+            )
+            for cve in cves
+        ),
+        batch_size=WRITE_BATCH,
     )
     if not full:
         return
@@ -219,15 +224,18 @@ def _flush(year, full, cves):
         )
     )
     NvdMatch.objects.bulk_create(
-        NvdMatch(
-            cve_id=pk[cve["id"]],
-            vendor_product=match["product"][:511],
-            criteria=match["criteria"][:1024],
-            bounds=match["bounds"],
-            conditional=match["conditional"],
-        )
-        for cve in cves
-        for match in cve["matches"]
+        (
+            NvdMatch(
+                cve_id=pk[cve["id"]],
+                vendor_product=match["product"][:511],
+                criteria=match["criteria"][:1024],
+                bounds=match["bounds"],
+                conditional=match["conditional"],
+            )
+            for cve in cves
+            for match in cve["matches"]
+        ),
+        batch_size=WRITE_BATCH,
     )
 
 

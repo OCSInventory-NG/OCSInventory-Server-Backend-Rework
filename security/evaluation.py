@@ -42,6 +42,8 @@ EvaluationKey = namedtuple(
 )
 
 # Identity statuses whose products are checked, per scheme
+# Rows per INSERT
+WRITE_BATCH = 1000
 COVERED = {"purl": ("matched",), "cpe": ("matched", "validated")}
 
 
@@ -339,7 +341,7 @@ def _vulnerabilities(findings):
         existing[finding["vuln_id"]] = vulnerability
         created.append(vulnerability)
     if created:
-        Vulnerability.objects.bulk_create(created)
+        Vulnerability.objects.bulk_create(created, batch_size=WRITE_BATCH)
         for vulnerability in Vulnerability.objects.filter(
             vuln_id__in=[v.vuln_id for v in created]
         ):
@@ -371,18 +373,21 @@ def store(key, findings, context):
         for finding in findings:
             unique.setdefault(finding["vuln_id"], finding)
         Finding.objects.bulk_create(
-            Finding(
-                evaluation=evaluation,
-                vulnerability=vulnerabilities[vuln_id],
-                advisory_id=finding["advisory_id"][:128],
-                fixed_version=finding["fixed_version"][:255],
-                fix_channel=finding["fix_channel"],
-                affected_range=finding["affected_range"][:255],
-                method=finding["method"],
-                uncertain=finding["uncertain"],
-                rating=(finding["rating"] or "")[:32],
-            )
-            for vuln_id, finding in unique.items()
+            (
+                Finding(
+                    evaluation=evaluation,
+                    vulnerability=vulnerabilities[vuln_id],
+                    advisory_id=finding["advisory_id"][:128],
+                    fixed_version=finding["fixed_version"][:255],
+                    fix_channel=finding["fix_channel"],
+                    affected_range=finding["affected_range"][:255],
+                    method=finding["method"],
+                    uncertain=finding["uncertain"],
+                    rating=(finding["rating"] or "")[:32],
+                )
+                for vuln_id, finding in unique.items()
+            ),
+            batch_size=WRITE_BATCH,
         )
     return evaluation
 

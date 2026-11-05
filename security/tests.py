@@ -401,6 +401,28 @@ def test_osv_compact_keeps_detection_records_only_with_their_packages():
     assert reference["cves"] == ["CVE-2026-29167"]
 
 
+def test_osv_compact_keeps_the_versions_of_an_entry_without_ranges_only():
+    def entry(ranges):
+        return {
+            "package": {"ecosystem": "Ubuntu:24.04:LTS", "name": "curl"},
+            "ranges": ranges,
+            "versions": ["8.5.0-2ubuntu10", "8.5.0-2ubuntu10.1"],
+        }
+
+    events = [{"introduced": "0"}, {"fixed": "8.5.0-2ubuntu10.2"}]
+    record = {
+        "id": "UBUNTU-CVE-2026-1",
+        "affected": [
+            entry([{"type": "ECOSYSTEM", "events": events}]),
+            entry([{"type": "GIT", "events": events}]),
+        ],
+    }
+
+    with_ranges, without = osv.compact(record, ("UBUNTU-CVE-",))["affected"]
+    assert (with_ranges["ranges"], with_ranges["versions"]) == ([events], [])
+    assert (without["ranges"], len(without["versions"])) == ([], 2)
+
+
 def make_zip(path, records):
     with zipfile.ZipFile(path, "w") as archive:
         for record in records:

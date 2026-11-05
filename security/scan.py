@@ -48,6 +48,8 @@ from security.sync import locked
 logger = logging.getLogger(__name__)
 
 ASSET_BATCH = 200
+# Rows per INSERT or UPDATE
+WRITE_BATCH = 1000
 
 
 def memory_mb():
@@ -480,7 +482,7 @@ class ScanService:
                 exposure.resolution = resolution
                 to_close.append(exposure)
         with transaction.atomic():
-            Exposure.objects.bulk_create(to_create)
+            Exposure.objects.bulk_create(to_create, batch_size=WRITE_BATCH)
             Exposure.objects.bulk_update(
                 to_update,
                 [
@@ -497,8 +499,11 @@ class ScanService:
                     "rating",
                     "last_seen",
                 ],
+                batch_size=WRITE_BATCH,
             )
-            Exposure.objects.bulk_update(to_close, ["closed_at", "resolution"])
+            Exposure.objects.bulk_update(
+                to_close, ["closed_at", "resolution"], batch_size=WRITE_BATCH
+            )
         counts["opened"] += len(to_create)
         counts["closed"] += len(to_close)
         for exposure in to_close:

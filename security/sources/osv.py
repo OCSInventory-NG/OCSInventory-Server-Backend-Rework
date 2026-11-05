@@ -44,6 +44,8 @@ DISTRIBUTIONS = {
     "almalinux": SOURCE_OSV_ALMA,
 }
 BATCH = 500
+# Rows per INSERT: an Ubuntu advisory alone can carry hundreds of packages
+WRITE_BATCH = 1000
 # A new archive with less than this share of the advisories loaded is refused
 MIN_SHARE = 0.5
 _LTS = re.compile(r"^\d*[02468]\.04$")
@@ -166,7 +168,10 @@ def compact(record, detection_prefixes):
                     "ecosystem": package.get("ecosystem", ""),
                     "package": package.get("name", ""),
                     "ranges": ranges,
-                    "versions": entry.get("versions") or [],
+                    # The versions enumerated from the ranges: Debian and
+                    # Ubuntu list every published one (95% of the Ubuntu
+                    # archive), all inside the ranges. Kept without ranges only
+                    "versions": [] if ranges else entry.get("versions") or [],
                     "urgency": (entry.get("ecosystem_specific") or {}).get(
                         "urgency", ""
                     ),
@@ -204,19 +209,22 @@ def _write(source, records):
     with transaction.atomic():
         OsvAdvisory.objects.filter(advisory_id__in=ids).delete()
         advisories = OsvAdvisory.objects.bulk_create(
-            OsvAdvisory(
-                source=source,
-                advisory_id=record["id"],
-                detection=record["detection"],
-                cves=record["cves"],
-                summary=record["summary"],
-                published=_date(record["published"]),
-                modified=record["modified"],
-                withdrawn=record["withdrawn"],
-                cvss_vector=record["vector"][:255],
-                rating=record["rating"][:32],
-            )
-            for record in records
+            (
+                OsvAdvisory(
+                    source=source,
+                    advisory_id=record["id"],
+                    detection=record["detection"],
+                    cves=record["cves"],
+                    summary=record["summary"],
+                    published=_date(record["published"]),
+                    modified=record["modified"],
+                    withdrawn=record["withdrawn"],
+                    cvss_vector=record["vector"][:255],
+                    rating=record["rating"][:32],
+                )
+                for record in records
+            ),
+            batch_size=WRITE_BATCH,
         )
         # Read the ids back: bulk_create does not return them on every database
         pk = dict(
@@ -226,21 +234,27 @@ def _write(source, records):
         )
         del advisories
         OsvAdvisoryCve.objects.bulk_create(
-            OsvAdvisoryCve(advisory_id=pk[record["id"]], cve=cve)
-            for record in records
-            for cve in record["cves"]
+            (
+                OsvAdvisoryCve(advisory_id=pk[record["id"]], cve=cve)
+                for record in records
+                for cve in record["cves"]
+            ),
+            batch_size=WRITE_BATCH,
         )
         OsvAffected.objects.bulk_create(
-            OsvAffected(
-                advisory_id=pk[record["id"]],
-                ecosystem=entry["ecosystem"][:64],
-                package=entry["package"][:255],
-                ranges=entry["ranges"],
-                versions=entry["versions"],
-                urgency=entry["urgency"][:32],
-            )
-            for record in records
-            for entry in record["affected"]
+            (
+                OsvAffected(
+                    advisory_id=pk[record["id"]],
+                    ecosystem=entry["ecosystem"][:64],
+                    package=entry["package"][:255],
+                    ranges=entry["ranges"],
+                    versions=entry["versions"],
+                    urgency=entry["urgency"][:32],
+                )
+                for record in records
+                for entry in record["affected"]
+            ),
+            batch_size=WRITE_BATCH,
         )
 
 
