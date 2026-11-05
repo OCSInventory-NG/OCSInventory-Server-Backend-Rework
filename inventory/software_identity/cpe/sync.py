@@ -11,6 +11,11 @@ from django.db import transaction
 from django.utils import timezone
 from inventory.software_identity.cpe.tokens import base_title, title_entries
 from inventory.software_identity.models import CpeIndexState, CpeProduct, CpeToken
+from ocsinventory_backend.ocs_framework.progress import (
+    Progress,
+    ProgressStream,
+    content_length,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +31,10 @@ def http_open(url):
     response = requests.get(url, stream=True, timeout=TIMEOUT)
     response.raise_for_status()
     response.raw.decode_content = True
-    return response.raw
+    progress = Progress(
+        logger, f"Downloading {url}", content_length(response), in_bytes=True
+    )
+    return ProgressStream(response.raw, progress)
 
 
 def sync_cpe_index(open_url=http_open):
@@ -34,13 +42,20 @@ def sync_cpe_index(open_url=http_open):
     Rebuild the CPE index when the NVD CPE dictionary changed.
     Returns True when the index was rebuilt, False when the feed is unchanged.
     """
+    logger.debug("Reading %s", settings.NVD_CPE_META_URL)
     meta = _parse_meta(open_url(settings.NVD_CPE_META_URL).read().decode())
     state = CpeIndexState.current()
     if meta.get("sha256") and meta["sha256"] == state.source_sha256:
         logger.info("NVD CPE dictionary unchanged since %s", state.source_date)
         return False
 
+    logger.info(
+        "NVD CPE dictionary changed (%s), downloading %s",
+        meta.get("lastModifiedDate", "date unknown"),
+        settings.NVD_CPE_FEED_URL,
+    )
     products = _read_feed(open_url(settings.NVD_CPE_FEED_URL))
+    logger.info("NVD CPE feed read: %s applications", len(products))
     if not products or len(products) * 2 < state.product_count:
         raise ValueError(
             f"NVD CPE feed refused: {len(products)} applications against "
@@ -48,6 +63,7 @@ def sync_cpe_index(open_url=http_open):
         )
     with transaction.atomic():
         _replace_index(products)
+        logger.debug("Committing the new CPE index")
         state.version += 1
         state.source_sha256 = meta.get("sha256", "")
         state.source_date = meta.get("lastModifiedDate", "")
@@ -77,6 +93,7 @@ def _read_feed(stream):
                 continue
             for item in json.load(archive.extractfile(member)).get("products", []):
                 _add_cpe(products, item.get("cpe", {}))
+            logger.debug("%s read: %s applications so far", member.name, len(products))
     return {key: data for key, data in products.items() if data["titles"]}
 
 
@@ -104,12 +121,14 @@ def _add_cpe(products, cpe):
 
 
 def _replace_index(products):
+    logger.debug("Deleting the previous CPE index")
     CpeToken.objects.all().delete()
     # The tokens are gone: skip the collector, which would load every product
     # and its JSON just to find nothing left to cascade
     CpeProduct.objects.all()._raw_delete(CpeProduct.objects.db)
+    written = Progress(logger, "CPE products written", len(products))
     CpeProduct.objects.bulk_create(
-        (
+        written.count(
             CpeProduct(
                 vendor=vendor,
                 product=product,
@@ -129,6 +148,7 @@ def _replace_index(products):
         )
     }
 
+    logger.debug("Splitting the product titles into tokens")
     words_by_product = {}
     frequency = Counter()
     for (vendor, product), data in products.items():
@@ -138,8 +158,11 @@ def _replace_index(products):
         frequency.update(words)
 
     total = len(products)
+    written = Progress(
+        logger, "CPE tokens written", sum(map(len, words_by_product.values()))
+    )
     CpeToken.objects.bulk_create(
-        (
+        written.count(
             CpeToken(
                 token=word,
                 product_id=product_id,

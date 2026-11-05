@@ -3,10 +3,14 @@ Downloads of the source files: streamed to a temporary file, asked again only
 when the server says the file changed (ETag, Last-Modified).
 """
 
+import logging
 import os
 import tempfile
 
 import requests
+from ocsinventory_backend.ocs_framework.progress import Progress, content_length
+
+logger = logging.getLogger(__name__)
 
 TIMEOUT = 900
 CHUNK = 1 << 20
@@ -40,11 +44,16 @@ def download(url, fingerprint=None, get=http_get):
     response = get(url, conditional_headers(fingerprint or {}))
     if response.status_code == 304:
         raise Unchanged(url)
+    progress = Progress(
+        logger, f"Downloading {url}", content_length(response), in_bytes=True
+    )
     handle, path = tempfile.mkstemp(prefix="ocs-security-")
     try:
         with os.fdopen(handle, "wb") as output:
             for chunk in response.iter_content(CHUNK):
                 output.write(chunk)
+                progress.advance(len(chunk))
+        progress.finish()
     except BaseException:
         os.unlink(path)
         raise

@@ -7,6 +7,7 @@ their CPE matches, older years with their scores only.
 import gzip
 import io
 import json
+import logging
 import re
 from datetime import timedelta
 from datetime import timezone as dt_timezone
@@ -15,6 +16,7 @@ from django.db import transaction
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 from inventory.software_identity.normalizers.cpe import cpe_version
+from ocsinventory_backend.ocs_framework.progress import Progress
 from security.models import (
     METHOD_NVD_ALL_VERSIONS,
     METHOD_NVD_EXACT,
@@ -22,6 +24,8 @@ from security.models import (
     NvdCve,
     NvdMatch,
 )
+
+logger = logging.getLogger(__name__)
 
 FIRST_YEAR = 2002
 BATCH = 2000
@@ -239,6 +243,7 @@ def load_year(year, path, full):
         with gzip.open(path, "rb") as raw:
             stream = io.TextIOWrapper(raw, encoding="utf-8")
             batch, seen = [], set()
+            written = Progress(logger, f"NVD {year}: CVEs written")
             for item in iter_items(stream):
                 cve = compact(item.get("cve") or {})
                 if cve["id"] in seen or cve_year(cve["id"]) != year:
@@ -248,10 +253,13 @@ def load_year(year, path, full):
                 if len(batch) >= BATCH:
                     _flush(year, full, batch)
                     count += len(batch)
+                    written.advance(len(batch))
                     batch = []
             if batch:
                 _flush(year, full, batch)
                 count += len(batch)
+                written.advance(len(batch))
+            written.finish()
     return count
 
 

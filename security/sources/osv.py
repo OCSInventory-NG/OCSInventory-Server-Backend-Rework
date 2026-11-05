@@ -8,12 +8,14 @@ DSA, DLA and USN are kept as references of their CVEs only.
 """
 
 import json
+import logging
 import re
 import zipfile
 from urllib.parse import quote, unquote
 
 from django.db import transaction
 from django.utils.dateparse import parse_datetime
+from ocsinventory_backend.ocs_framework.progress import Progress
 from security.models import (
     SOURCE_OSV_ALMA,
     SOURCE_OSV_DEBIAN,
@@ -23,6 +25,8 @@ from security.models import (
     OsvAdvisoryCve,
     OsvAffected,
 )
+
+logger = logging.getLogger(__name__)
 
 # Source: (OSV ecosystem of its archive, prefixes of its detection records;
 # None: every record detects)
@@ -251,9 +255,11 @@ def load(source, path):
         OsvAdvisory.objects.filter(source=source).values_list("advisory_id", "modified")
     )
     seen, pending = set(), []
+    read = Progress(logger, f"{source}: advisories read")
     for record in read_archive(path):
         if "id" not in record:
             continue
+        read.advance()
         seen.add(record["id"])
         if record["id"] in known and known[record["id"]] == record.get("modified", ""):
             continue
@@ -268,6 +274,7 @@ def load(source, path):
         )
     if pending:
         _write(source, pending)
+    read.finish()
     gone = [advisory_id for advisory_id in known if advisory_id not in seen]
     for start in range(0, len(gone), BATCH):
         OsvAdvisory.objects.filter(advisory_id__in=gone[start : start + BATCH]).delete()

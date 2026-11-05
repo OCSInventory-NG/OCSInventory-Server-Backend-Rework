@@ -111,6 +111,7 @@ class locked:
 def _load_osv(source, sync, get):
     url = osv.archive_url(settings.OSV_DATA_URL, source)
     path, fingerprint = fetch.download(url, sync.fingerprint, get=get)
+    logger.debug("Loading %s into the database", url)
     try:
         count, details = osv.load(source, path)
     finally:
@@ -120,6 +121,7 @@ def _load_osv(source, sync, get):
 
 def _load_single(loader, url, sync, get):
     path, fingerprint = fetch.download(url, sync.fingerprint, get=get)
+    logger.debug("Loading %s into the database", url)
     try:
         count, details = loader(path)
     finally:
@@ -152,6 +154,7 @@ def _load_nvd(sync, get, now):
             years[str(year)] = {**known, "checked": now.isoformat()}
             continue
         path, _ = fetch.download(url, None, get=get)
+        logger.debug("Loading NVD %s into the database", year)
         try:
             count = nvd.load_year(year, path, full)
         finally:
@@ -183,6 +186,7 @@ class SyncService:
         for source in sources or SOURCES:
             sync, _ = SourceSync.objects.get_or_create(source=source)
             sync.last_attempt = now
+            logger.debug("%s: checking for new data", source)
             try:
                 if source in OSV_SOURCES:
                     count, details, fingerprint = _load_osv(source, sync, get)
