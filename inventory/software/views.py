@@ -1,5 +1,10 @@
-from inventory.software.models import SoftwareDictionary, SoftwareMapping
+from inventory.software.models import (
+    DistroRelease,
+    SoftwareDictionary,
+    SoftwareMapping,
+)
 from inventory.software.serializers import (
+    DistroReleaseSerializer,
     SoftwareDictionarySerializer,
     SoftwareMappingSerializer,
 )
@@ -24,13 +29,23 @@ class SoftwareMappingViewSet(viewsets.OCSViewSet):
         "major_version",
         "minor_version",
         "patch_version",
+        "architecture",
+        "package_format",
+        "source_package",
+        "source_version",
+        "package_origin",
+        "os_id",
+        "os_like",
+        "os_release",
+        "os_codename",
+        "running_kernel",
     ]
 
 
 class SoftwareDictionaryViewSet(viewsets.OCSViewSet):
     permission_classes = [DefaultModelPermissions]
 
-    queryset = SoftwareDictionary.objects.all()
+    queryset = SoftwareDictionary.objects.select_related("identity")
     serializer_class = SoftwareDictionarySerializer
     model = SoftwareDictionary
     search_fields = [
@@ -40,6 +55,10 @@ class SoftwareDictionaryViewSet(viewsets.OCSViewSet):
         "major_version",
         "minor_version",
         "patch_version",
+        "platform_key",
+        "source_package",
+        "source_version",
+        "package_origin",
     ]
     ordering_fields = [
         "id",
@@ -49,6 +68,13 @@ class SoftwareDictionaryViewSet(viewsets.OCSViewSet):
         "major_version",
         "minor_version",
         "patch_version",
+        "platform_family",
+        "platform_key",
+        "architecture",
+        "package_format",
+        "source_package",
+        "source_version",
+        "package_origin",
         "installation_number",
     ]
     filterset_fields = [
@@ -59,5 +85,21 @@ class SoftwareDictionaryViewSet(viewsets.OCSViewSet):
         "major_version",
         "minor_version",
         "patch_version",
+        "platform_family",
+        "platform_key",
+        "architecture",
+        "package_format",
+        "source_package",
+        "source_version",
+        "package_origin",
         "installation_number",
+        "identity__status",
     ]
+
+
+class DistroReleaseViewSet(viewsets.OCSViewSet):
+    permission_classes = [DefaultModelPermissions]
+    queryset = DistroRelease.objects.all()
+    serializer_class = DistroReleaseSerializer
+    model = DistroRelease
+    filterset_fields = ["id", "base", "version", "codename"]

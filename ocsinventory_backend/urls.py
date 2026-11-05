@@ -58,6 +58,7 @@ from inventory.category.routers import CategoryRouter
 from inventory.field.routers import FieldRouter
 from inventory.section.routers import SectionRouter
 from inventory.software.routers import SoftwareRouter
+from inventory.software_identity.routers import SoftwareIdentityRouter
 from inventory.template.routers import TemplateRouter
 from ipdiscover.netdevice.routers import NetdeviceRouter
 from ipdiscover.netgroup.routers import NetgroupRouter
@@ -72,6 +73,7 @@ from permission.routers import PermissionRouter
 from rest_framework.routers import DefaultRouter
 from search.routers import SearchRouter
 from search.views import SearchView
+from security.routers import SecurityRouter
 from snmp.scanner.routers import SnmpScannerRouter
 from snmp.snmp_config.routers import SnmpConfigRouter
 from user.routers import UserRouter
@@ -132,6 +134,10 @@ categoryRouter = categoryRouter.defineRoutes(defaultRouter)
 # Add software router declaration
 softwareRouter = SoftwareRouter()
 softwareRouter = softwareRouter.defineRoutes(defaultRouter)
+
+# Add software identity router declaration
+softwareIdentityRouter = SoftwareIdentityRouter()
+softwareIdentityRouter = softwareIdentityRouter.defineRoutes(defaultRouter)
 
 # Add Netdevicce declaration
 netrouter = NetdeviceRouter()
@@ -230,6 +236,8 @@ extensionRouter = extensionRouter.defineRoutes(defaultRouter)
 
 complianceRouter = ComplianceRouter()
 complianceRouter = complianceRouter.defineRoutes(defaultRouter)
+securityRouter = SecurityRouter()
+securityRouter = securityRouter.defineRoutes(defaultRouter)
 debugRouter = DebugRouter()
 debugRouter = debugRouter.defineRoutes(defaultRouter)
 
