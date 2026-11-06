@@ -259,7 +259,7 @@ ADVISORIES = [
         "curl: cookie leak on cross-origin redirect (demo)",
         V31_LOW,
         "",
-        [("Debian:12", "curl", UNFIXED, "unimportant")],
+        [("Debian:12", "curl", UNFIXED, "low")],
     ),
     (
         "DEBIAN-CVE-2026-90003",
@@ -277,7 +277,7 @@ ADVISORIES = [
         "Apache HTTP Server: request smuggling with mod_proxy (demo)",
         V31_HIGH,
         "",
-        [("Debian:12", "apache2", fixed_in("2.4.65-1~deb12u1"), "not yet assigned")],
+        [("Debian:12", "apache2", fixed_in("2.4.65-1~deb12u1"), "medium")],
     ),
     (
         "DEBIAN-CVE-2026-90005",

@@ -36,17 +36,12 @@ NOT_UNCHECKED = (CHECKED, EXCLUDED, KERNEL_NOT_RUNNING)
 PRODUCTS_SHOWN = 5
 
 # Findings faithful to their source but hidden by default (counted)
-NOISE_MINOR_DISTRO = "minor_distro"
 NOISE_KERNEL_UNFIXED = "kernel_unfixed"
-NOISE = (NOISE_MINOR_DISTRO, NOISE_KERNEL_UNFIXED)
-# Debian urgencies that tell a vulnerability is minor or not triaged yet
-MINOR_RATINGS = ("unimportant", "not yet assigned")
+NOISE = (NOISE_KERNEL_UNFIXED,)
 
 
 def noise_of(exposure):
     """The noise category of an open exposure, "" when it is not noise."""
-    if (exposure["rating"] or "").strip().lower() in MINOR_RATINGS:
-        return NOISE_MINOR_DISTRO
     if exposure["kernel"] and not exposure["fixed_version"]:
         return NOISE_KERNEL_UNFIXED
     return ""

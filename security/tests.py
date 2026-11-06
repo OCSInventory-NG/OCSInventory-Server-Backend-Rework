@@ -36,6 +36,7 @@ from security.models import (
     Evaluation,
     Exclusion,
     Exposure,
+    Finding,
     KevEntry,
     NvdCve,
     NvdMatch,
@@ -1025,7 +1026,7 @@ def debian_data(db):
         SOURCE_OSV_DEBIAN,
         "DEBIAN-CVE-2026-2",
         ["CVE-2026-2"],
-        [("Debian:12", "curl", UNFIXED, "unimportant")],
+        [("Debian:12", "curl", UNFIXED, "low")],
     )
 
 
@@ -1483,13 +1484,10 @@ class TestReading:
         ScanService.run(now=NOW)
 
         rows, hidden, order = reading.vulnerability_rows(now=NOW)
-        assert [row["vuln_id"] for row in rows] == ["CVE-2026-1"]
-        assert hidden == {"minor_distro": 2}
+        assert [row["vuln_id"] for row in rows] == ["CVE-2026-1", "CVE-2026-2"]
+        assert hidden == {}
         assert order == ["kev", "score", "epss", "machines"]
         assert (rows[0]["kev"], rows[0]["machines"]) == (True, 2)
-
-        rows, hidden, _ = reading.vulnerability_rows(show=["minor_distro"], now=NOW)
-        assert {row["vuln_id"] for row in rows} == {"CVE-2026-1", "CVE-2026-2"}
 
         Exclusion.objects.create(asset=first, vuln_id="CVE-2026-1", comment="mitigated")
         user = User.objects.create(username="owner")
@@ -1501,9 +1499,13 @@ class TestReading:
             group=group, comment="lab", expires_at=NOW - timedelta(days=1)
         )
         rows, _, _ = reading.vulnerability_rows(now=NOW)
-        assert rows[0]["machines"] == 1
+        assert [(row["vuln_id"], row["machines"]) for row in rows] == [
+            ("CVE-2026-1", 1),
+            ("CVE-2026-2", 2),
+        ]
 
         Exclusion.objects.create(group=group, comment="lab")
+        Exclusion.objects.create(asset=first, vuln_id="CVE-2026-2", comment="n/a")
         rows, _, _ = reading.vulnerability_rows(now=NOW)
         assert rows == []
         assert reading.vulnerability_summary(now=NOW)["total"] == 0
@@ -1519,7 +1521,7 @@ class TestApi:
         ScanService.run(now=NOW)
 
         response = api_client.get(
-            "/vulnerabilities/?show=minor_distro&ordering=machines,score"
+            "/vulnerabilities/?show=kernel_unfixed&ordering=machines,score"
         )
         assert response.status_code == 200
         assert response.data["ordering"] == ["machines", "score"]
@@ -1573,7 +1575,7 @@ class TestApi:
         ScanService.run(now=NOW)
         Exclusion.objects.create(asset=third, comment="lab machine")
 
-        for params in ("", "show=minor_distro", "kev=no", "level=critical"):
+        for params in ("", "show=kernel_unfixed", "kev=no", "level=critical"):
             summary = api_client.get(f"/vulnerabilities/summary/?{params}")
             listed = api_client.get(f"/vulnerabilities/?{params}").data
             assert summary.status_code == 200
@@ -1587,16 +1589,16 @@ class TestApi:
             assert "asset_ids" not in (listed["results"] or [{}])[0]
 
         summary = api_client.get("/vulnerabilities/summary/").data
-        assert (summary["total"], summary["kev"], summary["machines"]) == (1, 1, 2)
+        assert (summary["total"], summary["kev"], summary["machines"]) == (2, 1, 2)
         assert list(summary["levels"]) == list(reading.LEVELS)
-        assert summary["hidden"] == {"minor_distro": 2}
-        assert api_client.get("/vulnerabilities/summary/?kev=no").data == {
+        assert summary["hidden"] == {}
+        assert api_client.get("/vulnerabilities/summary/?kev=yes&fix=no").data == {
             "total": 0,
             "levels": dict.fromkeys(reading.LEVELS, 0),
             "kev": 0,
             "fix_available": 0,
             "machines": 0,
-            "hidden": {"minor_distro": 2},
+            "hidden": {},
         }
 
     def test_exposures_need_a_machine(self, api_client):
@@ -1773,10 +1775,10 @@ def test_rows_tell_their_noise_and_coverage_counts_unchecked(debian_data):
     install(asset, "nginx", "1.0", "", status="review")
     ScanService.run(now=NOW)
 
-    rows, _, _ = reading.vulnerability_rows(show=["minor_distro"], now=NOW)
+    rows, _, _ = reading.vulnerability_rows(now=NOW)
     assert {row["vuln_id"]: row["noise"] for row in rows} == {
         "CVE-2026-1": "",
-        "CVE-2026-2": "minor_distro",
+        "CVE-2026-2": "",
     }
 
     Exclusion.objects.create(asset=make_asset("b"), comment="lab")
@@ -1841,7 +1843,7 @@ def test_demo_data_shows_every_state_and_resolution(admin_user):
     }
     rows, hidden, _ = reading.vulnerability_rows()
     # the excluded machines are left out before the noise is counted
-    assert hidden == {"minor_distro": 3, "kernel_unfixed": 2}
+    assert hidden == {"kernel_unfixed": 2}
     assert rows[0]["kev"]
     channels = set(
         Exposure.objects.filter(closed_at__isnull=True).values_list(
@@ -1947,3 +1949,49 @@ class TestDataAndScanApart:
 
         assert Exposure.objects.filter(asset=asset).exists()
         assert ScanState.current().last_full_scan is not None
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("urgency", ["unimportant", "not yet assigned", "Unimportant*"])
+def test_a_minor_debian_urgency_is_not_reported(urgency):
+    loaded(SOURCE_OSV_DEBIAN, ecosystems=["Debian:12"])
+    advisory(
+        SOURCE_OSV_DEBIAN,
+        "DEBIAN-CVE-2026-7",
+        ["CVE-2026-7"],
+        [("Debian:12", "curl", fixed_in("8.0-2"), urgency)],
+    )
+    asset = make_asset("a")
+    install(asset, "curl", "8.0-1", CURL)
+
+    ScanService.run(now=NOW)
+
+    assert not Exposure.objects.exists()
+    assert not Finding.objects.exists()
+    states = reading.asset_software_states(asset.id, now=NOW)
+    assert [row["state"] for row in states] == ["checked"]
+
+
+@pytest.mark.django_db
+def test_the_minor_debian_findings_already_stored_are_dropped(debian_data):
+    from django.apps import apps as django_apps
+
+    asset = make_asset("a")
+    install(asset, "curl", "8.0-1", CURL)
+    ScanService.run(now=NOW)
+    Exposure.objects.filter(vulnerability__vuln_id="CVE-2026-2").update(
+        rating="unimportant"
+    )
+    Finding.objects.filter(vulnerability__vuln_id="CVE-2026-2").update(
+        rating="unimportant"
+    )
+    migration = importlib.import_module(
+        "security.migrations.0006_drop_minor_debian_urgencies"
+    )
+
+    migration.drop_minor_urgencies(django_apps, None)
+
+    assert list(
+        Exposure.objects.values_list("vulnerability__vuln_id", flat=True)
+    ) == ["CVE-2026-1"]
+    assert Finding.objects.count() == 1

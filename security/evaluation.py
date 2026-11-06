@@ -50,6 +50,9 @@ EvaluationKey = namedtuple(
 
 # Rows per INSERT
 WRITE_BATCH = 1000
+# Debian urgencies not reported: no impact for Debian, or not triaged yet.
+# They made most of a Debian machine's findings, all of them noise.
+MINOR_RATINGS = ("unimportant", "not yet assigned")
 # Identity statuses whose products are checked, per scheme
 COVERED = {"purl": ("matched",), "cpe": ("matched", "validated")}
 # The full scan runs weekly: an evaluation made with older data still counts
@@ -275,6 +278,9 @@ def evaluate_osv(key, context):
         else:
             first = standard or pro
             fixed, channel, words, urgency = "", CHANNEL_STANDARD, first[2], first[3]
+        rating = normalize_rating(advisory.rating or urgency)
+        if rating in MINOR_RATINGS:
+            continue
         for vuln_id in advisory.cves or [advisory.advisory_id]:
             findings.append(
                 {
@@ -285,7 +291,7 @@ def evaluate_osv(key, context):
                     "affected_range": words,
                     "method": METHOD_OSV,
                     "uncertain": False,
-                    "rating": normalize_rating(advisory.rating or urgency),
+                    "rating": rating,
                     "summary": advisory.summary,
                     "published": advisory.published,
                     "vector": advisory.cvss_vector,
