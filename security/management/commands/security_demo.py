@@ -683,6 +683,7 @@ class Command(BaseCommand):
                 defaults={
                     "last_attempt": when,
                     "last_success": when,
+                    "data_changed_at": when,
                     "error": "",
                     "record_count": 1000,
                     "details": details,
@@ -693,6 +694,7 @@ class Command(BaseCommand):
             defaults={
                 "last_attempt": when,
                 "last_success": when - timedelta(hours=60),
+                "data_changed_at": when - timedelta(hours=60),
                 "error": "HTTPSConnectionPool: Read timed out (demo)",
                 "record_count": 800,
                 "details": {"ecosystems": ecosystems[SOURCE_OSV_ROCKY]},
@@ -703,6 +705,7 @@ class Command(BaseCommand):
             defaults={
                 "last_attempt": when,
                 "last_success": None,
+                "data_changed_at": None,
                 "error": "404 Not Found (demo)",
                 "record_count": 0,
                 "details": {},

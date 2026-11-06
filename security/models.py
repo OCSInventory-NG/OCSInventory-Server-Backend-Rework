@@ -71,6 +71,9 @@ class SourceSync(models.Model):
     source = models.CharField(max_length=16, choices=SOURCE_CHOICES, unique=True)
     last_attempt = models.DateTimeField(null=True, blank=True)
     last_success = models.DateTimeField(null=True, blank=True)
+    # Last load that changed the data: the evaluations made before it are
+    # out of date; a check that finds the files unchanged keeps it
+    data_changed_at = models.DateTimeField(null=True, blank=True)
     error = models.TextField(blank=True, default="")
     # What tells a changed file: ETag, Last-Modified, sha256 per feed
     fingerprint = models.JSONField(default=dict, blank=True)

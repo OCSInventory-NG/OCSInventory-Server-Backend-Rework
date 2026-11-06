@@ -10,6 +10,7 @@ aliases, within the loaded years.
 """
 
 from collections import defaultdict, namedtuple
+from datetime import timedelta
 
 from django.db import transaction
 from django.utils import timezone
@@ -34,17 +35,26 @@ from security.models import (
     Vulnerability,
 )
 from security.sources import nvd, osv
-from security.sync import FRESH, NEVER_LOADED, source_state, source_syncs
+from security.sync import (
+    FRESH,
+    NEVER_LOADED,
+    data_version,
+    source_state,
+    source_syncs,
+)
 from security.versions import comparator
 
 EvaluationKey = namedtuple(
     "EvaluationKey", "scheme product version platform_key extended"
 )
 
-# Identity statuses whose products are checked, per scheme
 # Rows per INSERT
 WRITE_BATCH = 1000
+# Identity statuses whose products are checked, per scheme
 COVERED = {"purl": ("matched",), "cpe": ("matched", "validated")}
+# The full scan runs weekly: an evaluation made with older data still counts
+# as checked while the newer data waits less than this for it
+RESCAN_GRACE = timedelta(days=8)
 
 
 def is_covered(status, scheme):
@@ -121,10 +131,24 @@ class Context:
     def up_to_date(self, key, evaluation_sources):
         """An evaluation made with the current data of its source."""
         source = self.source(key)
-        sync = self.syncs[source]
-        if evaluation_sources is None or sync.last_success is None:
+        version = data_version(self.syncs[source])
+        if evaluation_sources is None or version is None:
             return False
-        return evaluation_sources.get(source) == sync.last_success.isoformat()
+        return evaluation_sources.get(source) == version.isoformat()
+
+    def checked(self, key, evaluation_sources):
+        """
+        An evaluation that still stands: made with the current data, or with
+        older data while the full scan has had less than RESCAN_GRACE to
+        bring it up to date.
+        """
+        if self.up_to_date(key, evaluation_sources):
+            return True
+        source = self.source(key)
+        version = data_version(self.syncs[source])
+        if not (evaluation_sources or {}).get(source) or version is None:
+            return False
+        return self.now - version <= RESCAN_GRACE
 
     def loaded(self, key):
         return self.states[self.source(key)] != NEVER_LOADED
@@ -352,7 +376,7 @@ def _vulnerabilities(findings):
 def store(key, findings, context):
     """Replaces the key's evaluation and findings. Returns the evaluation."""
     source = context.source(key)
-    sync = context.syncs[source]
+    version = data_version(context.syncs[source])
     with transaction.atomic():
         evaluation, _ = Evaluation.objects.update_or_create(
             scheme=key.scheme,
@@ -362,9 +386,7 @@ def store(key, findings, context):
             extended=key.extended,
             defaults={
                 "evaluated_at": context.now,
-                "sources": {
-                    source: sync.last_success.isoformat() if sync.last_success else ""
-                },
+                "sources": {source: version.isoformat() if version else ""},
             },
         )
         vulnerabilities = _vulnerabilities(findings)

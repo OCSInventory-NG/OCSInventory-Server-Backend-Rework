@@ -1,7 +1,7 @@
 """
-Daily synchronization of the local vulnerability data. Each source is loaded
-on its own: a source that fails keeps its previous data, and becomes stale
-after STALE_AFTER without success.
+Daily synchronization of the local vulnerability data, apart from the scan of
+the machines. Each source is loaded on its own: a source that fails keeps its
+previous data, and becomes stale after STALE_AFTER without success.
 """
 
 import logging
@@ -44,6 +44,25 @@ def source_state(sync, now=None):
     if (now or timezone.now()) - sync.last_success > STALE_AFTER:
         return STALE
     return FRESH
+
+
+def data_version(sync):
+    """When the source's data last changed; the evaluations record it."""
+    if sync is None:
+        return None
+    return sync.data_changed_at or sync.last_success
+
+
+def _nvd_years_changed(previous, current):
+    """Whether a year's feed was replaced or moved in or out of the window."""
+
+    def files(fingerprint):
+        return {
+            year: (entry.get("sha256"), entry.get("full"))
+            for year, entry in ((fingerprint or {}).get("years") or {}).items()
+        }
+
+    return files(previous) != files(current)
 
 
 def source_syncs():
@@ -216,6 +235,10 @@ class SyncService:
                 results[source] = sync.error
                 progress(f"{source}: failed, previous data kept ({error})")
                 continue
+            if source != SOURCE_NVD or _nvd_years_changed(
+                sync.fingerprint, fingerprint
+            ):
+                sync.data_changed_at = now
             sync.last_success = now
             sync.error = ""
             sync.record_count = count

@@ -43,6 +43,7 @@ from security.models import (
     OsvAdvisoryCve,
     OsvAffected,
     ScanLock,
+    ScanState,
     SourceSync,
     Vulnerability,
 )
@@ -795,7 +796,9 @@ class TestSync:
         results = SyncService.run([SOURCE_OSV_DEBIAN], now=later, get=server)
 
         assert results == {SOURCE_OSV_DEBIAN: "unchanged"}
-        assert SourceSync.objects.get(source=SOURCE_OSV_DEBIAN).last_success == later
+        sync = SourceSync.objects.get(source=SOURCE_OSV_DEBIAN)
+        # the data did not change: the evaluations made with it stay up to date
+        assert (sync.last_success, sync.data_changed_at) == (later, NOW)
 
     def test_nvd_loads_the_window_with_matches_and_older_years_scores(
         self, osv_test_url, tmp_path
@@ -829,11 +832,15 @@ class TestSync:
             "https://nvd.test/nvdcve-2.0-2025.meta",
             "https://nvd.test/nvdcve-2.0-2026.meta",
         ]
+        assert SourceSync.objects.get(source=SOURCE_NVD).data_changed_at == NOW
 
         # a wider window loads 2024 with its matches
         set_config(nvd_years=3)
         SyncService.run([SOURCE_NVD], now=NOW + timedelta(days=2), get=server)
         assert NvdCve.objects.get(year=2024).full
+        assert SourceSync.objects.get(
+            source=SOURCE_NVD
+        ).data_changed_at == NOW + timedelta(days=2)
 
     def test_kev_and_epss_sources(self, osv_test_url):
         catalog = json.dumps({"vulnerabilities": [{"cveID": "CVE-2026-1"}]}).encode()
@@ -952,6 +959,7 @@ def loaded(*sources, at=NOW, ecosystems=()):
             defaults={
                 "last_success": at,
                 "last_attempt": at,
+                "data_changed_at": at,
                 "details": {"ecosystems": list(ecosystems)},
             },
         )
@@ -1672,17 +1680,20 @@ class TestApi:
 
 @pytest.mark.django_db
 def test_seeds():
-    tasks = dict(
-        Scheduler.objects.filter(
+    tasks = {
+        task.name: (task.active, task.recurrence, task.day_of_week)
+        for task in Scheduler.objects.filter(
             name__in=[
                 "securitySync.SecuritySync",
                 "vulnerabilityScan.VulnerabilityScan",
+                "vulnerabilityFullScan.VulnerabilityFullScan",
             ]
-        ).values_list("name", "active")
-    )
+        )
+    }
     assert tasks == {
-        "securitySync.SecuritySync": False,
-        "vulnerabilityScan.VulnerabilityScan": False,
+        "securitySync.SecuritySync": (False, "daily", None),
+        "vulnerabilityScan.VulnerabilityScan": (False, "hourly", None),
+        "vulnerabilityFullScan.VulnerabilityFullScan": (False, "weekly", 6),
     }
     assert security_config.current() == security_config.SecurityConfig()
     assert DistroRelease.objects.filter(standard_support_end__isnull=False).exists()
@@ -1875,3 +1886,64 @@ def test_the_cpe_evaluations_are_made_again_after_the_platform_filter():
     cpe.refresh_from_db()
     purl.refresh_from_db()
     assert (cpe.sources, purl.sources) == ({}, sources)
+
+
+@pytest.mark.django_db
+class TestDataAndScanApart:
+    """The data is loaded daily, the machines are scanned weekly."""
+
+    def scan_then_new_data(self, days):
+        asset = make_asset("a")
+        install(asset, "curl", "8.0-1", CURL)
+        ScanService.run(now=NOW)
+        later = NOW + timedelta(days=days)
+        loaded(SOURCE_OSV_DEBIAN, at=later, ecosystems=["Debian:12"])
+        return asset, later
+
+    def states(self, asset, now):
+        # the daily syncs find the files unchanged: the source stays fresh
+        SourceSync.objects.filter(source=SOURCE_OSV_DEBIAN).update(last_success=now)
+        return {
+            row["name"]: row["state"]
+            for row in reading.asset_software_states(asset.id, now=now)
+        }
+
+    def test_an_evaluation_stands_while_the_full_scan_has_time(self, debian_data):
+        asset, later = self.scan_then_new_data(days=1)
+
+        assert self.states(asset, later + timedelta(days=7))["curl"] == "checked"
+        assert self.states(asset, later + timedelta(days=9))["curl"] == "pending"
+
+    def test_a_machine_inventoried_again_is_checked_with_the_new_data(
+        self, debian_data
+    ):
+        asset, later = self.scan_then_new_data(days=1)
+        evaluation = Evaluation.objects.get(product__endswith="/curl")
+
+        ScanService.run(asset_ids=[asset.id], now=later + timedelta(hours=1))
+
+        evaluation.refresh_from_db()
+        assert evaluation.sources == {SOURCE_OSV_DEBIAN: later.isoformat()}
+
+    def test_the_sync_task_loads_without_scanning(self, debian_data, monkeypatch):
+        from automation.tasks.securitySync import SecuritySync
+        from automation.tasks.vulnerabilityFullScan import VulnerabilityFullScan
+
+        asset = make_asset("a")
+        install(asset, "curl", "8.0-1", CURL)
+        loads = []
+        monkeypatch.setattr(
+            "automation.tasks.securitySync.SyncService.run",
+            lambda **kwargs: loads.append(kwargs) or {},
+        )
+
+        SecuritySync().execute()
+
+        assert len(loads) == 1
+        assert not Exposure.objects.exists()
+        assert not ScanLock.objects.exists()
+
+        VulnerabilityFullScan().execute()
+
+        assert Exposure.objects.filter(asset=asset).exists()
+        assert ScanState.current().last_full_scan is not None

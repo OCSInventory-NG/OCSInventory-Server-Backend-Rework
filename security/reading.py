@@ -390,6 +390,7 @@ def sources(now=None):
             "state": source_state(syncs[source], now),
             "last_attempt": syncs[source].last_attempt,
             "last_success": syncs[source].last_success,
+            "data_changed_at": syncs[source].data_changed_at,
             "error": syncs[source].error,
             "record_count": syncs[source].record_count,
             "details": syncs[source].details,

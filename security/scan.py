@@ -226,7 +226,7 @@ class Installations:
         if not context.fresh(key):
             return STALE
         evaluation = self.evaluations.get(key)
-        if evaluation is None or not context.up_to_date(key, evaluation[1]):
+        if evaluation is None or not context.checked(key, evaluation[1]):
             return PENDING
         return CHECKED
 
