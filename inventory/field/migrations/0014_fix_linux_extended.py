@@ -89,6 +89,70 @@ def restore_debian_running_process(apps, schema_editor):
         template.save()
 
 
+def fix_debian_cron_tab_tasks(apps, schema_editor):
+    Template = apps.get_model("template", "Template")
+    Section = apps.get_model("section", "Section")
+    try:
+        template = Template.objects.get(name="Linux Extended (Debian based)", os="DEB")
+        section = Section.objects.get(template=template, name="CRON TAB TASKS")
+    except (Template.DoesNotExist, Section.DoesNotExist):
+        return
+
+    target = section.target
+    # A user crontab has no user column, see crontab(5): grep prints the file
+    # of each line, and the user of a crontab under /var/spool/cron/ is its
+    # file name. The three parts go together: a target edited in the console
+    # that lacks one of them stays as it is
+    parts = [
+        ('grep -rh --include="*"', 'grep -rH --include="*"'),
+        (
+            "import sys,re; l=sys.stdin.read().strip(); f=l.split(); is_sys=len(f)>=6 and not re.match(r'^[\\*0-9,\\-/]+$',f[5] if len(f)>5 else '');",
+            "import sys; p,_,l=sys.stdin.read().strip().partition(':'); f=l.split(); is_sys=not p.startswith('/var/spool/cron/');",
+        ),
+        (
+            "user=f[5] if is_sys and len(f)>5 else '';",
+            "user=(f[5] if len(f)>5 else '') if is_sys else p.split('/')[-1];",
+        ),
+    ]
+    if all(old in target for old, new in parts):
+        for old, new in parts:
+            target = target.replace(old, new)
+    if target != section.target:
+        section.target = target
+        section.save()
+        template.save()
+
+
+def restore_debian_cron_tab_tasks(apps, schema_editor):
+    Template = apps.get_model("template", "Template")
+    Section = apps.get_model("section", "Section")
+    try:
+        template = Template.objects.get(name="Linux Extended (Debian based)", os="DEB")
+        section = Section.objects.get(template=template, name="CRON TAB TASKS")
+    except (Template.DoesNotExist, Section.DoesNotExist):
+        return
+
+    target = section.target
+    parts = [
+        ('grep -rh --include="*"', 'grep -rH --include="*"'),
+        (
+            "import sys,re; l=sys.stdin.read().strip(); f=l.split(); is_sys=len(f)>=6 and not re.match(r'^[\\*0-9,\\-/]+$',f[5] if len(f)>5 else '');",
+            "import sys; p,_,l=sys.stdin.read().strip().partition(':'); f=l.split(); is_sys=not p.startswith('/var/spool/cron/');",
+        ),
+        (
+            "user=f[5] if is_sys and len(f)>5 else '';",
+            "user=(f[5] if len(f)>5 else '') if is_sys else p.split('/')[-1];",
+        ),
+    ]
+    if all(new in target for old, new in parts):
+        for old, new in parts:
+            target = target.replace(new, old)
+    if target != section.target:
+        section.target = target
+        section.save()
+        template.save()
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -101,4 +165,5 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             fix_debian_running_process, restore_debian_running_process
         ),
+        migrations.RunPython(fix_debian_cron_tab_tasks, restore_debian_cron_tab_tasks),
     ]
