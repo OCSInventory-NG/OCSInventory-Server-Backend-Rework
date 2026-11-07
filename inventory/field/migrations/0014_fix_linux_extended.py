@@ -61,6 +61,12 @@ def fix_debian_running_process(apps, schema_editor):
     ).update(retrieval_value="PROCESSMEMORY=(\\S+)"):
         template.save()
 
+    # TTY=(\S) kept one character of the terminal, "p" for pts/0
+    if Field.objects.filter(
+        section=section, name="TTY", retrieval_value="TTY=(\\S)"
+    ).update(retrieval_value="TTY=(\\S+)"):
+        template.save()
+
 
 def restore_debian_running_process(apps, schema_editor):
     Template = apps.get_model("template", "Template")
@@ -71,6 +77,11 @@ def restore_debian_running_process(apps, schema_editor):
         section = Section.objects.get(template=template, name="RUNNING PROCESS")
     except (Template.DoesNotExist, Section.DoesNotExist):
         return
+
+    if Field.objects.filter(
+        section=section, name="TTY", retrieval_value="TTY=(\\S+)"
+    ).update(retrieval_value="TTY=(\\S)"):
+        template.save()
 
     if Field.objects.filter(
         section=section, name="PROCESS MEMORY", retrieval_value="PROCESSMEMORY=(\\S+)"
