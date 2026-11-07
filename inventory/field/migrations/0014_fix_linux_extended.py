@@ -44,6 +44,40 @@ def restore_debian_uptime(apps, schema_editor):
         template.save()
 
 
+def fix_debian_running_process(apps, schema_editor):
+    Template = apps.get_model("template", "Template")
+    Section = apps.get_model("section", "Section")
+    Field = apps.get_model("field", "Field")
+    try:
+        template = Template.objects.get(name="Linux Extended (Debian based)", os="DEB")
+        section = Section.objects.get(template=template, name="RUNNING PROCESS")
+    except (Template.DoesNotExist, Section.DoesNotExist):
+        return
+
+    # The command prints all the keys of a process on one line: \S+ stops at
+    # the next space instead of taking the rest of the line
+    if Field.objects.filter(
+        section=section, name="PROCESS MEMORY", retrieval_value="PROCESSMEMORY=(.+)"
+    ).update(retrieval_value="PROCESSMEMORY=(\\S+)"):
+        template.save()
+
+
+def restore_debian_running_process(apps, schema_editor):
+    Template = apps.get_model("template", "Template")
+    Section = apps.get_model("section", "Section")
+    Field = apps.get_model("field", "Field")
+    try:
+        template = Template.objects.get(name="Linux Extended (Debian based)", os="DEB")
+        section = Section.objects.get(template=template, name="RUNNING PROCESS")
+    except (Template.DoesNotExist, Section.DoesNotExist):
+        return
+
+    if Field.objects.filter(
+        section=section, name="PROCESS MEMORY", retrieval_value="PROCESSMEMORY=(\\S+)"
+    ).update(retrieval_value="PROCESSMEMORY=(.+)"):
+        template.save()
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -53,4 +87,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunPython(fix_debian_uptime, restore_debian_uptime),
+        migrations.RunPython(
+            fix_debian_running_process, restore_debian_running_process
+        ),
     ]
