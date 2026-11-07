@@ -117,6 +117,12 @@ def fix_debian_cron_tab_tasks(apps, schema_editor):
     if all(old in target for old, new in parts):
         for old, new in parts:
             target = target.replace(old, new)
+    # /var/spool/cron/crontabs/ is inside /var/spool/cron/, so grep -r listed
+    # each line of a user crontab twice
+    target = target.replace(
+        "/var/spool/cron/ /var/spool/cron/crontabs/ 2>/dev/null",
+        "/var/spool/cron/ 2>/dev/null",
+    )
     if target != section.target:
         section.target = target
         section.save()
@@ -133,6 +139,10 @@ def restore_debian_cron_tab_tasks(apps, schema_editor):
         return
 
     target = section.target
+    target = target.replace(
+        "/var/spool/cron/ 2>/dev/null",
+        "/var/spool/cron/ /var/spool/cron/crontabs/ 2>/dev/null",
+    )
     parts = [
         ('grep -rh --include="*"', 'grep -rH --include="*"'),
         (
