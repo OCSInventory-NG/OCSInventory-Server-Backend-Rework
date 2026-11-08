@@ -232,6 +232,49 @@ def restore_rhel_security_certificate(apps, schema_editor):
         template.save()
 
 
+def fix_rhel_cron_tab_tasks(apps, schema_editor):
+    Template = apps.get_model("template", "Template")
+    Section = apps.get_model("section", "Section")
+    try:
+        template = Template.objects.get(name="Linux Extended (RHEL based)", os="RHEL")
+        section = Section.objects.get(template=template, name="CRON TAB TASKS")
+    except (Template.DoesNotExist, Section.DoesNotExist):
+        return
+
+    target = section.target
+    # cron reads /etc/crontab, /etc/cron.d/ and /var/spool/cron/ only: the
+    # other files whose path holds "cron", such as /etc/anacrontab, have
+    # another format
+    target = target.replace(
+        '(find /etc/ /var/spool/ -type f 2>/dev/null | grep -E "cron" | grep -vE "init\\.d|systemd|sysconfig|omc|pam\\.d") | while read fic;',
+        "find /etc/crontab /etc/cron.d/ /var/spool/cron/ -type f 2>/dev/null | while read fic;",
+    )
+    if target != section.target:
+        section.target = target
+        section.save()
+        template.save()
+
+
+def restore_rhel_cron_tab_tasks(apps, schema_editor):
+    Template = apps.get_model("template", "Template")
+    Section = apps.get_model("section", "Section")
+    try:
+        template = Template.objects.get(name="Linux Extended (RHEL based)", os="RHEL")
+        section = Section.objects.get(template=template, name="CRON TAB TASKS")
+    except (Template.DoesNotExist, Section.DoesNotExist):
+        return
+
+    target = section.target
+    target = target.replace(
+        "find /etc/crontab /etc/cron.d/ /var/spool/cron/ -type f 2>/dev/null | while read fic;",
+        '(find /etc/ /var/spool/ -type f 2>/dev/null | grep -E "cron" | grep -vE "init\\.d|systemd|sysconfig|omc|pam\\.d") | while read fic;',
+    )
+    if target != section.target:
+        section.target = target
+        section.save()
+        template.save()
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -249,4 +292,5 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             fix_rhel_security_certificate, restore_rhel_security_certificate
         ),
+        migrations.RunPython(fix_rhel_cron_tab_tasks, restore_rhel_cron_tab_tasks),
     ]
