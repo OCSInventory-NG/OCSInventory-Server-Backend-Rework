@@ -197,6 +197,41 @@ def restore_debian_firewall_rules(apps, schema_editor):
         template.save()
 
 
+def fix_rhel_security_certificate(apps, schema_editor):
+    Template = apps.get_model("template", "Template")
+    Section = apps.get_model("section", "Section")
+    try:
+        template = Template.objects.get(name="Linux Extended (RHEL based)", os="RHEL")
+        section = Section.objects.get(template=template, name="SECURITY CERTIFICATE")
+    except (Template.DoesNotExist, Section.DoesNotExist):
+        return
+
+    target = section.target
+    # The AUTORITY field reads AUTHORITY=(.+)
+    target = target.replace("\\nAUTORITY=%s\\n", "\\nAUTHORITY=%s\\n")
+    if target != section.target:
+        section.target = target
+        section.save()
+        template.save()
+
+
+def restore_rhel_security_certificate(apps, schema_editor):
+    Template = apps.get_model("template", "Template")
+    Section = apps.get_model("section", "Section")
+    try:
+        template = Template.objects.get(name="Linux Extended (RHEL based)", os="RHEL")
+        section = Section.objects.get(template=template, name="SECURITY CERTIFICATE")
+    except (Template.DoesNotExist, Section.DoesNotExist):
+        return
+
+    target = section.target
+    target = target.replace("\\nAUTHORITY=%s\\n", "\\nAUTORITY=%s\\n")
+    if target != section.target:
+        section.target = target
+        section.save()
+        template.save()
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -211,4 +246,7 @@ class Migration(migrations.Migration):
         ),
         migrations.RunPython(fix_debian_cron_tab_tasks, restore_debian_cron_tab_tasks),
         migrations.RunPython(fix_debian_firewall_rules, restore_debian_firewall_rules),
+        migrations.RunPython(
+            fix_rhel_security_certificate, restore_rhel_security_certificate
+        ),
     ]
