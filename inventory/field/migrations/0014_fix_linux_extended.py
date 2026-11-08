@@ -163,6 +163,40 @@ def restore_debian_cron_tab_tasks(apps, schema_editor):
         template.save()
 
 
+def fix_debian_firewall_rules(apps, schema_editor):
+    Template = apps.get_model("template", "Template")
+    Section = apps.get_model("section", "Section")
+    Field = apps.get_model("field", "Field")
+    try:
+        template = Template.objects.get(name="Linux Extended (Debian based)", os="DEB")
+        section = Section.objects.get(template=template, name="FIREWALL RULES")
+    except (Template.DoesNotExist, Section.DoesNotExist):
+        return
+
+    # COMMENT=(\S+) stopped at the first space of the comment, and the command
+    # always prints OTHER= after it
+    if Field.objects.filter(
+        section=section, name="COMMENT", retrieval_value="COMMENT=(\\S+)"
+    ).update(retrieval_value="COMMENT=(.*?) OTHER="):
+        template.save()
+
+
+def restore_debian_firewall_rules(apps, schema_editor):
+    Template = apps.get_model("template", "Template")
+    Section = apps.get_model("section", "Section")
+    Field = apps.get_model("field", "Field")
+    try:
+        template = Template.objects.get(name="Linux Extended (Debian based)", os="DEB")
+        section = Section.objects.get(template=template, name="FIREWALL RULES")
+    except (Template.DoesNotExist, Section.DoesNotExist):
+        return
+
+    if Field.objects.filter(
+        section=section, name="COMMENT", retrieval_value="COMMENT=(.*?) OTHER="
+    ).update(retrieval_value="COMMENT=(\\S+)"):
+        template.save()
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -176,4 +210,5 @@ class Migration(migrations.Migration):
             fix_debian_running_process, restore_debian_running_process
         ),
         migrations.RunPython(fix_debian_cron_tab_tasks, restore_debian_cron_tab_tasks),
+        migrations.RunPython(fix_debian_firewall_rules, restore_debian_firewall_rules),
     ]
