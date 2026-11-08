@@ -54,6 +54,19 @@ def fix_debian_running_process(apps, schema_editor):
     except (Template.DoesNotExist, Section.DoesNotExist):
         return
 
+    target = section.target
+    # ps aux prints the START of a process as HH:MM, MmmDD or the year, and the
+    # TIME column was taken for the hour: lstart always holds the full date,
+    # in English under LC_ALL=C
+    target = target.replace(
+        "ps aux | tail -n +2 | python3 -c \"import sys,datetime; months={'Jan':'01','Feb':'02','Mar':'03','Apr':'04','May':'05','Jun':'06','Jul':'07','Aug':'08','Sep':'09','Oct':'10','Nov':'11','Dec':'12'}; now=datetime.datetime.now(); [print('USERNAME='+f[0]+' PROCESSID='+f[1]+' CPUUSAGE='+f[2]+' PROCESSMEMORY='+f[3]+' VIRTUALMEMORY='+f[4]+' TTY='+f[6]+' STARTED='+(now.strftime('%Y-')+months.get(f[8][:3],'00')+'-'+f[8][3:]+' '+f[9] if f[8][:3] in months else now.strftime('%Y-%m-%d')+' '+f[8])+' COMMANDLINE='+' '.join(f[10:])) for line in sys.stdin for f in [line.split()] if len(f)>=11]\"",
+        "LC_ALL=C ps -eo user=,pid=,pcpu=,pmem=,vsz=,tty=,lstart=,args= | python3 -c \"import sys,datetime; [print('USERNAME='+f[0]+' PROCESSID='+f[1]+' CPUUSAGE='+f[2]+' PROCESSMEMORY='+f[3]+' VIRTUALMEMORY='+f[4]+' TTY='+f[5]+' STARTED='+datetime.datetime.strptime(' '.join(f[7:11]),'%b %d %H:%M:%S %Y').strftime('%Y-%m-%d %H:%M')+' COMMANDLINE='+' '.join(f[11:])) for line in sys.stdin for f in [line.split()] if len(f)>=12]\"",
+    )
+    if target != section.target:
+        section.target = target
+        section.save()
+        template.save()
+
     # The command prints all the keys of a process on one line: \S+ stops at
     # the next space instead of taking the rest of the line
     if Field.objects.filter(
@@ -77,6 +90,16 @@ def restore_debian_running_process(apps, schema_editor):
         section = Section.objects.get(template=template, name="RUNNING PROCESS")
     except (Template.DoesNotExist, Section.DoesNotExist):
         return
+
+    target = section.target
+    target = target.replace(
+        "LC_ALL=C ps -eo user=,pid=,pcpu=,pmem=,vsz=,tty=,lstart=,args= | python3 -c \"import sys,datetime; [print('USERNAME='+f[0]+' PROCESSID='+f[1]+' CPUUSAGE='+f[2]+' PROCESSMEMORY='+f[3]+' VIRTUALMEMORY='+f[4]+' TTY='+f[5]+' STARTED='+datetime.datetime.strptime(' '.join(f[7:11]),'%b %d %H:%M:%S %Y').strftime('%Y-%m-%d %H:%M')+' COMMANDLINE='+' '.join(f[11:])) for line in sys.stdin for f in [line.split()] if len(f)>=12]\"",
+        "ps aux | tail -n +2 | python3 -c \"import sys,datetime; months={'Jan':'01','Feb':'02','Mar':'03','Apr':'04','May':'05','Jun':'06','Jul':'07','Aug':'08','Sep':'09','Oct':'10','Nov':'11','Dec':'12'}; now=datetime.datetime.now(); [print('USERNAME='+f[0]+' PROCESSID='+f[1]+' CPUUSAGE='+f[2]+' PROCESSMEMORY='+f[3]+' VIRTUALMEMORY='+f[4]+' TTY='+f[6]+' STARTED='+(now.strftime('%Y-')+months.get(f[8][:3],'00')+'-'+f[8][3:]+' '+f[9] if f[8][:3] in months else now.strftime('%Y-%m-%d')+' '+f[8])+' COMMANDLINE='+' '.join(f[10:])) for line in sys.stdin for f in [line.split()] if len(f)>=11]\"",
+    )
+    if target != section.target:
+        section.target = target
+        section.save()
+        template.save()
 
     if Field.objects.filter(
         section=section, name="TTY", retrieval_value="TTY=(\\S+)"
@@ -275,6 +298,49 @@ def restore_rhel_cron_tab_tasks(apps, schema_editor):
         template.save()
 
 
+def fix_rhel_running_process(apps, schema_editor):
+    Template = apps.get_model("template", "Template")
+    Section = apps.get_model("section", "Section")
+    try:
+        template = Template.objects.get(name="Linux Extended (RHEL based)", os="RHEL")
+        section = Section.objects.get(template=template, name="RUNNING PROCESS")
+    except (Template.DoesNotExist, Section.DoesNotExist):
+        return
+
+    target = section.target
+    # ps aux prints the START of a process as HH:MM, MmmDD or the year, and the
+    # TIME column was taken for the hour: lstart always holds the full date,
+    # in English under LC_ALL=C
+    target = target.replace(
+        'ps aux 2>/dev/null | tail -n +2 | while read user pid cpu mem vsz rss tty stat started time cmd; do year=$(date +%Y); mon=$(date +%m); day=$(date +%d); if echo "$started" | grep -qE "^[A-Za-z]{3}"; then m=$(echo "$started" | cut -c1-3); d=$(echo "$started" | cut -c4-); m=$(echo "$m" | awk \'BEGIN{split("Jan 01 Feb 02 Mar 03 Apr 04 May 05 Jun 06 Jul 07 Aug 08 Sep 09 Oct 10 Nov 11 Dec 12",a); for(i=1;i<=24;i+=2)m[a[i]]=a[i+1]}{print m[$1]}\'); begin="${year}-${m}-${d} ${time}"; else begin="${year}-${mon}-${day} ${started}"; fi; printf',
+        'LC_ALL=C ps -eo user=,pid=,pcpu=,pmem=,vsz=,tty=,lstart=,args= 2>/dev/null | while read user pid cpu mem vsz tty wday month day clock year cmd; do begin=$(date -d "$month $day $year $clock" "+%Y-%m-%d %H:%M"); printf',
+    )
+    if target != section.target:
+        section.target = target
+        section.save()
+        template.save()
+
+
+def restore_rhel_running_process(apps, schema_editor):
+    Template = apps.get_model("template", "Template")
+    Section = apps.get_model("section", "Section")
+    try:
+        template = Template.objects.get(name="Linux Extended (RHEL based)", os="RHEL")
+        section = Section.objects.get(template=template, name="RUNNING PROCESS")
+    except (Template.DoesNotExist, Section.DoesNotExist):
+        return
+
+    target = section.target
+    target = target.replace(
+        'LC_ALL=C ps -eo user=,pid=,pcpu=,pmem=,vsz=,tty=,lstart=,args= 2>/dev/null | while read user pid cpu mem vsz tty wday month day clock year cmd; do begin=$(date -d "$month $day $year $clock" "+%Y-%m-%d %H:%M"); printf',
+        'ps aux 2>/dev/null | tail -n +2 | while read user pid cpu mem vsz rss tty stat started time cmd; do year=$(date +%Y); mon=$(date +%m); day=$(date +%d); if echo "$started" | grep -qE "^[A-Za-z]{3}"; then m=$(echo "$started" | cut -c1-3); d=$(echo "$started" | cut -c4-); m=$(echo "$m" | awk \'BEGIN{split("Jan 01 Feb 02 Mar 03 Apr 04 May 05 Jun 06 Jul 07 Aug 08 Sep 09 Oct 10 Nov 11 Dec 12",a); for(i=1;i<=24;i+=2)m[a[i]]=a[i+1]}{print m[$1]}\'); begin="${year}-${m}-${d} ${time}"; else begin="${year}-${mon}-${day} ${started}"; fi; printf',
+    )
+    if target != section.target:
+        section.target = target
+        section.save()
+        template.save()
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -293,4 +359,5 @@ class Migration(migrations.Migration):
             fix_rhel_security_certificate, restore_rhel_security_certificate
         ),
         migrations.RunPython(fix_rhel_cron_tab_tasks, restore_rhel_cron_tab_tasks),
+        migrations.RunPython(fix_rhel_running_process, restore_rhel_running_process),
     ]
