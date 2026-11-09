@@ -428,6 +428,34 @@ class ScanService:
             cls._apply(asset_id, wanted, installed, installations, now, counts)
         return touched
 
+    @staticmethod
+    def _kernel_duplicates(wanted, open_exposures):
+        """
+        The triples of a kernel vulnerability found through another kernel
+        package of the machine (linux and linux-signed on Ubuntu): a machine
+        runs one kernel, the vulnerability is exposed once. The one kept is
+        the exposure already open, else one with a fix, else the first
+        product.
+        """
+        per_vulnerability = defaultdict(list)
+        for triple, data in wanted.items():
+            if data["kernel"]:
+                per_vulnerability[triple[2]].append(triple)
+        duplicates = set()
+        for triples in per_vulnerability.values():
+            if len(triples) < 2:
+                continue
+            kept = min(
+                triples,
+                key=lambda triple: (
+                    triple not in open_exposures,
+                    not wanted[triple]["fixed_version"],
+                    triple[1],
+                ),
+            )
+            duplicates.update(triple for triple in triples if triple != kept)
+        return duplicates
+
     @classmethod
     def _apply(cls, asset_id, wanted, installed, installations, now, counts):
         open_exposures = {
@@ -436,6 +464,16 @@ class ScanService:
                 asset_id=asset_id, closed_at__isnull=True
             )
         }
+        duplicates = cls._kernel_duplicates(wanted, open_exposures)
+        wanted = {
+            triple: data for triple, data in wanted.items() if triple not in duplicates
+        }
+        # Copies of an exposure kept, not history: they go
+        to_delete = [
+            open_exposures.pop(triple).id
+            for triple in duplicates
+            if triple in open_exposures
+        ]
         to_update, to_create, to_close = [], [], []
         for triple, data in wanted.items():
             exposure = open_exposures.get(triple)
@@ -482,6 +520,8 @@ class ScanService:
                 exposure.resolution = resolution
                 to_close.append(exposure)
         with transaction.atomic():
+            for _, chunk in _chunks(to_delete):
+                Exposure.objects.filter(id__in=chunk).delete()
             Exposure.objects.bulk_create(to_create, batch_size=WRITE_BATCH)
             Exposure.objects.bulk_update(
                 to_update,
@@ -506,6 +546,8 @@ class ScanService:
             )
         counts["opened"] += len(to_create)
         counts["closed"] += len(to_close)
+        if to_delete:
+            counts["kernel_duplicates_removed"] += len(to_delete)
         for exposure in to_close:
             counts[f"closed_{exposure.resolution}"] += 1
 

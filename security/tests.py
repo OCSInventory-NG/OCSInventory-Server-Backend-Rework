@@ -1995,3 +1995,92 @@ def test_the_minor_debian_findings_already_stored_are_dropped(debian_data):
         Exposure.objects.values_list("vulnerability__vuln_id", flat=True)
     ) == ["CVE-2026-1"]
     assert Finding.objects.count() == 1
+
+
+@pytest.mark.django_db
+class TestKernelPackagesOfOneKernel:
+    """Ubuntu builds the kernel image and its modules from two sources."""
+
+    def setup_kernel(self, signed_fix=fixed_in("5.15.0-30.30")):
+        loaded(SOURCE_OSV_UBUNTU, ecosystems=["Ubuntu:22.04:LTS"])
+        for advisory_id, cve, rows in (
+            (
+                "UBUNTU-CVE-2026-40",
+                "CVE-2026-40",
+                [
+                    ("Ubuntu:22.04:LTS", "linux", fixed_in("5.15.0-30.30"), ""),
+                    ("Ubuntu:22.04:LTS", "linux-signed", signed_fix, ""),
+                ],
+            ),
+            (
+                "UBUNTU-CVE-2026-41",
+                "CVE-2026-41",
+                [("Ubuntu:22.04:LTS", "linux", fixed_in("5.15.0-30.30"), "")],
+            ),
+        ):
+            advisory(SOURCE_OSV_UBUNTU, advisory_id, [cve], rows)
+        asset = make_asset("a", key="ubuntu:22.04", running="5.15.0-25-generic")
+        for name, product in (
+            ("linux-image-5.15.0-25-generic", "pkg:deb/ubuntu/linux-signed"),
+            ("linux-modules-5.15.0-25-generic", "pkg:deb/ubuntu/linux"),
+        ):
+            install(
+                asset,
+                name,
+                "5.15.0-25.25",
+                product,
+                key="ubuntu:22.04",
+                origin="Ubuntu",
+            )
+        return asset
+
+    def test_a_kernel_vulnerability_is_exposed_once(self, db):
+        asset = self.setup_kernel()
+
+        ScanService.run(now=NOW)
+
+        rows = Exposure.objects.filter(asset=asset).order_by("vulnerability__vuln_id")
+        assert [(e.vulnerability.vuln_id, e.product) for e in rows] == [
+            ("CVE-2026-40", "pkg:deb/ubuntu/linux"),
+            ("CVE-2026-41", "pkg:deb/ubuntu/linux"),
+        ]
+
+    def test_the_package_with_a_fix_is_kept(self, db):
+        asset = self.setup_kernel(signed_fix=UNFIXED)
+
+        ScanService.run(now=NOW)
+
+        exposure = Exposure.objects.get(
+            asset=asset, vulnerability__vuln_id="CVE-2026-40"
+        )
+        assert (exposure.product, exposure.fixed_version) == (
+            "pkg:deb/ubuntu/linux",
+            "5.15.0-30.30",
+        )
+
+    def test_the_open_exposure_is_kept_and_its_copies_go(self, db):
+        asset = self.setup_kernel()
+        ScanService.run(now=NOW)
+        kept = Exposure.objects.get(asset=asset, vulnerability__vuln_id="CVE-2026-40")
+        # a copy left by an earlier scan
+        copy = Exposure.objects.create(
+            asset=asset,
+            vulnerability=kept.vulnerability,
+            scheme="purl",
+            product="pkg:deb/ubuntu/linux-signed",
+            software_name="linux-image-5.15.0-25-generic",
+            version="5.15.0-25.25",
+            platform_family="deb",
+            method="osv",
+            kernel=True,
+            first_seen=NOW,
+            last_seen=NOW,
+        )
+
+        counts = ScanService.run(now=NOW + timedelta(hours=1))
+
+        assert counts["kernel_duplicates_removed"] == 1
+        assert not Exposure.objects.filter(pk=copy.pk).exists()
+        kept.refresh_from_db()
+        assert (kept.closed_at, kept.first_seen) == (None, NOW)
+        assert not Exposure.objects.filter(closed_at__isnull=False).exists()
