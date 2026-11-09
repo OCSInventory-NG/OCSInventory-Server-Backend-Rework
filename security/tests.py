@@ -1989,9 +1989,9 @@ def test_the_minor_debian_findings_already_stored_are_dropped(debian_data):
 
     migration.drop_minor_urgencies(django_apps, None)
 
-    assert list(
-        Exposure.objects.values_list("vulnerability__vuln_id", flat=True)
-    ) == ["CVE-2026-1"]
+    assert list(Exposure.objects.values_list("vulnerability__vuln_id", flat=True)) == [
+        "CVE-2026-1"
+    ]
     assert Finding.objects.count() == 1
 
 
