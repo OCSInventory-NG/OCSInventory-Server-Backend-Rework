@@ -1,3 +1,6 @@
+import hashlib
+import json
+
 from asset.inventory_base.models import InventoryBase
 from django.db import models
 from inventory.field.models import Field
@@ -136,6 +139,35 @@ class SoftwareMapping(models.Model):
     )
 
 
+# What makes two installed software the same dictionary entry
+SIGNATURE_FIELDS = (
+    "name",
+    "publisher",
+    "version",
+    "major_version",
+    "minor_version",
+    "patch_version",
+    "platform_family",
+    "platform_key",
+    "architecture",
+    "package_format",
+    "source_package",
+    "source_version",
+    "package_origin",
+)
+
+
+def signature_of(values):
+    """
+    sha256 of the signature fields of an entry, from a dict or an instance:
+    unique in the table, so that two inventories received at once cannot
+    create the same entry twice. None and "" differ, as in the fields.
+    """
+    get = values.get if isinstance(values, dict) else lambda n: getattr(values, n)
+    parts = [None if get(name) is None else str(get(name)) for name in SIGNATURE_FIELDS]
+    return hashlib.sha256(json.dumps(parts).encode()).hexdigest()
+
+
 class SoftwareDictionary(models.Model):
     """Aggregate which assets have a specific software signature"""
 
@@ -159,6 +191,8 @@ class SoftwareDictionary(models.Model):
         blank=True,
     )
     updated_at = models.DateTimeField(auto_now=True)
+    # signature_of() the fields above, set on every save
+    signature = models.CharField(max_length=64, unique=True, null=True, editable=False)
 
     class Meta:
         indexes = [
@@ -167,6 +201,13 @@ class SoftwareDictionary(models.Model):
             models.Index(fields=["version"]),
             models.Index(fields=["platform_key"]),
         ]
+
+    def save(self, *args, **kwargs):
+        self.signature = signature_of(self)
+        update_fields = kwargs.get("update_fields")
+        if update_fields is not None and "signature" not in update_fields:
+            kwargs["update_fields"] = [*update_fields, "signature"]
+        super().save(*args, **kwargs)
 
 
 class DistroRelease(models.Model):

@@ -18,6 +18,7 @@ from inventory.software.models import (
     DistroRelease,
     SoftwareDictionary,
     SoftwareMapping,
+    signature_of,
 )
 from inventory.software.platform import resolve
 from inventory.software.services import SoftwareDictionaryService
@@ -1376,3 +1377,92 @@ def test_identity_migrations_reverse_and_apply_again():
     assert debian.package_origin.name == "ORIGIN"
     assert debian.source_version.name == "SOURCE VERSION"
     assert "SourceVersion" in default_target("Linux (RHEL based)", "SOFTWARES")
+
+
+@pytest.mark.django_db
+class TestSoftwareDictionarySignature:
+    """Two inventories received at once never create the same entry twice."""
+
+    def test_the_signature_is_unique(self, db):
+        from django.db import IntegrityError, transaction
+
+        SoftwareDictionary.objects.create(name="curl", version="8.0-1")
+
+        with pytest.raises(IntegrityError), transaction.atomic():
+            SoftwareDictionary.objects.create(name="curl", version="8.0-1")
+        # None and "" are different values
+        SoftwareDictionary.objects.create(name="curl", version="8.0-1", publisher="")
+
+    def test_an_entry_created_meanwhile_is_read_back(
+        self, asset, section, software_fields, mapping, monkeypatch
+    ):
+        from django.db.models.query import QuerySet
+
+        add_software_entry(
+            asset,
+            section,
+            software_fields,
+            name="apache2",
+            publisher="Debian",
+            version="2.4",
+        )
+        real_get = QuerySet.get
+        calls = []
+
+        def get_after_another_inventory(queryset, *args, **kwargs):
+            # The first lookup misses; another inventory creates the entry
+            # before this one inserts it
+            if queryset.model is SoftwareDictionary and not calls:
+                calls.append(1)
+                SoftwareDictionary.objects.create(
+                    name="apache2", publisher="Debian", version="2.4"
+                )
+                raise SoftwareDictionary.DoesNotExist
+            return real_get(queryset, *args, **kwargs)
+
+        monkeypatch.setattr(QuerySet, "get", get_after_another_inventory)
+
+        SoftwareDictionaryService.refresh_asset(asset)
+
+        entry = SoftwareDictionary.objects.get()
+        assert list(entry.assets.all()) == [asset]
+        assert entry.installation_number == 1
+
+    def test_the_duplicates_are_merged(self, asset, template):
+        from django.apps import apps as django_apps
+        from inventory.software_identity.models import SoftwareIdentity
+
+        other = InventoryBase.objects.create(
+            name="asset-2",
+            description="desc",
+            serial="SER-2",
+            osname="Linux",
+            osversion="1",
+            uuid="uuid-asset-2",
+            domain="example",
+            agent="agent",
+            template=template,
+            is_template_forced=True,
+        )
+        kept = SoftwareDictionary.objects.create(name="curl", version="8.0-1")
+        kept.assets.add(asset)
+        # Created as before the signature: bulk_create does not call save()
+        SoftwareDictionary.objects.bulk_create(
+            [SoftwareDictionary(name="curl", version="8.0-1")]
+        )
+        copy = SoftwareDictionary.objects.exclude(pk=kept.pk).get()
+        copy.assets.add(asset, other)
+        SoftwareIdentity.objects.create(entry=copy, status="matched")
+        SoftwareDictionary.objects.filter(pk=kept.pk).update(signature=None)
+        migration = importlib.import_module(
+            "inventory.software.migrations.0009_dictionary_signature"
+        )
+
+        migration.merge_duplicates(django_apps, None)
+
+        entry = SoftwareDictionary.objects.get()
+        assert entry.pk == kept.pk
+        assert set(entry.assets.all()) == {asset, other}
+        assert entry.installation_number == 2
+        assert SoftwareIdentity.objects.get().entry_id == kept.pk
+        assert entry.signature == signature_of(entry)

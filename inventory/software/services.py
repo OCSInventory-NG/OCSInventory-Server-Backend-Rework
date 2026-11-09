@@ -9,10 +9,12 @@ from django.db import transaction
 from django.db.models import F
 from django.db.models.functions import Now
 from inventory.software.models import (
+    SIGNATURE_FIELDS,
     AssetPlatform,
     DistroRelease,
     SoftwareDictionary,
     SoftwareMapping,
+    signature_of,
 )
 from inventory.software.platform import resolve
 
@@ -26,21 +28,6 @@ PACKAGE_FIELDS = (
     "package_format",
     "source_package",
     "source_version",
-)
-SIGNATURE_FIELDS = (
-    "name",
-    "publisher",
-    "version",
-    "major_version",
-    "minor_version",
-    "patch_version",
-    "platform_family",
-    "platform_key",
-    "architecture",
-    "package_format",
-    "source_package",
-    "source_version",
-    "package_origin",
 )
 
 
@@ -395,7 +382,12 @@ class SoftwareDictionaryService:
         through_model = SoftwareDictionary.assets.through
         created_count = 0
         for entry in entries:
-            obj, created = SoftwareDictionary.objects.get_or_create(**entry)
+            # By signature, unique: an entry created at the same time by
+            # another inventory makes this create fail, and get_or_create
+            # then reads it
+            obj, created = SoftwareDictionary.objects.get_or_create(
+                signature=signature_of(entry), defaults=entry
+            )
             if created:
                 created_count += 1
 
