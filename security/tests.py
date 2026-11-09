@@ -653,9 +653,7 @@ def forticlient(target_sw, end="7.4.4"):
         ("macos", "", True),
     ],
 )
-def test_nvd_skips_the_cpes_of_another_operating_system(
-    target_sw, platform, affected
-):
+def test_nvd_skips_the_cpes_of_another_operating_system(target_sw, platform, affected):
     result = nvd.evaluate([forticlient(target_sw)], "7.4.3.1790", platform)
 
     assert (result is not None) == affected
