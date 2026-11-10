@@ -217,13 +217,6 @@ class LegacyDatabase:
         ids = ", ".join(str(int(id)) for id in hardware_ids)
         return self.rows(f"SELECT * FROM accountinfo WHERE HARDWARE_ID IN ({ids})")
 
-    def snmp_devices(self):
-        try:
-            return self.rows("SELECT COUNT(*) AS N FROM snmp_accountinfo")[0]["N"]
-        except Exception:
-            # the table predates some 2.X versions
-            return 0
-
 
 @dataclass
 class Definition:
@@ -266,8 +259,6 @@ class Result:
     ignored_reasons: list = field(default_factory=list)
     machines: Counter = field(default_factory=Counter)
     values: Counter = field(default_factory=Counter)
-    snmp_fields: int = 0
-    snmp_devices: int = 0
     failed_batch: Optional[int] = None
     error: str = ""
 
@@ -344,10 +335,6 @@ class LegacyAccountinfoImport:
             # ocsreports stores what it is given HTML-escaped
             row["COMMENT"] = html.unescape(row["COMMENT"] or "")
 
-            if row["ACCOUNT_TYPE"] == "SNMP":
-                self.result.snmp_fields += 1
-                self.definition_row(name, "ignored", "SNMP field, not migrated")
-                continue
             if row["ACCOUNT_TYPE"] != "COMPUTERS":
                 continue
 
@@ -360,7 +347,6 @@ class LegacyAccountinfoImport:
                 self.attach_values(definition, labels.get(name, []))
             definitions.append(definition)
 
-        self.result.snmp_devices = self.legacy.snmp_devices()
         LOGGER.info(f"Definitions: {dict(self.result.definitions)}")
         return definitions
 

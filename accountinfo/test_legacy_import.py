@@ -33,7 +33,6 @@ CREATE TABLE config (NAME TEXT, IVALUE INTEGER, TVALUE TEXT, COMMENTS TEXT);
 CREATE TABLE hardware (ID INTEGER, DEVICEID TEXT, NAME TEXT, LASTDATE TEXT);
 CREATE TABLE bios (HARDWARE_ID INTEGER, SSN TEXT);
 CREATE TABLE networks (ID INTEGER, HARDWARE_ID INTEGER, MACADDR TEXT, STATUS TEXT);
-CREATE TABLE snmp_accountinfo (SNMP_ID INTEGER, TAG TEXT);
 
 INSERT INTO accountinfo_config VALUES
     (1, 'TAG', 0, 'TAG', 1, 'TAG', 1, 'COMPUTERS', NULL),
@@ -51,8 +50,6 @@ INSERT INTO config VALUES
     ('ACCOUNT_VALUE_CHECKBOXEXAMPLE_3', 3, 'Spare', NULL),
     ('ACCOUNT_VALUE_LOCATION_1', 1, 'Paris', NULL),
     ('ACCOUNT_VALUE_LOCATION_2', 2, 'Marseille', NULL);
-
-INSERT INTO snmp_accountinfo VALUES (1, 'SW-1'), (2, 'SW-2');
 """
 
 
@@ -146,11 +143,10 @@ class TestDefinitions:
         assert result.definitions["ignored"] == 2
         assert "type 7" in result.ignored_reasons
 
-    def test_snmp_fields_are_only_counted(self, legacy):
-        result, _ = run(legacy, definitions_only=True)
+    def test_only_computers_fields_are_read(self, legacy):
+        _, rows = run(legacy, definitions_only=True)
 
-        assert result.snmp_fields == 1
-        assert result.snmp_devices == 2
+        assert [row["field"] for row in rows].count("TAG") == 1
         assert AccountinfoConfig.objects.filter(name="TAG").count() == 1
 
     def test_list_values_keep_the_legacy_order(self, legacy):
@@ -579,7 +575,6 @@ class TestCommand:
             "Machines: 1 matched (1 by DEVICEID, 0 by duplicate rules),"
             " 0 unmatched, 0 duplicates",
             "Values: 1 imported, 0 kept (existing), 0 rejected",
-            "SNMP accountinfo: 1 fields, 2 devices - not migrated",
             f"Report: {tmp_path / 'report.csv'}",
         ]
 

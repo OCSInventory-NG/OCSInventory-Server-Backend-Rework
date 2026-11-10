@@ -165,10 +165,6 @@ class Command(BaseCommand):
                 line += f", {number(values['overwritten'])} overwritten"
             self.stdout.write(line)
 
-        self.stdout.write(
-            f"SNMP accountinfo: {number(result.snmp_fields)} fields, "
-            f"{number(result.snmp_devices)} devices - not migrated"
-        )
         self.stdout.write(f"Report: {path}")
 
     @staticmethod
