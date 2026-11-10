@@ -389,7 +389,6 @@ class ScanService:
                 "fixed_version",
                 "fix_channel",
                 "method",
-                "uncertain",
                 "rating",
             ):
                 findings[finding["evaluation_id"]].append(finding)
@@ -493,7 +492,6 @@ class ScanService:
                 "fixed_version": data["fixed_version"],
                 "fix_channel": data["fix_channel"],
                 "method": data["method"],
-                "uncertain": data["uncertain"],
                 "kernel": data["kernel"],
                 "rating": data["rating"],
                 "last_seen": now,
@@ -541,7 +539,6 @@ class ScanService:
                     "fixed_version",
                     "fix_channel",
                     "method",
-                    "uncertain",
                     "kernel",
                     "rating",
                     "last_seen",

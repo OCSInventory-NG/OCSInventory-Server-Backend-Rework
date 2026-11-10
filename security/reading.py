@@ -118,7 +118,6 @@ def _rows(
             "products": {},
             "fixed": set(),
             "channels": set(),
-            "certain": False,
             "methods": set(),
             "first_seen": None,
         }
@@ -131,7 +130,6 @@ def _rows(
         "version",
         "fixed_version",
         "fix_channel",
-        "uncertain",
         "method",
         "rating",
         "first_seen",
@@ -147,7 +145,6 @@ def _rows(
         if exposure["fixed_version"]:
             group["fixed"].add(exposure["fixed_version"])
             group["channels"].add(exposure["fix_channel"])
-        group["certain"] |= not exposure["uncertain"]
         group["methods"].add(exposure["method"])
         if group["first_seen"] is None or exposure["first_seen"] < group["first_seen"]:
             group["first_seen"] = exposure["first_seen"]
@@ -181,7 +178,6 @@ def _rows(
             "fix_available": bool(group["fixed"]),
             "fixed_versions": sorted(group["fixed"])[:PRODUCTS_SHOWN],
             "fix_channels": sorted(c or "standard" for c in group["channels"]),
-            "uncertain": not group["certain"],
             "first_seen": group["first_seen"],
             "asset_ids": group["machines"],
         }
@@ -277,7 +273,6 @@ def _exposure_row(exposure, names, excluded):
         "fixed_version": exposure.fixed_version,
         "fix_channel": exposure.fix_channel or "standard",
         "method": exposure.method,
-        "uncertain": exposure.uncertain,
         "rating": exposure.rating,
         "kernel": exposure.kernel,
         "first_seen": exposure.first_seen,

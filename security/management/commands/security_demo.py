@@ -412,7 +412,7 @@ REFERENCES = [
     ("USN-9101-1", SOURCE_OSV_UBUNTU, ["CVE-2026-90101"], "curl vulnerability (demo)"),
 ]
 
-# NVD CVEs: (id, description, vector, score, [(criteria, bounds, conditional)])
+# NVD CVEs: (id, description, vector, score, [(criteria, bounds, systems)])
 NVD = [
     (
         "CVE-2026-90301",
@@ -423,7 +423,7 @@ NVD = [
             (
                 "cpe:2.3:a:zoom:meetings:*:*:*:*:*:*:*:*",
                 {"versionEndExcluding": "6.2.0"},
-                False,
+                [],
             )
         ],
     ),
@@ -436,7 +436,7 @@ NVD = [
             (
                 "cpe:2.3:a:zoom:zoom:*:*:*:*:*:*:*:*",
                 {"versionEndExcluding": "6.3.0"},
-                True,
+                ["apple:macos"],
             )
         ],
     ),
@@ -449,7 +449,7 @@ NVD = [
             (
                 "cpe:2.3:a:microsoft:edge_chromium:*:*:*:*:*:*:*:*",
                 {"versionEndExcluding": "131.0.2903.48"},
-                False,
+                [],
             )
         ],
     ),
@@ -458,14 +458,26 @@ NVD = [
         "Microsoft Edge (EdgeHTML): memory corruption (demo)",
         V31_HIGH,
         7.5,
-        [("cpe:2.3:a:microsoft:edge:*:*:*:*:*:*:*:*", {}, False)],
+        [
+            (
+                "cpe:2.3:a:microsoft:edge:*:*:*:*:*:*:*:*",
+                {"versionEndIncluding": "130.0.2849.56"},
+                [],
+            )
+        ],
     ),
     (
         "CVE-2026-90305",
         "7-Zip: directory traversal in archive extraction (demo)",
         V31_HIGH,
         7.8,
-        [("cpe:2.3:a:7-zip:7-zip:*:*:*:*:*:*:*:*", {}, False)],
+        [
+            (
+                "cpe:2.3:a:7-zip:7-zip:*:*:*:*:*:*:*:*",
+                {"versionEndExcluding": "24.07"},
+                [],
+            )
+        ],
     ),
     (
         "CVE-2026-90306",
@@ -476,7 +488,7 @@ NVD = [
             (
                 "cpe:2.3:a:mozilla:firefox:*:*:*:*:*:*:*:*",
                 {"versionEndExcluding": "131.0"},
-                False,
+                [],
             )
         ],
     ),
@@ -489,7 +501,7 @@ NVD = [
             (
                 "cpe:2.3:a:tunnelblick:tunnelblick:*:*:*:*:*:*:*:*",
                 {"versionStartIncluding": "3.5.3", "versionEndExcluding": "8.0.1"},
-                False,
+                [],
             )
         ],
     ),
@@ -502,7 +514,7 @@ NVD = [
             (
                 "cpe:2.3:a:7-zip:7-zip:*:*:*:*:*:*:*:*",
                 {"versionEndExcluding": "24.0"},
-                False,
+                [],
             )
         ],
     ),
@@ -642,13 +654,13 @@ class Command(BaseCommand):
                 cvss3_vector=vector,
                 cvss3_score=score,
             )
-            for criteria, bounds, conditional in matches:
+            for criteria, bounds, systems in matches:
                 NvdMatch.objects.create(
                     cve=cve,
                     vendor_product=":".join(criteria.split(":")[3:5]),
                     criteria=criteria,
                     bounds=bounds,
-                    conditional=conditional,
+                    systems=systems,
                 )
         for cve, added in KEV.items():
             KevEntry.objects.create(cve=cve, date_added=added)

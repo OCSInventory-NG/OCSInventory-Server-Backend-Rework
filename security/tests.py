@@ -665,21 +665,33 @@ def test_nvd_items_are_read_one_at_a_time():
 
 
 def test_nvd_compact_keeps_both_scores_and_the_conditions():
+    def compacted(platform):
+        return nvd.compact(
+            nvd_item(
+                "CVE-2026-0005",
+                "cpe:2.3:a:zoom:meetings:*:*:*:*:*:*:*:*",
+                {"versionEndExcluding": "6.0"},
+                platform=platform,
+            )["cve"]
+        )["matches"]
+
     cve = nvd.compact(NVD_TUNNELBLICK["vulnerabilities"][0]["cve"])
-    conditional = nvd.compact(
-        nvd_item(
-            "CVE-2026-0005",
-            "cpe:2.3:a:zoom:meetings:*:*:*:*:*:*:*:*",
-            {"versionEndExcluding": "6.0"},
-            platform="cpe:2.3:o:apple:macos:-:*:*:*:*:*:*:*",
-        )["cve"]
-    )
+    on_macos = compacted("cpe:2.3:o:apple:macos:-:*:*:*:*:*:*:*")
+    with_app = compacted("cpe:2.3:a:wordpress:wordpress:*:*:*:*:*:*:*:*")
 
     assert (cve["cvss3_score"], cve["cvss4_score"]) == (5.5, 6.8)
     assert len(cve["matches"]) == 6
-    assert not cve["matches"][0]["conditional"]
-    assert [m["product"] for m in conditional["matches"]] == ["zoom:meetings"]
-    assert conditional["matches"][0]["conditional"]
+    assert (cve["matches"][0]["conditional"], cve["matches"][0]["systems"]) == (
+        False,
+        [],
+    )
+    # an operating system says where; another product is a condition
+    assert [m["product"] for m in on_macos] == ["zoom:meetings"]
+    assert (on_macos[0]["conditional"], on_macos[0]["systems"]) == (
+        False,
+        ["apple:macos"],
+    )
+    assert (with_app[0]["conditional"], with_app[0]["systems"]) == (True, [])
 
 
 @pytest.mark.parametrize(
@@ -705,24 +717,46 @@ def test_nvd_evaluate(version, expected):
             result["fixed_version"],
             result["affected_range"],
         ) == expected
-        assert result["uncertain"] is False
 
 
-def test_nvd_all_versions_and_conditions_are_uncertain():
-    everything = {
+def seven_zip(bounds, conditional=False, systems=()):
+    return {
         "criteria": "cpe:2.3:a:7-zip:7-zip:*:*:*:*:*:*:*:*",
-        "bounds": {},
-        "conditional": False,
-    }
-    conditional = {
-        "criteria": "cpe:2.3:a:7-zip:7-zip:*:*:*:*:*:*:*:*",
-        "bounds": {"versionEndExcluding": "25.0"},
-        "conditional": True,
+        "bounds": bounds,
+        "conditional": conditional,
+        "systems": list(systems),
     }
 
-    assert nvd.evaluate([everything], "24.08")["uncertain"] is True
-    result = nvd.evaluate([everything, conditional], "24.08")
-    assert (result["method"], result["uncertain"]) == ("nvd_range", True)
+
+def test_nvd_only_reports_what_is_sure():
+    up_to_25 = {"versionEndExcluding": "25.0"}
+
+    # all versions, or a condition on another product: never reported
+    assert nvd.evaluate([seven_zip({})], "24.08", "windows") is None
+    assert nvd.evaluate([seven_zip(up_to_25, True)], "24.08", "windows") is None
+    # an operating system condition: reported on that system only
+    on_android = seven_zip(up_to_25, systems=["google:android"])
+    on_windows = seven_zip(up_to_25, systems=["microsoft:windows_10"])
+    assert nvd.evaluate([on_android], "24.08", "macos") is None
+    assert nvd.evaluate([on_windows], "24.08", "windows")["method"] == "nvd_range"
+    assert nvd.evaluate([on_windows], "24.08", "macos") is None
+
+
+@pytest.mark.parametrize(
+    "version, bound, same",
+    [
+        ("16.0.19127.20192", "2401.17231.20236", False),
+        ("143.0.4", "99.0", True),
+        ("9.2", "10.1", True),
+        ("6.1.5", "6.2", True),
+    ],
+)
+def test_nvd_bounds_in_another_numbering_are_skipped(version, bound, same):
+    assert nvd.same_numbering(version, bound) is same
+    result = nvd.evaluate(
+        [seven_zip({"versionEndIncluding": bound})], version, "windows"
+    )
+    assert (result is not None) is (same and nvd.vcmp(version, bound) <= 0)
 
 
 def forticlient(target_sw, end="7.4.4"):
@@ -1527,10 +1561,10 @@ class TestNvdScan:
         ScanService.run(now=NOW)
 
         rows = Exposure.objects.filter(asset=asset).order_by("vulnerability__vuln_id")
-        assert [(e.vulnerability.vuln_id, e.method, e.uncertain) for e in rows] == [
-            ("CVE-2024-0001", "nvd_range", False),
-            ("CVE-2026-0100", "nvd_range", False),
-            ("CVE-2026-0101", "nvd_all_versions", True),
+        # CVE-2026-0101 affects all versions: not sure, not reported
+        assert [(e.vulnerability.vuln_id, e.method) for e in rows] == [
+            ("CVE-2024-0001", "nvd_range"),
+            ("CVE-2026-0100", "nvd_range"),
         ]
         assert CpeAlias.objects.filter(
             product="zoom:zoom", alias="zoom:meetings"

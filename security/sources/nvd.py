@@ -18,7 +18,6 @@ from django.utils.dateparse import parse_datetime
 from inventory.software_identity.normalizers.cpe import cpe_version
 from ocsinventory_backend.ocs_framework.progress import Progress
 from security.models import (
-    METHOD_NVD_ALL_VERSIONS,
     METHOD_NVD_EXACT,
     METHOD_NVD_RANGE,
     NvdCve,
@@ -142,6 +141,12 @@ def vendor_product(criteria):
     return _unescape(f"{parts[3]}:{parts[4]}")
 
 
+def cpe_part(criteria):
+    """a (application), o (operating system) or h (hardware)."""
+    parts = _UNESCAPED_COLON.split(criteria or "")
+    return parts[2] if len(parts) > 2 else ""
+
+
 def compact(cve):
     """What the local data keeps of an NVD CVE."""
     metrics = cve.get("metrics") or {}
@@ -150,12 +155,23 @@ def compact(cve):
     matches = []
     for configuration in cve.get("configurations") or []:
         nodes = configuration.get("nodes") or []
-        # An AND with a non vulnerable product: vulnerable on that platform only
-        conditional = configuration.get("operator") == "AND" and any(
-            not match.get("vulnerable")
-            for node in nodes
-            for match in node.get("cpeMatch") or []
+        # An AND with products that are not vulnerable: vulnerable with them
+        # only. Operating systems name where; any other product is a
+        # condition the inventory cannot check.
+        conditions = (
+            [
+                match.get("criteria", "")
+                for node in nodes
+                for match in node.get("cpeMatch") or []
+                if not match.get("vulnerable")
+            ]
+            if configuration.get("operator") == "AND"
+            else []
         )
+        systems = sorted(
+            {vendor_product(c) for c in conditions if cpe_part(c) == "o"} - {""}
+        )
+        conditional = any(cpe_part(c) != "o" for c in conditions)
         for node in nodes:
             for match in node.get("cpeMatch") or []:
                 if not match.get("vulnerable"):
@@ -169,6 +185,7 @@ def compact(cve):
                         "criteria": match["criteria"],
                         "bounds": {b: match[b] for b in _BOUNDS if match.get(b)},
                         "conditional": conditional,
+                        "systems": systems,
                     }
                 )
     description = next(
@@ -231,6 +248,7 @@ def _flush(year, full, cves):
                 criteria=match["criteria"][:1024],
                 bounds=match["bounds"],
                 conditional=match["conditional"],
+                systems=match["systems"],
             )
             for cve in cves
             for match in cve["matches"]
@@ -288,6 +306,29 @@ def vcmp(a, b):
     return (ka > kb) - (ka < kb)
 
 
+# Known mistakes of the NVD data, never reported: {CVE: why}
+ERRATA = {
+    "CVE-2024-20701": (
+        "lists the SQL Server builds of the July 2024 security updates that fix"
+        " it (15.0.2116.2, 15.0.4382.1) as the vulnerable ones"
+    ),
+}
+
+
+def _major_digits(version):
+    major = re.match(r"\d+", version or "")
+    return len(major.group(0)) if major else 0
+
+
+def same_numbering(version, bound):
+    """
+    Whether a bound counts versions like the installed version: a major of
+    another order of magnitude is another numbering (Microsoft 365 Apps
+    installed as 16.0.19127.20192, bounded by NVD as 2401.17231.20236).
+    """
+    return abs(_major_digits(version) - _major_digits(bound)) < 2
+
+
 def _within(version, bounds):
     checks = {
         "versionStartIncluding": lambda bound: vcmp(version, bound) >= 0,
@@ -339,6 +380,18 @@ PLATFORM_SYSTEMS = {
     "windows": {"windows"},
     "macos": {"macos", "mac_os", "mac_os_x", "os_x", "unix"},
 }
+# The operating system CPEs (vendor:product) of a platform: Windows is named
+# per edition too (microsoft:windows_10, microsoft:windows_server_2022)
+_SYSTEM_CPES = {
+    "windows": re.compile(r"^microsoft:windows(_.*)?$"),
+    "macos": re.compile(r"^apple:(macos|mac_os|mac_os_x|os_x)$"),
+}
+
+
+def runs_on(systems, platform):
+    """Whether the platform is one of the operating systems a CVE requires."""
+    pattern = _SYSTEM_CPES.get(platform)
+    return pattern is not None and any(pattern.match(s) for s in systems)
 
 
 def for_platform(criteria, platform):
@@ -358,25 +411,30 @@ def for_platform(criteria, platform):
 def evaluate(matches, installed, platform=""):
     """
     How an installed version is affected by the matches of one CVE, None when
-    it is not. A range or an exact version wins over an "all versions" entry;
-    "all versions" and a condition on another product are uncertain. Matches
-    for another operating system than the platform's are skipped.
+    it is not or when it cannot be told for sure: only a range or an exact
+    version count, never "all versions"; a match for another operating
+    system than the platform's, or with a condition on another product, is
+    skipped.
     """
     version = cpe_version(installed or "")
-    all_versions = None
     for match in matches:
         bounds = match["bounds"]
         parts = _UNESCAPED_COLON.split(match["criteria"])
         if len(parts) < 7 or not for_platform(match["criteria"], platform):
             continue
+        if match["conditional"]:
+            continue
+        if match.get("systems") and not runs_on(match["systems"], platform):
+            continue
         exact, update = _unescape(parts[5]), _unescape(parts[6])
         if bounds:
+            if not all(same_numbering(version, bound) for bound in bounds.values()):
+                continue
             if version and _within(version, bounds):
                 return {
                     "method": METHOD_NVD_RANGE,
                     "fixed_version": bounds.get("versionEndExcluding", ""),
                     "affected_range": _words(bounds),
-                    "uncertain": match["conditional"],
                 }
         elif exact not in ("*", "-"):
             # "9.0" with update "beta01" is that pre-release, not 9.0 itself
@@ -392,13 +450,5 @@ def evaluate(matches, installed, platform=""):
                     "affected_range": " ".join(
                         ["version", exact] + ([update] if pre_release else [])
                     ),
-                    "uncertain": match["conditional"],
                 }
-        elif exact == "*" and all_versions is None:
-            all_versions = {
-                "method": METHOD_NVD_ALL_VERSIONS,
-                "fixed_version": "",
-                "affected_range": "all versions",
-                "uncertain": True,
-            }
-    return all_versions
+    return None

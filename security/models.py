@@ -38,15 +38,8 @@ SOURCE_CHOICES = tuple((source, source) for source in SOURCES)
 METHOD_OSV = "osv"
 METHOD_NVD_RANGE = "nvd_range"
 METHOD_NVD_EXACT = "nvd_exact"
-METHOD_NVD_ALL_VERSIONS = "nvd_all_versions"
 METHOD_CHOICES = tuple(
-    (method, method)
-    for method in (
-        METHOD_OSV,
-        METHOD_NVD_RANGE,
-        METHOD_NVD_EXACT,
-        METHOD_NVD_ALL_VERSIONS,
-    )
+    (method, method) for method in (METHOD_OSV, METHOD_NVD_RANGE, METHOD_NVD_EXACT)
 )
 
 # Where the fix comes from: the distribution, or its Ubuntu Pro repositories
@@ -164,8 +157,11 @@ class NvdMatch(models.Model):
     vendor_product = models.CharField(max_length=511, db_index=True)
     criteria = models.CharField(max_length=1024)
     bounds = models.JSONField(default=dict, blank=True)
-    # Vulnerable only with another product (an AND with an operating system)
+    # Vulnerable only with another product than an operating system (an AND
+    # with an application or a device): never reported
     conditional = models.BooleanField(default=False)
+    # Vulnerable only on one of these operating systems (vendor:product)
+    systems = models.JSONField(default=list, blank=True)
 
 
 class KevEntry(models.Model):
@@ -249,7 +245,6 @@ class Finding(models.Model):
     fix_channel = models.CharField(max_length=16, blank=True, default="")
     affected_range = models.CharField(max_length=255, blank=True, default="")
     method = models.CharField(max_length=16, choices=METHOD_CHOICES)
-    uncertain = models.BooleanField(default=False)
     # Debian urgency, Ubuntu priority, Rocky or Alma severity
     rating = models.CharField(max_length=32, blank=True, default="")
 
@@ -291,7 +286,6 @@ class Exposure(models.Model):
     fixed_version = models.CharField(max_length=255, blank=True, default="")
     fix_channel = models.CharField(max_length=16, blank=True, default="")
     method = models.CharField(max_length=16, choices=METHOD_CHOICES)
-    uncertain = models.BooleanField(default=False)
     kernel = models.BooleanField(default=False)
     rating = models.CharField(max_length=32, blank=True, default="")
     first_seen = models.DateTimeField()

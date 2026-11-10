@@ -312,7 +312,6 @@ def evaluate_osv(key, context):
                     "fix_channel": channel,
                     "affected_range": words,
                     "method": METHOD_OSV,
-                    "uncertain": False,
                     "rating": rating,
                     "summary": advisory.summary,
                     "published": advisory.published,
@@ -334,14 +333,20 @@ class NvdProducts:
         if product not in self.cache:
             names = {product} | self.context.aliases.get(product, set())
             per_cve = defaultdict(list)
-            for cve_id, criteria, bounds, conditional in NvdMatch.objects.filter(
+            rows = NvdMatch.objects.filter(
                 vendor_product__in=names,
                 cve__full=True,
                 cve__rejected=False,
                 cve__year__in=self.context.window,
-            ).values_list("cve__cve_id", "criteria", "bounds", "conditional"):
+            ).values_list("cve__cve_id", "criteria", "bounds", "conditional", "systems")
+            for cve_id, criteria, bounds, conditional, systems in rows:
                 per_cve[cve_id].append(
-                    {"criteria": criteria, "bounds": bounds, "conditional": conditional}
+                    {
+                        "criteria": criteria,
+                        "bounds": bounds,
+                        "conditional": conditional,
+                        "systems": systems,
+                    }
                 )
             if len(self.cache) > 200:
                 self.cache.clear()
@@ -352,6 +357,8 @@ class NvdProducts:
 def evaluate_nvd(key, products):
     findings = []
     for cve_id, matches in sorted(products.matches(key.product).items()):
+        if cve_id in nvd.ERRATA:
+            continue
         result = nvd.evaluate(matches, key.version, key.platform_key)
         if result is None:
             continue
@@ -363,7 +370,6 @@ def evaluate_nvd(key, products):
                 "fix_channel": CHANNEL_STANDARD,
                 "affected_range": result["affected_range"],
                 "method": result["method"],
-                "uncertain": result["uncertain"],
                 "rating": "",
                 "summary": "",
                 "published": None,
@@ -432,7 +438,6 @@ def store(key, findings, context):
                     fix_channel=finding["fix_channel"],
                     affected_range=finding["affected_range"][:255],
                     method=finding["method"],
-                    uncertain=finding["uncertain"],
                     rating=(finding["rating"] or "")[:32],
                 )
                 for vuln_id, finding in unique.items()

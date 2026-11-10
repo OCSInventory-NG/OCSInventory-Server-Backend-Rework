@@ -49,7 +49,6 @@ class ExposureSerializer(ModelSerializer):
             "fixed_version",
             "fix_channel",
             "method",
-            "uncertain",
             "first_seen",
             "last_seen",
             "closed_at",
