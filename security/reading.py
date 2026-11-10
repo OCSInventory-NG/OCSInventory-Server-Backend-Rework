@@ -36,7 +36,9 @@ LEVELS = ("critical", "high", "medium", "low", "unknown")
 NOT_UNCHECKED = (CHECKED, EXCLUDED, KERNEL_NOT_RUNNING)
 PRODUCTS_SHOWN = 5
 
-# Findings faithful to their source but hidden by default (counted)
+# Noise categories the list could show on demand. The noise is no longer
+# stored (security.kernel.is_noise): accepted by "show" for the clients that
+# still send it, "hidden" stays empty and "noise" "".
 NOISE_KERNEL_UNFIXED = "kernel_unfixed"
 NOISE = (NOISE_KERNEL_UNFIXED,)
 
@@ -58,23 +60,6 @@ NOT_COVERED_REASONS = (
     SOURCE_NEVER_LOADED,
     RELEASE_NOT_TRACKED,
 )
-
-
-def noise_of(exposure):
-    """The noise category of an open exposure, "" when it is not noise."""
-    if exposure["kernel"] and not exposure["fixed_version"]:
-        return NOISE_KERNEL_UNFIXED
-    return ""
-
-
-def row_noise(categories):
-    """
-    The noise category of a vulnerability row: the one of all its detections
-    shown, "" as soon as one of them is not noise.
-    """
-    if not categories or "" in categories:
-        return ""
-    return next(category for category in NOISE if category in categories)
 
 
 def priority(ordering=None):
@@ -119,8 +104,9 @@ def _rows(
 ):
     """
     (rows, hidden counts): one row per vulnerability open on at least one
-    machine, exclusions applied, noise hidden unless shown, filters applied;
-    each row keeps the ids of its machines under "asset_ids".
+    machine, exclusions applied, filters applied; each row keeps the ids of
+    its machines under "asset_ids". Nothing is hidden any more: show is
+    accepted and ignored.
     """
     exclusions = active_exclusions(now)
     exposures = Exposure.objects.filter(closed_at__isnull=True)
@@ -133,7 +119,7 @@ def _rows(
             id__in=exposures.values("vulnerability_id")
         ).values_list("id", "vuln_id")
     )
-    hidden = Counter()
+    hidden = {}
     grouped = defaultdict(
         lambda: {
             "machines": set(),
@@ -143,7 +129,6 @@ def _rows(
             "certain": False,
             "methods": set(),
             "first_seen": None,
-            "noise": set(),
         }
     )
     for exposure in exposures.values(
@@ -157,18 +142,12 @@ def _rows(
         "uncertain",
         "method",
         "rating",
-        "kernel",
         "first_seen",
     ):
         vuln_id = vuln_names.get(exposure["vulnerability_id"], "")
         if exclusions.excludes(exposure["asset_id"], vuln_id):
             continue
-        noise = noise_of(exposure)
-        if noise and noise not in show:
-            hidden[noise] += 1
-            continue
         group = grouped[exposure["vulnerability_id"]]
-        group["noise"].add(noise)
         group["machines"].add(exposure["asset_id"])
         group["products"][(exposure["product"], exposure["version"])] = exposure[
             "software_name"
@@ -211,7 +190,7 @@ def _rows(
             "fixed_versions": sorted(group["fixed"])[:PRODUCTS_SHOWN],
             "fix_channels": sorted(c or "standard" for c in group["channels"]),
             "uncertain": not group["certain"],
-            "noise": row_noise(group["noise"]),
+            "noise": "",
             "first_seen": group["first_seen"],
             "asset_ids": group["machines"],
         }
@@ -387,13 +366,7 @@ def asset_exposures(asset_id, status="open", now=None):
                 "level": level(vulnerability.cvss_score, vulnerability.distro_rating),
                 "kev": vulnerability.kev,
                 "epss": vulnerability.epss,
-                "noise": noise_of(
-                    {
-                        "rating": exposure.rating,
-                        "kernel": exposure.kernel,
-                        "fixed_version": exposure.fixed_version,
-                    }
-                ),
+                "noise": "",
             }
         )
         rows.append(row)

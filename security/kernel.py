@@ -55,3 +55,23 @@ def is_running_kernel(name, version, family, running, source=""):
         return _name(name).endswith("-" + running)
     release = (version or "").split(":", 1)[-1]
     return bool(release) and (running == release or running.startswith(release + "."))
+
+
+# SpiderMonkey, the JavaScript engine embedded apart from Firefox: the
+# distributions mark it affected by every Firefox vulnerability, browser
+# ones included, and never fix it there
+_NOISY_SOURCES = re.compile(r"^mozjs\d+$")
+
+
+def is_noise(source, family, kernel=None, fixed=""):
+    """
+    A finding not worth keeping: without a fix, on the kernel (its sources,
+    or a package of the running kernel when kernel is True) or on mozjs. The
+    distributions track every kernel vulnerability, most never fixed for a
+    release: they would drown the ones to act on.
+    """
+    if fixed:
+        return False
+    if _NOISY_SOURCES.match(source or ""):
+        return True
+    return bool(kernel) if kernel is not None else _is_kernel_source(source, family)

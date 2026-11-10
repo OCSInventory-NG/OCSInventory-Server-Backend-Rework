@@ -42,6 +42,7 @@ from security.sync import (
     source_state,
     source_syncs,
 )
+from security.kernel import is_noise
 from security.versions import comparator
 
 EvaluationKey = namedtuple(
@@ -239,10 +240,12 @@ def evaluate_osv(key, context):
     """Findings of a Linux key: one per CVE of each affecting advisory."""
     ecosystems = context.ecosystems_of(key)
     compare = comparator(ecosystems[0])
+    source_name = osv.query_name(key.product)
+    family = key.product[4:].split("/")[0]
     rows = (
         OsvAffected.objects.filter(
             ecosystem__in=ecosystems,
-            package=osv.query_name(key.product),
+            package=source_name,
             advisory__detection=True,
             advisory__withdrawn=False,
         )
@@ -288,6 +291,8 @@ def evaluate_osv(key, context):
             fixed, channel, words, urgency = "", CHANNEL_STANDARD, first[2], first[3]
         rating = normalize_rating(advisory.rating or urgency)
         if rating in MINOR_RATINGS:
+            continue
+        if is_noise(source_name, family, fixed=fixed):
             continue
         for vuln_id in advisory.cves or [advisory.advisory_id]:
             findings.append(

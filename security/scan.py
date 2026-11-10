@@ -29,7 +29,7 @@ from security.evaluation import (
     refresh_vulnerabilities,
 )
 from security.exclusions import active_exclusions
-from security.kernel import is_kernel, is_running_kernel
+from security.kernel import is_kernel, is_noise, is_running_kernel
 from security.models import (
     RESOLUTION_FIXED,
     RESOLUTION_IDENTITY_CHANGED,
@@ -409,7 +409,14 @@ class ScanService:
                 if evaluation is not None:
                     name, _, family, _, _ = installations.entries[entry_id]
                     kernel = installations.is_kernel(entry_id)
+                    linux = key.scheme == "purl"
+                    source = osv.query_name(key.product) if linux else ""
                     for finding in findings[evaluation[0]]:
+                        # Kept by an evaluation made before the noise rule
+                        if linux and is_noise(
+                            source, family, kernel, finding["fixed_version"]
+                        ):
+                            continue
                         vulnerabilities.add(finding["vulnerability_id"])
                         wanted[
                             (key.scheme, key.product, finding["vulnerability_id"])

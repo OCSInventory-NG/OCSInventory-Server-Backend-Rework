@@ -1131,6 +1131,43 @@ class TestScan:
         ]
         assert open_exposures(patched) == []
 
+    def test_the_noise_is_not_stored(self, debian_data):
+        rows = [
+            ("CVE-2026-50", "linux", UNFIXED),
+            ("CVE-2026-51", "linux", fixed_in("6.1.2-1")),
+            ("CVE-2026-52", "mozjs115", UNFIXED),
+            ("CVE-2026-53", "mozjs115", fixed_in("115.2-1")),
+        ]
+        for cve, package, events in rows:
+            advisory(
+                SOURCE_OSV_DEBIAN,
+                f"DEBIAN-{cve}",
+                [cve],
+                [("Debian:12", package, events, "medium")],
+            )
+        asset = make_asset("a", running="6.1.0-1-amd64")
+        install(asset, "linux-image-6.1.0-1-amd64", "6.1.1-1", "pkg:deb/debian/linux")
+        install(asset, "libmozjs-115-0", "115.1-1", "pkg:deb/debian/mozjs115")
+
+        ScanService.run(now=NOW)
+
+        wanted = [
+            ("CVE-2026-51", "6.1.1-1", "6.1.2-1"),
+            ("CVE-2026-53", "115.1-1", "115.2-1"),
+        ]
+        assert open_exposures(asset) == wanted
+        assert not Finding.objects.filter(fixed_version="").exists()
+
+        # a finding kept by an evaluation made before the rule is not exposed
+        Finding.objects.create(
+            evaluation=Evaluation.objects.get(product="pkg:deb/debian/linux"),
+            vulnerability=Vulnerability.objects.create(vuln_id="CVE-2026-54"),
+            advisory_id="DEBIAN-CVE-2026-54",
+            method="osv",
+        )
+        ScanService.run(now=NOW + timedelta(hours=1))
+        assert open_exposures(asset) == wanted
+
     def test_the_source_version_is_compared(self, debian_data):
         # libcurl4 is built from curl: its own version is not curl's
         asset = make_asset("a")
@@ -2003,8 +2040,9 @@ def test_demo_data_shows_every_state_and_resolution(admin_user):
         "checked",
     }
     rows, hidden, _ = reading.vulnerability_rows()
-    # the excluded machines are left out before the noise is counted
-    assert hidden == {"kernel_unfixed": 2}
+    # the kernel vulnerabilities without a fix are not stored
+    assert hidden == {}
+    assert not Exposure.objects.filter(kernel=True, fixed_version="").exists()
     assert rows[0]["kev"]
     channels = set(
         Exposure.objects.filter(closed_at__isnull=True).values_list(
