@@ -53,6 +53,8 @@ CHECKBOX_SPACES = str.maketrans("._", "  ")
 
 # fields of legacy_duplicate_reconciliation tried once the DEVICEID failed
 RULE_FIELDS = ("name", "serial", "srcmac")
+# a 3.x agent never sends the DEVICEID: uuid alone would leave its machine out
+DEFAULT_RULE_FIELDS = ("name", "serial")
 
 NAME_MAX = AccountinfoConfig._meta.get_field("name").max_length
 DESCRIPTION_MAX = AccountinfoConfig._meta.get_field("description").max_length
@@ -461,18 +463,13 @@ class LegacyAccountinfoImport:
             InventoryBase.objects.values("id", "uuid", "name", "serial", "srcmac")
         )
         by_uuid = {asset["uuid"]: asset["id"] for asset in assets}
-        index = self.rule_index(assets, fields) if fields else {}
+        index = self.rule_index(assets, fields)
         rule = "+".join(fields)
 
         for machine in machines:
             if machine.deviceid in by_uuid:
                 machine.asset_id = by_uuid[machine.deviceid]
                 machine.rule = "deviceid"
-                continue
-
-            if not fields:
-                machine.status = "unmatched"
-                machine.reason = "no asset matches on deviceid"
                 continue
 
             # the server falls back on the uuid, which has just failed
@@ -539,7 +536,8 @@ class LegacyAccountinfoImport:
     def rule_fields():
         """legacy_duplicate_reconciliation without uuid, matched first as DEVICEID"""
         configured = ReconciliationService.get_legacy_reconciliation_fields()
-        return [name for name in configured if name in RULE_FIELDS]
+        fields = [name for name in configured if name in RULE_FIELDS]
+        return fields or list(DEFAULT_RULE_FIELDS)
 
     @classmethod
     def rule_index(cls, assets, fields):

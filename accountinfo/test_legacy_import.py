@@ -197,14 +197,14 @@ class TestMatching:
         assert result.machines["deviceid"] == 1
         assert result.machines["duplicate:name+serial"] == 1
 
-    def test_uuid_alone_only_matches_the_deviceid(self, legacy):
-        make_asset("NEW-UUID", name="PC-1", serial="A")
+    def test_uuid_alone_falls_back_on_name_and_serial(self, legacy):
+        asset = make_asset("NEW-UUID", name="PC-1", serial="A")
         add_machine(legacy, 1, "OLD-1", "PC-1", serial="A", tag="T1")
 
-        result, rows = run(legacy)
+        result, _ = run(legacy)
 
-        assert result.machines["unmatched"] == 1
-        assert rows[-1]["reason"] == "no asset matches on deviceid"
+        assert accountdata(asset)[str(config("TAG").id)] == "T1"
+        assert result.machines["duplicate:name+serial"] == 1
 
     def test_a_blank_value_is_unmatched_like_on_the_server(self, legacy):
         reconcile_on("name", "serial")
