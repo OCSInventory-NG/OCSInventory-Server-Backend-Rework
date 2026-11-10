@@ -72,9 +72,7 @@ def drop_other_stream_fixes(apps, schema_editor):
         for start in range(0, len(ids), 900):
             model.objects.filter(id__in=ids[start : start + 900]).delete()
     Evaluation.objects.filter(scheme="purl", **rpm).update(sources={})
-    Vulnerability.objects.filter(
-        findings__isnull=True, exposures__isnull=True
-    ).delete()
+    Vulnerability.objects.filter(findings__isnull=True, exposures__isnull=True).delete()
 
 
 class Migration(migrations.Migration):

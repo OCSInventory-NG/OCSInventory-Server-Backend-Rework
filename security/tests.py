@@ -1183,16 +1183,12 @@ class TestScan:
         ]
         assert open_exposures(second) == open_exposures(first)
 
-    def test_a_rhel_machine_is_checked_against_the_red_hat_advisories(
-        self, tmp_path
-    ):
+    def test_a_rhel_machine_is_checked_against_the_red_hat_advisories(self, tmp_path):
         baseos = "Red Hat:enterprise_linux:9::baseos"
         records = [
             redhat_advisory("RHSA-2026:1", [(baseos, "openssl", "1:3.2.2-6.el9_5.1")])
         ]
-        _, details = osv.load(
-            SOURCE_OSV_REDHAT, make_zip(tmp_path / "a.zip", records)
-        )
+        _, details = osv.load(SOURCE_OSV_REDHAT, make_zip(tmp_path / "a.zip", records))
         loaded(SOURCE_OSV_REDHAT, ecosystems=details["ecosystems"])
         old = make_asset("old", "rpm", "rhel:9")
         patched = make_asset("new", "rpm", "rhel:9")
@@ -1755,9 +1751,7 @@ class TestApi:
         install(asset, "curl", "8.0-1", CURL)
         ScanService.run(now=NOW)
 
-        response = api_client.get(
-            "/vulnerabilities/?ordering=machines,score"
-        )
+        response = api_client.get("/vulnerabilities/?ordering=machines,score")
         assert response.status_code == 200
         assert response.data["ordering"] == ["machines", "score"]
         assert response.data["count"] == 2
@@ -2073,12 +2067,18 @@ def test_machine_coverage_in_the_api(api_client, debian_data):
             "release_not_tracked": 0,
         },
     }
-    assert api_client.get(
-        f"/vulnerabilities/summary/?asset={covered.id}"
-    ).data["coverage"]["not_covered"] == 0
-    assert api_client.get("/vulnerabilities/summary/?family=rpm").data["coverage"][
-        "not_covered"
-    ] == 1
+    assert (
+        api_client.get(f"/vulnerabilities/summary/?asset={covered.id}").data[
+            "coverage"
+        ]["not_covered"]
+        == 0
+    )
+    assert (
+        api_client.get("/vulnerabilities/summary/?family=rpm").data["coverage"][
+            "not_covered"
+        ]
+        == 1
+    )
 
     machines = api_client.get("/vulnerabilities/machines/?status=not_covered").json()
     assert machines["count"] == 2
@@ -2094,9 +2094,10 @@ def test_machine_coverage_in_the_api(api_client, debian_data):
         "not_covered",
         "end_of_support",
     )
-    assert api_client.get("/vulnerabilities/coverage/").data["machines"][
-        "not_covered"
-    ] == 2
+    assert (
+        api_client.get("/vulnerabilities/coverage/").data["machines"]["not_covered"]
+        == 2
+    )
 
 
 @pytest.mark.django_db

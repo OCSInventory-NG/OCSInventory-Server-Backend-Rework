@@ -48,9 +48,7 @@ def drop_uncertain(apps, schema_editor):
 
     def other_numbering(cve_id, product, version):
         ranges = bounds.get((cve_id, product))
-        return bool(ranges) and not any(
-            _same_numbering(version, rng) for rng in ranges
-        )
+        return bool(ranges) and not any(_same_numbering(version, rng) for rng in ranges)
 
     findings = [
         finding_id
@@ -83,9 +81,7 @@ def drop_uncertain(apps, schema_editor):
                 entry["sha256"] = ""
         sync.save(update_fields=["fingerprint"])
     Evaluation.objects.filter(scheme="cpe").update(sources={})
-    Vulnerability.objects.filter(
-        findings__isnull=True, exposures__isnull=True
-    ).delete()
+    Vulnerability.objects.filter(findings__isnull=True, exposures__isnull=True).delete()
 
 
 class Migration(migrations.Migration):

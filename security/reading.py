@@ -37,7 +37,6 @@ NOT_UNCHECKED = (CHECKED, EXCLUDED, KERNEL_NOT_RUNNING)
 PRODUCTS_SHOWN = 5
 
 
-
 # A machine as a whole: covered when the scan checks its own packages (Linux)
 # or its software (Windows, macOS); otherwise, the first reason that applies
 MACHINE_COVERED = "covered"
@@ -351,7 +350,7 @@ def asset_exposures(asset_id, status="open", now=None):
                 "level": level(vulnerability.cvss_score, vulnerability.distro_rating),
                 "kev": vulnerability.kev,
                 "epss": vulnerability.epss,
-                }
+            }
         )
         rows.append(row)
     order = priority()
@@ -493,9 +492,7 @@ def coverage(asset_id=None, now=None):
         n for state_name, n in totals.items() if state_name not in NOT_UNCHECKED
     )
     result["excluded"] = totals.get(EXCLUDED, 0)
-    machines = machine_rows(
-        None if asset_id is None else [asset_id], context=context
-    )
+    machines = machine_rows(None if asset_id is None else [asset_id], context=context)
     if asset_id is None:
         result["kernels"] = dict(kernels)
         result["machines"] = machine_counts(machines)

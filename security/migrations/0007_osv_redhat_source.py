@@ -6,18 +6,43 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('security', '0006_drop_minor_debian_urgencies'),
+        ("security", "0006_drop_minor_debian_urgencies"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='osvadvisory',
-            name='source',
-            field=models.CharField(choices=[('osv_debian', 'osv_debian'), ('osv_ubuntu', 'osv_ubuntu'), ('osv_rocky', 'osv_rocky'), ('osv_alma', 'osv_alma'), ('osv_redhat', 'osv_redhat'), ('nvd', 'nvd'), ('kev', 'kev'), ('epss', 'epss')], max_length=16),
+            model_name="osvadvisory",
+            name="source",
+            field=models.CharField(
+                choices=[
+                    ("osv_debian", "osv_debian"),
+                    ("osv_ubuntu", "osv_ubuntu"),
+                    ("osv_rocky", "osv_rocky"),
+                    ("osv_alma", "osv_alma"),
+                    ("osv_redhat", "osv_redhat"),
+                    ("nvd", "nvd"),
+                    ("kev", "kev"),
+                    ("epss", "epss"),
+                ],
+                max_length=16,
+            ),
         ),
         migrations.AlterField(
-            model_name='sourcesync',
-            name='source',
-            field=models.CharField(choices=[('osv_debian', 'osv_debian'), ('osv_ubuntu', 'osv_ubuntu'), ('osv_rocky', 'osv_rocky'), ('osv_alma', 'osv_alma'), ('osv_redhat', 'osv_redhat'), ('nvd', 'nvd'), ('kev', 'kev'), ('epss', 'epss')], max_length=16, unique=True),
+            model_name="sourcesync",
+            name="source",
+            field=models.CharField(
+                choices=[
+                    ("osv_debian", "osv_debian"),
+                    ("osv_ubuntu", "osv_ubuntu"),
+                    ("osv_rocky", "osv_rocky"),
+                    ("osv_alma", "osv_alma"),
+                    ("osv_redhat", "osv_redhat"),
+                    ("nvd", "nvd"),
+                    ("kev", "kev"),
+                    ("epss", "epss"),
+                ],
+                max_length=16,
+                unique=True,
+            ),
         ),
     ]

@@ -23,9 +23,7 @@ def drop_noise(apps, schema_editor):
         | Q(evaluation__product__regex=MOZJS),
         fixed_version="",
     ).delete()
-    Vulnerability.objects.filter(
-        findings__isnull=True, exposures__isnull=True
-    ).delete()
+    Vulnerability.objects.filter(findings__isnull=True, exposures__isnull=True).delete()
 
 
 class Migration(migrations.Migration):

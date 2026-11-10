@@ -18,6 +18,7 @@ from inventory.software.models import DistroRelease
 from inventory.software_identity.models import CpeAlias, PackageOrigin
 from security import config as security_config
 from security.cvss import base_score, normalize_rating
+from security.kernel import is_noise
 from security.models import (
     CHANNEL_STANDARD,
     CHANNEL_UBUNTU_PRO,
@@ -42,7 +43,6 @@ from security.sync import (
     source_state,
     source_syncs,
 )
-from security.kernel import is_noise
 from security.versions import comparator, module_streams, rpm_compare, same_stream
 
 EvaluationKey = namedtuple(
