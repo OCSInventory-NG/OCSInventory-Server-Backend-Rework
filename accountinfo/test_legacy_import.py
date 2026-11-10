@@ -433,6 +433,23 @@ class TestValues:
 
         assert accountdata(asset)[tag] == "V3"
 
+    def test_the_default_tag_na_is_ignored(self, legacy):
+        run(legacy, definitions_only=True)
+        asset = make_asset("DEV-1")
+        tag = str(config("TAG").id)
+        AccountinfoData.objects.create(
+            accountdata={tag: "V3"},
+            object_slug=SLUG,
+            content_type=ContentType.objects.get_for_model(InventoryBase),
+            object_id=asset.id,
+        )
+        add_machine(legacy, 1, "DEV-1", "PC", tag="NA")
+
+        result, _ = run(legacy, overwrite=True)
+
+        assert accountdata(asset)[tag] == "V3"
+        assert result.values["overwritten"] == 0
+
     def test_values_that_do_not_fit_are_rejected(self, legacy):
         asset = make_asset("DEV-1")
         add_machine(legacy, 1, "DEV-1", "PC", location="9", checkbox="value&&&value&&&")

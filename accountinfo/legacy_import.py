@@ -45,6 +45,9 @@ TEXT_TYPES = ("TEXT", "TEXTAREA")
 # hardware rows that are groups, not machines
 GROUP_DEVICEIDS = ("_SYSTEMGROUP_", "_DOWNLOADGROUP_")
 
+# default of the accountinfo.TAG column, set by the 2.X server
+TAG_DEFAULT = "NA"
+
 CHECKBOX_SEPARATOR = "&&&"
 CHECKBOX_SPACES = str.maketrans("._", "  ")
 
@@ -668,6 +671,8 @@ class LegacyAccountinfoImport:
         raw = values.get(definition.column)
         if self.is_blank(raw):
             # an empty legacy value never clears a 3.x one
+            return None
+        if definition.column == "TAG" and str(raw).strip() == TAG_DEFAULT:
             return None
 
         key = str(definition.config.id)
