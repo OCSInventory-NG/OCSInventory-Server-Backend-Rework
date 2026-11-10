@@ -15,6 +15,7 @@ from security.evaluation import Context
 from security.exclusions import active_exclusions
 from security.models import (
     METHOD_OSV,
+    SOURCE_NVD,
     SOURCES,
     Exposure,
     OsvAdvisoryCve,
@@ -29,7 +30,7 @@ from security.scan import (
     Installations,
 )
 from security.sources import nvd, osv
-from security.sync import source_state, source_syncs
+from security.sync import NEVER_LOADED, source_state, source_syncs
 
 LEVELS = ("critical", "high", "medium", "low", "unknown")
 NOT_UNCHECKED = (CHECKED, EXCLUDED, KERNEL_NOT_RUNNING)
@@ -38,6 +39,25 @@ PRODUCTS_SHOWN = 5
 # Findings faithful to their source but hidden by default (counted)
 NOISE_KERNEL_UNFIXED = "kernel_unfixed"
 NOISE = (NOISE_KERNEL_UNFIXED,)
+
+
+# A machine as a whole: covered when the scan checks its own packages (Linux)
+# or its software (Windows, macOS); otherwise, the first reason that applies
+MACHINE_COVERED = "covered"
+MACHINE_NOT_COVERED = "not_covered"
+MACHINE_STATUSES = (MACHINE_COVERED, MACHINE_NOT_COVERED)
+NO_PLATFORM = "no_platform"
+NO_SOURCE = "no_source"
+END_OF_SUPPORT = "end_of_support"
+SOURCE_NEVER_LOADED = "source_never_loaded"
+RELEASE_NOT_TRACKED = "release_not_tracked"
+NOT_COVERED_REASONS = (
+    NO_PLATFORM,
+    NO_SOURCE,
+    END_OF_SUPPORT,
+    SOURCE_NEVER_LOADED,
+    RELEASE_NOT_TRACKED,
+)
 
 
 def noise_of(exposure):
@@ -229,10 +249,16 @@ def vulnerability_rows(ordering=None, **filters):
 def vulnerability_summary(**filters):
     """
     Totals of the vulnerabilities the list shows with the same filters: per
-    level, exploited, with a fix, and the distinct machines impacted.
+    level, exploited, with a fix, and the distinct machines impacted; the
+    machines the scan does not cover, counted apart (machine and family
+    filters only: the others select vulnerabilities, not machines).
     """
     rows, hidden = _rows(**filters)
     levels = Counter(row["level"] for row in rows)
+    asset_id = filters.get("asset_id")
+    machines = machine_rows(
+        None if asset_id is None else [asset_id], filters.get("family")
+    )
     return {
         "total": len(rows),
         "levels": {name: levels[name] for name in LEVELS},
@@ -240,6 +266,7 @@ def vulnerability_summary(**filters):
         "fix_available": sum(1 for row in rows if row["fix_available"]),
         "machines": len(set().union(*(row["asset_ids"] for row in rows))),
         "hidden": hidden,
+        "coverage": machine_counts(machines),
     }
 
 
@@ -394,6 +421,79 @@ def sources(now=None):
     ]
 
 
+def machine_coverage(family, key, context):
+    """
+    (status, reason, support end) of a machine from its platform: reason ""
+    when covered; support end, the date its release's security support ends
+    (Linux), else None.
+    """
+    support_end = None
+    if family in ("deb", "rpm") and ":" in key:
+        base, _, release = key.partition(":")
+        support_end = context.full_support_end.get((base, release))
+    if family in ("windows", "macos"):
+        if context.states[SOURCE_NVD] == NEVER_LOADED:
+            return MACHINE_NOT_COVERED, SOURCE_NEVER_LOADED, None
+        return MACHINE_COVERED, "", None
+    if family not in ("deb", "rpm") or not key.partition(":")[2]:
+        return MACHINE_NOT_COVERED, NO_PLATFORM, None
+    source, ecosystem = osv.platform_source(key)
+    if source is None:
+        return MACHINE_NOT_COVERED, NO_SOURCE, support_end
+    if context.past_support(key):
+        return MACHINE_NOT_COVERED, END_OF_SUPPORT, support_end
+    if context.states[source] == NEVER_LOADED:
+        return MACHINE_NOT_COVERED, SOURCE_NEVER_LOADED, support_end
+    if ecosystem not in context.ecosystems:
+        return MACHINE_NOT_COVERED, RELEASE_NOT_TRACKED, support_end
+    return MACHINE_COVERED, "", support_end
+
+
+def machine_rows(asset_ids=None, family=None, now=None, context=None):
+    """
+    Each machine with its coverage, the machines not covered first. A machine
+    without a resolved platform has family and platform "".
+    """
+    context = context or Context(now)
+    assets = InventoryBase.objects.all()
+    if asset_ids is not None:
+        assets = assets.filter(id__in=asset_ids)
+    if family:
+        assets = assets.filter(platform__family=family)
+    rows = []
+    for asset_id, name, asset_family, key in assets.values_list(
+        "id", "name", "platform__family", "platform__key"
+    ):
+        asset_family, key = asset_family or "", key or ""
+        status, reason, support_end = machine_coverage(asset_family, key, context)
+        rows.append(
+            {
+                "asset": asset_id,
+                "name": name,
+                "family": asset_family,
+                "platform": key,
+                "status": status,
+                "reason": reason,
+                "support_end": support_end,
+            }
+        )
+    return sorted(
+        rows,
+        key=lambda row: (row["status"] != MACHINE_NOT_COVERED, row["name"]),
+    )
+
+
+def machine_counts(rows):
+    """Machines covered and not covered, these per reason."""
+    statuses = Counter(row["status"] for row in rows)
+    reasons = Counter(row["reason"] for row in rows if row["reason"])
+    return {
+        MACHINE_COVERED: statuses[MACHINE_COVERED],
+        MACHINE_NOT_COVERED: statuses[MACHINE_NOT_COVERED],
+        "reasons": {reason: reasons[reason] for reason in NOT_COVERED_REASONS},
+    }
+
+
 def coverage(asset_id=None, now=None):
     """
     What is checked and what is not: installations per family and state (the
@@ -436,10 +536,15 @@ def coverage(asset_id=None, now=None):
         n for state_name, n in totals.items() if state_name not in NOT_UNCHECKED
     )
     result["excluded"] = totals.get(EXCLUDED, 0)
+    machines = machine_rows(
+        None if asset_id is None else [asset_id], context=context
+    )
     if asset_id is None:
         result["kernels"] = dict(kernels)
+        result["machines"] = machine_counts(machines)
     else:
         result["kernel"] = next(iter(kernels), "not_applicable")
+        result["machine"] = machines[0] if machines else None
     return result
 
 

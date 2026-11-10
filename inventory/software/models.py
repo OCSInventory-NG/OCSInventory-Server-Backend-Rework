@@ -219,6 +219,10 @@ class DistroRelease(models.Model):
     # End of the standard support (Ubuntu): from then on, the release's
     # packages are also checked against its Ubuntu Pro advisories
     standard_support_end = models.DateField(null=True, blank=True)
+    # End of every security support (Debian LTS, Ubuntu Pro, an interim
+    # release's end of life): from then on, its machines are no longer
+    # covered by the vulnerability scan
+    support_end = models.DateField(null=True, blank=True)
 
     class Meta:
         ordering = ["base", "version"]

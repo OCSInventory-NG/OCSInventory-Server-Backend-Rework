@@ -108,6 +108,27 @@ class VulnerabilityViewSet(viewsets.OCSViewSet):
         return Response(reading.coverage(_asset(request.query_params)))
 
     @action(detail=False, methods=["get"])
+    def machines(self, request):
+        """
+        The machines with their coverage, the machines not covered first:
+        status, reason and family filters.
+        """
+        params = request.query_params
+        status = _choice(params, "status", reading.MACHINE_STATUSES)
+        reason = _choice(params, "reason", reading.NOT_COVERED_REASONS)
+        rows = reading.machine_rows(family=_choice(params, "family", FAMILIES))
+        rows = [
+            row
+            for row in rows
+            if (status is None or row["status"] == status)
+            and (reason is None or row["reason"] == reason)
+        ]
+        page = self.paginate_queryset(rows)
+        if page is not None:
+            return self.get_paginated_response(page)
+        return Response({"count": len(rows), "results": rows})
+
+    @action(detail=False, methods=["get"])
     def sources(self, request):
         return Response(reading.sources())
 

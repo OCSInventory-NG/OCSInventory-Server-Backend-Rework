@@ -79,12 +79,14 @@ class Context:
             for source in OSV_SOURCES
             for ecosystem in (self.syncs[source].details or {}).get("ecosystems", [])
         }
-        self.support_end = {
-            (base, version): end
-            for base, version, end in DistroRelease.objects.values_list(
-                "base", "version", "standard_support_end"
-            )
-        }
+        self.support_end = {}
+        # End of every security support, per (base, version)
+        self.full_support_end = {}
+        for base, version, standard, full in DistroRelease.objects.values_list(
+            "base", "version", "standard_support_end", "support_end"
+        ):
+            self.support_end[(base, version)] = standard
+            self.full_support_end[(base, version)] = full
         self.extended_origins = {
             name.strip().lower()
             for name in PackageOrigin.objects.filter(extended=True).values_list(
@@ -124,6 +126,12 @@ class Context:
         base, _, release = platform_key.partition(":")
         end = self.support_end.get((base, release))
         return end is not None and self.now.date() > end
+
+    def past_support(self, platform_key):
+        """The release's security support ended: its date, else None."""
+        base, _, release = platform_key.partition(":")
+        end = self.full_support_end.get((base, release))
+        return end if end is not None and self.now.date() > end else None
 
     def tracked(self, key):
         """Whether the source still publishes advisories for the key's release."""

@@ -129,6 +129,23 @@ def ecosystems(product, platform_key):
     return None, None
 
 
+def platform_source(platform_key):
+    """
+    (source, standard ecosystem) that cover a Linux platform's own packages,
+    (None, None) when no source does.
+    """
+    distro = (platform_key or "").split(":")[0]
+    namespace = next(
+        (name for name, platform in PLATFORM_IDS.items() if platform == distro),
+        distro,
+    )
+    source = DISTRIBUTIONS.get(namespace)
+    if source is None:
+        return None, None
+    standard, _ = ecosystems(f"pkg:any/{namespace}/any", platform_key)
+    return (source, standard) if standard else (None, None)
+
+
 def package_name(product):
     """The source package of a purl product (pkg:deb/debian/libstdc%2B%2B6)."""
     return unquote(product.rsplit("/", 1)[1])

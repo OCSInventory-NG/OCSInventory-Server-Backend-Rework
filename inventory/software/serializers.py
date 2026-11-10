@@ -102,4 +102,11 @@ class SoftwareDictionarySerializer(ModelSerializer):
 class DistroReleaseSerializer(ModelSerializer):
     class Meta:
         model = DistroRelease
-        fields = ["id", "base", "version", "codename", "standard_support_end"]
+        fields = [
+            "id",
+            "base",
+            "version",
+            "codename",
+            "standard_support_end",
+            "support_end",
+        ]

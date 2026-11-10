@@ -1673,7 +1673,10 @@ class TestApi:
         assert (summary["total"], summary["kev"], summary["machines"]) == (2, 1, 2)
         assert list(summary["levels"]) == list(reading.LEVELS)
         assert summary["hidden"] == {}
-        assert api_client.get("/vulnerabilities/summary/?kev=yes&fix=no").data == {
+        empty = api_client.get("/vulnerabilities/summary/?kev=yes&fix=no").data
+        # the coverage counts machines: the vulnerability filters leave it alone
+        assert empty.pop("coverage") == summary["coverage"]
+        assert empty == {
             "total": 0,
             "levels": dict.fromkeys(reading.LEVELS, 0),
             "kev": 0,
@@ -1869,6 +1872,83 @@ def test_rows_tell_their_noise_and_coverage_counts_unchecked(debian_data):
     # nginx has no identity; the excluded machine is counted apart
     assert (fleet["unchecked"], fleet["excluded"]) == (1, 1)
     assert (machine["unchecked"], machine["excluded"]) == (1, 0)
+
+
+def test_machines_not_covered_are_told_apart_with_their_reason(debian_data):
+    make_asset("debian-12")
+    make_asset("debian-11", key="debian:11")
+    make_asset("debian-14", key="debian:14")
+    make_asset("centos", "rpm", "centos:9")
+    make_asset("rhel", "rpm", "rhel:9")
+    make_asset("popos", "", "")
+    make_asset("windows", "windows", "windows")
+    InventoryBase.objects.create(
+        name="legacy", serial="S", osname="Linux", osversion="1", uuid="u"
+    )
+
+    rows = {row["name"]: row for row in reading.machine_rows(now=NOW)}
+
+    assert {name: (row["status"], row["reason"]) for name, row in rows.items()} == {
+        "debian-12": ("covered", ""),
+        # Debian 11 LTS ended on 2026-08-31
+        "debian-11": ("not_covered", "end_of_support"),
+        "debian-14": ("not_covered", "release_not_tracked"),
+        "centos": ("not_covered", "no_source"),
+        "rhel": ("not_covered", "source_never_loaded"),
+        "popos": ("not_covered", "no_platform"),
+        "windows": ("not_covered", "source_never_loaded"),
+        "legacy": ("not_covered", "no_platform"),
+    }
+    assert rows["debian-11"]["support_end"] == date(2026, 8, 31)
+    assert rows["debian-12"]["support_end"] == date(2028, 6, 30)
+    assert list(rows)[-1] == "debian-12"
+
+    loaded(SOURCE_NVD)
+    assert reading.machine_rows(family="windows", now=NOW)[0]["status"] == "covered"
+
+
+@pytest.mark.django_db
+def test_machine_coverage_in_the_api(api_client, debian_data):
+    covered = make_asset("debian-12")
+    old = make_asset("debian-11", key="debian:11")
+    make_asset("centos", "rpm", "centos:9")
+
+    summary = api_client.get("/vulnerabilities/summary/").data
+    assert summary["coverage"] == {
+        "covered": 1,
+        "not_covered": 2,
+        "reasons": {
+            "no_platform": 0,
+            "no_source": 1,
+            "end_of_support": 1,
+            "source_never_loaded": 0,
+            "release_not_tracked": 0,
+        },
+    }
+    assert api_client.get(
+        f"/vulnerabilities/summary/?asset={covered.id}"
+    ).data["coverage"]["not_covered"] == 0
+    assert api_client.get("/vulnerabilities/summary/?family=rpm").data["coverage"][
+        "not_covered"
+    ] == 1
+
+    machines = api_client.get("/vulnerabilities/machines/?status=not_covered").json()
+    assert machines["count"] == 2
+    assert [row["name"] for row in machines["results"]] == ["centos", "debian-11"]
+    reason = api_client.get("/vulnerabilities/machines/?reason=end_of_support").json()
+    assert [(row["asset"], row["support_end"]) for row in reason["results"]] == [
+        (old.id, "2026-08-31")
+    ]
+    assert api_client.get("/vulnerabilities/machines/?status=x").status_code == 400
+
+    machine = api_client.get(f"/vulnerabilities/coverage/?asset={old.id}").data
+    assert (machine["machine"]["status"], machine["machine"]["reason"]) == (
+        "not_covered",
+        "end_of_support",
+    )
+    assert api_client.get("/vulnerabilities/coverage/").data["machines"][
+        "not_covered"
+    ] == 2
 
 
 @pytest.mark.django_db
