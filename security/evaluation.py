@@ -43,7 +43,7 @@ from security.sync import (
     source_syncs,
 )
 from security.kernel import is_noise
-from security.versions import comparator
+from security.versions import comparator, module_streams, rpm_compare, same_stream
 
 EvaluationKey = namedtuple(
     "EvaluationKey", "scheme product version platform_key extended"
@@ -258,8 +258,10 @@ def evaluate_osv(key, context):
         advisories[row.advisory_id] = row.advisory
         per_advisory[row.advisory_id][row.ecosystem].append(row)
     findings = []
+    modules = compare is rpm_compare
     for advisory_id, by_ecosystem in per_advisory.items():
         advisory = advisories[advisory_id]
+        streams = module_streams(advisory.summary) if modules else {}
         results = {}
         for ecosystem, entries in by_ecosystem.items():
             affected, fixed, words, urgency = False, "", "", ""
@@ -269,6 +271,13 @@ def evaluate_osv(key, context):
                 )
                 words = words or entry_words
                 urgency = urgency or entry.urgency
+                if (
+                    hit
+                    and modules
+                    and not same_stream(key.version, entry_fixed, source_name, streams)
+                ):
+                    # The fix of another module stream: not for this version
+                    continue
                 if hit:
                     affected, fixed = True, fixed or entry_fixed
             results[ecosystem] = (affected, fixed, words, urgency)

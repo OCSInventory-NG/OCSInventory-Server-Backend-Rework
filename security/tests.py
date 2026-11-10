@@ -32,6 +32,7 @@ from security.models import (
     SOURCE_NVD,
     SOURCE_OSV_DEBIAN,
     SOURCE_OSV_REDHAT,
+    SOURCE_OSV_ROCKY,
     SOURCE_OSV_UBUNTU,
     EpssScore,
     Evaluation,
@@ -58,7 +59,12 @@ from security.sync import (
     release_lock,
     source_state,
 )
-from security.versions import dpkg_compare, rpm_compare
+from security.versions import (
+    dpkg_compare,
+    module_streams,
+    rpm_compare,
+    same_stream,
+)
 
 DATA = Path(__file__).parent / "test_data"
 OSV_RECORDS = json.loads((DATA / "osv_records.json").read_text())
@@ -292,6 +298,53 @@ def test_dpkg_compare_agrees_with_dpkg():
 def test_rpm_compare(a, b, expected):
     assert rpm_compare(a, b) == expected
     assert rpm_compare(b, a) == -expected
+
+
+def test_module_streams_of_a_summary():
+    assert module_streams("Important: nodejs:16 security update") == {"nodejs": "16"}
+    assert module_streams(
+        "Red Hat Security Advisory: virt:rhel and virt-devel:rhel security update"
+    ) == {"virt": "rhel", "virt-devel": "rhel"}
+    assert module_streams("Red Hat Security Advisory: openssl security update") == {}
+
+
+NODEJS_16 = "1:16.13.1-3.module+el8.5.0+721+4c107270"
+
+
+@pytest.mark.parametrize(
+    "installed, fixed, package, summary, expected",
+    [
+        # the same numbered stream
+        (NODEJS_16, "1:16.20.2-1.module+el8.8.0+1+a", "nodejs", "nodejs:16", True),
+        # another stream of the module
+        (NODEJS_16, "1:22.23.2-1.module+el8.10.0+1+a", "nodejs", "nodejs:22", False),
+        # a package outside modules and the fix of a module, both ways
+        ("3.12-12.el8", "5.4.1-1.module+el8.5.0+1+a", "PyYAML", "python39:3.9", False),
+        ("1:16.20.2-4.el9_3", "", "nodejs", "nodejs:20", False),
+        (NODEJS_16, "1:16.20.2-4.el9_3", "nodejs", "nodejs security update", False),
+        # a stream without a number: rolling, the version cannot tell
+        (
+            "1:3.4.2-9.module+el8.5.0+735+2f243138",
+            "4:4.9.4-28.module+el8.10.0+40087+cfe9c127",
+            "podman",
+            "container-tools:rhel8",
+            True,
+        ),
+        # Alma tags its module builds module_el8
+        (
+            "1:16.13.1-3.module_el8.5.0+2605+45d748af",
+            "1:16.14.0-4.module_el8.6.0+2904+f21ad6f4",
+            "nodejs",
+            "nodejs:16",
+            True,
+        ),
+        # outside modules on both sides
+        ("1:3.0.7-27.el9", "1:3.0.7-28.el9", "openssl", "openssl update", True),
+    ],
+)
+def test_same_stream(installed, fixed, package, summary, expected):
+    streams = module_streams(summary)
+    assert same_stream(installed, fixed, package, streams) is expected
 
 
 @pytest.mark.parametrize(
@@ -1167,6 +1220,37 @@ class TestScan:
         )
         ScanService.run(now=NOW + timedelta(hours=1))
         assert open_exposures(asset) == wanted
+
+    def test_a_module_build_is_fixed_by_its_own_stream_only(self):
+        loaded(SOURCE_OSV_ROCKY, ecosystems=["Rocky Linux:8"])
+        for advisory_id, cve, summary, fixed in (
+            ("RLSA-1", "CVE-2026-60", "nodejs:16", "1:16.20.2-1.module+el8.8.0+1+a"),
+            ("RLSA-2", "CVE-2026-61", "nodejs:22", "1:22.23.2-1.module+el8.10.0+1+a"),
+        ):
+            record = advisory(
+                SOURCE_OSV_ROCKY,
+                advisory_id,
+                [cve],
+                [("Rocky Linux:8", "nodejs", fixed_in(fixed), "")],
+            )
+            record.summary = f"Important: {summary} security update"
+            record.save()
+        asset = make_asset("a", "rpm", "rocky:8")
+        install(
+            asset,
+            "nodejs",
+            NODEJS_16,
+            "pkg:rpm/rocky/nodejs",
+            family="rpm",
+            key="rocky:8",
+            origin="Rocky Enterprise Software Foundation",
+        )
+
+        ScanService.run(now=NOW)
+
+        assert open_exposures(asset) == [
+            ("CVE-2026-60", NODEJS_16, "1:16.20.2-1.module+el8.8.0+1+a")
+        ]
 
     def test_the_source_version_is_compared(self, debian_data):
         # libcurl4 is built from curl: its own version is not curl's

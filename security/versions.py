@@ -7,6 +7,7 @@ algorithm ("~" sorts before anything, even the end). rpm: epoch, version and
 release, compared with rpmvercmp ("~" before anything, "^" after the end).
 """
 
+import re
 from functools import cmp_to_key
 
 _DIGITS = "0123456789"
@@ -180,3 +181,37 @@ def comparator(ecosystem):
 
 def sort_key(compare):
     return cmp_to_key(compare)
+
+
+# RPM modules. A module build carries ".module+el8.5.0+721+4c107270" (Alma:
+# "module_el8"), not its stream: the advisories name it in their summary
+# ("nodejs:16 security update", "virt:rhel and virt-devel:rhel ...").
+_MODULE_BUILD = re.compile(r"\.module[+_]el\d")
+_MODULE_STREAM = re.compile(r"(?<![\w.+-])([A-Za-z0-9][\w.+-]*):([A-Za-z0-9][\w.+-]*)")
+
+
+def is_module_build(version):
+    return bool(_MODULE_BUILD.search(version or ""))
+
+
+def module_streams(summary):
+    """{module: stream} named by an advisory's summary."""
+    return dict(_MODULE_STREAM.findall(summary or ""))
+
+
+def same_stream(installed, fixed, package, streams):
+    """
+    Whether a fix can apply to the installed version: a module build is only
+    fixed by a build of the same module stream, a package outside modules by
+    a package outside modules. A numbered stream of the package's own module
+    (nodejs:16, postgresql:13) holds its upstream versions (16.x, 13.x); a
+    stream without a number (virt:rhel) cannot be told from the version.
+    """
+    module_fix = (fixed and is_module_build(fixed)) or package in streams
+    if bool(module_fix) != is_module_build(installed):
+        return False
+    stream = streams.get(package, "")
+    if not is_module_build(installed) or not stream[:1].isdigit():
+        return True
+    version, _ = _last_dash(_epoch(installed)[1])
+    return version == stream or version.startswith(stream + ".")
