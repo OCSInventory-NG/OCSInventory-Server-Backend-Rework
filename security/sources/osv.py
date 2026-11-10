@@ -3,8 +3,9 @@ Linux advisories from the OSV data dumps, one archive per ecosystem
 (<base>/<ecosystem>/all.zip), loaded locally and compared by OCS.
 
 Detection rests on the per CVE records (DEBIAN-CVE, UBUNTU-CVE), which also
-carry the vulnerabilities without a fix, and on the Rocky and Alma advisories.
-DSA, DLA and USN are kept as references of their CVEs only.
+carry the vulnerabilities without a fix, and on the Rocky, Alma and Red Hat
+security advisories. DSA, DLA, USN, RHBA and RHEA are kept as references of
+their CVEs only.
 """
 
 import json
@@ -19,6 +20,7 @@ from ocsinventory_backend.ocs_framework.progress import Progress
 from security.models import (
     SOURCE_OSV_ALMA,
     SOURCE_OSV_DEBIAN,
+    SOURCE_OSV_REDHAT,
     SOURCE_OSV_ROCKY,
     SOURCE_OSV_UBUNTU,
     OsvAdvisory,
@@ -35,6 +37,7 @@ ARCHIVES = {
     SOURCE_OSV_UBUNTU: ("Ubuntu", ("UBUNTU-CVE-",)),
     SOURCE_OSV_ROCKY: ("Rocky Linux", None),
     SOURCE_OSV_ALMA: ("AlmaLinux", None),
+    SOURCE_OSV_REDHAT: ("Red Hat", ("RHSA-",)),
 }
 # purl namespace (distribution) of a source's packages
 DISTRIBUTIONS = {
@@ -42,7 +45,10 @@ DISTRIBUTIONS = {
     "ubuntu": SOURCE_OSV_UBUNTU,
     "rocky": SOURCE_OSV_ROCKY,
     "almalinux": SOURCE_OSV_ALMA,
+    "redhat": SOURCE_OSV_REDHAT,
 }
+# os-release id of the machines of a purl namespace, when it differs
+PLATFORM_IDS = {"redhat": "rhel"}
 BATCH = 500
 # Rows per INSERT: an Ubuntu advisory alone can carry hundreds of packages
 WRITE_BATCH = 1000
@@ -51,6 +57,26 @@ MIN_SHARE = 0.5
 _LTS = re.compile(r"^\d*[02468]\.04$")
 # Rocky and Alma advisories start their summary with their severity
 _SUMMARY_RATING = re.compile(r"^(Critical|Important|Moderate|Low):")
+# Red Hat: RHEL itself (enterprise_linux), one ecosystem per repository on 8
+# and 9 (enterprise_linux:9::appstream), per minor release from 10
+# (enterprise_linux:10.1). The other products (JBoss, OpenShift...) and the
+# extended streams of a minor release (rhel_eus, rhel_aus...) are left out.
+_RHEL_ECOSYSTEM = re.compile(r"^Red Hat:enterprise_linux:(\d+)(\.\d+)?(::.*)?$")
+_DEBUG_PACKAGE = re.compile(r"-debug(info|source)$")
+
+
+def local_ecosystem(ecosystem, package):
+    """
+    The ecosystem an affected entry is kept under, None when it is not kept:
+    Red Hat entries are kept per RHEL major release, without their debug
+    packages, which no advisory is searched for.
+    """
+    if not ecosystem.startswith("Red Hat:"):
+        return ecosystem
+    match = _RHEL_ECOSYSTEM.match(ecosystem)
+    if match is None or _DEBUG_PACKAGE.search(package):
+        return None
+    return f"Red Hat:enterprise_linux:{match.group(1)}"
 
 
 def archive_url(base_url, source):
@@ -85,7 +111,7 @@ def ecosystems(product, platform_key):
     if ":" not in (platform_key or ""):
         return None, None
     distro, release = platform_key.split(":", 1)
-    if namespace != distro or not release:
+    if PLATFORM_IDS.get(namespace, namespace) != distro or not release:
         return None, None
     if namespace == "debian":
         return f"Debian:{release}", None
@@ -98,6 +124,8 @@ def ecosystems(product, platform_key):
         return f"Rocky Linux:{major}", None
     if namespace == "almalinux":
         return f"AlmaLinux:{major}", None
+    if namespace == "redhat":
+        return f"Red Hat:enterprise_linux:{major}", None
     return None, None
 
 
@@ -154,18 +182,28 @@ def compact(record, detection_prefixes):
     detection = detection_prefixes is None or record["id"].startswith(
         detection_prefixes
     )
-    affected = []
+    affected, kept = [], set()
     if detection:
         for entry in record.get("affected") or []:
             package = entry.get("package") or {}
+            ecosystem = local_ecosystem(
+                package.get("ecosystem", ""), package.get("name", "")
+            )
+            if ecosystem is None:
+                continue
             ranges = [
                 rng.get("events") or []
                 for rng in entry.get("ranges") or []
                 if rng.get("type") == "ECOSYSTEM"
             ]
+            # Red Hat lists a package once per repository of its release
+            same = (ecosystem, package.get("name", ""), json.dumps(ranges))
+            if same in kept:
+                continue
+            kept.add(same)
             affected.append(
                 {
-                    "ecosystem": package.get("ecosystem", ""),
+                    "ecosystem": ecosystem,
                     "package": package.get("name", ""),
                     "ranges": ranges,
                     # The versions enumerated from the ranges: Debian and

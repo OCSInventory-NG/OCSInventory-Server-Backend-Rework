@@ -31,6 +31,7 @@ from security.models import (
     SOURCE_KEV,
     SOURCE_NVD,
     SOURCE_OSV_DEBIAN,
+    SOURCE_OSV_REDHAT,
     SOURCE_OSV_UBUNTU,
     EpssScore,
     Evaluation,
@@ -363,9 +364,13 @@ def test_osv_ranges(ranges, versions, installed, expected):
         ("pkg:deb/ubuntu/curl", "ubuntu:24.10", ("Ubuntu:24.10", None)),
         ("pkg:rpm/rocky/openssl", "rocky:9", ("Rocky Linux:9", None)),
         ("pkg:rpm/almalinux/openssl", "almalinux:9", ("AlmaLinux:9", None)),
+        # Red Hat packages on a RHEL machine (os-release id "rhel")
+        ("pkg:rpm/redhat/openssl", "rhel:9", ("Red Hat:enterprise_linux:9", None)),
+        ("pkg:rpm/redhat/openssl", "rhel:10", ("Red Hat:enterprise_linux:10", None)),
         # a package of another distribution than the machine's
         ("pkg:deb/debian/curl", "ubuntu:24.04", (None, None)),
-        ("pkg:rpm/redhat/openssl", "rhel:9", (None, None)),
+        ("pkg:rpm/redhat/openssl", "rocky:9", (None, None)),
+        ("pkg:rpm/centos/openssl", "centos:9", (None, None)),
         ("pkg:deb/debian/curl", "", (None, None)),
     ],
 )
@@ -424,6 +429,48 @@ def test_osv_compact_keeps_the_versions_of_an_entry_without_ranges_only():
     with_ranges, without = osv.compact(record, ("UBUNTU-CVE-",))["affected"]
     assert (with_ranges["ranges"], with_ranges["versions"]) == ([events], [])
     assert (without["ranges"], len(without["versions"])) == ([], 2)
+
+
+def redhat_advisory(advisory_id, entries, modified="1"):
+    """entries: (ecosystem, package, fixed version)."""
+    return {
+        "id": advisory_id,
+        "modified": modified,
+        "upstream": ["CVE-2026-7"],
+        "summary": "Red Hat Security Advisory: openssl security update",
+        "severity": [{"type": "CVSS_V3", "score": "CVSS:3.1/AV:N/AC:L"}],
+        "affected": [
+            {
+                "package": {"name": package, "ecosystem": ecosystem},
+                "ranges": [{"type": "ECOSYSTEM", "events": fixed_in(fixed)}],
+            }
+            for ecosystem, package, fixed in entries
+        ],
+    }
+
+
+def test_osv_compact_keeps_the_rhel_entries_per_major_release():
+    record = redhat_advisory(
+        "RHSA-2026:1",
+        [
+            ("Red Hat:enterprise_linux:9::baseos", "openssl", "1:3.2.2-6.el9_5.1"),
+            ("Red Hat:enterprise_linux:9::appstream", "openssl", "1:3.2.2-6.el9_5.1"),
+            ("Red Hat:enterprise_linux:9::baseos", "openssl-debuginfo", "1:3.2.2-6"),
+            ("Red Hat:enterprise_linux:10.1", "openssl", "1:3.5.1-3.el10_1"),
+            ("Red Hat:rhel_eus:9.4", "openssl", "1:3.0.7-29.el9_4.1"),
+            ("Red Hat:openshift:4.18::el9", "openssl", "1:3.2.2-6.el9_5.1"),
+        ],
+    )
+
+    compacted = osv.compact(record, ("RHSA-",))
+    bug_fix = osv.compact({**record, "id": "RHBA-2026:2"}, ("RHSA-",))
+
+    assert [(a["ecosystem"], a["package"]) for a in compacted["affected"]] == [
+        ("Red Hat:enterprise_linux:9", "openssl"),
+        ("Red Hat:enterprise_linux:10", "openssl"),
+    ]
+    assert compacted["cves"] == ["CVE-2026-7"]
+    assert (bug_fix["detection"], bug_fix["affected"]) == (False, [])
 
 
 def make_zip(path, records):
@@ -1029,6 +1076,7 @@ def debian_data(db):
 
 
 CURL = "pkg:deb/debian/curl"
+OPENSSL_RHEL = "pkg:rpm/redhat/openssl"
 
 
 @pytest.mark.django_db
@@ -1047,6 +1095,41 @@ class TestScan:
             ("CVE-2026-2", "8.0-1", ""),
         ]
         assert open_exposures(second) == open_exposures(first)
+
+    def test_a_rhel_machine_is_checked_against_the_red_hat_advisories(
+        self, tmp_path
+    ):
+        baseos = "Red Hat:enterprise_linux:9::baseos"
+        records = [
+            redhat_advisory("RHSA-2026:1", [(baseos, "openssl", "1:3.2.2-6.el9_5.1")])
+        ]
+        _, details = osv.load(
+            SOURCE_OSV_REDHAT, make_zip(tmp_path / "a.zip", records)
+        )
+        loaded(SOURCE_OSV_REDHAT, ecosystems=details["ecosystems"])
+        old = make_asset("old", "rpm", "rhel:9")
+        patched = make_asset("new", "rpm", "rhel:9")
+        for asset, version in (
+            (old, "1:3.2.2-6.el9_5"),
+            (patched, "1:3.2.2-6.el9_5.1"),
+        ):
+            install(
+                asset,
+                "openssl-libs",
+                version,
+                OPENSSL_RHEL,
+                family="rpm",
+                key="rhel:9",
+                origin="Red Hat, Inc.",
+            )
+
+        ScanService.run(now=NOW)
+
+        assert details == {"ecosystems": ["Red Hat:enterprise_linux:9"]}
+        assert open_exposures(old) == [
+            ("CVE-2026-7", "1:3.2.2-6.el9_5", "1:3.2.2-6.el9_5.1")
+        ]
+        assert open_exposures(patched) == []
 
     def test_the_source_version_is_compared(self, debian_data):
         # libcurl4 is built from curl: its own version is not curl's
