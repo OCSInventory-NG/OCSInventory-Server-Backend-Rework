@@ -46,6 +46,7 @@ TEXT_TYPES = ("TEXT", "TEXTAREA")
 GROUP_DEVICEIDS = ("_SYSTEMGROUP_", "_DOWNLOADGROUP_")
 
 CHECKBOX_SEPARATOR = "&&&"
+CHECKBOX_SPACES = str.maketrans("._", "  ")
 
 # fields of legacy_duplicate_reconciliation tried once the DEVICEID failed
 RULE_FIELDS = ("name", "serial", "srcmac")
@@ -730,21 +731,24 @@ class LegacyAccountinfoImport:
 
     def checkbox_values(self, definition, raw):
         """
-        ocsreports stores the checked labels cut at their first space, each
-        followed by &&& : 'value 1' and 'value 2' both become 'value'.
+        ocsreports stores each checked label followed by &&&, its dots and
+        underscores turned into spaces: 'pc_portable' becomes 'pc portable'.
+        The multi-search mass tag keeps only the first word: 'pc'.
         """
-        labels = list(definition.values.values())
+        labels = [
+            (self.checkbox_key(value.value), value)
+            for value in definition.values.values()
+        ]
         picked = []
         for token in raw.split(CHECKBOX_SEPARATOR):
             token = html.unescape(token).strip()
             if not token:
                 continue
 
-            exact = [v for v in labels if self.fold(v.value) == self.fold(token)]
+            key = self.checkbox_key(token)
+            exact = [value for label, value in labels if label == key]
             candidates = exact or [
-                v
-                for v in labels
-                if self.fold(v.value).startswith(self.fold(token) + " ")
+                value for label, value in labels if label.startswith(key + " ")
             ]
             if len(candidates) != 1:
                 raise Rejected(f"ambiguous checkbox label '{token}'")
@@ -798,6 +802,10 @@ class LegacyAccountinfoImport:
     @staticmethod
     def fold(text):
         return (text or "").strip().casefold()
+
+    @classmethod
+    def checkbox_key(cls, label):
+        return cls.fold((label or "").translate(CHECKBOX_SPACES))
 
     @staticmethod
     def text(value):

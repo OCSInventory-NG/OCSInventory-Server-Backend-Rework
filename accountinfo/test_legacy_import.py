@@ -462,6 +462,23 @@ class TestValues:
         spare = config("CHECKBOXEXAMPLE").accountinfo_values.get(value="Spare part")
         assert accountdata(asset)[str(config("CHECKBOXEXAMPLE").id)] == [spare.id]
 
+    def test_dots_and_underscores_are_stored_as_spaces(self, legacy):
+        legacy.connection.executemany(
+            "INSERT INTO config VALUES (?, ?, ?, NULL)",
+            [
+                ("ACCOUNT_VALUE_CHECKBOXEXAMPLE_4", 4, "pc_portable"),
+                ("ACCOUNT_VALUE_CHECKBOXEXAMPLE_5", 5, "v1.2"),
+            ],
+        )
+        asset = make_asset("DEV-1")
+        add_machine(legacy, 1, "DEV-1", "PC", checkbox="pc portable&&&v1 2&&&")
+
+        run(legacy)
+
+        values = config("CHECKBOXEXAMPLE").accountinfo_values
+        picked = [values.get(value="pc_portable").id, values.get(value="v1.2").id]
+        assert accountdata(asset)[str(config("CHECKBOXEXAMPLE").id)] == picked
+
     def test_a_second_run_changes_nothing(self, legacy):
         make_asset("DEV-1")
         add_machine(legacy, 1, "DEV-1", "PC", tag="T1", location="1")
