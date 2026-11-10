@@ -8,6 +8,7 @@ unless asked to.
 """
 
 import datetime
+import html
 import logging
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
@@ -336,6 +337,8 @@ class LegacyAccountinfoImport:
         definitions = []
         for row in legacy_rows:
             name = (row["NAME"] or "").strip()
+            # ocsreports stores what it is given HTML-escaped
+            row["COMMENT"] = html.unescape(row["COMMENT"] or "")
 
             if row["ACCOUNT_TYPE"] == "SNMP":
                 self.result.snmp_fields += 1
@@ -413,9 +416,8 @@ class LegacyAccountinfoImport:
             if not name or not suffix.isdigit():
                 continue
             index = self.as_int(row["IVALUE"])
-            labels[name].append(
-                (int(suffix) if index is None else index, row["TVALUE"])
-            )
+            label = html.unescape(row["TVALUE"] or "")
+            labels[name].append((int(suffix) if index is None else index, label))
         for values in labels.values():
             values.sort()
         return labels
@@ -706,7 +708,8 @@ class LegacyAccountinfoImport:
                 raise Rejected(f"text value for a {datatype} config")
             if isinstance(raw, (datetime.date, datetime.datetime)):
                 return raw.isoformat()[:10]
-            return str(raw).strip() if definition.legacy_type == TEXT else str(raw)
+            value = html.unescape(str(raw))
+            return value.strip() if definition.legacy_type == TEXT else value
 
         if datatype not in LIST_TYPES:
             raise Rejected(f"list value for a {datatype} config")
@@ -733,7 +736,7 @@ class LegacyAccountinfoImport:
         labels = list(definition.values.values())
         picked = []
         for token in raw.split(CHECKBOX_SEPARATOR):
-            token = token.strip()
+            token = html.unescape(token).strip()
             if not token:
                 continue
 

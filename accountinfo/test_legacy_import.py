@@ -349,6 +349,40 @@ class TestValues:
         assert data[str(config("CHECKBOXEXAMPLE").id)] == [spare.id]
         assert data[str(config("PURCHASE").id)] == "2024-03-01"
 
+    def test_html_entities_are_decoded(self, legacy):
+        db = legacy.connection
+        db.execute(
+            "UPDATE accountinfo_config SET COMMENT = ? WHERE ID = 157",
+            ("Site &amp; room",),
+        )
+        db.executemany(
+            "INSERT INTO config VALUES (?, ?, ?, NULL)",
+            [
+                ("ACCOUNT_VALUE_LOCATION_3", 3, "L&#039;Isle"),
+                ("ACCOUNT_VALUE_CHECKBOXEXAMPLE_4", 4, "R&amp;D"),
+            ],
+        )
+        asset = make_asset("DEV-1")
+        add_machine(
+            legacy,
+            1,
+            "DEV-1",
+            "PC",
+            tag="&quot;T1&quot;",
+            location="3",
+            checkbox="R&amp;D&&&",
+        )
+
+        run(legacy)
+
+        data = accountdata(asset)
+        isle = config("LOCATION").accountinfo_values.get(value="L'Isle")
+        rnd = config("CHECKBOXEXAMPLE").accountinfo_values.get(value="R&D")
+        assert config("LOCATION").description == "Site & room"
+        assert data[str(config("TAG").id)] == '"T1"'
+        assert data[str(config("LOCATION").id)] == {"text": "L'Isle", "value": isle.id}
+        assert data[str(config("CHECKBOXEXAMPLE").id)] == [rnd.id]
+
     def test_a_new_entry_holds_every_asset_config(self, legacy):
         other = AccountinfoConfig.objects.create(
             name="Owner", description="Owner", datatype="TEXT", datatarget="ASSET"
