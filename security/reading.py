@@ -36,11 +36,6 @@ LEVELS = ("critical", "high", "medium", "low", "unknown")
 NOT_UNCHECKED = (CHECKED, EXCLUDED, KERNEL_NOT_RUNNING)
 PRODUCTS_SHOWN = 5
 
-# Noise categories the list could show on demand. The noise is no longer
-# stored (security.kernel.is_noise): accepted by "show" for the clients that
-# still send it, "hidden" stays empty and "noise" "".
-NOISE_KERNEL_UNFIXED = "kernel_unfixed"
-NOISE = (NOISE_KERNEL_UNFIXED,)
 
 
 # A machine as a whole: covered when the scan checks its own packages (Linux)
@@ -99,14 +94,12 @@ def _rows(
     asset_id=None,
     search="",
     kev=None,
-    show=(),
     now=None,
 ):
     """
-    (rows, hidden counts): one row per vulnerability open on at least one
-    machine, exclusions applied, filters applied; each row keeps the ids of
-    its machines under "asset_ids". Nothing is hidden any more: show is
-    accepted and ignored.
+    One row per vulnerability open on at least one machine, exclusions and
+    filters applied; each row keeps the ids of its machines under
+    "asset_ids".
     """
     exclusions = active_exclusions(now)
     exposures = Exposure.objects.filter(closed_at__isnull=True)
@@ -119,7 +112,6 @@ def _rows(
             id__in=exposures.values("vulnerability_id")
         ).values_list("id", "vuln_id")
     )
-    hidden = {}
     grouped = defaultdict(
         lambda: {
             "machines": set(),
@@ -190,7 +182,6 @@ def _rows(
             "fixed_versions": sorted(group["fixed"])[:PRODUCTS_SHOWN],
             "fix_channels": sorted(c or "standard" for c in group["channels"]),
             "uncertain": not group["certain"],
-            "noise": "",
             "first_seen": group["first_seen"],
             "asset_ids": group["machines"],
         }
@@ -210,19 +201,19 @@ def _rows(
         ):
             continue
         rows.append(row)
-    return rows, dict(hidden)
+    return rows
 
 
 def vulnerability_rows(ordering=None, **filters):
     """
-    (rows, hidden counts, active order): the vulnerabilities shown by the
+    (rows, active order): the vulnerabilities shown by the
     list, in the active priority order. Filters as _rows.
     """
-    rows, hidden = _rows(**filters)
+    rows = _rows(**filters)
     for row in rows:
         del row["asset_ids"]
     order = priority(ordering)
-    return sort_rows(rows, order), hidden, order
+    return sort_rows(rows, order), order
 
 
 def vulnerability_summary(**filters):
@@ -232,7 +223,7 @@ def vulnerability_summary(**filters):
     machines the scan does not cover, counted apart (machine and family
     filters only: the others select vulnerabilities, not machines).
     """
-    rows, hidden = _rows(**filters)
+    rows = _rows(**filters)
     levels = Counter(row["level"] for row in rows)
     asset_id = filters.get("asset_id")
     machines = machine_rows(
@@ -244,7 +235,6 @@ def vulnerability_summary(**filters):
         "kev": sum(1 for row in rows if row["kev"]),
         "fix_available": sum(1 for row in rows if row["fix_available"]),
         "machines": len(set().union(*(row["asset_ids"] for row in rows))),
-        "hidden": hidden,
         "coverage": machine_counts(machines),
     }
 
@@ -366,8 +356,7 @@ def asset_exposures(asset_id, status="open", now=None):
                 "level": level(vulnerability.cvss_score, vulnerability.distro_rating),
                 "kev": vulnerability.kev,
                 "epss": vulnerability.epss,
-                "noise": "",
-            }
+                }
         )
         rows.append(row)
     order = priority()

@@ -61,7 +61,6 @@ def _filters(params):
         "asset_id": _asset(params),
         "search": params.get("search", ""),
         "kev": _yes_no(params, "kev"),
-        "show": _list(params, "show", reading.NOISE),
     }
 
 
@@ -82,7 +81,7 @@ class VulnerabilityViewSet(viewsets.OCSViewSet):
 
     def list(self, request, *args, **kwargs):
         params = request.query_params
-        rows, hidden, order = reading.vulnerability_rows(
+        rows, order = reading.vulnerability_rows(
             ordering=_list(params, "ordering", PRIORITY_CRITERIA) or None,
             **_filters(params),
         )
@@ -92,7 +91,6 @@ class VulnerabilityViewSet(viewsets.OCSViewSet):
         else:
             response = Response({"count": len(rows), "results": rows})
         response.data["ordering"] = order
-        response.data["hidden"] = hidden
         return response
 
     def retrieve(self, request, *args, **kwargs):

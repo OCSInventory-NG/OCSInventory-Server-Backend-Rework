@@ -1594,16 +1594,15 @@ class TestInstallationStates:
 
 @pytest.mark.django_db
 class TestReading:
-    def test_priority_noise_and_exclusions(self, debian_data):
+    def test_priority_and_exclusions(self, debian_data):
         KevEntry.objects.create(cve="CVE-2026-1")
         first, second = make_asset("a"), make_asset("b")
         install(first, "curl", "8.0-1", CURL)
         install(second, "curl", "8.0-1", CURL)
         ScanService.run(now=NOW)
 
-        rows, hidden, order = reading.vulnerability_rows(now=NOW)
+        rows, order = reading.vulnerability_rows(now=NOW)
         assert [row["vuln_id"] for row in rows] == ["CVE-2026-1", "CVE-2026-2"]
-        assert hidden == {}
         assert order == ["kev", "score", "epss", "machines"]
         assert (rows[0]["kev"], rows[0]["machines"]) == (True, 2)
 
@@ -1616,7 +1615,7 @@ class TestReading:
         Exclusion.objects.create(
             group=group, comment="lab", expires_at=NOW - timedelta(days=1)
         )
-        rows, _, _ = reading.vulnerability_rows(now=NOW)
+        rows, _ = reading.vulnerability_rows(now=NOW)
         assert [(row["vuln_id"], row["machines"]) for row in rows] == [
             ("CVE-2026-1", 1),
             ("CVE-2026-2", 2),
@@ -1624,7 +1623,7 @@ class TestReading:
 
         Exclusion.objects.create(group=group, comment="lab")
         Exclusion.objects.create(asset=first, vuln_id="CVE-2026-2", comment="n/a")
-        rows, _, _ = reading.vulnerability_rows(now=NOW)
+        rows, _ = reading.vulnerability_rows(now=NOW)
         assert rows == []
         assert reading.vulnerability_summary(now=NOW)["total"] == 0
         # exclusions are never stored on the exposures
@@ -1639,7 +1638,7 @@ class TestApi:
         ScanService.run(now=NOW)
 
         response = api_client.get(
-            "/vulnerabilities/?show=kernel_unfixed&ordering=machines,score"
+            "/vulnerabilities/?ordering=machines,score"
         )
         assert response.status_code == 200
         assert response.data["ordering"] == ["machines", "score"]
@@ -1674,7 +1673,6 @@ class TestApi:
             "fix=maybe",
             "ordering=name",
             "ordering=kev,kev",
-            "show=all",
             "asset=x",
         ],
     )
@@ -1693,12 +1691,12 @@ class TestApi:
         ScanService.run(now=NOW)
         Exclusion.objects.create(asset=third, comment="lab machine")
 
-        for params in ("", "show=kernel_unfixed", "kev=no", "level=critical"):
+        for params in ("", "kev=no", "level=critical"):
             summary = api_client.get(f"/vulnerabilities/summary/?{params}")
             listed = api_client.get(f"/vulnerabilities/?{params}").data
             assert summary.status_code == 200
             assert summary.data["total"] == listed["count"]
-            assert summary.data["hidden"] == listed["hidden"]
+            assert "hidden" not in summary.data and "hidden" not in listed
             assert sum(summary.data["levels"].values()) == listed["count"]
             assert summary.data["kev"] == sum(r["kev"] for r in listed["results"])
             assert summary.data["fix_available"] == sum(
@@ -1709,7 +1707,6 @@ class TestApi:
         summary = api_client.get("/vulnerabilities/summary/").data
         assert (summary["total"], summary["kev"], summary["machines"]) == (2, 1, 2)
         assert list(summary["levels"]) == list(reading.LEVELS)
-        assert summary["hidden"] == {}
         empty = api_client.get("/vulnerabilities/summary/?kev=yes&fix=no").data
         # the coverage counts machines: the vulnerability filters leave it alone
         assert empty.pop("coverage") == summary["coverage"]
@@ -1719,7 +1716,6 @@ class TestApi:
             "kev": 0,
             "fix_available": 0,
             "machines": 0,
-            "hidden": {},
         }
 
     def test_exposures_need_a_machine(self, api_client):
@@ -1890,17 +1886,14 @@ def test_ratings_are_normalized(value, expected):
 
 
 @pytest.mark.django_db
-def test_rows_tell_their_noise_and_coverage_counts_unchecked(debian_data):
+def test_coverage_counts_unchecked(debian_data):
     asset = make_asset("a")
     install(asset, "curl", "8.0-1", CURL)
     install(asset, "nginx", "1.0", "", status="review")
     ScanService.run(now=NOW)
 
-    rows, _, _ = reading.vulnerability_rows(now=NOW)
-    assert {row["vuln_id"]: row["noise"] for row in rows} == {
-        "CVE-2026-1": "",
-        "CVE-2026-2": "",
-    }
+    rows, _ = reading.vulnerability_rows(now=NOW)
+    assert "noise" not in rows[0]
 
     Exclusion.objects.create(asset=make_asset("b"), comment="lab")
     install(InventoryBase.objects.get(name="b"), "curl", "8.0-1", CURL)
@@ -2039,9 +2032,8 @@ def test_demo_data_shows_every_state_and_resolution(admin_user):
         "stale",
         "checked",
     }
-    rows, hidden, _ = reading.vulnerability_rows()
+    rows, _ = reading.vulnerability_rows()
     # the kernel vulnerabilities without a fix are not stored
-    assert hidden == {}
     assert not Exposure.objects.filter(kernel=True, fixed_version="").exists()
     assert rows[0]["kev"]
     channels = set(
