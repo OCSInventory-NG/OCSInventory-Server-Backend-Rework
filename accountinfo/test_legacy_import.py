@@ -12,6 +12,7 @@ from accountinfo.legacy_import import (
 )
 from accountinfo.models import AccountinfoConfig, AccountinfoData, AccountinfoValue
 from asset.inventory_base.models import InventoryBase
+from config.models import Config
 from django.contrib.contenttypes.models import ContentType
 from django.core.management import call_command
 from django.core.management.base import CommandError
@@ -31,6 +32,7 @@ CREATE TABLE accountinfo (
 CREATE TABLE config (NAME TEXT, IVALUE INTEGER, TVALUE TEXT, COMMENTS TEXT);
 CREATE TABLE hardware (ID INTEGER, DEVICEID TEXT, NAME TEXT, LASTDATE TEXT);
 CREATE TABLE bios (HARDWARE_ID INTEGER, SSN TEXT);
+CREATE TABLE networks (ID INTEGER, HARDWARE_ID INTEGER, MACADDR TEXT, STATUS TEXT);
 CREATE TABLE snmp_accountinfo (SNMP_ID INTEGER, TAG TEXT);
 
 INSERT INTO accountinfo_config VALUES
@@ -84,10 +86,18 @@ def add_machine(
     )
 
 
-def make_asset(uuid, name="PC", serial="S1"):
+def make_asset(uuid, name="PC", serial="S1", srcmac=""):
     return InventoryBase.objects.create(
-        name=name, osname="os", uuid=uuid, serial=serial
+        name=name, osname="os", uuid=uuid, serial=serial, srcmac=srcmac
     )
+
+
+def reconcile_on(*fields):
+    server = Config.objects.get(name="server")
+    for entry in server.value:
+        if entry["name"] == "legacy_duplicate_reconciliation":
+            entry["value"] = ["uuid", *fields]
+    server.save()
 
 
 def accountdata(asset):
@@ -178,6 +188,7 @@ class TestDefinitions:
 @pytest.mark.django_db
 class TestMatching:
     def test_deviceid_first_then_name_and_serial(self, legacy):
+        reconcile_on("name", "serial")
         by_deviceid = make_asset("DEV-1", name="PC-1", serial="A")
         by_rules = make_asset("NEW-UUID", name="pc-2", serial="B")
         add_machine(legacy, 1, "DEV-1", "PC-1", serial="A", tag="T1")
@@ -190,28 +201,55 @@ class TestMatching:
         assert result.machines["deviceid"] == 1
         assert result.machines["duplicate:name+serial"] == 1
 
-    def test_a_blank_serial_falls_back_on_the_name(self, legacy):
-        # a 2.X agent sent to the 3.x server, new DEVICEID, virtual machine
-        asset = make_asset(
-            "OCS-CAU-MYSQL-2026-10-29", name="OCS-CAU-MYSQL", serial="Empty"
-        )
-        add_machine(legacy, 1, "OCS-CAU-MYSQL-2026-08-06", "OCS-CAU-MYSQL", tag="T1")
-
-        result, _ = run(legacy)
-
-        assert accountdata(asset)[str(config("TAG").id)] == "T1"
-        assert result.machines["duplicate:name"] == 1
-
-    def test_a_blank_serial_never_matches_a_blank_serial(self, legacy):
-        make_asset("U1", name="PC-1", serial="Empty")
-        add_machine(legacy, 1, "DEV-1", "PC-2", serial="", tag="T1")
+    def test_uuid_alone_only_matches_the_deviceid(self, legacy):
+        make_asset("NEW-UUID", name="PC-1", serial="A")
+        add_machine(legacy, 1, "OLD-1", "PC-1", serial="A", tag="T1")
 
         result, rows = run(legacy)
 
         assert result.machines["unmatched"] == 1
-        assert rows[-1]["reason"] == "no asset matches on name"
+        assert rows[-1]["reason"] == "no asset matches on deviceid"
+
+    def test_a_blank_value_is_unmatched_like_on_the_server(self, legacy):
+        reconcile_on("name", "serial")
+        make_asset("NEW-UUID", name="PC-1", serial="Empty")
+        add_machine(legacy, 1, "OLD-1", "PC-1", serial="", tag="T1")
+
+        result, rows = run(legacy)
+
+        assert result.machines["unmatched"] == 1
+        assert rows[-1]["reason"] == "no usable value on serial"
+
+    def test_the_mac_is_the_first_network_up(self, legacy):
+        reconcile_on("srcmac")
+        asset = make_asset("NEW-UUID", srcmac="00:50:56:aa:bb:cc")
+        make_asset("OTHER", srcmac="00:50:56:00:00:01")
+        add_machine(legacy, 1, "OLD-1", "PC-1", tag="T1")
+        legacy.connection.executemany(
+            "INSERT INTO networks VALUES (?, 1, ?, ?)",
+            [(1, "00:50:56:00:00:01", "Down"), (2, "00:50:56:AA:BB:CC", "Up")],
+        )
+
+        result, _ = run(legacy)
+
+        assert accountdata(asset)[str(config("TAG").id)] == "T1"
+        assert result.machines["duplicate:srcmac"] == 1
+
+    def test_a_mac_among_several_matches(self, legacy):
+        reconcile_on("srcmac")
+        asset = make_asset("NEW-UUID", srcmac="20:7b:d2:54:0f:e6,98:59:7a:f5:d6:f1")
+        add_machine(legacy, 1, "OLD-1", "PC-1", tag="T1")
+        legacy.connection.execute(
+            "INSERT INTO networks VALUES (1, 1, '98:59:7a:f5:d6:f1', 'Up')"
+        )
+
+        result, _ = run(legacy)
+
+        assert accountdata(asset)[str(config("TAG").id)] == "T1"
+        assert result.machines["duplicate:srcmac"] == 1
 
     def test_no_asset_or_no_usable_value_is_unmatched(self, legacy):
+        reconcile_on("name", "serial")
         make_asset("OTHER", name="PC-9", serial="Z")
         add_machine(legacy, 1, "DEV-1", "PC-1", serial="A", tag="T1")
         add_machine(legacy, 2, "DEV-2", "", serial="", tag="T2")
@@ -226,6 +264,7 @@ class TestMatching:
         }
 
     def test_several_candidate_assets_is_a_duplicate(self, legacy):
+        reconcile_on("name", "serial")
         make_asset("U1", name="PC-1", serial="A")
         make_asset("U2", name="PC-1", serial="A")
         add_machine(legacy, 1, "DEV-1", "PC-1", serial="A", tag="T1")
@@ -236,6 +275,7 @@ class TestMatching:
         assert result.values["imported"] == 0
 
     def test_a_shared_asset_goes_to_the_latest_machine(self, legacy):
+        reconcile_on("name", "serial")
         asset = make_asset("DEV-NEW", name="PC-1", serial="A")
         add_machine(
             legacy,
@@ -264,6 +304,7 @@ class TestMatching:
         assert loser["legacy_hardware_id"] == "1"
 
     def test_a_shared_asset_with_the_same_lastdate_goes_to_nobody(self, legacy):
+        reconcile_on("name", "serial")
         make_asset("U1", name="PC-1", serial="A")
         add_machine(legacy, 1, "OLD-1", "PC-1", serial="A", tag="A")
         add_machine(legacy, 2, "OLD-2", "PC-1", serial="A", tag="B")

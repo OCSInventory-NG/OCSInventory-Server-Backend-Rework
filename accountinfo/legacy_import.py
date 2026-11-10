@@ -11,6 +11,7 @@ import datetime
 import logging
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
+from itertools import product
 from typing import Optional
 from urllib.parse import unquote, urlparse
 
@@ -45,8 +46,8 @@ GROUP_DEVICEIDS = ("_SYSTEMGROUP_", "_DOWNLOADGROUP_")
 
 CHECKBOX_SEPARATOR = "&&&"
 
-# fields of legacy_duplicate_reconciliation the legacy database can feed
-RULE_FIELDS = ("name", "serial")
+# fields of legacy_duplicate_reconciliation tried once the DEVICEID failed
+RULE_FIELDS = ("name", "serial", "srcmac")
 
 NAME_MAX = AccountinfoConfig._meta.get_field("name").max_length
 DESCRIPTION_MAX = AccountinfoConfig._meta.get_field("description").max_length
@@ -195,6 +196,16 @@ class LegacyDatabase:
             f"WHERE h.DEVICEID NOT IN ({groups}) ORDER BY h.ID"
         )
 
+    def macs(self):
+        """{hardware id: MAC of its first network up}, like the legacy endpoint"""
+        macs = {}
+        for row in self.rows(
+            "SELECT HARDWARE_ID, MACADDR FROM networks "
+            "WHERE UPPER(STATUS) = 'UP' ORDER BY ID"
+        ):
+            macs.setdefault(row["HARDWARE_ID"], row["MACADDR"])
+        return macs
+
     def accountinfo(self, hardware_ids):
         if not hardware_ids:
             return []
@@ -233,6 +244,7 @@ class Machine:
     name: str
     lastdate: object
     serial: str
+    srcmac: str = ""
     asset_id: Optional[int] = None
     rule: str = ""
     status: str = ""
@@ -439,6 +451,8 @@ class LegacyAccountinfoImport:
 
     def match_machines(self):
         """Reconcile every legacy machine with at most one asset (FR-005)"""
+        fields = self.rule_fields()
+        macs = self.legacy.macs() if "srcmac" in fields else {}
         machines = [
             Machine(
                 hardware_id=row["ID"],
@@ -446,14 +460,17 @@ class LegacyAccountinfoImport:
                 name=row["NAME"],
                 lastdate=row["LASTDATE"],
                 serial=row["SSN"],
+                srcmac=macs.get(row["ID"], ""),
             )
             for row in self.legacy.machines()
         ]
 
-        assets = list(InventoryBase.objects.values("id", "uuid", "name", "serial"))
+        assets = list(
+            InventoryBase.objects.values("id", "uuid", "name", "serial", "srcmac")
+        )
         by_uuid = {asset["uuid"]: asset["id"] for asset in assets}
-        indexes = {}
-        fields = self.rule_fields()
+        index = self.rule_index(assets, fields) if fields else {}
+        rule = "+".join(fields)
 
         for machine in machines:
             if machine.deviceid in by_uuid:
@@ -461,29 +478,30 @@ class LegacyAccountinfoImport:
                 machine.rule = "deviceid"
                 continue
 
-            # a 2.X agent sent to the 3.x server may get a new DEVICEID, and a
-            # virtual machine often has no serial: a blank field is left out
-            # and the others still have to match
-            values = {"name": machine.name, "serial": machine.serial}
-            usable = tuple(name for name in fields if self.usable(values[name]))
-            if not usable:
+            if not fields:
                 machine.status = "unmatched"
-                machine.reason = f"no usable value on {'+'.join(fields)}"
+                machine.reason = "no asset matches on deviceid"
                 continue
 
-            if usable not in indexes:
-                indexes[usable] = self.rule_index(assets, usable)
-            candidates = indexes[usable].get(self.rule_key(values, usable), [])
+            # the server falls back on the uuid, which has just failed
+            values = {name: getattr(machine, name) for name in fields}
+            blank = [name for name in fields if not self.usable(values[name])]
+            if blank:
+                machine.status = "unmatched"
+                machine.reason = f"no usable value on {'+'.join(blank)}"
+                continue
+
+            candidates = index.get(self.rule_key(values, fields), [])
 
             if len(candidates) == 1:
                 machine.asset_id = candidates[0]
-                machine.rule = "duplicate:" + "+".join(usable)
+                machine.rule = "duplicate:" + rule
             elif candidates:
                 machine.status = "duplicate"
-                machine.reason = f"{len(candidates)} assets match on {'+'.join(usable)}"
+                machine.reason = f"{len(candidates)} assets match on {rule}"
             else:
                 machine.status = "unmatched"
-                machine.reason = f"no asset matches on {'+'.join(usable)}"
+                machine.reason = f"no asset matches on {rule}"
 
         self.settle_shared_assets(machines)
 
@@ -527,18 +545,27 @@ class LegacyAccountinfoImport:
 
     @staticmethod
     def rule_fields():
-        """legacy_duplicate_reconciliation, limited to what the legacy base holds"""
+        """legacy_duplicate_reconciliation without uuid, matched first as DEVICEID"""
         configured = ReconciliationService.get_legacy_reconciliation_fields()
-        fields = [name for name in configured if name in RULE_FIELDS]
-        return fields or list(RULE_FIELDS)
+        return [name for name in configured if name in RULE_FIELDS]
 
     @classmethod
     def rule_index(cls, assets, fields):
         """{rule key: [asset ids]} over the assets usable on every field"""
         index = defaultdict(list)
         for asset in assets:
-            if all(cls.usable(asset[name]) for name in fields):
-                index[cls.rule_key(asset, fields)].append(asset["id"])
+            # a 3.x agent may send several MACs in srcmac
+            options = [
+                (asset[name] or "").split(",") if name == "srcmac" else [asset[name]]
+                for name in fields
+            ]
+            keys = {
+                cls.rule_key(dict(zip(fields, values)), fields)
+                for values in product(*options)
+                if all(cls.usable(value) for value in values)
+            }
+            for key in keys:
+                index[key].append(asset["id"])
         return index
 
     @staticmethod
@@ -552,7 +579,7 @@ class LegacyAccountinfoImport:
         key = []
         for name in fields:
             value = values[name].strip()
-            key.append(value.casefold() if name == "name" else value)
+            key.append(value.casefold() if name in ("name", "srcmac") else value)
         return tuple(key)
 
     # ---- values ----
