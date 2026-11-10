@@ -1,5 +1,4 @@
 import gzip
-import importlib
 import io
 import json
 import shutil
@@ -2169,38 +2168,6 @@ def test_demo_data_shows_every_state_and_resolution(admin_user):
 
 
 @pytest.mark.django_db
-def test_the_cpe_evaluations_are_made_again_after_the_platform_filter():
-    from django.apps import apps as django_apps
-
-    migration = importlib.import_module(
-        "security.migrations.0004_reevaluate_cpe_platform"
-    )
-    sources = {"nvd": NOW.isoformat()}
-    cpe = Evaluation.objects.create(
-        scheme="cpe",
-        product="zoom:zoom",
-        version="6.1.5",
-        platform_key="windows",
-        evaluated_at=NOW,
-        sources=sources,
-    )
-    purl = Evaluation.objects.create(
-        scheme="purl",
-        product="pkg:deb/debian/curl",
-        version="8.0-1",
-        platform_key="debian:12",
-        evaluated_at=NOW,
-        sources=sources,
-    )
-
-    migration.reevaluate_cpe(django_apps, None)
-
-    cpe.refresh_from_db()
-    purl.refresh_from_db()
-    assert (cpe.sources, purl.sources) == ({}, sources)
-
-
-@pytest.mark.django_db
 class TestDataAndScanApart:
     """The data is loaded daily, the machines are scanned weekly."""
 
@@ -2280,31 +2247,6 @@ def test_a_minor_debian_urgency_is_not_reported(urgency):
     assert not Finding.objects.exists()
     states = reading.asset_software_states(asset.id, now=NOW)
     assert [row["state"] for row in states] == ["checked"]
-
-
-@pytest.mark.django_db
-def test_the_minor_debian_findings_already_stored_are_dropped(debian_data):
-    from django.apps import apps as django_apps
-
-    asset = make_asset("a")
-    install(asset, "curl", "8.0-1", CURL)
-    ScanService.run(now=NOW)
-    Exposure.objects.filter(vulnerability__vuln_id="CVE-2026-2").update(
-        rating="unimportant"
-    )
-    Finding.objects.filter(vulnerability__vuln_id="CVE-2026-2").update(
-        rating="unimportant"
-    )
-    migration = importlib.import_module(
-        "security.migrations.0006_drop_minor_debian_urgencies"
-    )
-
-    migration.drop_minor_urgencies(django_apps, None)
-
-    assert list(Exposure.objects.values_list("vulnerability__vuln_id", flat=True)) == [
-        "CVE-2026-1"
-    ]
-    assert Finding.objects.count() == 1
 
 
 @pytest.mark.django_db

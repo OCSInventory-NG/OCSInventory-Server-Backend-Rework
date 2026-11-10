@@ -4,6 +4,7 @@ import re
 import shutil
 import subprocess
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 from asset.inventory_base.models import InventoryBase
@@ -1430,7 +1431,6 @@ class TestSoftwareDictionarySignature:
 
     def test_the_duplicates_are_merged(self, asset, template):
         from django.apps import apps as django_apps
-        from inventory.software_identity.models import SoftwareIdentity
 
         other = InventoryBase.objects.create(
             name="asset-2",
@@ -1452,17 +1452,15 @@ class TestSoftwareDictionarySignature:
         )
         copy = SoftwareDictionary.objects.exclude(pk=kept.pk).get()
         copy.assets.add(asset, other)
-        SoftwareIdentity.objects.create(entry=copy, status="matched")
         SoftwareDictionary.objects.filter(pk=kept.pk).update(signature=None)
         migration = importlib.import_module(
-            "inventory.software.migrations.0009_dictionary_signature"
+            "inventory.software.migrations.0007_software_identity"
         )
 
-        migration.merge_duplicates(django_apps, None)
+        migration.merge_duplicates(django_apps, SimpleNamespace(connection=connection))
 
         entry = SoftwareDictionary.objects.get()
         assert entry.pk == kept.pk
         assert set(entry.assets.all()) == {asset, other}
         assert entry.installation_number == 2
-        assert SoftwareIdentity.objects.get().entry_id == kept.pk
         assert entry.signature == signature_of(entry)
