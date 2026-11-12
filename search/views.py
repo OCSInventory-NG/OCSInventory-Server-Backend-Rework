@@ -25,6 +25,19 @@ from search.serializers import (
 from snmp.scanner.models import SnmpScanner
 
 
+class SearchError(ValueError):
+    """A search condition outside what the search accepts."""
+
+
+class CanSearchAssets(DefaultModelPermissions):
+    """Authenticated, and allowed to see the assets: a search POST reads them."""
+
+    perms_map = {
+        **DefaultModelPermissions.perms_map,
+        "POST": ["%(app_label)s.view_%(model_name)s"],
+    }
+
+
 class SearchView(GenericAPIView):
     """
     Manage multisearch feature
@@ -35,7 +48,7 @@ class SearchView(GenericAPIView):
     return the result
     """
 
-    permission_classes = []
+    permission_classes = [CanSearchAssets]
     queryset = InventoryBase.objects.none()
     serializer_class = InventoryBaseSerializer
 
@@ -76,6 +89,65 @@ class SearchView(GenericAPIView):
     )
 
     TEXT_OPERATORS = {"icontains", "iexact", "istartswith", "iendswith"}
+    # The lookups a condition may use: a field is compared, never followed
+    OPERATORS = {
+        "exact",
+        "iexact",
+        "contains",
+        "icontains",
+        "startswith",
+        "istartswith",
+        "endswith",
+        "iendswith",
+        "gt",
+        "gte",
+        "lt",
+        "lte",
+    }
+    # Objects whose field is an id: accountinfo, template field
+    ID_FIELD_OBJECTS = {"AccountinfoConfig", "inventory_sections"}
+
+    def _searchable_fields(self, obj):
+        """The fields of an object a condition may name: its own columns."""
+        model = InventoryBase if obj == "InventoryBase" else self.RELATED_MODELS[obj]
+        return {field.name for field in model._meta.concrete_fields}
+
+    def _validate_condition(self, condition):
+        """
+        Only known objects, their own columns and the comparison lookups: the
+        object, field and operator are put in the ORM lookups, a relation
+        named there would let a search read any table (password hashes
+        included).
+        """
+        if not isinstance(condition, dict):
+            raise SearchError("A condition is an object")
+        obj = condition.get("object")
+        field = condition.get("field")
+        if obj not in ("InventoryBase", *self.ID_FIELD_OBJECTS, *self.RELATED_MODELS):
+            raise SearchError(f"Unknown object: {obj}")
+        if condition.get("operator") not in self.OPERATORS:
+            raise SearchError("Operator among " + ", ".join(sorted(self.OPERATORS)))
+        if obj in self.ID_FIELD_OBJECTS:
+            if not str(field).isdecimal():
+                raise SearchError(f"{obj}: the field is an id")
+            if (
+                obj == "inventory_sections"
+                and not str(condition.get("section")).isdecimal()
+            ):
+                raise SearchError("inventory_sections: the section is an id")
+        elif field not in self._searchable_fields(obj):
+            raise SearchError(f"{obj}: unknown field {field}")
+        if condition.get("link", "AND") not in ("AND", "OR", ""):
+            raise SearchError("Link AND or OR")
+
+    def validate(self, data):
+        if not isinstance(data, list) or not all(
+            isinstance(group, list) for group in data
+        ):
+            raise SearchError("search_data is a list of condition lists")
+        for and_conditions in data:
+            for condition in and_conditions:
+                self._validate_condition(condition)
 
     def _empty_inventory_match_q(self):
         return ~Q(id__in=InventoryBase.objects.values_list("id"))
@@ -234,6 +306,7 @@ class SearchView(GenericAPIView):
         return base_qs.filter(pk__in=condition_qs.values("pk"))
 
     def process_search(self, data):
+        self.validate(data)
         filters = []
         links = {}
         masterindex = 0
@@ -575,6 +648,7 @@ class SearchView(GenericAPIView):
         request=SearchRequestSerializer,
         responses={
             200: InventoryBaseSerializer(many=True),
+            400: SearchErrorSerializer,
             500: SearchErrorSerializer,
         },
     )
@@ -584,6 +658,10 @@ class SearchView(GenericAPIView):
 
         try:
             qs = self.process_search(data)
+        except SearchError as error:
+            return Response({"error": str(error)}, status=400)
+
+        try:
             rel_q = self._extract_match_filters(data)
 
             if ungroup:
