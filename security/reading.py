@@ -8,12 +8,12 @@ from collections import Counter, defaultdict
 
 from asset.inventory_base.models import InventoryBase
 from django.db.models import Max
+from inventory.software.models import SoftwareDictionary
 from security import config as security_config
 from security.config import PRIORITY_CRITERIA
 from security.cvss import level
 from security.evaluation import Context
 from security.exclusions import active_exclusions
-from inventory.software.models import SoftwareDictionary
 from security.models import (
     METHOD_OSV,
     SOURCE_NVD,
