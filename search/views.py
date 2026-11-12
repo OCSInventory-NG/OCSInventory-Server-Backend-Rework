@@ -19,12 +19,12 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from search import security_criteria
 from search.models import Search
-from security.models import Exposure
 from search.serializers import (
     SearchErrorSerializer,
     SearchRequestSerializer,
     SearchSerializer,
 )
+from security.models import Exposure
 from snmp.scanner.models import SnmpScanner
 
 

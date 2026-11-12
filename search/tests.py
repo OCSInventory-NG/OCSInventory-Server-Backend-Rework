@@ -5,8 +5,8 @@ from asset.asset_group.models import AssetGroup
 from asset.inventory_base.models import InventoryBase
 from automation.tasks.dynaGroups import DynaGroups
 from django.contrib.auth.models import User
-from inventory.software.models import SoftwareDictionary
 from django.utils import timezone
+from inventory.software.models import SoftwareDictionary
 from rest_framework.test import APIClient
 from security.asset_security import RANKS
 from security.models import AssetSecurity, Exclusion, Exposure, Vulnerability

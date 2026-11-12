@@ -20,8 +20,9 @@ from inventory.software_identity.models import (
     PackageOrigin,
     SoftwareIdentity,
 )
+from security import asset_security
 from security import config as security_config
-from security import asset_security, reading
+from security import reading
 from security.cvss import base_score, level
 from security.evaluation import Context, EvaluationKey, affected_by
 from security.kernel import is_kernel, is_running_kernel
