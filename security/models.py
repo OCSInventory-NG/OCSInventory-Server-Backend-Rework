@@ -15,6 +15,7 @@ from django.conf import settings
 from django.db import models
 from django.db.models import Q
 from inventory.software.models import SoftwareDictionary
+from security.cvss import level
 
 # Sources, each synchronized on its own
 SOURCE_OSV_DEBIAN = "osv_debian"
@@ -202,7 +203,19 @@ class Vulnerability(models.Model):
     epss = models.FloatField(null=True, blank=True)
     epss_percentile = models.FloatField(null=True, blank=True)
     url = models.CharField(max_length=255, blank=True, default="")
+    # From the retained score, else the distribution rating: what the
+    # filters, the search and the machine statuses read
+    level = models.CharField(max_length=8, default="unknown", db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        self.level = level(self.cvss_score, self.distro_rating)
+        update_fields = kwargs.get("update_fields")
+        if update_fields is not None and (
+            {"cvss_score", "distro_rating"} & set(update_fields)
+        ):
+            kwargs["update_fields"] = {*update_fields, "level"}
+        super().save(*args, **kwargs)
 
 
 class Evaluation(models.Model):

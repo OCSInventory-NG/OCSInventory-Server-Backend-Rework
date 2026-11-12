@@ -10,7 +10,6 @@ from asset.inventory_base.models import InventoryBase
 from django.db.models import Max
 from security import config as security_config
 from security.config import PRIORITY_CRITERIA
-from security.cvss import level
 from security.evaluation import Context
 from security.exclusions import active_exclusions
 from inventory.software.models import SoftwareDictionary
@@ -178,7 +177,7 @@ def _rows(
             "cvss_version": vulnerability.cvss_version,
             "epss": vulnerability.epss,
             "epss_percentile": vulnerability.epss_percentile,
-            "level": level(vulnerability.cvss_score, vulnerability.distro_rating),
+            "level": vulnerability.level,
             "distro_rating": vulnerability.distro_rating,
             "source": "osv" if group["methods"] == {METHOD_OSV} else "nvd",
             "machines": len(group["machines"]),
@@ -312,7 +311,7 @@ def vulnerability_detail(vulnerability, now=None):
         "cvss_version": vulnerability.cvss_version,
         "cvss_vector": vulnerability.cvss_vector,
         "cvss_score": vulnerability.cvss_score,
-        "level": level(vulnerability.cvss_score, vulnerability.distro_rating),
+        "level": vulnerability.level,
         "distro_rating": vulnerability.distro_rating,
         "kev": vulnerability.kev,
         "kev_date_added": vulnerability.kev_date_added,
@@ -357,7 +356,7 @@ def asset_exposures(asset_id, status="open", now=None):
                 "vuln_id": vulnerability.vuln_id,
                 "summary": vulnerability.summary,
                 "cvss_score": vulnerability.cvss_score,
-                "level": level(vulnerability.cvss_score, vulnerability.distro_rating),
+                "level": vulnerability.level,
                 "kev": vulnerability.kev,
                 "epss": vulnerability.epss,
             }
@@ -488,8 +487,7 @@ def asset_summaries(asset_ids, now=None):
         asset_id,
         vulnerability_id,
         vuln_id,
-        score,
-        rating,
+        vulnerability_level,
         fixed,
     ) in Exposure.objects.filter(
         closed_at__isnull=True, asset_id__in=[row["asset"] for row in machines]
@@ -497,8 +495,7 @@ def asset_summaries(asset_ids, now=None):
         "asset_id",
         "vulnerability_id",
         "vulnerability__vuln_id",
-        "vulnerability__cvss_score",
-        "vulnerability__distro_rating",
+        "vulnerability__level",
         "fixed_version",
     ):
         if exclusions.excludes(asset_id, vuln_id):
@@ -507,7 +504,7 @@ def asset_summaries(asset_ids, now=None):
         vulnerabilities[vulnerability_id] = vulnerabilities.get(
             vulnerability_id, True
         ) and bool(fixed)
-        levels[vulnerability_id] = level(score, rating)
+        levels[vulnerability_id] = vulnerability_level
 
     excluded = exclusions.scan_wide_assets()
     rows = []

@@ -125,6 +125,18 @@ def test_level(score, rating, expected):
     assert level(score, rating) == expected
 
 
+@pytest.mark.django_db
+def test_the_stored_level_follows_the_score_and_the_rating():
+    vulnerability = Vulnerability.objects.create(vuln_id="CVE-1", distro_rating="low")
+    assert vulnerability.level == "low"
+
+    vulnerability.cvss_score = 9.8
+    vulnerability.save(update_fields=["cvss_score"])
+
+    vulnerability.refresh_from_db()
+    assert vulnerability.level == "critical"
+
+
 @pytest.mark.parametrize(
     "name, family, expected",
     [
@@ -1647,6 +1659,8 @@ class TestNvdScan:
             7.5,
         )
         assert vulnerability.cvss_version == "3.1"
+        # Stored from the score, for the filters and the search
+        assert vulnerability.level == "high"
 
 
 @pytest.mark.django_db

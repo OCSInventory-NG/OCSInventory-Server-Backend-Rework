@@ -17,7 +17,7 @@ from django.utils import timezone
 from inventory.software.models import DistroRelease
 from inventory.software_identity.models import CpeAlias, PackageOrigin
 from security import config as security_config
-from security.cvss import base_score, normalize_rating
+from security.cvss import base_score, level, normalize_rating
 from security.kernel import is_noise
 from security.models import (
     CHANNEL_STANDARD,
@@ -395,6 +395,7 @@ def _vulnerabilities(findings):
             cvss_vector=finding["vector"][:255],
             distro_rating=finding["rating"][:32],
             url=finding["url"][:255],
+            level=level(None, finding["rating"]),
         )
         existing[finding["vuln_id"]] = vulnerability
         created.append(vulnerability)
@@ -501,6 +502,7 @@ def refresh_vulnerabilities(ids=None):
             vulnerability.cvss_vector = vector[:255]
             vulnerability.cvss_version = _cvss_version(vector)
             vulnerability.cvss_score = score
+            vulnerability.level = level(score, vulnerability.distro_rating)
             if cve:
                 vulnerability.summary = cve.description or vulnerability.summary
                 vulnerability.published = cve.published or vulnerability.published
@@ -519,6 +521,7 @@ def refresh_vulnerabilities(ids=None):
                 "cvss_vector",
                 "cvss_version",
                 "cvss_score",
+                "level",
                 "summary",
                 "published",
                 "modified",
