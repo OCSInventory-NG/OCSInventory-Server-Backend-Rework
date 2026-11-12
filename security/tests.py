@@ -2100,6 +2100,64 @@ def test_machine_coverage_in_the_api(api_client, debian_data):
 
 
 @pytest.mark.django_db
+def test_asset_summaries_give_the_worst_level_and_the_vulnerabilities(debian_data):
+    vulnerable = make_asset("vulnerable")
+    install(vulnerable, "curl", "8.0-1", CURL)
+    healthy = make_asset("healthy")
+    install(healthy, "zlib1g", "1:1.2.13", "pkg:deb/debian/zlib")
+    empty = make_asset("empty")
+    old = make_asset("debian-11", key="debian:11")
+    install(old, "curl", "8.0-1", CURL, key="debian:11")
+    left_out = make_asset("left-out")
+    install(left_out, "curl", "8.0-1", CURL)
+    ScanService.run(now=NOW)
+    Exclusion.objects.create(asset=left_out, comment="lab")
+    ids = [vulnerable.id, healthy.id, empty.id, old.id, left_out.id, 999999]
+
+    rows = {row["asset"]: row for row in reading.asset_summaries(ids, now=NOW)}
+
+    assert set(rows) == set(ids[:-1])
+    # CVE-2026-1 medium with a fix, CVE-2026-2 low without
+    assert rows[vulnerable.id] == {
+        "asset": vulnerable.id,
+        "status": "medium",
+        "cves": 2,
+        "cves_fixable": 1,
+        "levels": {"critical": 0, "high": 0, "medium": 1, "low": 1, "unknown": 0},
+    }
+    assert {asset: row["status"] for asset, row in rows.items()} == {
+        vulnerable.id: "medium",
+        healthy.id: "not_vulnerable",
+        empty.id: "not_scanned",
+        old.id: "not_scanned",
+        left_out.id: "excluded",
+    }
+    assert rows[left_out.id]["cves"] == 0
+
+    Exclusion.objects.create(asset=vulnerable, vuln_id="CVE-2026-1", comment="n/a")
+    row = reading.asset_summaries([vulnerable.id], now=NOW)[0]
+    assert (row["status"], row["cves"], row["cves_fixable"]) == ("low", 1, 0)
+
+
+@pytest.mark.django_db
+def test_asset_summary_in_the_api(api_client, debian_data):
+    asset = make_asset("srv-01")
+
+    rows = api_client.get(f"/vulnerabilities/asset-summary/?asset__in={asset.id}")
+
+    assert rows.status_code == 200
+    assert [(row["asset"], row["status"]) for row in rows.json()] == [
+        (asset.id, "not_scanned")
+    ]
+    for query in ("", "?asset__in=", "?asset__in=1,x", "?asset__in=-1"):
+        response = api_client.get("/vulnerabilities/asset-summary/" + query)
+        assert response.status_code == 400
+    too_many = ",".join(str(n) for n in range(1, 502))
+    response = api_client.get(f"/vulnerabilities/asset-summary/?asset__in={too_many}")
+    assert response.status_code == 400
+
+
+@pytest.mark.django_db
 def test_exclusions_carry_names_and_filter_on_active(api_client, admin_user):
     asset = make_asset("srv-01")
     group = AssetGroup.objects.create(name="lab", user=admin_user, visibility="public")

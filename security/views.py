@@ -20,6 +20,8 @@ from security.serializers import (
 
 READ_ONLY = ["get", "head", "options"]
 FAMILIES = ("deb", "rpm", "windows", "macos")
+# The machines of a page of the asset list, a large page included
+ASSETS_PER_CALL = 500
 
 
 def _asset(params, required=False):
@@ -31,6 +33,22 @@ def _asset(params, required=False):
     if not value.isdecimal() or not value.isascii():
         raise ValidationError({"asset": "A machine id"})
     return int(value)
+
+
+def _assets(params):
+    """The machine ids of asset__in: comma separated, ASSETS_PER_CALL at most."""
+    values = [
+        v.strip() for v in (params.get("asset__in") or "").split(",") if v.strip()
+    ]
+    if (
+        not values
+        or len(values) > ASSETS_PER_CALL
+        or not all(v.isdecimal() and v.isascii() for v in values)
+    ):
+        raise ValidationError(
+            {"asset__in": f"Comma separated machine ids, {ASSETS_PER_CALL} at most"}
+        )
+    return sorted({int(v) for v in values})
 
 
 def _choice(params, name, choices):
@@ -125,6 +143,15 @@ class VulnerabilityViewSet(viewsets.OCSViewSet):
         if page is not None:
             return self.get_paginated_response(page)
         return Response({"count": len(rows), "results": rows})
+
+    @action(detail=False, methods=["get"], url_path="asset-summary")
+    def asset_summary(self, request):
+        """
+        The security of the machines of asset__in, for the asset list: status
+        (excluded, not_scanned, the worst level of the open vulnerabilities
+        or not_vulnerable), vulnerabilities, those with a fix, per level.
+        """
+        return Response(reading.asset_summaries(_assets(request.query_params)))
 
     @action(detail=False, methods=["get"])
     def sources(self, request):

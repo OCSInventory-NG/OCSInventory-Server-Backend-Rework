@@ -13,10 +13,12 @@ from security.config import PRIORITY_CRITERIA
 from security.cvss import level
 from security.evaluation import Context
 from security.exclusions import active_exclusions
+from inventory.software.models import SoftwareDictionary
 from security.models import (
     METHOD_OSV,
     SOURCE_NVD,
     SOURCES,
+    Evaluation,
     Exposure,
     OsvAdvisoryCve,
     ScanState,
@@ -54,6 +56,14 @@ NOT_COVERED_REASONS = (
     SOURCE_NEVER_LOADED,
     RELEASE_NOT_TRACKED,
 )
+
+# A machine's security in the asset list: left out of the scan, not scanned
+# (not covered, or none of its software evaluated yet), else the worst level
+# of its open vulnerabilities, or not vulnerable
+ASSET_EXCLUDED = "excluded"
+ASSET_NOT_SCANNED = "not_scanned"
+ASSET_NOT_VULNERABLE = "not_vulnerable"
+ASSET_STATUSES = (ASSET_EXCLUDED, ASSET_NOT_SCANNED, *LEVELS, ASSET_NOT_VULNERABLE)
 
 
 def priority(ordering=None):
@@ -448,6 +458,82 @@ def machine_counts(rows):
         MACHINE_NOT_COVERED: statuses[MACHINE_NOT_COVERED],
         "reasons": {reason: reasons[reason] for reason in NOT_COVERED_REASONS},
     }
+
+
+def asset_summaries(asset_ids, now=None):
+    """
+    Per machine of asset_ids (those that exist): its security status, its
+    open vulnerabilities (exclusions applied, a vulnerability on two
+    products counted once), those whose every open exposure on the machine
+    has a fix, and the vulnerabilities per level.
+    """
+    context = Context(now)
+    exclusions = active_exclusions(context.now)
+    machines = machine_rows(asset_ids, context=context)
+    # Scanned: a product of its software evaluated, its data fresh or not
+    evaluated = set(
+        SoftwareDictionary.assets.through.objects.filter(
+            inventorybase_id__in=[row["asset"] for row in machines],
+            softwaredictionary__identity__product__in=Evaluation.objects.values(
+                "product"
+            ),
+        )
+        .values_list("inventorybase_id", flat=True)
+        .distinct()
+    )
+
+    fixable = defaultdict(dict)
+    levels = {}
+    for (
+        asset_id,
+        vulnerability_id,
+        vuln_id,
+        score,
+        rating,
+        fixed,
+    ) in Exposure.objects.filter(
+        closed_at__isnull=True, asset_id__in=[row["asset"] for row in machines]
+    ).values_list(
+        "asset_id",
+        "vulnerability_id",
+        "vulnerability__vuln_id",
+        "vulnerability__cvss_score",
+        "vulnerability__distro_rating",
+        "fixed_version",
+    ):
+        if exclusions.excludes(asset_id, vuln_id):
+            continue
+        vulnerabilities = fixable[asset_id]
+        vulnerabilities[vulnerability_id] = vulnerabilities.get(
+            vulnerability_id, True
+        ) and bool(fixed)
+        levels[vulnerability_id] = level(score, rating)
+
+    excluded = exclusions.scan_wide_assets()
+    rows = []
+    for machine in sorted(machines, key=lambda row: row["asset"]):
+        asset_id = machine["asset"]
+        vulnerabilities = fixable.get(asset_id, {})
+        counts = Counter(levels[v] for v in vulnerabilities)
+        scanned = machine["status"] == MACHINE_COVERED and asset_id in evaluated
+        if asset_id in excluded:
+            status = ASSET_EXCLUDED
+        elif not scanned:
+            status = ASSET_NOT_SCANNED
+        else:
+            status = next(
+                (name for name in LEVELS if counts[name]), ASSET_NOT_VULNERABLE
+            )
+        rows.append(
+            {
+                "asset": asset_id,
+                "status": status,
+                "cves": len(vulnerabilities),
+                "cves_fixable": sum(vulnerabilities.values()),
+                "levels": {name: counts[name] for name in LEVELS},
+            }
+        )
+    return rows
 
 
 def coverage(asset_id=None, now=None):
