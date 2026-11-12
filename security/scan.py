@@ -20,6 +20,7 @@ from django.db.models import Q
 from django.utils import timezone
 from inventory.software.models import AssetPlatform, SoftwareDictionary
 from inventory.software_identity.models import SoftwareIdentity
+from security import asset_security
 from security.evaluation import (
     Context,
     EvaluationKey,
@@ -329,6 +330,7 @@ class ScanService:
                 progress(f"Scan stopped, memory limit reached ({used} MB of {limit})")
                 counts["stopped_memory"] = 1
                 refresh_vulnerabilities(touched)
+                asset_security.refresh(now=now)
                 return dict(counts)
             installations = Installations(context, batch)
             cls._evaluate(installations, context, products, counts)
@@ -348,6 +350,8 @@ class ScanService:
             )
         else:
             refresh_vulnerabilities(touched)
+        # Every machine: a level or a coverage may change beyond the batch
+        asset_security.refresh(now=now)
         return dict(counts)
 
     @staticmethod

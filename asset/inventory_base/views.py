@@ -5,6 +5,7 @@ from asset.inventory_base.models import InventoryBase
 from asset.inventory_base.serializers import InventoryBaseSerializer
 from asset.inventory_field.models import InventoryField
 from django.db.models import F, OuterRef, Q, Subquery
+from django.db.models.functions import Coalesce
 from django_filters.rest_framework import DjangoFilterBackend
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
@@ -157,7 +158,25 @@ class InventoryBaseViewSet(AccountinfoSearchMixin, viewsets.OCSViewSet):
             order.desc(nulls_last=True) if descending else order.asc(nulls_last=True)
         )
 
+    # Sorts on the stored security of each machine (security.AssetSecurity):
+    # a machine without row is not scanned yet, rank 1 and no vulnerability
+    SECURITY_ORDERING = {
+        "security_status": ("security__rank", 1),
+        "security_cves": ("security__cves", 0),
+        "security_cves_fixable": ("security__cves_fixable", 0),
+    }
+
     def filter_queryset(self, queryset):
+        queryset = self._filter_queryset(queryset)
+        ordering = self.request.query_params.get("ordering") or ""
+        descending = ordering.startswith("-")
+        sort = self.SECURITY_ORDERING.get(ordering.lstrip("-"))
+        if sort is None:
+            return queryset
+        value = Coalesce(sort[0], sort[1])
+        return queryset.order_by(value.desc() if descending else value.asc(), "id")
+
+    def _filter_queryset(self, queryset):
         """
         Let the quick search and the sort reach the displayed virtual columns
 

@@ -5,7 +5,7 @@ from permission.permissions import DefaultModelPermissions
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
-from security import reading
+from security import asset_security, reading
 from security.config import PRIORITY_CRITERIA
 from security.models import (
     Exclusion,
@@ -151,7 +151,7 @@ class VulnerabilityViewSet(viewsets.OCSViewSet):
         (excluded, not_scanned, the worst level of the open vulnerabilities
         or not_vulnerable), vulnerabilities, those with a fix, per level.
         """
-        return Response(reading.asset_summaries(_assets(request.query_params)))
+        return Response(asset_security.summaries(_assets(request.query_params)))
 
     @action(detail=False, methods=["get"])
     def sources(self, request):
@@ -212,5 +212,23 @@ class ExclusionViewSet(viewsets.OCSViewSet):
             else queryset.exclude(in_force)
         )
 
+    @staticmethod
+    def _machines(exclusion):
+        if exclusion.asset_id is not None:
+            return {exclusion.asset_id}
+        return set(exclusion.group.assets.values_list("id", flat=True))
+
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        exclusion = serializer.save(user=self.request.user)
+        asset_security.refresh(self._machines(exclusion))
+
+    def perform_update(self, serializer):
+        # The machines it covered and those it covers now
+        before = self._machines(serializer.instance)
+        exclusion = serializer.save()
+        asset_security.refresh(before | self._machines(exclusion))
+
+    def perform_destroy(self, instance):
+        machines = self._machines(instance)
+        instance.delete()
+        asset_security.refresh(machines)

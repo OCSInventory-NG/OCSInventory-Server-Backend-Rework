@@ -6,9 +6,9 @@ out for a machine or for the machines of a group, dynamic groups included
 
 from collections import defaultdict
 
-from django.db.models import Q
+from django.db.models import Exists, OuterRef, Q
 from django.utils import timezone
-from security.models import Exclusion
+from security.models import Exclusion, Exposure
 
 WHOLE_SCAN = ""
 
@@ -64,3 +64,16 @@ def active_exclusions(now=None):
         for group_id, asset_id in members:
             per_asset[asset_id] |= group_exclusions[group_id]
     return ActiveExclusions(dict(per_asset))
+
+
+def visible_exposures(now=None):
+    """
+    The open exposures no exclusion in force leaves out, in SQL: neither the
+    whole scan nor their vulnerability excluded for their machine or one of
+    its groups. What the search and the machine statuses read.
+    """
+    excluding = in_force(now).filter(
+        Q(vuln_id=WHOLE_SCAN) | Q(vuln_id=OuterRef("vulnerability__vuln_id")),
+        Q(asset_id=OuterRef("asset_id")) | Q(group__assets=OuterRef("asset_id")),
+    )
+    return Exposure.objects.filter(closed_at__isnull=True).exclude(Exists(excluding))

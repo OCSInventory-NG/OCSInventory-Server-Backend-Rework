@@ -21,7 +21,7 @@ from inventory.software_identity.models import (
     SoftwareIdentity,
 )
 from security import config as security_config
-from security import reading
+from security import asset_security, reading
 from security.cvss import base_score, level
 from security.evaluation import Context, EvaluationKey, affected_by
 from security.kernel import is_kernel, is_running_kernel
@@ -33,6 +33,7 @@ from security.models import (
     SOURCE_OSV_REDHAT,
     SOURCE_OSV_ROCKY,
     SOURCE_OSV_UBUNTU,
+    AssetSecurity,
     EpssScore,
     Evaluation,
     Exclusion,
@@ -2114,9 +2115,21 @@ def test_machine_coverage_in_the_api(api_client, debian_data):
 
 
 @pytest.mark.django_db
-def test_asset_summaries_give_the_worst_level_and_the_vulnerabilities(debian_data):
+def test_machine_security_gives_the_worst_level_and_the_vulnerabilities(
+    debian_data, admin_user
+):
+    # CVE-2026-1 also on wget, without fix: counted once, not fixable there
+    advisory(
+        SOURCE_OSV_DEBIAN,
+        "DEBIAN-CVE-2026-1-WGET",
+        ["CVE-2026-1"],
+        [("Debian:12", "wget", UNFIXED, "medium")],
+    )
     vulnerable = make_asset("vulnerable")
     install(vulnerable, "curl", "8.0-1", CURL)
+    both = make_asset("both")
+    install(both, "curl", "8.0-1", CURL)
+    install(both, "wget", "1.21", "pkg:deb/debian/wget")
     healthy = make_asset("healthy")
     install(healthy, "zlib1g", "1:1.2.13", "pkg:deb/debian/zlib")
     empty = make_asset("empty")
@@ -2124,13 +2137,16 @@ def test_asset_summaries_give_the_worst_level_and_the_vulnerabilities(debian_dat
     install(old, "curl", "8.0-1", CURL, key="debian:11")
     left_out = make_asset("left-out")
     install(left_out, "curl", "8.0-1", CURL)
+    group = AssetGroup.objects.create(name="lab", user=admin_user, visibility="public")
+    group.assets.add(left_out)
+    Exclusion.objects.create(group=group, comment="lab")
+
+    # Stored by the scan, for every machine
     ScanService.run(now=NOW)
-    Exclusion.objects.create(asset=left_out, comment="lab")
-    ids = [vulnerable.id, healthy.id, empty.id, old.id, left_out.id, 999999]
+    ids = [vulnerable.id, both.id, healthy.id, empty.id, old.id, left_out.id]
+    rows = {row["asset"]: row for row in asset_security.summaries(ids + [999999])}
 
-    rows = {row["asset"]: row for row in reading.asset_summaries(ids, now=NOW)}
-
-    assert set(rows) == set(ids[:-1])
+    assert set(rows) == set(ids)
     # CVE-2026-1 medium with a fix, CVE-2026-2 low without
     assert rows[vulnerable.id] == {
         "asset": vulnerable.id,
@@ -2139,18 +2155,75 @@ def test_asset_summaries_give_the_worst_level_and_the_vulnerabilities(debian_dat
         "cves_fixable": 1,
         "levels": {"critical": 0, "high": 0, "medium": 1, "low": 1, "unknown": 0},
     }
+    assert (rows[both.id]["cves"], rows[both.id]["cves_fixable"]) == (2, 0)
     assert {asset: row["status"] for asset, row in rows.items()} == {
         vulnerable.id: "medium",
+        both.id: "medium",
         healthy.id: "not_vulnerable",
         empty.id: "not_scanned",
         old.id: "not_scanned",
         left_out.id: "excluded",
     }
     assert rows[left_out.id]["cves"] == 0
+    ranks = dict(AssetSecurity.objects.values_list("asset_id", "rank"))
+    assert ranks[vulnerable.id] > ranks[healthy.id] > ranks[empty.id]
+    assert ranks[empty.id] > ranks[left_out.id]
 
     Exclusion.objects.create(asset=vulnerable, vuln_id="CVE-2026-1", comment="n/a")
-    row = reading.asset_summaries([vulnerable.id], now=NOW)[0]
+    asset_security.refresh([vulnerable.id], now=NOW)
+    row = asset_security.summaries([vulnerable.id])[0]
     assert (row["status"], row["cves"], row["cves_fixable"]) == ("low", 1, 0)
+
+
+@pytest.mark.django_db
+def test_the_asset_list_sorts_on_the_machine_security(api_client):
+    def stored(name, status, rank, cves):
+        asset = make_asset(name)
+        AssetSecurity.objects.create(
+            asset=asset, status=status, rank=rank, cves=cves, updated_at=NOW
+        )
+        return asset
+
+    stored("critical", "critical", 7, 3)
+    stored("clean", "not_vulnerable", 2, 0)
+    stored("excluded", "excluded", 0, 0)
+    make_asset("new")  # no row yet: not scanned
+
+    def names(ordering):
+        response = api_client.get(f"/asset/bases/?ordering={ordering}&limit=10")
+        return [row["name"] for row in response.json()["results"]]
+
+    assert names("-security_status") == ["critical", "clean", "new", "excluded"]
+    assert names("security_status") == ["excluded", "new", "clean", "critical"]
+    assert names("-security_cves")[0] == "critical"
+
+
+@pytest.mark.django_db
+def test_an_exclusion_changed_in_the_api_updates_the_machines(api_client, admin_user):
+    asset = make_asset("srv-01")
+    group = AssetGroup.objects.create(name="lab", user=admin_user, visibility="public")
+    group.assets.add(asset)
+
+    def status():
+        return asset_security.summaries([asset.id])[0]["status"]
+
+    created = api_client.post(
+        "/vulnerability_exclusions/",
+        {"group": group.id, "comment": "lab"},
+        format="json",
+    )
+    assert created.status_code == 201
+    assert status() == "excluded"
+    other = AssetGroup.objects.create(
+        name="other", user=admin_user, visibility="public"
+    )
+    url = f"/vulnerability_exclusions/{created.json()['id']}/"
+    api_client.patch(url, {"group": other.id}, format="json")
+    assert status() == "not_scanned"
+    api_client.patch(url, {"group": group.id}, format="json")
+    assert status() == "excluded"
+    api_client.delete(url)
+    assert status() == "not_scanned"
 
 
 @pytest.mark.django_db

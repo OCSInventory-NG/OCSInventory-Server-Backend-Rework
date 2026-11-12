@@ -1,6 +1,7 @@
 import logging
 
 from automation.tasks.abstractTask import AbstractTask
+from security import asset_security
 from security.evaluation import refresh_vulnerabilities
 from security.sync import SyncService, locked
 
@@ -20,4 +21,6 @@ class SecuritySync(AbstractTask):
             results = SyncService.run(progress=logger.info)
             logger.info("Vulnerability data: %s", results)
             refresh_vulnerabilities()
+            # The coverage follows the sources and the support end dates
+            asset_security.refresh()
         logger.info("SecuritySync task completed")

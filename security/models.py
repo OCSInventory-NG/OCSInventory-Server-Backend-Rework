@@ -362,6 +362,33 @@ class Exclusion(models.Model):
         ]
 
 
+class AssetSecurity(models.Model):
+    """
+    A machine's security as the asset list and the search read it, kept by
+    security.asset_security after each scan, synchronization and exclusion
+    change: status, open vulnerabilities (exclusions applied), those with a
+    fix, per level. A machine without row is not scanned yet.
+    """
+
+    asset = models.OneToOneField(
+        InventoryBase,
+        related_name="security",
+        primary_key=True,
+        on_delete=models.CASCADE,
+    )
+    status = models.CharField(max_length=16, db_index=True)
+    # Order of the statuses, the most serious first when descending
+    rank = models.SmallIntegerField(db_index=True)
+    cves = models.IntegerField(default=0, db_index=True)
+    cves_fixable = models.IntegerField(default=0)
+    critical = models.IntegerField(default=0)
+    high = models.IntegerField(default=0)
+    medium = models.IntegerField(default=0)
+    low = models.IntegerField(default=0)
+    unknown = models.IntegerField(default=0)
+    updated_at = models.DateTimeField()
+
+
 class ScanLock(models.Model):
     """One synchronization or scan at a time; a lock older than 12 h is taken over."""
 
