@@ -8,6 +8,7 @@ from collections import Counter, defaultdict
 
 from asset.inventory_base.models import InventoryBase
 from django.db.models import Max
+from inventory.software.models import SoftwareDictionary
 from security import config as security_config
 from security.config import PRIORITY_CRITERIA
 from security.evaluation import Context
