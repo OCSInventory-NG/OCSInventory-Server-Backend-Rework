@@ -115,6 +115,14 @@ class ExclusionSerializer(ModelSerializer):
         group = attrs.get("group", getattr(self.instance, "group", None))
         if (asset is None) == (group is None):
             raise serializers.ValidationError("A machine or a group, not both")
+        # A dynamic group chosen on security criteria would lose the machines
+        # the exclusion leaves out, then exclude them no more, and so on
+        from search.security_criteria import uses_security
+
+        if group is not None and group.is_dynamic and uses_security(group.search):
+            raise serializers.ValidationError(
+                {"group": "A dynamic group chosen on security criteria"}
+            )
         expires_at = attrs.get("expires_at")
         if expires_at is not None and expires_at <= timezone.now():
             raise serializers.ValidationError({"expires_at": "A date to come"})

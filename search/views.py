@@ -14,9 +14,12 @@ from inventory.field.models import Field
 from inventory.software.models import SoftwareDictionary
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
+from search import security_criteria
 from search.models import Search
+from security.models import Exposure
 from search.serializers import (
     SearchErrorSerializer,
     SearchRequestSerializer,
@@ -60,6 +63,7 @@ class SearchView(GenericAPIView):
         "snmpscanner": SnmpScanner,
         "inventory_sections": InventorySection,
         "software_dictionary_entries": SoftwareDictionary,
+        security_criteria.VULNERABILITIES: Exposure,
     }
 
     RELATED_MODEL_FK = {
@@ -68,6 +72,7 @@ class SearchView(GenericAPIView):
         "snmpscanner": "assets",
         "inventory_sections": "base",
         "software_dictionary_entries": "assets",
+        security_criteria.VULNERABILITIES: "asset",
     }
 
     SAME_ROW_RELATED_MODELS = {
@@ -75,6 +80,7 @@ class SearchView(GenericAPIView):
         "logs",
         "snmpscanner",
         "software_dictionary_entries",
+        security_criteria.VULNERABILITIES,
     }
     MANY_TO_MANY_RELATED_MODELS = {
         "snmpscanner",
@@ -86,6 +92,7 @@ class SearchView(GenericAPIView):
         "snmpscanner",
         "inventory_sections",
         "software_dictionary_entries",
+        security_criteria.VULNERABILITIES,
     )
 
     TEXT_OPERATORS = {"icontains", "iexact", "istartswith", "iendswith"}
@@ -123,8 +130,21 @@ class SearchView(GenericAPIView):
             raise SearchError("A condition is an object")
         obj = condition.get("object")
         field = condition.get("field")
-        if obj not in ("InventoryBase", *self.ID_FIELD_OBJECTS, *self.RELATED_MODELS):
+        if obj not in (
+            "InventoryBase",
+            *self.ID_FIELD_OBJECTS,
+            *self.RELATED_MODELS,
+            *security_criteria.OBJECTS,
+        ):
             raise SearchError(f"Unknown object: {obj}")
+        if obj in security_criteria.OBJECTS:
+            try:
+                security_criteria.validate(condition)
+            except ValueError as error:
+                raise SearchError(str(error)) from None
+            if condition.get("link", "AND") not in ("AND", "OR", ""):
+                raise SearchError("Link AND or OR")
+            return
         if condition.get("operator") not in self.OPERATORS:
             raise SearchError("Operator among " + ", ".join(sorted(self.OPERATORS)))
         if obj in self.ID_FIELD_OBJECTS:
@@ -167,7 +187,12 @@ class SearchView(GenericAPIView):
         operator = self._normalize_operator(condition["operator"], value)
 
         # Construction of the Q condition
-        if obj == "InventoryBase":
+        if obj == security_criteria.VULNERABILITIES:
+            # on the exposure: process_search turns it into machines
+            condition_q = security_criteria.exposure_q(condition)
+        elif obj == security_criteria.SECURITY:
+            condition_q = security_criteria.security_q(condition)
+        elif obj == "InventoryBase":
             condition_q = Q(**{f"{field}__{operator}": value})
         # Special process if accountinfo
         elif obj == "AccountinfoConfig":
@@ -242,6 +267,8 @@ class SearchView(GenericAPIView):
         return condition_q
 
     def _build_related_condition_q(self, condition):
+        if condition["object"] == security_criteria.VULNERABILITIES:
+            return security_criteria.exposure_q(condition)
         field = condition["field"]
         operator = self._normalize_operator(condition["operator"], condition["value"])
 
@@ -302,8 +329,19 @@ class SearchView(GenericAPIView):
         if base_qs is None:
             return condition_qs
         if link == "OR":
-            return base_qs | condition_qs
+            return self._either(base_qs, condition_qs)
         return base_qs.filter(pk__in=condition_qs.values("pk"))
+
+    @staticmethod
+    def _either(first_qs, second_qs):
+        """
+        The machines of either set, as two id subqueries: an SQL OR between a
+        join and a subquery makes PostgreSQL scan far more (2.3 s against
+        0.3 s for a software OR a vulnerability condition on 520 machines).
+        """
+        return InventoryBase.objects.filter(
+            Q(pk__in=first_qs.values("pk")) | Q(pk__in=second_qs.values("pk"))
+        )
 
     def process_search(self, data):
         self.validate(data)
@@ -321,7 +359,12 @@ class SearchView(GenericAPIView):
                 and_conditions, self._build_condition_q
             ):
                 condition_q = unit["q"]
-                condition_qs = InventoryBase.objects.filter(condition_q).distinct()
+                if unit["object"] == security_criteria.VULNERABILITIES:
+                    condition_qs = InventoryBase.objects.filter(
+                        id__in=security_criteria.asset_ids(condition_q)
+                    ).distinct()
+                else:
+                    condition_qs = InventoryBase.objects.filter(condition_q).distinct()
                 group_qs = self._combine_querysets(
                     group_qs, condition_qs, unit.get("link", "AND")
                 )
@@ -335,7 +378,7 @@ class SearchView(GenericAPIView):
             linkindex = 1
             for qs_filter in filters[1:]:
                 if links[linkindex] == "OR":
-                    query_set = query_set | qs_filter
+                    query_set = self._either(query_set, qs_filter)
                 else:
                     query_set = query_set.filter(pk__in=qs_filter.values("pk"))
                 linkindex += 1
@@ -380,6 +423,7 @@ class SearchView(GenericAPIView):
                 "snmpscanner": [],
                 "inventory_sections": [],
                 "software_dictionary_entries": [],
+                security_criteria.VULNERABILITIES: [],
             }
         )
         seen_matches = defaultdict(lambda: defaultdict(set))
@@ -390,7 +434,10 @@ class SearchView(GenericAPIView):
                 continue
 
             fk = self.RELATED_MODEL_FK.get(related)
-            if related in self.MANY_TO_MANY_RELATED_MODELS:
+            if related == security_criteria.VULNERABILITIES:
+                for inv_id, rows in security_criteria.matched(inventory_ids, q).items():
+                    match_map[inv_id][related] = rows
+            elif related in self.MANY_TO_MANY_RELATED_MODELS:
                 qs = (
                     model.objects.filter(
                         **{f"{fk}__in": inventory_ids},
@@ -512,6 +559,10 @@ class SearchView(GenericAPIView):
         model = self.RELATED_MODELS.get(related)
         fk = self.RELATED_MODEL_FK.get(related)
 
+        if related == security_criteria.VULNERABILITIES:
+            queryset = security_criteria.rows_queryset(inventory_qs.values("pk"), q)
+            return queryset, "asset_id"
+
         if related in self.MANY_TO_MANY_RELATED_MODELS:
             queryset = model.objects.filter(
                 **{f"{fk}__in": inventory_qs.values("pk")}
@@ -528,7 +579,8 @@ class SearchView(GenericAPIView):
             return inventory_qs.count()
 
         total_count = 0
-        base_only_qs = inventory_qs
+        # Ids only: a DISTINCT on every column of the asset costs seconds
+        base_only_qs = InventoryBase.objects.filter(pk__in=inventory_qs.values("pk"))
 
         for related, q in rel_q.items():
             related_qs, inventory_id_field = self._build_related_rows_queryset(
@@ -660,6 +712,10 @@ class SearchView(GenericAPIView):
             qs = self.process_search(data)
         except SearchError as error:
             return Response({"error": str(error)}, status=400)
+        if security_criteria.uses_security(data) and not request.user.has_perm(
+            security_criteria.PERMISSION
+        ):
+            raise PermissionDenied("The security criteria need to see vulnerabilities")
 
         try:
             rel_q = self._extract_match_filters(data)
