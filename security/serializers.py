@@ -1,0 +1,129 @@
+from asset.asset_group.models import AssetGroup
+from django.utils import timezone
+from rest_framework import serializers
+from rest_framework.serializers import ModelSerializer
+from security.models import (
+    Exclusion,
+    Exposure,
+    Vulnerability,
+)
+
+
+class VulnerabilitySerializer(ModelSerializer):
+    """Describes the model for the API schema; rows are built by security.reading."""
+
+    class Meta:
+        model = Vulnerability
+        fields = [
+            "id",
+            "vuln_id",
+            "summary",
+            "published",
+            "modified",
+            "cvss_version",
+            "cvss_vector",
+            "cvss_score",
+            "distro_rating",
+            "kev",
+            "kev_date_added",
+            "epss",
+            "epss_percentile",
+            "url",
+        ]
+        read_only_fields = fields
+
+
+class ExposureSerializer(ModelSerializer):
+    """Describes the model for the API schema; rows are built by security.reading."""
+
+    class Meta:
+        model = Exposure
+        fields = [
+            "id",
+            "asset",
+            "vulnerability",
+            "scheme",
+            "product",
+            "software_name",
+            "version",
+            "fixed_version",
+            "fix_channel",
+            "method",
+            "first_seen",
+            "last_seen",
+            "closed_at",
+            "resolution",
+        ]
+        read_only_fields = fields
+
+
+class ExclusionSerializer(ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
+    active = serializers.SerializerMethodField()
+    asset_name = serializers.CharField(source="asset.name", read_only=True, default="")
+    group_name = serializers.CharField(source="group.name", read_only=True, default="")
+    user_name = serializers.CharField(
+        source="user.username", read_only=True, default=""
+    )
+
+    class Meta:
+        model = Exclusion
+        fields = [
+            "id",
+            "vuln_id",
+            "asset",
+            "asset_name",
+            "group",
+            "group_name",
+            "comment",
+            "expires_at",
+            "user",
+            "user_name",
+            "created_at",
+            "active",
+        ]
+        read_only_fields = [
+            "asset_name",
+            "group_name",
+            "user",
+            "user_name",
+            "created_at",
+            "active",
+        ]
+
+    def get_active(self, exclusion) -> bool:
+        return exclusion.expires_at is None or exclusion.expires_at > timezone.now()
+
+    def validate_comment(self, value):
+        value = (value or "").strip()
+        if not value:
+            raise serializers.ValidationError("A comment is required")
+        return value
+
+    def validate_vuln_id(self, value):
+        return (value or "").strip().upper()
+
+    def validate_group(self, group):
+        request = self.context.get("request")
+        if group is not None and request is not None:
+            if not AssetGroup.objects.visible_to(request.user).filter(pk=group.pk):
+                raise serializers.ValidationError("Unknown group")
+        return group
+
+    def validate(self, attrs):
+        asset = attrs.get("asset", getattr(self.instance, "asset", None))
+        group = attrs.get("group", getattr(self.instance, "group", None))
+        if (asset is None) == (group is None):
+            raise serializers.ValidationError("A machine or a group, not both")
+        # A dynamic group chosen on security criteria would lose the machines
+        # the exclusion leaves out, then exclude them no more, and so on
+        from search.security_criteria import uses_security
+
+        if group is not None and group.is_dynamic and uses_security(group.search):
+            raise serializers.ValidationError(
+                {"group": "A dynamic group chosen on security criteria"}
+            )
+        expires_at = attrs.get("expires_at")
+        if expires_at is not None and expires_at <= timezone.now():
+            raise serializers.ValidationError({"expires_at": "A date to come"})
+        return attrs

@@ -22,7 +22,13 @@ class Command(BaseCommand):
     help = "Execute scheduled automation tasks"
     library = "automation.tasks."
     utc = pytz.UTC
-    task_loggers = ("mgmt.management.commands", "automation.tasks")
+    # the command, the tasks and the services the tasks run
+    task_loggers = (
+        "mgmt.management.commands",
+        "automation.tasks",
+        "inventory.software_identity",
+        "security",
+    )
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -48,9 +54,8 @@ class Command(BaseCommand):
 
         # only set log level if explicitly provided in args
         if options["loglevel"]:
-            log_manager.set_level_for_logger(
-                "mgmt.management.commands", options["loglevel"]
-            )
+            for logger_name in self.task_loggers:
+                log_manager.set_level_for_logger(logger_name, options["loglevel"])
             logger.debug(f"Log level overridden to: {options['loglevel']}")
         else:
             logger.debug("Using log level from server")
@@ -73,6 +78,10 @@ class Command(BaseCommand):
 
         def updateHistory(task, comment, status):
             """Update history with task and comment"""
+            # an error message can exceed the column, keep its beginning
+            size = History._meta.get_field("comment").max_length
+            if len(comment) > size:
+                comment = comment[: size - 1] + "…"
             h = History(scheduler=task, comment=comment, status=status)
             h.save()
             logger.debug(f"History updated for task {task.name}: {comment}")

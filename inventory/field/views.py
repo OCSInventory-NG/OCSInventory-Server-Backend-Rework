@@ -15,6 +15,8 @@ class FieldFilterSet(filters.FilterSet):
     """
 
     section = filters.NumberFilter(field_name="section_id")
+    # Lets the software mapping editor list every field of a template at once
+    template = filters.NumberFilter(field_name="section__template_id")
 
     class Meta:
         model = Field

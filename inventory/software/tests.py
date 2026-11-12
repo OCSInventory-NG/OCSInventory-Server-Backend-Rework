@@ -1,10 +1,27 @@
+import datetime
+import importlib
+import re
+import shutil
+import subprocess
+from pathlib import Path
+from types import SimpleNamespace
+
 import pytest
 from asset.inventory_base.models import InventoryBase
 from asset.inventory_field.models import InventoryField
 from asset.inventory_section.models import InventorySection
+from django.db import connection
+from django.db.migrations.executor import MigrationExecutor
 from inventory.field.models import Field
 from inventory.section.models import Section
-from inventory.software.models import SoftwareDictionary, SoftwareMapping
+from inventory.software.models import (
+    AssetPlatform,
+    DistroRelease,
+    SoftwareDictionary,
+    SoftwareMapping,
+    signature_of,
+)
+from inventory.software.platform import resolve
 from inventory.software.services import SoftwareDictionaryService
 from inventory.template.models import Template
 
@@ -405,3 +422,1045 @@ class TestSoftwareDictionaryApi:
 
         assert response.status_code == 200
         assert len(response.data) == 1
+
+
+@pytest.mark.django_db
+class TestSoftwareMappingIdentityFields:
+    def test_mapping_accepts_identity_fields_from_other_sections(
+        self, api_client, template, section, software_fields
+    ):
+        os_section = Section.objects.create(
+            name="OS RELEASE", target="os-release", template=template
+        )
+        os_id = Field.objects.create(name="ID", section=os_section, order=1)
+        architecture = Field.objects.create(
+            name="ARCHITECTURE", section=section, order=4
+        )
+
+        response = api_client.post(
+            "/software_mapping/",
+            {
+                "template": template.id,
+                "section": section.id,
+                "name": software_fields["name"].id,
+                "architecture": architecture.id,
+                "os_id": os_id.id,
+            },
+            format="json",
+        )
+
+        assert response.status_code == 201
+        mapping = SoftwareMapping.objects.get(template=template)
+        assert mapping.architecture == architecture
+        assert mapping.os_id == os_id
+        assert mapping.running_kernel is None
+
+    def test_fields_can_be_filtered_by_template(
+        self, api_client, template, section, software_fields
+    ):
+        os_section = Section.objects.create(
+            name="OS RELEASE", target="os-release", template=template
+        )
+        Field.objects.create(name="ID", section=os_section, order=1)
+        other_template = Template.objects.create(name="Other", os="WIN")
+        other_section = Section.objects.create(
+            name="SOFTWARES", target="softwares", template=other_template
+        )
+        Field.objects.create(name="NAME", section=other_section, order=1)
+
+        response = api_client.get(f"/fields/?template={template.id}")
+
+        assert response.status_code == 200
+        assert sorted(field["name"] for field in response.data) == [
+            "ID",
+            "Name",
+            "Publisher",
+            "Version",
+        ]
+
+
+RELEASES = {
+    ("debian", "bullseye"): "11",
+    ("debian", "bookworm"): "12",
+    ("debian", "trixie"): "13",
+    ("ubuntu", "focal"): "20.04",
+    ("ubuntu", "jammy"): "22.04",
+    ("ubuntu", "noble"): "24.04",
+}
+
+
+@pytest.mark.parametrize(
+    "os_id, os_like, os_release, os_codename, expected",
+    [
+        ("debian", "", "13", "trixie", ("deb", "debian:13")),
+        ('"debian"', "", '"13"', "", ("deb", "debian:13")),
+        ("debian", "", "12.5", "", ("deb", "debian:12")),
+        ("debian", "", "", "bookworm", ("deb", "debian:12")),
+        ("ubuntu", "debian", "24.04", "noble", ("deb", "ubuntu:24.04")),
+        ("ubuntu", "debian", "22.04", "jammy", ("deb", "ubuntu:22.04")),
+        ("pop", "ubuntu debian", "24.04", "noble", ("deb", "ubuntu:24.04")),
+        ("linuxmint", "ubuntu debian", "22.3", "noble", ("deb", "ubuntu:24.04")),
+        ("kali", "debian", "2026.3", "kali-rolling", ("deb", "")),
+        ("rocky", "rhel centos fedora", "9.4", "", ("rpm", "rocky:9")),
+        ("almalinux", "rhel centos fedora", "9.5", "", ("rpm", "almalinux:9")),
+        # A derivative unknown to its base keeps its own name: never its base's
+        ("ol", "fedora", "9.4", "", ("rpm", "ol:9")),
+        ("debian", "", "", "forky", ("deb", "")),
+        ("zorin", "ubuntu debian", "17.2", "", ("deb", "")),
+        ("Ubuntu 20.04", "", "20.04", "", ("deb", "ubuntu:20.04")),
+        ("CentOS Linux release 7.9.2009", "", "3.10.0", "", ("rpm", "centos:7")),
+        ("Rocky Linux 9.4", "", "", "", ("rpm", "rocky:9")),
+        (
+            "Microsoft Windows 11 Professionnel",
+            "",
+            "10.0.26200",
+            "",
+            ("windows", "windows"),
+        ),
+        ("macOS", "", "26.1", "", ("macos", "macos")),
+        ("Mac OS X", "", "10.15.7", "", ("macos", "macos")),
+        ("", "", "", "", ("", "")),
+        ("freebsd", "", "14.1", "", ("", "")),
+        ("Debian GNU/Linux trixie/sid", "", "6.12.0", "", ("deb", "")),
+        (
+            "Debian GNU/Linux 12 (bookworm)",
+            "",
+            "6.1.0-18-amd64",
+            "",
+            ("deb", "debian:12"),
+        ),
+    ],
+)
+def test_resolve_platform(os_id, os_like, os_release, os_codename, expected):
+    platform = resolve(os_id, os_like, os_release, os_codename, RELEASES)
+
+    assert (platform.family, platform.key) == expected
+
+
+@pytest.mark.django_db
+class TestDistroRelease:
+    def test_default_releases_are_seeded(self):
+        assert DistroRelease.objects.filter(
+            base="ubuntu", codename="noble", version="24.04"
+        ).exists()
+        assert DistroRelease.objects.count() == 12
+        # Ubuntu Pro advisories are read after the end of standard support
+        bionic = DistroRelease.objects.get(base="ubuntu", codename="bionic")
+        assert bionic.standard_support_end == datetime.date(2023, 5, 31)
+        assert not DistroRelease.objects.filter(
+            base="debian", standard_support_end__isnull=False
+        ).exists()
+
+    def test_api_lists_releases(self, api_client):
+        response = api_client.get("/distro_releases/?base=debian")
+
+        assert response.status_code == 200
+        assert sorted(row["codename"] for row in response.data) == [
+            "bookworm",
+            "bullseye",
+            "buster",
+            "trixie",
+        ]
+
+
+OS_RELEASE_FIELDS = ("ID", "ID_LIKE", "VERSION_ID", "CODENAME", "RUNNING_KERNEL")
+
+
+@pytest.fixture
+def identity_fields(section, software_fields, template):
+    os_section = Section.objects.create(
+        name="OS RELEASE", target="os-release", template=template
+    )
+    fields = dict(software_fields)
+    fields["architecture"] = Field.objects.create(
+        name="ARCHITECTURE", section=section, order=4
+    )
+    fields["package_format"] = Field.objects.create(
+        name="FROM", section=section, order=5
+    )
+    fields["source_package"] = Field.objects.create(
+        name="SOURCE", section=section, order=6
+    )
+    fields["source_version"] = Field.objects.create(
+        name="SOURCE VERSION", section=section, order=7
+    )
+    for order, name in enumerate(OS_RELEASE_FIELDS, 1):
+        fields[name] = Field.objects.create(name=name, section=os_section, order=order)
+    fields["os_section"] = os_section
+    return fields
+
+
+@pytest.fixture
+def identity_mapping(template, section, identity_fields):
+    return SoftwareMapping.objects.create(
+        template=template,
+        section=section,
+        name=identity_fields["name"],
+        publisher=identity_fields["publisher"],
+        version=identity_fields["version"],
+        architecture=identity_fields["architecture"],
+        package_format=identity_fields["package_format"],
+        source_package=identity_fields["source_package"],
+        source_version=identity_fields["source_version"],
+        os_id=identity_fields["ID"],
+        os_like=identity_fields["ID_LIKE"],
+        os_release=identity_fields["VERSION_ID"],
+        os_codename=identity_fields["CODENAME"],
+        running_kernel=identity_fields["RUNNING_KERNEL"],
+    )
+
+
+def make_asset(template, name):
+    return InventoryBase.objects.create(
+        name=name,
+        description="desc",
+        serial=f"SER-{name}",
+        osname="Linux",
+        osversion="1",
+        uuid=f"uuid-{name}",
+        domain="example",
+        agent="agent",
+        template=template,
+        is_template_forced=True,
+    )
+
+
+def add_values(asset, section, values):
+    inventory_section = InventorySection.objects.create(
+        base=asset, template_section=section
+    )
+    for field, value in values.items():
+        InventoryField.objects.create(
+            inventory_section=inventory_section, template_field=field, value=value
+        )
+
+
+def add_package(
+    asset, section, fields, name, version, source="openssl", source_version=None
+):
+    add_values(
+        asset,
+        section,
+        {
+            fields["name"]: name,
+            fields["publisher"]: "",
+            fields["version"]: version,
+            fields["architecture"]: "amd64",
+            fields["package_format"]: "deb",
+            fields["source_package"]: source,
+            fields["source_version"]: source_version or version,
+        },
+    )
+
+
+def add_os_release(asset, fields, os_id, os_like, release, codename):
+    add_values(
+        asset,
+        fields["os_section"],
+        {
+            fields["ID"]: os_id,
+            fields["ID_LIKE"]: os_like,
+            fields["VERSION_ID"]: release,
+            fields["CODENAME"]: codename,
+            fields["RUNNING_KERNEL"]: "6.8.0-87-generic",
+        },
+    )
+
+
+@pytest.mark.django_db
+class TestSoftwareDictionaryPlatform:
+    def test_entry_gets_platform_and_package_fields(
+        self, template, section, identity_fields, identity_mapping
+    ):
+        asset = make_asset(template, "mint")
+        add_os_release(
+            asset, identity_fields, "linuxmint", "ubuntu debian", "22.3", "noble"
+        )
+        add_package(
+            asset, section, identity_fields, "libssl3t64:amd64", "3.0.13-0ubuntu3.5"
+        )
+
+        SoftwareDictionaryService.refresh_asset(asset)
+
+        entry = SoftwareDictionary.objects.get()
+        assert entry.platform_family == "deb"
+        assert entry.platform_key == "ubuntu:24.04"
+        assert entry.architecture == "amd64"
+        assert entry.package_format == "deb"
+        assert entry.source_package == "openssl"
+        assert entry.source_version == "3.0.13-0ubuntu3.5"
+        platform = AssetPlatform.objects.get(asset=asset)
+        assert (platform.family, platform.key) == ("deb", "ubuntu:24.04")
+        assert platform.os_id == "linuxmint"
+        assert platform.running_kernel == "6.8.0-87-generic"
+
+    def test_values_longer_than_their_column_are_cut(
+        self, template, section, identity_fields, identity_mapping
+    ):
+        asset = make_asset(template, "long-values")
+        add_values(
+            asset,
+            identity_fields["os_section"],
+            {identity_fields["VERSION_ID"]: "9" * 300},
+        )
+        add_values(
+            asset,
+            section,
+            {
+                identity_fields["name"]: "curl",
+                identity_fields["architecture"]: "0123456789" * 10,
+            },
+        )
+
+        SoftwareDictionaryService.refresh_asset(asset)
+
+        stored = SoftwareDictionary.objects.get().architecture
+        assert stored == ("0123456789" * 10)[:64]
+        assert AssetPlatform.objects.get(asset=asset).os_release == "9" * 255
+
+    def test_same_package_on_two_distributions_gives_two_entries(
+        self, template, section, identity_fields, identity_mapping
+    ):
+        debian = make_asset(template, "debian")
+        add_os_release(debian, identity_fields, "debian", "", "13", "trixie")
+        add_package(debian, section, identity_fields, "curl", "8.14.1-2")
+        ubuntu = make_asset(template, "ubuntu")
+        add_os_release(ubuntu, identity_fields, "ubuntu", "debian", "24.04", "noble")
+        add_package(ubuntu, section, identity_fields, "curl", "8.14.1-2")
+
+        SoftwareDictionaryService.refresh_asset(debian)
+        SoftwareDictionaryService.refresh_asset(ubuntu)
+
+        assert sorted(
+            SoftwareDictionary.objects.values_list("platform_key", flat=True)
+        ) == ["debian:13", "ubuntu:24.04"]
+
+    def test_windows_entries_stay_shared_across_os_versions(
+        self, template, section, identity_fields, identity_mapping
+    ):
+        for name, caption in (
+            ("win10", "Microsoft Windows 10 Professionnel"),
+            ("win11", "Microsoft Windows 11 Professionnel"),
+        ):
+            asset = make_asset(template, name)
+            add_os_release(asset, identity_fields, caption, "", "10.0", "")
+            add_values(
+                asset,
+                section,
+                {
+                    identity_fields["name"]: "Mozilla Firefox (x64 fr)",
+                    identity_fields["publisher"]: "Mozilla",
+                    identity_fields["version"]: "154.0.1",
+                },
+            )
+            SoftwareDictionaryService.refresh_asset(asset)
+
+        entry = SoftwareDictionary.objects.get()
+        assert entry.platform_key == "windows"
+        assert entry.installation_number == 2
+
+    def test_machine_field_uses_first_row(
+        self, template, section, identity_fields, identity_mapping
+    ):
+        asset = make_asset(template, "two-rows")
+        add_os_release(asset, identity_fields, "debian", "", "13", "trixie")
+        add_os_release(asset, identity_fields, "ubuntu", "debian", "24.04", "noble")
+        add_package(asset, section, identity_fields, "curl", "8.14.1-2")
+
+        SoftwareDictionaryService.refresh_asset(asset)
+
+        assert SoftwareDictionary.objects.get().platform_key == "debian:13"
+
+    def test_platform_is_unknown_without_os_fields(
+        self, asset, section, software_fields, mapping
+    ):
+        add_software_entry(
+            asset,
+            section,
+            software_fields,
+            name="apache2",
+            publisher="Debian",
+            version="2.4",
+        )
+
+        SoftwareDictionaryService.refresh_asset(asset)
+
+        entry = SoftwareDictionary.objects.get()
+        assert entry.platform_family is None
+        assert entry.platform_key is None
+        assert AssetPlatform.objects.get(asset=asset).family == ""
+
+    def test_api_filters_by_platform(
+        self, api_client, template, section, identity_fields, identity_mapping
+    ):
+        asset = make_asset(template, "debian")
+        add_os_release(asset, identity_fields, "debian", "", "13", "trixie")
+        add_package(asset, section, identity_fields, "curl", "8.14.1-2")
+        SoftwareDictionaryService.refresh_asset(asset)
+
+        response = api_client.get("/software_dictionary/?platform_key=debian:13")
+
+        assert response.status_code == 200
+        assert [row["source_package"] for row in response.data] == ["openssl"]
+
+
+@pytest.fixture
+def origin_field(section):
+    return Field.objects.create(name="ORIGIN", section=section, order=7)
+
+
+@pytest.fixture
+def origin_mapping(identity_mapping, origin_field):
+    identity_mapping.package_origin = origin_field
+    identity_mapping.save()
+    return identity_mapping
+
+
+@pytest.mark.django_db
+class TestSoftwareDictionaryPackageOrigin:
+    def test_mapped_origin_is_stored(
+        self, template, section, identity_fields, origin_field, origin_mapping
+    ):
+        asset = make_asset(template, "docker-host")
+        add_os_release(asset, identity_fields, "ubuntu", "debian", "22.04", "jammy")
+        add_values(
+            asset,
+            section,
+            {
+                identity_fields["name"]: "docker-ce",
+                identity_fields["version"]: "5:29.8.0-1~ubuntu.22.04~jammy",
+                origin_field: "Docker",
+            },
+        )
+
+        SoftwareDictionaryService.refresh_asset(asset)
+
+        assert SoftwareDictionary.objects.get().package_origin == "Docker"
+
+    def test_mapped_origin_missing_or_empty_is_stored_empty(
+        self, template, section, identity_fields, origin_field, origin_mapping
+    ):
+        asset = make_asset(template, "local-packages")
+        add_os_release(asset, identity_fields, "ubuntu", "debian", "22.04", "jammy")
+        add_values(
+            asset,
+            section,
+            {
+                identity_fields["name"]: "ocsinventory-agent",
+                identity_fields["version"]: "3:3.0.0-1",
+                origin_field: "",
+            },
+        )
+        # An agent still on the previous template sends no Origin line at all
+        add_values(
+            asset,
+            section,
+            {
+                identity_fields["name"]: "old-template-row",
+                identity_fields["version"]: "1",
+            },
+        )
+
+        SoftwareDictionaryService.refresh_asset(asset)
+
+        assert sorted(
+            SoftwareDictionary.objects.values_list("name", "package_origin")
+        ) == [("ocsinventory-agent", ""), ("old-template-row", "")]
+
+    def test_origin_is_null_when_not_mapped(
+        self, template, section, identity_fields, identity_mapping
+    ):
+        asset = make_asset(template, "legacy-like")
+        add_os_release(asset, identity_fields, "debian", "", "13", "trixie")
+        add_package(asset, section, identity_fields, "curl", "8.14.1-2")
+
+        SoftwareDictionaryService.refresh_asset(asset)
+
+        assert SoftwareDictionary.objects.get().package_origin is None
+
+    def test_null_and_empty_origins_give_two_entries(
+        self, template, section, identity_fields, origin_field, origin_mapping
+    ):
+        first = make_asset(template, "first")
+        add_os_release(first, identity_fields, "debian", "", "13", "trixie")
+        add_package(first, section, identity_fields, "curl", "8.14.1-2")
+        SoftwareDictionaryService.refresh_asset(first)
+
+        origin_mapping.package_origin = None
+        origin_mapping.save()
+        second = make_asset(template, "second")
+        add_os_release(second, identity_fields, "debian", "", "13", "trixie")
+        add_package(second, section, identity_fields, "curl", "8.14.1-2")
+        SoftwareDictionaryService.refresh_asset(second)
+
+        origins = list(
+            SoftwareDictionary.objects.values_list("package_origin", flat=True)
+        )
+        assert len(origins) == 2
+        assert set(origins) == {"", None}
+
+    def test_long_origin_is_cut(
+        self, template, section, identity_fields, origin_field, origin_mapping
+    ):
+        asset = make_asset(template, "long-origin")
+        add_values(
+            asset,
+            section,
+            {identity_fields["name"]: "curl", origin_field: "o" * 300},
+        )
+
+        SoftwareDictionaryService.refresh_asset(asset)
+
+        assert SoftwareDictionary.objects.get().package_origin == "o" * 128
+
+    def test_api_filters_and_searches_by_origin(
+        self,
+        api_client,
+        template,
+        section,
+        identity_fields,
+        origin_field,
+        origin_mapping,
+    ):
+        asset = make_asset(template, "api")
+        add_os_release(asset, identity_fields, "ubuntu", "debian", "22.04", "jammy")
+        # containerd.io: a name that does not contain its origin, so the
+        # search can only find it through package_origin
+        for name, origin in (("containerd.io", "Docker"), ("curl", "Ubuntu")):
+            add_values(
+                asset,
+                section,
+                {identity_fields["name"]: name, origin_field: origin},
+            )
+        SoftwareDictionaryService.refresh_asset(asset)
+
+        filtered = api_client.get("/software_dictionary/?package_origin=Docker")
+        searched = api_client.get("/software_dictionary/?search=Docker")
+
+        assert filtered.status_code == 200
+        assert [row["name"] for row in filtered.data] == ["containerd.io"]
+        assert [row["name"] for row in searched.data] == ["containerd.io"]
+        assert filtered.data[0]["package_origin"] == "Docker"
+
+    def test_mapping_api_accepts_package_origin(
+        self, api_client, template, section, software_fields, origin_field
+    ):
+        response = api_client.post(
+            "/software_mapping/",
+            {
+                "template": template.id,
+                "section": section.id,
+                "name": software_fields["name"].id,
+                "package_origin": origin_field.id,
+            },
+            format="json",
+        )
+
+        assert response.status_code == 201
+        assert SoftwareMapping.objects.get(template=template).package_origin == (
+            origin_field
+        )
+
+
+needs_shell = pytest.mark.skipif(
+    shutil.which("bash") is None or shutil.which("awk") is None,
+    reason="bash and awk are needed to run the template commands",
+)
+
+FAKE_DPKG = r"""
+dpkg() {
+  if [ "$1" = "-l" ]; then
+    printf 'h\nh\nh\nh\nh\nii  libssl-dev:amd64 3.0.2 amd64 x\nii  bash 5.1 amd64 y\nii  libldb2:amd64 2.4.4 amd64 z\n'
+    return
+  fi
+  case "$2" in
+    libldb2:amd64) printf 'Package: libldb2\nSource: samba (2:4.15.13+dfsg-0ubuntu1.6)\nVersion: 2:2.4.4-0ubuntu0.22.04.1\nArchitecture: amd64\nDescription: LDB\n' ;;
+    libssl-dev:amd64) printf 'Package: libssl-dev\nSource: openssl (3.0.2-0ubuntu1.18)\nVersion: 3.0.2-0ubuntu1.18\nArchitecture: amd64\nDescription: SSL dev\n' ;;
+    bash) printf 'Package: bash\nVersion: 5.1-6ubuntu1.1\nArchitecture: amd64\nDescription: shell\n' ;;
+  esac
+}
+"""  # noqa: E501
+
+FAKE_RPM = r"""
+rpm() {
+  if [ "$1" = "-qa" ]; then printf 'vim-enhanced\nopenssl\ngpg-pubkey\n'; return; fi
+  case "$2" in
+    vim-enhanced) printf 'Name        : vim-enhanced\nEpoch       : 2\nVersion     : 8.2.2637\nRelease     : 20.el9_1\nArchitecture: x86_64\nSource RPM  : vim-8.2.2637-20.el9_1.src.rpm\nVendor      : Rocky\nSummary     : VIM\n' ;;
+    openssl) printf 'Name        : openssl\nVersion     : 3.0.7\nRelease     : 27.el9\nArchitecture: x86_64\nSource RPM  : openssl-3.0.7-27.el9.src.rpm\nVendor      : Rocky\nSummary     : TLS\n' ;;
+    gpg-pubkey) printf 'Name        : gpg-pubkey\nVersion     : 8483c65d\nRelease     : 5ccc5b19\nArchitecture: (none)\nSource RPM  : (none)\nSummary     : gpg(Rocky Enterprise Software Foundation)\n' ;;
+  esac
+}
+"""  # noqa: E501
+
+
+FAKE_DPKG_ORIGINS = r"""
+dpkg() {
+  if [ "$1" = "-l" ]; then
+    printf 'h\nh\nh\nh\nh\nii  adduser 3.118ubuntu5 all a\nii  libc6:amd64 2.35-0ubuntu3.11 amd64 b\nii  docker-ce 5:29.8.0-1~ubuntu.22.04~jammy amd64 c\nii  ocsinventory-agent 3:3.0.0-1 all d\nii  example-tool 1.2-1 amd64 e\nii  libstdc++6:amd64 12.3.0-1ubuntu1~22.04.2 amd64 f\nii  gnome-shell 42.9-0ubuntu2.2 amd64 g\nii  libnss-systemd:amd64 249.11-0ubuntu3.12 amd64 h\n'
+    return
+  fi
+  printf 'Package: %s\nVersion: 1\nArchitecture: amd64\nDescription: x\n' "$2"
+}
+"""  # noqa: E501
+
+FAKE_APT = r"""
+apt-cache() {
+  if [ "$#" -eq 1 ]; then
+    cat <<'APT'
+Package files:
+ 100 /var/lib/dpkg/status
+     release a=now
+ 500 https://download.docker.com/linux/ubuntu jammy/stable amd64 Packages
+     release o=Docker,a=jammy,l=Docker CE,c=stable,b=amd64
+     origin download.docker.com
+ 500 http://archive.ubuntu.com/ubuntu jammy-security/main amd64 Packages
+     release v=22.04,o=Ubuntu,a=jammy-security,n=jammy,l=Ubuntu,c=main,b=amd64
+     origin archive.ubuntu.com
+ 500 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 Packages
+     release v=22.04,o=Ubuntu,a=jammy-updates,n=jammy,l=Ubuntu,c=main,b=amd64
+     origin archive.ubuntu.com
+ 500 http://archive.ubuntu.com/ubuntu jammy-updates/universe amd64 Packages
+     release v=22.04,o=Ubuntu,a=jammy-updates,n=jammy,l=Ubuntu,c=universe,b=amd64
+     origin archive.ubuntu.com
+ 500 http://archive.ubuntu.com/ubuntu jammy/main amd64 Packages
+     release v=22.04,o=Ubuntu,a=jammy,n=jammy,l=Ubuntu,c=main,b=amd64
+     origin archive.ubuntu.com
+ 500 http://archive.ubuntu.com/ubuntu jammy/universe amd64 Packages
+     release v=22.04,o=Ubuntu,a=jammy,n=jammy,l=Ubuntu,c=universe,b=amd64
+     origin archive.ubuntu.com
+ 500 http://repo.example.org/debian stable/main amd64 Packages
+     release a=stable,c=main,b=amd64
+     origin repo.example.org
+Pinned packages:
+APT
+    return
+  fi
+  cat <<'APT'
+adduser:
+  Installed: 3.118ubuntu5
+  Candidate: 3.118ubuntu5
+  Version table:
+ *** 3.118ubuntu5 500
+        500 http://archive.ubuntu.com/ubuntu jammy/main amd64 Packages
+        100 /var/lib/dpkg/status
+libc6:
+  Installed: 2.35-0ubuntu3.11
+  Candidate: 2.35-0ubuntu3.14
+  Version table:
+     2.35-0ubuntu3.14 500
+        500 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 Packages
+        500 http://archive.ubuntu.com/ubuntu jammy-security/main amd64 Packages
+ *** 2.35-0ubuntu3.11 100
+        100 /var/lib/dpkg/status
+     2.35-0ubuntu3 500
+        500 http://archive.ubuntu.com/ubuntu jammy/main amd64 Packages
+docker-ce:
+  Installed: 5:29.8.0-1~ubuntu.22.04~jammy
+  Candidate: 5:29.8.0-1~ubuntu.22.04~jammy
+  Version table:
+ *** 5:29.8.0-1~ubuntu.22.04~jammy 500
+        500 https://download.docker.com/linux/ubuntu jammy/stable amd64 Packages
+        100 /var/lib/dpkg/status
+     5:29.7.2-1~ubuntu.22.04~jammy 500
+        500 https://download.docker.com/linux/ubuntu jammy/stable amd64 Packages
+ocsinventory-agent:
+  Installed: 3:3.0.0-1
+  Candidate: 3:3.0.0-1
+  Version table:
+ *** 3:3.0.0-1 100
+        100 /var/lib/dpkg/status
+     2:2.8-2ubuntu1 500
+        500 http://archive.ubuntu.com/ubuntu jammy-updates/universe amd64 Packages
+     2:2.8-2 500
+        500 http://archive.ubuntu.com/ubuntu jammy/universe amd64 Packages
+libstdc++6:
+  Installed: 12.3.0-1ubuntu1~22.04.2
+  Candidate: 12.3.0-1ubuntu1~22.04.3
+  Version table:
+     12.3.0-1ubuntu1~22.04.3 500
+        500 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 Packages
+        500 http://archive.ubuntu.com/ubuntu jammy-security/main amd64 Packages
+ *** 12.3.0-1ubuntu1~22.04.2 100
+        100 /var/lib/dpkg/status
+gnome-shell:
+  Installed: 42.9-0ubuntu2.2
+  Candidate: 42.9-0ubuntu2.2
+  Version table:
+ *** 42.9-0ubuntu2.2 500 (phased 20%)
+        500 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 Packages
+        100 /var/lib/dpkg/status
+     42.0-2ubuntu1 500
+        500 http://archive.ubuntu.com/ubuntu jammy/main amd64 Packages
+libnss-systemd:
+  Installed: 249.11-0ubuntu3.12
+  Candidate: 249.11-0ubuntu3.12
+  Version table:
+     249.11-0ubuntu3.16 500 (phased 0%)
+        500 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 Packages
+ *** 249.11-0ubuntu3.12 100
+        100 /var/lib/dpkg/status
+     249.11-0ubuntu3 500
+        500 http://archive.ubuntu.com/ubuntu jammy/main amd64 Packages
+example-tool:
+  Installed: 1.2-1
+  Candidate: 1.2-1
+  Version table:
+ *** 1.2-1 500
+        500 http://repo.example.org/debian stable/main amd64 Packages
+        100 /var/lib/dpkg/status
+APT
+}
+"""
+
+
+def origins_by_package(output):
+    """{Name: Origin} of the blocks printed by a SOFTWARES command."""
+    origins = {}
+    for block in output.split("---"):
+        name = re.search(r"(?:^|\n)Name: (.*)", block)
+        if name:
+            origin = re.search(r"(?:^|\n)Origin:[ \t]*(.*)", block)
+            origins[name.group(1)] = origin.group(1) if origin else None
+    return origins
+
+
+def values_by_package(output, field_name, template_name):
+    """{Name: value} of a default SOFTWARES field, read with its own regex."""
+    regex = default_field(template_name, "SOFTWARES", field_name).retrieval_value
+    values = {}
+    for block in output.split("---"):
+        name = re.search(r"(?:^|\n)Name\s*: (.*)", block)
+        if name:
+            value = re.search(regex, block)
+            values[name.group(1).strip()] = value.group(1) if value else None
+    return values
+
+
+def default_target(template_name, section_name):
+    return Section.objects.get(template__name=template_name, name=section_name).target
+
+
+def default_field(template_name, section_name, field_name):
+    return Field.objects.get(
+        section__template__name=template_name,
+        section__name=section_name,
+        name=field_name,
+    )
+
+
+def run_bash(script):
+    return subprocess.run(
+        ["bash", "-c", script], capture_output=True, text=True, timeout=60, check=True
+    ).stdout
+
+
+@pytest.mark.django_db
+class TestDefaultTemplates:
+    @needs_shell
+    def test_debian_softwares_command_prints_the_source_package(self):
+        output = run_bash(
+            FAKE_DPKG + default_target("Linux (Debian based)", "SOFTWARES")
+        )
+
+        blocks = [block for block in output.split("---") if block.strip()]
+        assert "Source: openssl" in blocks[0]
+        assert "Source: bash" in blocks[1]
+
+    @needs_shell
+    def test_debian_softwares_command_prints_the_source_version(self):
+        output = run_bash(
+            FAKE_DPKG + default_target("Linux (Debian based)", "SOFTWARES")
+        )
+
+        assert values_by_package(output, "SOURCE VERSION", "Linux (Debian based)") == {
+            "libssl-dev:amd64": "3.0.2-0ubuntu1.18",
+            # no version on the Source line: the package's own
+            "bash": "5.1-6ubuntu1.1",
+            # libldb2 is versioned apart from samba, its source
+            "libldb2:amd64": "2:4.15.13+dfsg-0ubuntu1.6",
+        }
+
+    @needs_shell
+    def test_rhel_softwares_command_prints_the_source_version(self):
+        output = run_bash(FAKE_RPM + default_target("Linux (RHEL based)", "SOFTWARES"))
+
+        assert values_by_package(output, "SOURCE VERSION", "Linux (RHEL based)") == {
+            "vim-enhanced": "2:8.2.2637-20.el9_1",
+            "openssl": "3.0.7-27.el9",
+            "gpg-pubkey": "8483c65d-5ccc5b19",
+        }
+
+    @needs_shell
+    def test_rhel_softwares_command_prints_epoch_and_source_package(self):
+        output = run_bash(FAKE_RPM + default_target("Linux (RHEL based)", "SOFTWARES"))
+
+        assert "Version: 2:8.2.2637-20.el9_1" in output
+        assert "Source: vim" in output
+        assert "Version: 3.0.7-27.el9" in output
+        assert "Source: openssl" in output
+        assert "Source: gpg-pubkey" in output
+
+    @needs_shell
+    @pytest.mark.skipif(
+        not Path("/etc/os-release").exists(), reason="needs /etc/os-release"
+    )
+    def test_os_release_command_prints_every_field(self):
+        output = run_bash(default_target("Linux (Debian based)", "OS RELEASE"))
+
+        for name in OS_RELEASE_FIELDS:
+            field = default_field("Linux (Debian based)", "OS RELEASE", name)
+            assert re.search(field.retrieval_value, output), name
+
+    def test_windows_major_and_minor_come_from_display_version(self):
+        target = default_target("Windows", "SOFTWARES")
+
+        assert "@{Name='DisplayVersionMajor'" in target
+        assert "@{Name='DisplayVersionMinor'" in target
+        assert target.count("-ExcludeProperty") == 1
+        assert default_field("Windows", "SOFTWARES", "MAJOR").retrieval_value == (
+            "DisplayVersionMajor"
+        )
+        assert default_field("Windows", "SOFTWARES", "MINOR").retrieval_value == (
+            "DisplayVersionMinor"
+        )
+
+    def test_windows_and_macos_have_an_operating_system_section(self):
+        windows_name = default_field("Windows", "OPERATING SYSTEM", "OS NAME")
+        assert windows_name.retrieval_value == "Caption"
+        macos_name = default_field("MacOS", "OPERATING SYSTEM", "OS NAME")
+        match = re.search(macos_name.retrieval_value, "ProductName:\t\tmacOS\n")
+        assert match.group(1) == "macOS"
+
+    @pytest.mark.parametrize(
+        "template_name, expected",
+        [
+            (
+                "Linux (Debian based)",
+                {
+                    "architecture": ("SOFTWARES", "ARCHITECTURE"),
+                    "package_format": ("SOFTWARES", "FROM"),
+                    "source_package": ("SOFTWARES", "SOURCE"),
+                    "source_version": ("SOFTWARES", "SOURCE VERSION"),
+                    "package_origin": ("SOFTWARES", "ORIGIN"),
+                    "os_id": ("OS RELEASE", "ID"),
+                    "os_like": ("OS RELEASE", "ID_LIKE"),
+                    "os_release": ("OS RELEASE", "VERSION_ID"),
+                    "os_codename": ("OS RELEASE", "CODENAME"),
+                    "running_kernel": ("OS RELEASE", "RUNNING_KERNEL"),
+                },
+            ),
+            (
+                "Linux (RHEL based)",
+                {
+                    # The RPM Vendor, already collected as the publisher
+                    "package_origin": ("SOFTWARES", "PUBLISHER"),
+                    "source_package": ("SOFTWARES", "SOURCE"),
+                    "source_version": ("SOFTWARES", "SOURCE VERSION"),
+                },
+            ),
+            (
+                "Windows",
+                {
+                    "os_id": ("OPERATING SYSTEM", "OS NAME"),
+                    "os_release": ("OPERATING SYSTEM", "OS VERSION"),
+                },
+            ),
+            (
+                "Legacy",
+                {
+                    "os_id": ("HARDWARE", "OPERATING SYSTEM"),
+                    "os_release": ("HARDWARE", "OS VERSION"),
+                    "architecture": ("SOFTWARES", "ARCHITECTURE"),
+                    "package_format": ("SOFTWARES", "FROM"),
+                },
+            ),
+        ],
+    )
+    def test_default_mappings_point_to_identity_fields(self, template_name, expected):
+        mapping = SoftwareMapping.objects.get(template__name=template_name)
+
+        for attribute, (section_name, field_name) in expected.items():
+            field = getattr(mapping, attribute)
+            assert (field.section.name, field.name) == (section_name, field_name)
+
+    @needs_shell
+    def test_debian_softwares_command_prints_the_package_origin(self):
+        output = run_bash(
+            FAKE_DPKG_ORIGINS
+            + FAKE_APT
+            + default_target("Linux (Debian based)", "SOFTWARES")
+        )
+
+        assert origins_by_package(output) == {
+            # installed version in a repository
+            "adduser": "Ubuntu",
+            # installed version in no repository any more: the candidate's
+            "libc6:amd64": "Ubuntu",
+            "libstdc++6:amd64": "Ubuntu",
+            "docker-ce": "Docker",
+            # installed by hand, Ubuntu only ships an older version
+            "ocsinventory-agent": "",
+            # repository without o=: the host of its origin line
+            "example-tool": "repo.example.org",
+            # Ubuntu phased update installed: "(phased 20%)" on its line
+            "gnome-shell": "Ubuntu",
+            # phased update held back: the candidate is the installed version,
+            # in no repository any more, the newest version tells the origin
+            "libnss-systemd:amd64": "Ubuntu",
+        }
+        field = default_field("Linux (Debian based)", "SOFTWARES", "ORIGIN")
+        match = re.search(field.retrieval_value, "Name: docker-ce\nOrigin: Docker\n")
+        assert match.group(1) == "Docker"
+
+    @needs_shell
+    def test_debian_origin_is_empty_without_apt_data(self):
+        output = run_bash(
+            FAKE_DPKG_ORIGINS
+            + "apt-cache() { :; }\n"
+            + default_target("Linux (Debian based)", "SOFTWARES")
+        )
+
+        origins = origins_by_package(output)
+        assert len(origins) == 8
+        assert set(origins.values()) == {""}
+
+    @needs_shell
+    def test_debian_origin_lookup_is_one_pass(self, tmp_path):
+        calls = tmp_path / "awk-calls"
+        count_awk = f'awk() {{ echo x >> "{calls}"; command awk "$@"; }}\n'
+
+        output = run_bash(
+            count_awk
+            + FAKE_DPKG_ORIGINS
+            + FAKE_APT
+            + default_target("Linux (Debian based)", "SOFTWARES")
+        )
+
+        # One awk per package for its dpkg -s block, the origins in a fixed
+        # number of passes: no lookup process per package
+        packages = len(origins_by_package(output))
+        assert len(calls.read_text().splitlines()) <= packages + 4
+
+    def test_command_changes_reverse_to_the_original_commands(self):
+        migration = importlib.import_module(
+            "inventory.section.migrations.0015_software_identity_sections"
+        )
+        for (template_name, _), changes in migration.SOFTWARES_CHANGES.items():
+            target = default_target(template_name, "SOFTWARES")
+            original = migration.patch_command(
+                target, migration.reverse_changes(changes)
+            )
+            for added in ("Source:", "Origin:", "SourceVersion", "srcver"):
+                assert added not in original
+            assert "apt-cache" not in original
+            assert "DisplayVersionMajor" not in original
+            assert migration.patch_command(original, changes) == target
+
+
+@pytest.mark.django_db(transaction=True, serialized_rollback=True)
+def test_identity_migrations_reverse_and_apply_again():
+    executor = MigrationExecutor(connection)
+    executor.migrate([("section", "0014_section_is_active")])
+
+    assert not Section.objects.filter(name="OS RELEASE").exists()
+    assert "Source:" not in default_target("Linux (Debian based)", "SOFTWARES")
+    major = default_field("Windows", "SOFTWARES", "MAJOR")
+    assert major.retrieval_value == "VersionMajor"
+
+    executor = MigrationExecutor(connection)
+    executor.migrate(executor.loader.graph.leaf_nodes())
+
+    assert Section.objects.filter(name="OS RELEASE").count() == 2
+    windows = SoftwareMapping.objects.get(template__name="Windows")
+    assert windows.os_id.name == "OS NAME"
+    assert "Origin:" in default_target("Linux (Debian based)", "SOFTWARES")
+    debian = SoftwareMapping.objects.get(template__name="Linux (Debian based)")
+    assert debian.package_origin.name == "ORIGIN"
+    assert debian.source_version.name == "SOURCE VERSION"
+    assert "SourceVersion" in default_target("Linux (RHEL based)", "SOFTWARES")
+
+
+@pytest.mark.django_db
+class TestSoftwareDictionarySignature:
+    """Two inventories received at once never create the same entry twice."""
+
+    def test_the_signature_is_unique(self, db):
+        from django.db import IntegrityError, transaction
+
+        SoftwareDictionary.objects.create(name="curl", version="8.0-1")
+
+        with pytest.raises(IntegrityError), transaction.atomic():
+            SoftwareDictionary.objects.create(name="curl", version="8.0-1")
+        # None and "" are different values
+        SoftwareDictionary.objects.create(name="curl", version="8.0-1", publisher="")
+
+    def test_an_entry_created_meanwhile_is_read_back(
+        self, asset, section, software_fields, mapping, monkeypatch
+    ):
+        from django.db.models.query import QuerySet
+
+        add_software_entry(
+            asset,
+            section,
+            software_fields,
+            name="apache2",
+            publisher="Debian",
+            version="2.4",
+        )
+        real_get = QuerySet.get
+        calls = []
+
+        def get_after_another_inventory(queryset, *args, **kwargs):
+            # The first lookup misses; another inventory creates the entry
+            # before this one inserts it
+            if queryset.model is SoftwareDictionary and not calls:
+                calls.append(1)
+                SoftwareDictionary.objects.create(
+                    name="apache2", publisher="Debian", version="2.4"
+                )
+                raise SoftwareDictionary.DoesNotExist
+            return real_get(queryset, *args, **kwargs)
+
+        monkeypatch.setattr(QuerySet, "get", get_after_another_inventory)
+
+        SoftwareDictionaryService.refresh_asset(asset)
+
+        entry = SoftwareDictionary.objects.get()
+        assert list(entry.assets.all()) == [asset]
+        assert entry.installation_number == 1
+
+    def test_the_duplicates_are_merged(self, asset, template):
+        from django.apps import apps as django_apps
+
+        other = InventoryBase.objects.create(
+            name="asset-2",
+            description="desc",
+            serial="SER-2",
+            osname="Linux",
+            osversion="1",
+            uuid="uuid-asset-2",
+            domain="example",
+            agent="agent",
+            template=template,
+            is_template_forced=True,
+        )
+        kept = SoftwareDictionary.objects.create(name="curl", version="8.0-1")
+        kept.assets.add(asset)
+        # Created as before the signature: bulk_create does not call save()
+        SoftwareDictionary.objects.bulk_create(
+            [SoftwareDictionary(name="curl", version="8.0-1")]
+        )
+        copy = SoftwareDictionary.objects.exclude(pk=kept.pk).get()
+        copy.assets.add(asset, other)
+        SoftwareDictionary.objects.filter(pk=kept.pk).update(signature=None)
+        migration = importlib.import_module(
+            "inventory.software.migrations.0007_software_identity"
+        )
+
+        migration.merge_duplicates(django_apps, SimpleNamespace(connection=connection))
+
+        entry = SoftwareDictionary.objects.get()
+        assert entry.pk == kept.pk
+        assert set(entry.assets.all()) == {asset, other}
+        assert entry.installation_number == 2
+        assert entry.signature == signature_of(entry)
