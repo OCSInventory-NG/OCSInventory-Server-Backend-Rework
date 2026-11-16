@@ -1,4 +1,7 @@
 from accountinfo.models import AccountinfoConfig, AccountinfoData, AccountinfoValue
+from django.contrib.contenttypes.models import ContentType
+
+ASSET_SLUG = "inventory_base.inventorybase"
 
 
 def empty_value(datatype):
@@ -98,3 +101,170 @@ class AccountinfoSearch:
             return int(value)
         except (TypeError, ValueError):
             return None
+
+
+class AgentAdminData:
+    """
+    Apply the admin_data sent by an agent ({name: value}) to an asset.
+
+    Names match ASSET configs, case ignored. Only empty values are filled;
+    a value that cannot be applied is logged and skipped.
+    """
+
+    TEXT_TYPES = ("TEXT", "TEXTAREA")
+    CHECKBOX_SEPARATOR = ","
+
+    def __init__(self, logger):
+        self.logger = logger
+
+    def apply(self, asset, admin_data):
+        """Return the names of the configs filled on this asset"""
+        device = asset.name
+        if admin_data is None or admin_data == {}:
+            return []
+        if not isinstance(admin_data, dict):
+            self.ignore(device, "admin_data is not an object")
+            return []
+
+        configs = list(
+            AccountinfoConfig.objects.filter(datatarget="ASSET").prefetch_related(
+                "accountinfo_values"
+            )
+        )
+
+        received = {}
+        for name, raw in admin_data.items():
+            config = self.match(configs, name, device)
+            if config is None:
+                continue
+            value = self.convert(config, raw, device)
+            if value is not None:
+                received[config] = value
+
+        if not received:
+            return []
+
+        data = self.data_of(asset, configs)
+        applied = []
+        for config, value in received.items():
+            key = str(config.id)
+            if is_empty_value(data.accountdata.get(key)):
+                data.accountdata[key] = value
+                applied.append(config.name)
+            else:
+                self.logger.debug(
+                    'Admin data kept for device %s: "%s" is already set',
+                    device,
+                    config.name,
+                    extra={"classname": __name__},
+                )
+
+        if applied:
+            data.save(update_fields=["accountdata"])
+            self.logger.info(
+                "Admin data applied for device %s: %s",
+                device,
+                ", ".join(applied),
+                extra={"classname": __name__},
+            )
+        return applied
+
+    def match(self, configs, name, device):
+        """The config named name, an exact match winning over a case match"""
+        wanted = name.strip() if isinstance(name, str) else ""
+        folded = [
+            config
+            for config in configs
+            if config.name.strip().casefold() == wanted.casefold()
+        ]
+        if not wanted or not folded:
+            self.ignore(device, f'unknown field "{name}"')
+            return None
+        if len(folded) == 1:
+            return folded[0]
+
+        exact = [config for config in folded if config.name.strip() == wanted]
+        if len(exact) == 1:
+            return exact[0]
+        self.ignore(device, f'ambiguous field "{name}"')
+        return None
+
+    def convert(self, config, raw, device):
+        """The value in the shape the config stores, None when rejected"""
+        if not isinstance(raw, str):
+            self.ignore(device, f'value of "{config.name}" is not a string')
+            return None
+
+        if config.datatype in self.TEXT_TYPES:
+            value = raw.strip()
+            if not value:
+                self.ignore(device, f'empty value for "{config.name}"')
+                return None
+            return value
+
+        labels = self.labels(config)
+
+        if config.datatype == "SELECT":
+            label = raw.strip()
+            if not label:
+                self.ignore(device, f'empty value for "{config.name}"')
+                return None
+            picked = labels.get(label.casefold())
+            if picked is None:
+                self.ignore(device, f'"{label}" is not a value of "{config.name}"')
+                return None
+            return {"text": picked.value, "value": picked.id}
+
+        if config.datatype == "CHECKBOX":
+            tokens = [
+                token.strip()
+                for token in raw.split(self.CHECKBOX_SEPARATOR)
+                if token.strip()
+            ]
+            if not tokens:
+                self.ignore(device, f'empty value for "{config.name}"')
+                return None
+            ids = []
+            for token in tokens:
+                picked = labels.get(token.casefold())
+                if picked is None:
+                    self.ignore(device, f'"{token}" is not a value of "{config.name}"')
+                elif picked.id not in ids:
+                    ids.append(picked.id)
+            return ids or None
+
+        self.ignore(device, f'unsupported type {config.datatype} for "{config.name}"')
+        return None
+
+    @staticmethod
+    def labels(config):
+        """Labels of a SELECT or CHECKBOX, case folded, the lowest id first"""
+        labels = {}
+        for value in sorted(config.accountinfo_values.all(), key=lambda v: v.id):
+            labels.setdefault(value.value.strip().casefold(), value)
+        return labels
+
+    @staticmethod
+    def data_of(asset, configs):
+        """The AccountinfoData of the asset, created blank when missing"""
+        data, _ = AccountinfoData.objects.get_or_create(
+            content_type=ContentType.objects.get_for_model(asset),
+            object_id=asset.id,
+            defaults={
+                "object_slug": ASSET_SLUG,
+                "accountdata": {
+                    str(config.id): empty_value(config.datatype) for config in configs
+                },
+            },
+        )
+        if not isinstance(data.accountdata, dict):
+            data.accountdata = {}
+        return data
+
+    def ignore(self, device, reason):
+        self.logger.warning(
+            "Admin data ignored for device %s: %s",
+            device,
+            reason,
+            extra={"classname": __name__},
+        )
