@@ -20,8 +20,7 @@ def create_containers_sections(apps, schema_editor):
             "retrieval_output": "REGX",
             "target": 'for rt in docker podman; do command -v $rt >/dev/null 2>&1 || continue; [ $rt = docker ] && docker --version 2>/dev/null | grep -qi podman && continue;for id in $($rt ps -q 2>/dev/null); do name=$($rt inspect --format \'{{.Name}}\' $id); $rt exec $id sh -c \'dpkg-query -W 2>/dev/null || rpm -qa --qf %{NAME}\\\\t%{VERSION}-%{RELEASE}\\\\n 2>/dev/null || apk info -v 2>/dev/null\' 2>/dev/null | sed \'/\\t/!s/^\\(.*\\)-\\([^-]*-r[0-9]*\\)$/\\1\\t\\2/\' | while IFS="$(printf \'\\t\')" read -r pkg ver; do printf "Container: %s\\nName: %s\\nVersion: %s\\n" "${name#/}" "$pkg" "$ver"; done; done; done',
             "options": {"multiple": False, "separator": "Container:"},
-            # runs a command inside each running container: disabled by default
-            "is_active": False,
+            "is_active": True,
         },
     ]
 
@@ -40,8 +39,7 @@ def create_containers_sections(apps, schema_editor):
             "retrieval_output": "JSON",
             "target": "$s = 'dpkg-query -W 2>/dev/null || rpm -qa --qf %{NAME}\\\\t%{VERSION}-%{RELEASE}\\\\n 2>/dev/null || apk info -v 2>/dev/null'; $r = foreach ($rt in 'docker', 'podman') { if (Get-Command $rt -ErrorAction SilentlyContinue) { foreach ($id in (& $rt ps -q 2>$null)) { $name = (& $rt inspect --format '{{.Name}}' $id).TrimStart('/'); foreach ($l in (& $rt exec $id sh -c $s 2>$null)) { if ($l -match '^(.+?)\\t(.*)$' -or $l -match '^(.*)-([^-]*-r\\d+)$') { [PSCustomObject]@{Container = $name; Name = $Matches[1]; Version = $Matches[2]} } elseif ($l) { [PSCustomObject]@{Container = $name; Name = $l; Version = ''} } } } } }; @($r) | ConvertTo-Json",
             "options": {"submap": None},
-            # runs a command inside each running container: disabled by default
-            "is_active": False,
+            "is_active": True,
         },
     ]
 
