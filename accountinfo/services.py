@@ -1,6 +1,19 @@
 from accountinfo.models import AccountinfoConfig, AccountinfoData, AccountinfoValue
 
 
+def empty_value(datatype):
+    """The value a config of this datatype holds when nothing is set"""
+    if datatype == "CHECKBOX":
+        return []
+    if datatype == "SELECT":
+        return None
+    return ""
+
+
+def is_empty_value(value):
+    return value in (None, "", [], {})
+
+
 class AccountinfoSearch:
     """
     Find the objects whose administrative data matches a search term

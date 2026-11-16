@@ -17,6 +17,7 @@ from typing import Optional
 from urllib.parse import unquote, urlparse
 
 from accountinfo.models import AccountinfoConfig, AccountinfoData, AccountinfoValue
+from accountinfo.services import empty_value, is_empty_value
 from asset.inventory_base.models import InventoryBase
 from asset.services import ReconciliationService
 from django.contrib.contenttypes.models import ContentType
@@ -772,17 +773,8 @@ class LegacyAccountinfoImport:
         row.update(values)
         return row
 
-    @staticmethod
-    def empty(datatype):
-        if datatype == "CHECKBOX":
-            return []
-        if datatype == "SELECT":
-            return None
-        return ""
-
-    @staticmethod
-    def is_empty(value):
-        return value in (None, "", [], {})
+    empty = staticmethod(empty_value)
+    is_empty = staticmethod(is_empty_value)
 
     @staticmethod
     def is_blank(raw):
