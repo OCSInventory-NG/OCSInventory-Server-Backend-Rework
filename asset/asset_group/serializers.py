@@ -3,7 +3,7 @@ from asset.inventory_base.scope import visible_asset_ids_for
 from asset.inventory_base.serializers import InventoryBaseSerializer
 from group.serializers import GroupSerializer
 from ocsinventory_backend.ocs_framework.viewsets import ExpandableFieldsMixin
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, ValidationError
 from user.serializers import UserSerializer
 
 from .models import AssetGroup
@@ -30,6 +30,19 @@ class AssetGroupSerializer(ExpandableFieldsMixin, ModelSerializer):
 
     def _scope_ids(self):
         return visible_asset_ids_for(self.context.get("request"))
+
+    def validate_visibility(self, value):
+        instance = self.instance
+        if (
+            instance is not None
+            and value != "public"
+            and instance.visibility == "public"
+            and instance.scoped_user_groups.exists()
+        ):
+            raise ValidationError(
+                "This asset group is used as a user group scope and must stay public."
+            )
+        return value
 
     def get_fields(self):
         fields = super().get_fields()

@@ -1,7 +1,8 @@
 import pytest
 from asset.asset_group.models import AssetGroup
 from deployment.result.models import Result
-from django.contrib.auth.models import Permission, User
+from django.contrib.auth.models import Group, Permission, User
+from group.models import GroupAssetScope
 from rest_framework.test import APIClient
 
 
@@ -252,3 +253,59 @@ class TestAssetGroupScope:
         assert set(mixed.assets.values_list("id", flat=True)) == {
             scope_setup.visible.id
         }
+
+
+@pytest.mark.django_db
+class TestAssetGroupScopeConstraints:
+    @pytest.fixture(autouse=True)
+    def paris_scope(self, scope_setup):
+        group = Group.objects.create(name="paris-team")
+        scope = GroupAssetScope.objects.create(group=group)
+        scope.asset_groups.set([scope_setup.paris])
+
+    @pytest.fixture
+    def other(self, admin_user):
+        return AssetGroup.objects.create(
+            name="Other", user=admin_user, visibility="public"
+        )
+
+    def test_delete_scope_group_is_refused(self, api_client, scope_setup):
+        response = api_client.delete(f"/asset/groups/{scope_setup.paris.id}/")
+        assert response.status_code == 409
+        message = "This asset group is used as a user group scope."
+        assert response.data["detail"] == message
+        assert AssetGroup.objects.filter(id=scope_setup.paris.id).exists()
+
+    def test_bulk_delete_with_scope_group_is_refused(
+        self, api_client, scope_setup, other
+    ):
+        response = api_client.post(
+            "/asset/groups/?delete=1",
+            {"ids": [scope_setup.paris.id, other.id]},
+            format="json",
+        )
+        assert response.status_code == 409
+        ids = [scope_setup.paris.id, other.id]
+        assert AssetGroup.objects.filter(id__in=ids).count() == 2
+
+    def test_delete_unused_group_works(self, api_client, other):
+        assert api_client.delete(f"/asset/groups/{other.id}/").status_code == 204
+
+    def test_scope_group_must_stay_public(self, api_client, scope_setup):
+        response = api_client.patch(
+            f"/asset/groups/{scope_setup.paris.id}/",
+            {"visibility": "private_personal"},
+            format="json",
+        )
+        assert response.status_code == 400
+        assert response.data["visibility"] == [
+            "This asset group is used as a user group scope and must stay public."
+        ]
+
+    def test_unused_group_can_go_private(self, api_client, other):
+        response = api_client.patch(
+            f"/asset/groups/{other.id}/",
+            {"visibility": "private_personal"},
+            format="json",
+        )
+        assert response.status_code == 200
