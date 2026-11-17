@@ -1,5 +1,6 @@
 import pytest
 from asset.asset_group.models import AssetGroup
+from deployment.result.models import Result
 from django.contrib.auth.models import Permission, User
 from rest_framework.test import APIClient
 
@@ -153,3 +154,101 @@ class TestAssetGroupCreate:
 
         assert response.status_code == 403
         assert not AssetGroup.objects.filter(name="New group").exists()
+
+
+@pytest.fixture
+def mixed(admin_user, scope_setup):
+    group = AssetGroup.objects.create(
+        name="Mixed", user=admin_user, visibility="public"
+    )
+    group.assets.set([scope_setup.visible, scope_setup.hidden])
+    return group
+
+
+@pytest.fixture
+def scoped_user(make_scoped_user, scope_setup):
+    return make_scoped_user(
+        "view_assetgroup",
+        "add_assetgroup",
+        "change_assetgroup",
+        "view_result",
+        asset_groups=[scope_setup.paris],
+    )
+
+
+@pytest.fixture
+def scoped(client_for, scoped_user):
+    return client_for(scoped_user)
+
+
+@pytest.fixture
+def mine(scoped_user, scope_setup):
+    group = AssetGroup.objects.create(
+        name="Mine", user=scoped_user, visibility="public"
+    )
+    group.assets.set([scope_setup.visible])
+    return group
+
+
+@pytest.mark.django_db
+class TestAssetGroupScope:
+    def test_group_detail_lists_visible_assets_only(self, scoped, mixed, scope_setup):
+        data = scoped.get(f"/asset/groups/{mixed.id}/").data
+        assert data["assets"] == [scope_setup.visible.id]
+
+    def test_expanded_assets_are_filtered(self, scoped, mixed, scope_setup):
+        data = scoped.get(f"/asset/groups/{mixed.id}/?expand=assets").data
+        assert [a["id"] for a in data["assets"]] == [scope_setup.visible.id]
+
+    def test_result_expanding_group_filters_its_assets(
+        self, scoped, mixed, scope_setup
+    ):
+        Result.objects.create(asset=scope_setup.visible, group=mixed, name="pkg")
+        data = scoped.get("/deployment/results/?expand=group").data
+        assert data[0]["group"]["assets"] == [scope_setup.visible.id]
+
+    def test_post_with_hidden_asset_is_refused(self, scoped, scoped_user, scope_setup):
+        response = scoped.post(
+            "/asset/groups/",
+            {
+                "name": "New",
+                "visibility": "public",
+                "user": scoped_user.id,
+                "assets": [scope_setup.hidden.id],
+            },
+            format="json",
+        )
+        assert response.status_code == 400
+        assert "Unknown asset." in response.data["error"]
+
+    def test_patch_with_hidden_asset_is_refused(self, scoped, mine, scope_setup):
+        response = scoped.patch(
+            f"/asset/groups/{mine.id}/",
+            {"assets": [scope_setup.visible.id, scope_setup.hidden.id]},
+            format="json",
+        )
+        assert response.status_code == 400
+        assert response.data["assets"] == ["Unknown asset."]
+
+    def test_patch_keeps_hidden_assets(self, scoped, mine, scope_setup):
+        mine.assets.set([scope_setup.visible, scope_setup.hidden])
+        response = scoped.patch(
+            f"/asset/groups/{mine.id}/",
+            {"assets": [scope_setup.visible.id]},
+            format="json",
+        )
+        assert response.status_code == 200
+        assert set(mine.assets.values_list("id", flat=True)) == {
+            scope_setup.visible.id,
+            scope_setup.hidden.id,
+        }
+
+    def test_unscoped_patch_replaces_assets(self, api_client, mixed, scope_setup):
+        api_client.patch(
+            f"/asset/groups/{mixed.id}/",
+            {"assets": [scope_setup.visible.id]},
+            format="json",
+        )
+        assert set(mixed.assets.values_list("id", flat=True)) == {
+            scope_setup.visible.id
+        }
