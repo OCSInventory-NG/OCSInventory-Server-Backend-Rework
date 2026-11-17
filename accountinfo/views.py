@@ -4,6 +4,7 @@ from accountinfo.serializers import (
     AccountinfoDataSerializer,
     AccountinfoValueSerializer,
 )
+from accountinfo.services import empty_value
 from django.contrib.contenttypes.models import ContentType
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
@@ -85,18 +86,9 @@ class AccountinfoDataViewSet(viewsets.OCSViewSet):
             ).filter(datatarget="ASSET")
 
             if configs.exists():
-                # accountdata structure
-                accountdata = {}
-                for config in configs:
-                    if config.datatype == "CHECKBOX":
-                        # empty list for checkboxes
-                        accountdata[str(config.id)] = []
-                    elif config.datatype == "SELECT":
-                        # null value for select fields
-                        accountdata[str(config.id)] = None
-                    # TEXT or TEXTAREA
-                    else:
-                        accountdata[str(config.id)] = ""
+                accountdata = {
+                    str(config.id): empty_value(config.datatype) for config in configs
+                }
 
                 AccountinfoData.objects.create(
                     content_type=content_type,
