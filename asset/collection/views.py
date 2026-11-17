@@ -223,7 +223,7 @@ class CollectionView(APIView):
             Response object
         """
         data = request.data
-        admin_data = data.pop("admin_data", None)
+        admin_data = data.get("admin_data")
         reconciliation_info = ReconciliationService().format_reconciliation_info(data)
         device_id = f"{data.get('name', 'unknown')} {reconciliation_info}"
 
@@ -414,7 +414,7 @@ class CollectionView(APIView):
             Response object
         """
         data = request.data
-        admin_data = data.pop("admin_data", None)
+        admin_data = data.get("admin_data")
         reconciliation_info = ReconciliationService().format_reconciliation_info(data)
         device_id = f"{data.get('name', 'unknown')} {reconciliation_info}"
 
@@ -600,7 +600,7 @@ class CollectionView(APIView):
         template_section will be created for the same asset.
         """
         data = request.data
-        admin_data = data.pop("admin_data", None)
+        admin_data = data.get("admin_data")
         reconciliation_info = ReconciliationService().format_reconciliation_info(data)
         device_id = f"{data.get('name', 'unknown')} {reconciliation_info}"
 

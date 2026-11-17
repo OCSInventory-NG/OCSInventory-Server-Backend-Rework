@@ -783,3 +783,11 @@ class TestCollectionViewAdminData:
         assert collection_messages(collection_log, logging.ERROR) == [
             "Error while applying admin data for device asset-1: boom"
         ]
+
+    def test_a_form_request_is_still_accepted(self, api_client, template):
+        """Form data is an immutable QueryDict: admin_data must not be popped"""
+        response = api_client.post(
+            "/asset/collection/", collection_payload(template), format="multipart"
+        )
+
+        assert response.status_code == 201
