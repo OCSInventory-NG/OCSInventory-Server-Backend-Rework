@@ -1,5 +1,4 @@
 import pytest
-
 from compliance.models import AssetEOLStatus, ComplianceResult, ComplianceRule
 
 

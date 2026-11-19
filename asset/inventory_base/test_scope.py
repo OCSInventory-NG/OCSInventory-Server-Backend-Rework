@@ -1,11 +1,10 @@
 from types import SimpleNamespace
 
 import pytest
-from django.contrib.auth.models import Group, Permission, User
-
+from asset.asset_group.models import AssetGroup
 from asset.inventory_base.models import InventoryBase
 from asset.inventory_base.scope import visible_asset_ids, visible_asset_ids_for
-from asset.asset_group.models import AssetGroup
+from django.contrib.auth.models import Group, Permission, User
 from group.models import GroupAssetScope
 
 

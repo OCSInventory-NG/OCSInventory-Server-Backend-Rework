@@ -1,12 +1,11 @@
 from types import SimpleNamespace
 
 import pytest
-from django.contrib.auth.models import Group, Permission, User
-from rest_framework.test import APIClient
-
-from asset.inventory_base.models import InventoryBase
 from asset.asset_group.models import AssetGroup
+from asset.inventory_base.models import InventoryBase
+from django.contrib.auth.models import Group, Permission, User
 from group.models import GroupAssetScope
+from rest_framework.test import APIClient
 
 
 @pytest.fixture
