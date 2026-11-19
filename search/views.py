@@ -3,6 +3,7 @@ from collections import defaultdict
 
 from accountinfo.models import AccountinfoData
 from asset.inventory_base.models import InventoryBase
+from asset.inventory_base.scope import visible_asset_ids_for
 from asset.inventory_base.serializers import InventoryBaseSerializer
 from asset.inventory_field.models import InventoryField
 from asset.inventory_section.models import InventorySection
@@ -295,7 +296,7 @@ class SearchView(GenericAPIView):
 
         return rel_q
 
-    def _build_match_map(self, inventory_ids, rel_q):
+    def _build_match_map(self, inventory_ids, rel_q, scoped):
         """
         Returns {inventory_id: {"results":[...], "logs":[...], ...}}
         by making one query per relation (no N+1).
@@ -334,6 +335,9 @@ class SearchView(GenericAPIView):
                         field.name: getattr(obj, field.name)
                         for field in model._meta.fields
                     }
+                    if scoped and related == "software_dictionary_entries":
+                        # the stored count includes machines outside the scope
+                        del row["installation_number"]
 
                     for inv_id in related_ids:
                         row_id = row.get("id")
@@ -391,12 +395,12 @@ class SearchView(GenericAPIView):
 
         return match_map
 
-    def _build_grouped_match_map(self, inventory_ids, rel_q):
+    def _build_grouped_match_map(self, inventory_ids, rel_q, scoped):
         """
         In grouped mode, keep only the first matched row per relation and expose
         how many additional rows were omitted for the frontend.
         """
-        full_match_map = self._build_match_map(inventory_ids, rel_q)
+        full_match_map = self._build_match_map(inventory_ids, rel_q, scoped)
         grouped_match_map = {}
 
         for inventory_id, matches in full_match_map.items():
@@ -486,7 +490,7 @@ class SearchView(GenericAPIView):
         if chunk:
             yield chunk
 
-    def _get_ungrouped_page(self, inventory_qs, rel_q, request, offset, limit):
+    def _get_ungrouped_page(self, inventory_qs, rel_q, request, offset, limit, scoped):
         if limit == 0:
             return []
 
@@ -504,7 +508,7 @@ class SearchView(GenericAPIView):
 
         for chunk_ids in self._chunked(inventory_ids, 100):
             objects = InventoryBase.objects.in_bulk(chunk_ids)
-            match_map = self._build_match_map(chunk_ids, rel_q)
+            match_map = self._build_match_map(chunk_ids, rel_q, scoped)
 
             for inventory_id in chunk_ids:
                 obj = objects.get(inventory_id)
@@ -549,9 +553,9 @@ class SearchView(GenericAPIView):
 
         return rows
 
-    def _get_all_ungrouped_rows(self, inventory_qs, rel_q, request):
+    def _get_all_ungrouped_rows(self, inventory_qs, rel_q, request, scoped):
         inventory_ids = list(inventory_qs.values_list("id", flat=True))
-        match_map = self._build_match_map(inventory_ids, rel_q)
+        match_map = self._build_match_map(inventory_ids, rel_q, scoped)
         rows = []
 
         for obj in inventory_qs:
@@ -584,6 +588,10 @@ class SearchView(GenericAPIView):
 
         try:
             qs = self.process_search(data)
+            visible = visible_asset_ids_for(request)
+            scoped = visible is not None
+            if scoped:
+                qs = qs.filter(pk__in=visible)
             rel_q = self._extract_match_filters(data)
 
             if ungroup:
@@ -608,17 +616,19 @@ class SearchView(GenericAPIView):
                             request,
                             paginator.offset,
                             paginator.limit,
+                            scoped,
                         )
                         return paginator.get_paginated_response(paginated_rows)
 
                 return Response(
-                    self._get_all_ungrouped_rows(qs, rel_q, request), status=200
+                    self._get_all_ungrouped_rows(qs, rel_q, request, scoped),
+                    status=200,
                 )
 
             page = self.paginate_queryset(qs)
             if page is not None:
                 inventory_ids = [obj.pk for obj in page]
-                match_map = self._build_grouped_match_map(inventory_ids, rel_q)
+                match_map = self._build_grouped_match_map(inventory_ids, rel_q, scoped)
                 serializer = InventoryBaseSerializer(
                     page,
                     many=True,
@@ -627,7 +637,7 @@ class SearchView(GenericAPIView):
                 return self.get_paginated_response(serializer.data)
 
             inventory_ids = list(qs.values_list("id", flat=True))
-            match_map = self._build_grouped_match_map(inventory_ids, rel_q)
+            match_map = self._build_grouped_match_map(inventory_ids, rel_q, scoped)
 
             serializer = InventoryBaseSerializer(
                 qs,

@@ -48,6 +48,14 @@ class InventoryBase(models.Model):
     )
     last_update = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        permissions = [
+            (
+                "view_all_assets",
+                "Can view all assets regardless of user group scope",
+            )
+        ]
+
 
 @receiver(post_save, sender=InventoryBase)
 def inventory_received_handler(sender, instance, created, **kwargs):

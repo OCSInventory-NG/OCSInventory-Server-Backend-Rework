@@ -1,10 +1,11 @@
+from asset.inventory_base.scope import AssetScopeMixin
 from asset.log.models import Log
 from asset.log.serializers import LogSerializer
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
 
 
-class LogViewSet(viewsets.OCSViewSet):
+class LogViewSet(AssetScopeMixin, viewsets.OCSViewSet):
     """
     This class will define the view behavior
 
@@ -14,6 +15,7 @@ class LogViewSet(viewsets.OCSViewSet):
 
     # Need to have permissions to consult
     permission_classes = [DefaultModelPermissions]
+    asset_scope_field = "asset"
 
     queryset = Log.objects.all()
     serializer_class = LogSerializer

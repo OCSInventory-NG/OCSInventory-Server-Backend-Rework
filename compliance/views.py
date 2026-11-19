@@ -1,5 +1,6 @@
 import logging
 
+from asset.inventory_base.scope import AssetScopeMixin
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
 from rest_framework import status
@@ -56,7 +57,8 @@ class ComplianceRuleViewSet(viewsets.OCSViewSet):
         return Response(resolver.get_schema())
 
 
-class ComplianceResultViewSet(viewsets.OCSViewSet):
+class ComplianceResultViewSet(AssetScopeMixin, viewsets.OCSViewSet):
+    asset_scope_field = "asset"
     permission_classes = [DefaultModelPermissions]
     queryset = ComplianceResult.objects.all()
     serializer_class = ComplianceResultSerializer
@@ -102,11 +104,10 @@ class ComplianceResultViewSet(viewsets.OCSViewSet):
                 return Response(
                     {"error": "Invalid asset IDs"}, status=status.HTTP_400_BAD_REQUEST
                 )
-            queryset = ComplianceResult.objects.filter(
-                asset_id__in=asset_ids
-            ).select_related("rule", "asset")
+            queryset = self.get_queryset().filter(asset_id__in=asset_ids)
         else:
-            queryset = ComplianceResult.objects.select_related("rule", "asset").all()
+            queryset = self.get_queryset()
+        queryset = queryset.select_related("rule", "asset")
 
         summary = {}
         for result in queryset:
@@ -151,9 +152,11 @@ class ComplianceResultViewSet(viewsets.OCSViewSet):
         (impacted = 0). Mirrors asset-summary but aggregated per rule.
         """
         counts = {}
-        for rule_id in ComplianceResult.objects.filter(
-            status=ComplianceResult.STATUS_NON_COMPLIANT
-        ).values_list("rule_id", flat=True):
+        for rule_id in (
+            self.get_queryset()
+            .filter(status=ComplianceResult.STATUS_NON_COMPLIANT)
+            .values_list("rule_id", flat=True)
+        ):
             counts[rule_id] = counts.get(rule_id, 0) + 1
 
         return Response(
@@ -170,13 +173,14 @@ class ComplianceResultViewSet(viewsets.OCSViewSet):
         )
 
 
-class AssetEOLStatusViewSet(viewsets.OCSViewSet):
+class AssetEOLStatusViewSet(AssetScopeMixin, viewsets.OCSViewSet):
     """
     Read-only viewset exposing per-asset EOL status.
 
     GET /compliance/eol-status/
     """
 
+    asset_scope_field = "asset"
     permission_classes = [DefaultModelPermissions]
     queryset = AssetEOLStatus.objects.select_related("asset").all()
     serializer_class = AssetEOLStatusSerializer
@@ -211,9 +215,9 @@ class AssetEOLStatusViewSet(viewsets.OCSViewSet):
                 return Response(
                     {"error": "Invalid asset IDs"}, status=status.HTTP_400_BAD_REQUEST
                 )
-            queryset = AssetEOLStatus.objects.filter(asset_id__in=asset_ids)
+            queryset = self.get_queryset().filter(asset_id__in=asset_ids)
         else:
-            queryset = AssetEOLStatus.objects.all()
+            queryset = self.get_queryset()
 
         return Response(
             [

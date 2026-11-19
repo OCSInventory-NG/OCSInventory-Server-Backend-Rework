@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 from asset.inventory_base.models import InventoryBase
+from asset.inventory_base.scope import AssetScopeMixin
 from dashboard.chart.serializers import (
     DashboardChartCounterSerializer,
     DashboardChartDescriptorSerializer,
@@ -67,7 +68,7 @@ from rest_framework.response import Response
         responses=DashboardChartSeriesSerializer,
     ),
 )
-class DashboardChartViewSet(viewsets.OCSViewSet):
+class DashboardChartViewSet(AssetScopeMixin, viewsets.OCSViewSet):
     """
     This class allows the frontend to request data for the dashboard charts
     """
@@ -256,12 +257,12 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
         """
 
         try:
-            data = self.queryset
+            data = self.get_queryset()
             count = 0
 
             # timeframe for contacted is today
             since = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-            contacted_data = self.queryset.filter(last_update__gte=since)
+            contacted_data = self.get_queryset().filter(last_update__gte=since)
             contacted = 0
 
             if "ALL" == os_template:
@@ -303,7 +304,8 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
         try:
             # get top 15 os counts
             os_counts = (
-                self.queryset.values("osname")
+                self.get_queryset()
+                .values("osname")
                 .annotate(count=Count("id"))
                 .order_by("-count")[:15]
             )
@@ -335,7 +337,7 @@ class DashboardChartViewSet(viewsets.OCSViewSet):
             today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
             since = today - timedelta(days=6)
 
-            contacted = self.queryset.filter(last_update__gte=since)
+            contacted = self.get_queryset().filter(last_update__gte=since)
 
             last_contacted_counters = {
                 (today - timedelta(days=i)).strftime("%Y-%m-%d"): 0 for i in range(7)
