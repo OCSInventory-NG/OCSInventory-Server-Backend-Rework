@@ -40,10 +40,25 @@ class GroupSerializer(ExpandableFieldsMixin, ModelSerializer):
         protection = getattr(instance, "protection", None)
         representation["is_protected"] = bool(protection and protection.is_protected)
         scope = getattr(instance, "asset_scope", None)
-        representation["asset_groups"] = (
-            None if scope is None else sorted(g.id for g in scope.asset_groups.all())
-        )
+        if scope is None:
+            representation["asset_groups"] = None
+        elif self._expands("asset_groups"):
+            representation["asset_groups"] = [
+                {"id": g.id, "name": g.name}
+                for g in sorted(scope.asset_groups.all(), key=lambda g: g.name)
+            ]
+        else:
+            representation["asset_groups"] = sorted(
+                g.id for g in scope.asset_groups.all()
+            )
         return representation
+
+    def _expands(self, field):
+        request = self.context.get("request")
+        if request is None or self.context.get("expand_depth", 0) >= 1:
+            return False
+        expand = request.query_params.get("expand", "")
+        return expand == "*" or field in {f.strip() for f in expand.split(",")}
 
     def _apply_scope(self, group, asset_groups):
         if asset_groups is None:

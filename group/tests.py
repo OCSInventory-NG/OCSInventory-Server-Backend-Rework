@@ -39,6 +39,21 @@ class TestGroupAssetScopeApi:
         group = Group.objects.create(name="helpdesk")
         assert api_client.get(f"/groups/{group.id}/").data["asset_groups"] is None
 
+    def test_expand_lists_asset_group_names(
+        self, api_client, scope_setup, admin_user
+    ):
+        lyon = AssetGroup.objects.create(
+            name="Lyon", user=admin_user, visibility="public"
+        )
+        group = _scoped_group("helpdesk", [scope_setup.paris, lyon])
+        data = api_client.get(f"/groups/{group.id}/?expand=asset_groups").data
+        assert data["asset_groups"] == [
+            {"id": lyon.id, "name": "Lyon"},
+            {"id": scope_setup.paris.id, "name": "Paris"},
+        ]
+        listed = api_client.get("/groups/?expand=asset_groups").data
+        assert next(g for g in listed if g["id"] == group.id) == data
+
     def test_patch_sets_scope(self, api_client, scope_setup):
         group = Group.objects.create(name="helpdesk")
         response = api_client.patch(
