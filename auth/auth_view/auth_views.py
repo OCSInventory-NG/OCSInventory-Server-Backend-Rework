@@ -14,7 +14,10 @@ from django.urls import reverse
 from django.utils.crypto import get_random_string
 from django.views import View
 from knox.models import AuthToken
-from mozilla_django_oidc.utils import add_state_and_verifier_and_nonce_to_session
+from mozilla_django_oidc.utils import (
+    add_state_and_verifier_and_nonce_to_session,
+    generate_code_challenge,
+)
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.response import Response
 
@@ -152,7 +155,13 @@ class LoginView(BaseAuthView):
             "redirect_uri": redirect_uri,
         }
 
-        add_state_and_verifier_and_nonce_to_session(request, state, params)
+        code_verifier = get_random_string(64)
+        params["code_challenge"] = generate_code_challenge(code_verifier, "S256")
+        params["code_challenge_method"] = "S256"
+
+        add_state_and_verifier_and_nonce_to_session(
+            request, state, params, code_verifier
+        )
         request.session.modified = True
 
         query = urlencode(params, quote_via=quote)
@@ -211,11 +220,14 @@ class CallbackView(BaseAuthView):
 
     def oidc_callback(self, request):
         """Handle OIDC callback requests"""
-        if self._consume_oidc_state(request) is None or request.GET.get("error"):
+        oidc_state = self._consume_oidc_state(request)
+        if oidc_state is None or request.GET.get("error"):
             return self._oidc_login_failure_response(request)
 
         customOIDCBackend = CustomOIDCBackend()
-        user = customOIDCBackend.authenticate(request)
+        user = customOIDCBackend.authenticate(
+            request, code_verifier=oidc_state.get("code_verifier")
+        )
         if user is not None:
             login(request, user)
             request.session["auth_method"] = "sso"
