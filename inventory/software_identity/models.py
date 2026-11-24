@@ -1,3 +1,5 @@
+import json
+
 from django.conf import settings
 from django.db import models
 from django.db.models.functions import Lower
@@ -5,13 +7,19 @@ from inventory.software.models import SoftwareDictionary
 from inventory.software_identity.normalizers.base import STATUSES
 
 
+class UnescapedJSONEncoder(json.JSONEncoder):
+    # a SQL_ASCII database rejects the \u escapes of non-ASCII characters
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **{**kwargs, "ensure_ascii": False})
+
+
 class CpeProduct(models.Model):
     """An application of the NVD CPE dictionary, with its titles and known versions"""
 
     vendor = models.CharField(max_length=255)
     product = models.CharField(max_length=255)
-    titles = models.JSONField(default=dict)
-    versions = models.JSONField(default=list)
+    titles = models.JSONField(default=dict, encoder=UnescapedJSONEncoder)
+    versions = models.JSONField(default=list, encoder=UnescapedJSONEncoder)
     popularity = models.IntegerField(default=0)
 
     class Meta:

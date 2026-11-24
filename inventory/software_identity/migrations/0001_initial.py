@@ -1,5 +1,6 @@
 import django.db.models.deletion
 import django.db.models.functions.text
+import inventory.software_identity.models
 from django.conf import settings
 from django.db import migrations, models
 
@@ -192,8 +193,20 @@ class Migration(migrations.Migration):
                 ),
                 ("vendor", models.CharField(max_length=255)),
                 ("product", models.CharField(max_length=255)),
-                ("titles", models.JSONField(default=dict)),
-                ("versions", models.JSONField(default=list)),
+                (
+                    "titles",
+                    models.JSONField(
+                        default=dict,
+                        encoder=inventory.software_identity.models.UnescapedJSONEncoder,
+                    ),
+                ),
+                (
+                    "versions",
+                    models.JSONField(
+                        default=list,
+                        encoder=inventory.software_identity.models.UnescapedJSONEncoder,
+                    ),
+                ),
                 ("popularity", models.IntegerField(default=0)),
             ],
             options={
