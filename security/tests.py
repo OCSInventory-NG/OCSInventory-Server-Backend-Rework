@@ -2113,6 +2113,28 @@ def test_machine_coverage_in_the_api(api_client, debian_data):
         "not_covered",
         "end_of_support",
     )
+
+
+@pytest.mark.django_db
+def test_machine_list_sorts_on_a_column(api_client, debian_data):
+    make_asset("debian-12")
+    make_asset("debian-11", key="debian:11")
+    make_asset("centos", "rpm", "centos:9")
+
+    def names(ordering):
+        response = api_client.get(f"/vulnerabilities/machines/?ordering={ordering}")
+        return [row["name"] for row in response.json()["results"]]
+
+    assert names("name") == ["centos", "debian-11", "debian-12"]
+    assert names("-name") == ["debian-12", "debian-11", "centos"]
+    # centos has no support end: last both ways
+    assert names("support_end") == ["debian-11", "debian-12", "centos"]
+    assert names("-support_end") == ["debian-12", "debian-11", "centos"]
+    # no source comes before end of support in the tests, covered is last
+    assert names("reason") == ["centos", "debian-11", "debian-12"]
+    assert names("-status") == ["debian-12", "centos", "debian-11"]
+    response = api_client.get("/vulnerabilities/machines/?ordering=asset")
+    assert response.status_code == 400
     assert (
         api_client.get("/vulnerabilities/coverage/").data["machines"]["not_covered"]
         == 2

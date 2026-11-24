@@ -53,6 +53,7 @@ NOT_COVERED_REASONS = (
     SOURCE_NEVER_LOADED,
     RELEASE_NOT_TRACKED,
 )
+MACHINE_ORDERING = ("name", "platform", "status", "reason", "support_end")
 
 
 def priority(ordering=None):
@@ -436,6 +437,30 @@ def machine_rows(asset_ids=None, family=None, now=None, context=None):
         rows,
         key=lambda row: (row["status"] != MACHINE_NOT_COVERED, row["name"]),
     )
+
+
+def sort_machine_rows(rows, ordering):
+    """
+    By a column of MACHINE_ORDERING, "-" before it for descending; the empty
+    values last. Status and reason follow the order of the tests.
+    """
+    key = {
+        "name": lambda row: row["name"].casefold() if row["name"] else None,
+        "platform": lambda row: (
+            (row["family"], row["platform"]) if row["family"] else None
+        ),
+        "status": lambda row: row["status"] == MACHINE_COVERED,
+        "reason": lambda row: (
+            NOT_COVERED_REASONS.index(row["reason"]) if row["reason"] else None
+        ),
+        "support_end": lambda row: row["support_end"],
+    }[ordering.removeprefix("-")]
+    filled = sorted(
+        (row for row in rows if key(row) is not None),
+        key=key,
+        reverse=ordering.startswith("-"),
+    )
+    return filled + [row for row in rows if key(row) is None]
 
 
 def machine_counts(rows):

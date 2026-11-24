@@ -127,11 +127,16 @@ class VulnerabilityViewSet(viewsets.OCSViewSet):
     def machines(self, request):
         """
         The machines with their coverage, the machines not covered first:
-        status, reason and family filters.
+        status, reason and family filters, ordering on a column.
         """
         params = request.query_params
         status = _choice(params, "status", reading.MACHINE_STATUSES)
         reason = _choice(params, "reason", reading.NOT_COVERED_REASONS)
+        ordering = _choice(
+            params,
+            "ordering",
+            [prefix + c for prefix in ("", "-") for c in reading.MACHINE_ORDERING],
+        )
         rows = reading.machine_rows(family=_choice(params, "family", FAMILIES))
         rows = [
             row
@@ -139,6 +144,8 @@ class VulnerabilityViewSet(viewsets.OCSViewSet):
             if (status is None or row["status"] == status)
             and (reason is None or row["reason"] == reason)
         ]
+        if ordering:
+            rows = reading.sort_machine_rows(rows, ordering)
         page = self.paginate_queryset(rows)
         if page is not None:
             return self.get_paginated_response(page)
