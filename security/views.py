@@ -28,10 +28,10 @@ def _asset(params, required=False):
     value = params.get("asset")
     if value in (None, ""):
         if required:
-            raise ValidationError({"asset": "A machine id"})
+            raise ValidationError({"asset": "An asset id"})
         return None
     if not value.isdecimal() or not value.isascii():
-        raise ValidationError({"asset": "A machine id"})
+        raise ValidationError({"asset": "An asset id"})
     return int(value)
 
 
@@ -46,7 +46,7 @@ def _assets(params):
         or not all(v.isdecimal() and v.isascii() for v in values)
     ):
         raise ValidationError(
-            {"asset__in": f"Comma separated machine ids, {ASSETS_PER_CALL} at most"}
+            {"asset__in": f"Comma separated asset ids, {ASSETS_PER_CALL} at most"}
         )
     return sorted({int(v) for v in values})
 

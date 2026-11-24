@@ -12,13 +12,13 @@ TASKS = [
     },
     {
         "name": "vulnerabilityScan.VulnerabilityScan",
-        "description": "Scan the machines inventoried since the last scan",
+        "description": "Scan the assets inventoried since the last scan",
         "recurrence": "hourly",
         "hour": None,
     },
     {
         "name": "vulnerabilityFullScan.VulnerabilityFullScan",
-        "description": "Scan every machine against the vulnerability data",
+        "description": "Scan every asset against the vulnerability data",
         "recurrence": "weekly",
         # Sunday (Monday is 0), after the daily data load at 04:00
         "day_of_week": 6,

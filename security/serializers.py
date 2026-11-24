@@ -114,7 +114,7 @@ class ExclusionSerializer(ModelSerializer):
         asset = attrs.get("asset", getattr(self.instance, "asset", None))
         group = attrs.get("group", getattr(self.instance, "group", None))
         if (asset is None) == (group is None):
-            raise serializers.ValidationError("A machine or a group, not both")
+            raise serializers.ValidationError("An asset or a group, not both")
         # A dynamic group chosen on security criteria would lose the machines
         # the exclusion leaves out, then exclude them no more, and so on
         from search.security_criteria import uses_security
