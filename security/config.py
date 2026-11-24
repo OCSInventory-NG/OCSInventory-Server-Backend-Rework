@@ -26,7 +26,10 @@ ITEMS = [
     },
     {
         "name": "priority",
-        "description": "Order of the vulnerability list, first criterion first",
+        "description": (
+            "Default order of Security > Vulnerabilities: sorted on criterion 1,"
+            " then on criterion 2 when equal, and so on"
+        ),
         "value": list(PRIORITY_CRITERIA),
         "type": ORDERED_LIST,
         "unit": "",
@@ -35,8 +38,10 @@ ITEMS = [
     {
         "name": "cpe_match_score",
         "description": (
-            "Windows and macOS software: name match score from which the product"
-            " is identified automatically"
+            "Windows and macOS software is identified by comparing its name with"
+            " the product names of the NVD: from this similarity score, the"
+            " closest product is assigned automatically, unless another product"
+            " comes close"
         ),
         "value": 0.9,
         "type": "number input",
@@ -47,8 +52,11 @@ ITEMS = [
     {
         "name": "cpe_review_score",
         "description": (
-            "Windows and macOS software: name match score from which the product"
-            " is proposed for review"
+            "Windows and macOS software whose similarity score is between this"
+            " score and the automatic identification score is listed in"
+            " Security > Software identity > Review, where an administrator"
+            " chooses the product; below this score, the software is not"
+            " identified"
         ),
         "value": 0.5,
         "type": "number input",
