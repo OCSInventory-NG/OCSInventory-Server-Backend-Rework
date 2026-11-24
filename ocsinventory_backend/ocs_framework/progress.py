@@ -74,7 +74,8 @@ class ProgressStream:
         self.progress = progress
 
     def read(self, size=-1):
-        data = self.stream.read(size)
+        # urllib3 2.1 raises "buffer is empty" on read(-1)
+        data = self.stream.read(None if size is None or size < 0 else size)
         if data:
             self.progress.advance(len(data))
         else:
