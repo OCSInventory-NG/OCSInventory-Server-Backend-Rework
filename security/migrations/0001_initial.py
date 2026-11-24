@@ -8,7 +8,7 @@ TASKS = [
         "name": "securitySync.SecuritySync",
         "description": "Load the vulnerability data and refresh the scores",
         "recurrence": "daily",
-        "hour": "02:00",
+        "hour": "04:00",
     },
     {
         "name": "vulnerabilityScan.VulnerabilityScan",
@@ -20,9 +20,9 @@ TASKS = [
         "name": "vulnerabilityFullScan.VulnerabilityFullScan",
         "description": "Scan every machine against the vulnerability data",
         "recurrence": "weekly",
-        # Sunday (Monday is 0), after the daily data load at 02:00
+        # Sunday (Monday is 0), after the daily data load at 04:00
         "day_of_week": 6,
-        "hour": "03:00",
+        "hour": "05:00",
     },
 ]
 
