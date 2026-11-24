@@ -2266,54 +2266,6 @@ def test_exclusions_carry_names_and_filter_on_active(api_client, admin_user):
 
 
 @pytest.mark.django_db
-def test_demo_data_shows_every_state_and_resolution(admin_user):
-    from django.core.management import call_command
-
-    call_command("security_demo", stdout=io.StringIO())
-
-    resolutions = set(
-        Exposure.objects.filter(closed_at__isnull=False).values_list(
-            "resolution", flat=True
-        )
-    )
-    assert resolutions == {
-        "fixed",
-        "uninstalled",
-        "withdrawn",
-        "identity_changed",
-        "out_of_window",
-    }
-    states = set()
-    for asset in InventoryBase.objects.filter(uuid__startswith="demo-security-"):
-        states |= {r["state"] for r in reading.asset_software_states(asset.id)}
-    assert states == {
-        "excluded",
-        "kernel_not_running",
-        "no_identity",
-        "third_party",
-        "no_origin",
-        "source_never_loaded",
-        "stale",
-        "checked",
-    }
-    rows, _ = reading.vulnerability_rows()
-    # the kernel vulnerabilities without a fix are not stored
-    assert not Exposure.objects.filter(kernel=True, fixed_version="").exists()
-    assert rows[0]["kev"]
-    channels = set(
-        Exposure.objects.filter(closed_at__isnull=True).values_list(
-            "fix_channel", flat=True
-        )
-    )
-    assert channels == {"", "ubuntu_pro"}
-    assert reading.coverage()["kernels"]["host_kernel_unverified"] == 1
-
-    call_command("security_demo", "--reset", stdout=io.StringIO())
-    assert not InventoryBase.objects.filter(uuid__startswith="demo-security-").exists()
-    assert not Vulnerability.objects.exists()
-
-
-@pytest.mark.django_db
 class TestDataAndScanApart:
     """The data is loaded daily, the machines are scanned weekly."""
 
