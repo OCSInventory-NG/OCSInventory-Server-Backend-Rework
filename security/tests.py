@@ -1519,6 +1519,13 @@ class TestNvdScan:
     def nvd_data(self, tmp_path):
         set_config(nvd_years=3)
         loaded(SOURCE_NVD)
+        # the NVD files Zoom under two names
+        CpeAlias.objects.bulk_create(
+            [
+                CpeAlias(product="zoom:zoom", alias="zoom:meetings"),
+                CpeAlias(product="zoom:meetings", alias="zoom:zoom"),
+            ]
+        )
         nvd.load_year(
             2026,
             nvd_feed(
@@ -1575,9 +1582,6 @@ class TestNvdScan:
             ("CVE-2024-0001", "nvd_range"),
             ("CVE-2026-0100", "nvd_range"),
         ]
-        assert CpeAlias.objects.filter(
-            product="zoom:zoom", alias="zoom:meetings"
-        ).exists()
 
     def test_a_cpe_for_another_system_is_not_reported(self, nvd_data, tmp_path):
         nvd.load_year(

@@ -36,19 +36,6 @@ PACKAGE_ORIGINS = [
     ("UbuntuESMApps", "ubuntu", True),
 ]
 
-# "microsoft:edge" is the EdgeHTML browser (CVEs of 2016 to 2018 for every
-# version): today's Edge is microsoft:edge_chromium
-DECISIONS = [
-    ("windows", "microsoft edge", "microsoft:edge_chromium"),
-    ("macos", "microsoft edge", "microsoft:edge_chromium"),
-]
-
-# Products the NVD files under two names
-ALIASES = [
-    ("zoom:zoom", "zoom:meetings"),
-    ("zoom:meetings", "zoom:zoom"),
-]
-
 
 def check_constraints_now(schema_editor):
     """
@@ -62,8 +49,6 @@ def check_constraints_now(schema_editor):
 def seed(apps, schema_editor):
     Scheduler = apps.get_model("scheduler", "Scheduler")
     PackageOrigin = apps.get_model("software_identity", "PackageOrigin")
-    IdentityDecision = apps.get_model("software_identity", "IdentityDecision")
-    CpeAlias = apps.get_model("software_identity", "CpeAlias")
 
     for task in TASKS:
         Scheduler.objects.create(
@@ -80,20 +65,6 @@ def seed(apps, schema_editor):
             for name, distribution, extended in PACKAGE_ORIGINS
         ]
     )
-    IdentityDecision.objects.bulk_create(
-        [
-            IdentityDecision(
-                family=family, match_key=key, product=product, source="shipped"
-            )
-            for family, key, product in DECISIONS
-        ]
-    )
-    CpeAlias.objects.bulk_create(
-        [
-            CpeAlias(product=product, alias=alias, source="shipped")
-            for product, alias in ALIASES
-        ]
-    )
 
 
 def unseed(apps, schema_editor):
@@ -102,12 +73,6 @@ def unseed(apps, schema_editor):
     ).delete()
     apps.get_model("software_identity", "PackageOrigin").objects.filter(
         name__in=[name for name, _, _ in PACKAGE_ORIGINS]
-    ).delete()
-    apps.get_model("software_identity", "IdentityDecision").objects.filter(
-        source="shipped"
-    ).delete()
-    apps.get_model("software_identity", "CpeAlias").objects.filter(
-        source="shipped"
     ).delete()
     check_constraints_now(schema_editor)
 

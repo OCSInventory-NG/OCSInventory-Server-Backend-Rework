@@ -572,9 +572,12 @@ def make_entry(name, version, family, key, installations=1, **values):
 
 @pytest.fixture
 def shipped_edge(db):
-    """The shipped decision for Edge: Chromium Edge, not EdgeHTML."""
-    return IdentityDecision.objects.get(
-        family="windows", match_key="microsoft edge", source="shipped"
+    """A shipped decision for Edge: Chromium Edge, not EdgeHTML."""
+    return IdentityDecision.objects.create(
+        family="windows",
+        match_key="microsoft edge",
+        product="microsoft:edge_chromium",
+        source="shipped",
     )
 
 
@@ -588,19 +591,8 @@ class TestIdentityService:
             ("daily", False),
             ("hourly", False),
         ]
-        # Edge is Chromium Edge: microsoft:edge is EdgeHTML
-        assert sorted(
-            IdentityDecision.objects.filter(source="shipped").values_list(
-                "family", "match_key", "product"
-            )
-        ) == [
-            ("macos", "microsoft edge", "microsoft:edge_chromium"),
-            ("windows", "microsoft edge", "microsoft:edge_chromium"),
-        ]
-        assert sorted(CpeAlias.objects.values_list("product", "alias")) == [
-            ("zoom:meetings", "zoom:zoom"),
-            ("zoom:zoom", "zoom:meetings"),
-        ]
+        assert not IdentityDecision.objects.exists()
+        assert not CpeAlias.objects.exists()
         origins = {
             name: (distribution, extended)
             for name, distribution, extended in PackageOrigin.objects.values_list(
