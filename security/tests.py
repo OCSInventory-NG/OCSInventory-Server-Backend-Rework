@@ -2317,6 +2317,20 @@ class TestDataAndScanApart:
         assert self.states(asset, later + timedelta(days=7))["curl"] == "checked"
         assert self.states(asset, later + timedelta(days=9))["curl"] == "pending"
 
+    def test_new_data_every_day_does_not_extend_the_wait(self, debian_data):
+        asset, _ = self.scan_then_new_data(days=1)
+        today = NOW + timedelta(days=9)
+        loaded(SOURCE_OSV_DEBIAN, at=today, ecosystems=["Debian:12"])
+
+        assert self.states(asset, today)["curl"] == "pending"
+
+    def test_the_wait_counts_from_the_last_full_scan(self, debian_data):
+        # the data had not changed for 20 days: the full scan kept the evaluation
+        loaded(SOURCE_OSV_DEBIAN, at=NOW - timedelta(days=20), ecosystems=["Debian:12"])
+        asset, later = self.scan_then_new_data(days=1)
+
+        assert self.states(asset, later + timedelta(days=1))["curl"] == "checked"
+
     def test_a_machine_inventoried_again_is_checked_with_the_new_data(
         self, debian_data
     ):

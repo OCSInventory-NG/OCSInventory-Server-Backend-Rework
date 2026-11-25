@@ -10,7 +10,7 @@ aliases, within the loaded years.
 """
 
 from collections import defaultdict, namedtuple
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from django.db import transaction
 from django.utils import timezone
@@ -33,6 +33,7 @@ from security.models import (
     NvdMatch,
     OsvAdvisoryCve,
     OsvAffected,
+    ScanState,
     Vulnerability,
 )
 from security.sources import nvd, osv
@@ -57,7 +58,7 @@ MINOR_RATINGS = ("unimportant", "not yet assigned")
 # Identity statuses whose products are checked, per scheme
 COVERED = {"purl": ("matched",), "cpe": ("matched", "validated")}
 # The full scan runs weekly: an evaluation made with older data still counts
-# as checked while the newer data waits less than this for it
+# as checked this long after its data or the last full scan, the later
 RESCAN_GRACE = timedelta(days=8)
 
 
@@ -98,6 +99,11 @@ class Context:
         for product, alias in CpeAlias.objects.values_list("product", "alias"):
             self.aliases[product].add(alias)
         self.window = nvd.window(self.settings.nvd_years, self.now)
+        self.last_full_scan = (
+            ScanState.objects.order_by("id")
+            .values_list("last_full_scan", flat=True)
+            .first()
+        )
 
     # Keys and sources
 
@@ -152,15 +158,19 @@ class Context:
         """
         An evaluation that still stands: made with the current data, or with
         older data while the full scan has had less than RESCAN_GRACE to
-        bring it up to date.
+        bring it up to date, counted from its data or the last full scan.
         """
         if self.up_to_date(key, evaluation_sources):
             return True
         source = self.source(key)
         version = data_version(self.syncs[source])
-        if not (evaluation_sources or {}).get(source) or version is None:
+        made_with = (evaluation_sources or {}).get(source)
+        if not made_with or version is None:
             return False
-        return self.now - version <= RESCAN_GRACE
+        since = datetime.fromisoformat(made_with)
+        if self.last_full_scan is not None:
+            since = max(since, self.last_full_scan)
+        return self.now - since <= RESCAN_GRACE
 
     def loaded(self, key):
         return self.states[self.source(key)] != NEVER_LOADED
