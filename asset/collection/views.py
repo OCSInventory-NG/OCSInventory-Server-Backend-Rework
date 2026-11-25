@@ -2,6 +2,7 @@ import ipaddress
 import logging
 import re
 
+from accountinfo.services import AgentAdminData
 from accountinfo.views import AccountinfoDataViewSet
 from asset.collection.serializers import (
     CollectionErrorSerializer,
@@ -13,6 +14,7 @@ from asset.inventory_field.models import InventoryField
 from asset.inventory_section.models import InventorySection
 from asset.services import ReconciliationService
 from config.models import Config
+from django.db import transaction
 from drf_spectacular.utils import extend_schema
 from inventory.field.models import Field
 from inventory.section.models import Section
@@ -177,9 +179,26 @@ class CollectionView(APIView):
 
         return False, None
 
+    def apply_admin_data(self, asset_instance, admin_data):
+        """Apply admin_data to the saved asset, never failing the inventory"""
+        if admin_data is None:
+            return
+        try:
+            with transaction.atomic():
+                AgentAdminData(self.LOGGER).apply(asset_instance, admin_data)
+        except Exception as e:
+            self.LOGGER.error(
+                "Error while applying admin data for device %s: %s",
+                asset_instance.name,
+                e,
+                extra={"classname": __name__},
+            )
+
     @extend_schema(
         description="Create an asset and its inventory (if template_inventory "
-        "is provided).",
+        "is provided)."
+        " Optional admin_data ({name: value}) fills the empty administrative"
+        " data of the asset.",
         request=InventoryBaseSerializer,
         responses={
             201: CollectionResponseSerializer,
@@ -204,6 +223,7 @@ class CollectionView(APIView):
             Response object
         """
         data = request.data
+        admin_data = data.get("admin_data")
         reconciliation_info = ReconciliationService().format_reconciliation_info(data)
         device_id = f"{data.get('name', 'unknown')} {reconciliation_info}"
 
@@ -266,6 +286,8 @@ class CollectionView(APIView):
                 {"error": f"Error while creating inventory: {e}"},
                 status=500,
             )
+
+        self.apply_admin_data(asset_instance, admin_data)
 
         # pre-fetch all Sections and Fields for this template
         section_objs = Section.objects.filter(template=templateId, is_active=True)
@@ -363,7 +385,9 @@ class CollectionView(APIView):
 
     @extend_schema(
         description="Update an asset and fully overwrite its inventory "
-        "(missing sections/fields are deleted).",
+        "(missing sections/fields are deleted)."
+        " Optional admin_data ({name: value}) fills the empty administrative"
+        " data of the asset.",
         request=InventoryBaseSerializer,
         responses={
             200: CollectionResponseSerializer,
@@ -390,6 +414,7 @@ class CollectionView(APIView):
             Response object
         """
         data = request.data
+        admin_data = data.get("admin_data")
         reconciliation_info = ReconciliationService().format_reconciliation_info(data)
         device_id = f"{data.get('name', 'unknown')} {reconciliation_info}"
 
@@ -453,6 +478,8 @@ class CollectionView(APIView):
             return Response(
                 {"error": f"Error while updating inventory: {e}"}, status=500
             )
+
+        self.apply_admin_data(asset_instance, admin_data)
 
         section_objs = Section.objects.filter(
             template=asset_instance.template_id, is_active=True
@@ -551,7 +578,9 @@ class CollectionView(APIView):
 
     @extend_schema(
         description="Partially update an asset and its inventory (only the "
-        "provided sections/fields are affected).",
+        "provided sections/fields are affected)."
+        " Optional admin_data ({name: value}) fills the empty administrative"
+        " data of the asset.",
         request=InventoryBaseSerializer,
         responses={
             200: CollectionResponseSerializer,
@@ -571,6 +600,7 @@ class CollectionView(APIView):
         template_section will be created for the same asset.
         """
         data = request.data
+        admin_data = data.get("admin_data")
         reconciliation_info = ReconciliationService().format_reconciliation_info(data)
         device_id = f"{data.get('name', 'unknown')} {reconciliation_info}"
 
@@ -636,6 +666,8 @@ class CollectionView(APIView):
                 extra={"classname": __name__},
             )
             return Response({"error": f"Error updating asset: {e}"}, status=500)
+
+        self.apply_admin_data(asset_instance, admin_data)
 
         # pre-fetch Sections and Fields
         section_objs = Section.objects.filter(
