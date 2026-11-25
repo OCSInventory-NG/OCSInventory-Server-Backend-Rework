@@ -1,10 +1,11 @@
+from asset.inventory_base.scope import AssetScopeMixin
 from asset.inventory_section.models import InventorySection
 from asset.inventory_section.serializers import InventorySectionSerializer
 from ocsinventory_backend.ocs_framework import viewsets
 from permission.permissions import DefaultModelPermissions
 
 
-class InventorySectionViewSet(viewsets.OCSViewSet):
+class InventorySectionViewSet(AssetScopeMixin, viewsets.OCSViewSet):
     """
     Inventory Section ViewSet
 
@@ -14,6 +15,7 @@ class InventorySectionViewSet(viewsets.OCSViewSet):
 
     # Need to have permissions to consult
     permission_classes = [DefaultModelPermissions]
+    asset_scope_field = "base"
 
     queryset = InventorySection.objects.all()
     serializer_class = InventorySectionSerializer
