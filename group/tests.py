@@ -39,9 +39,7 @@ class TestGroupAssetScopeApi:
         group = Group.objects.create(name="helpdesk")
         assert api_client.get(f"/groups/{group.id}/").data["asset_groups"] is None
 
-    def test_expand_lists_asset_group_names(
-        self, api_client, scope_setup, admin_user
-    ):
+    def test_expand_lists_asset_group_names(self, api_client, scope_setup, admin_user):
         lyon = AssetGroup.objects.create(
             name="Lyon", user=admin_user, visibility="public"
         )
