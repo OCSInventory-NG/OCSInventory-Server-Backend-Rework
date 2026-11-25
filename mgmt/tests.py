@@ -6,7 +6,7 @@ from django.core.management import call_command
 
 class LongFailure:
     def execute(self):
-        raise RuntimeError("x" * 1000)
+        raise RuntimeError("é" * 1000)
 
 
 @pytest.mark.django_db
@@ -22,6 +22,7 @@ def test_a_long_error_is_kept_in_the_history(monkeypatch):
     call_command("automation", force=task.name)
 
     failure = History.objects.get(scheduler=task, status=2)
-    assert len(failure.comment) == 255
+    # a SQL_ASCII database counts bytes, not characters
+    assert len(failure.comment.encode()) <= 255
     assert failure.comment.startswith(f"Task {task.name} failed")
-    assert failure.comment.endswith("…")
+    assert failure.comment.endswith("...")
