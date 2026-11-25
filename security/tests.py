@@ -1935,6 +1935,49 @@ class TestApi:
 
     def test_exposures_need_a_machine(self, api_client):
         assert api_client.get("/vulnerability_exposures/").status_code == 400
+        assert api_client.get("/vulnerability_exposures/summary/").status_code == 400
+
+    def test_a_machine_exposures_page_sort_and_search(self, api_client, two_vulns):
+        _, second = two_vulns
+
+        def listed(query):
+            response = api_client.get(
+                f"/vulnerability_exposures/?asset={second.id}&{query}"
+            )
+            rows = response.data["results"] if "limit" in query else response.data
+            return [(row["vuln_id"], row["product"]) for row in rows]
+
+        # the priority order, then the vulnerability and the product
+        assert listed("limit=1&offset=1") == [("CVE-2026-10", "libfoo")]
+        assert listed("ordering=-version") == [
+            ("CVE-2026-10", "foo-bin"),
+            ("CVE-2026-10", "libfoo"),
+            ("CVE-2026-11", "bar"),
+        ]
+        assert listed("search=foo tools") == [("CVE-2026-10", "foo-bin")]
+        assert listed("search=CVE-2026-11") == [("CVE-2026-11", "bar")]
+        assert (
+            api_client.get(
+                f"/vulnerability_exposures/?asset={second.id}&ordering=asset"
+            ).status_code
+            == 400
+        )
+
+    def test_a_machine_exposures_split_on_the_exclusions(self, api_client, two_vulns):
+        _, second = two_vulns
+        Exclusion.objects.create(asset=second, vuln_id="CVE-2026-11", comment="n/a")
+
+        def listed(excluded):
+            rows = api_client.get(
+                f"/vulnerability_exposures/?asset={second.id}&excluded={excluded}"
+            ).data
+            return sorted((row["vuln_id"], row["product"]) for row in rows)
+
+        assert listed("no") == [("CVE-2026-10", "foo-bin"), ("CVE-2026-10", "libfoo")]
+        assert listed("yes") == [("CVE-2026-11", "bar")]
+        summary = api_client.get(f"/vulnerability_exposures/summary/?asset={second.id}")
+        # exposures, but vulnerabilities with a fix
+        assert summary.data == {"open": 2, "fix": 1, "excluded": 1}
 
     def test_exclusions_need_a_comment_and_one_target(self, api_client, admin_user):
         asset = make_asset("a")

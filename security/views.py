@@ -181,14 +181,32 @@ class ExposureViewSet(viewsets.OCSViewSet):
 
     def list(self, request, *args, **kwargs):
         params = request.query_params
-        rows = reading.asset_exposures(
-            _asset(params, required=True),
+        asset_id = _asset(params, required=True)
+        exposures = reading.asset_exposures(
+            asset_id,
             status=_choice(params, "status", ("open", "closed", "all")) or "open",
+            excluded=_yes_no(params, "excluded"),
+            search=params.get("search", ""),
+            ordering=_choice(
+                params,
+                "ordering",
+                [p + c for p in ("", "-") for c in reading.EXPOSURE_ORDERING],
+            ),
         )
-        page = self.paginate_queryset(rows)
+        page = self.paginate_queryset(exposures)
+        rows = reading.asset_exposure_rows(
+            exposures if page is None else page, asset_id
+        )
         if page is not None:
-            return self.get_paginated_response(page)
+            return self.get_paginated_response(rows)
         return Response(rows)
+
+    @action(detail=False, methods=["get"])
+    def summary(self, request):
+        """The counts of a machine's tiles and tabs."""
+        return Response(
+            reading.asset_exposure_counts(_asset(request.query_params, True))
+        )
 
     @action(detail=False, methods=["get"])
     def software(self, request):

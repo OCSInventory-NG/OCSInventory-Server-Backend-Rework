@@ -66,26 +66,6 @@ def priority(ordering=None):
     return configured or list(PRIORITY_CRITERIA)
 
 
-def _criterion(row, criterion):
-    """Larger first, unknown last."""
-    value = {
-        "kev": row["kev"],
-        "score": row["cvss_score"],
-        "epss": row["epss"],
-        "machines": row["machines"],
-    }[criterion]
-    if value is None:
-        return (1, 0)
-    return (0, -float(value))
-
-
-def sort_rows(rows, order):
-    rows.sort(
-        key=lambda row: tuple(_criterion(row, c) for c in order) + (row["vuln_id"],)
-    )
-    return rows
-
-
 # The priority criteria in SQL: larger first, unknown last
 RANKING = {
     "kev": F("vulnerability__kev").desc(),
@@ -366,9 +346,31 @@ def vulnerability_detail(vulnerability, now=None):
     }
 
 
-def asset_exposures(asset_id, status="open", now=None):
-    """A machine's exposures, open or closed, exclusions marked."""
-    exclusions = active_exclusions(now)
+# The columns of a machine's exposures and what they sort on
+EXPOSURE_ORDERING = {
+    "vuln_id": "vulnerability__vuln_id",
+    "summary": "vulnerability__summary",
+    "score": "vulnerability__cvss_score",
+    "kev": "vulnerability__kev",
+    "epss": "vulnerability__epss",
+    "software": "software_name",
+    "version": "version",
+    "fix": "fixed_version",
+    "method": "method",
+    "first_seen": "first_seen",
+    "closed_on": "closed_at",
+    "resolution": "resolution",
+}
+
+
+def asset_exposures(
+    asset_id, status="open", excluded=None, search="", ordering=None, now=None
+):
+    """
+    A machine's exposures, open or closed, those an exclusion leaves out or
+    in when excluded is given: in the priority order, or on a column of
+    EXPOSURE_ORDERING ("-" before it for descending). A queryset, paged in SQL.
+    """
     exposures = Exposure.objects.filter(asset_id=asset_id).select_related(
         "vulnerability"
     )
@@ -376,6 +378,41 @@ def asset_exposures(asset_id, status="open", now=None):
         exposures = exposures.filter(closed_at__isnull=True)
     elif status == "closed":
         exposures = exposures.filter(closed_at__isnull=False)
+    if excluded is not None:
+        left_out = active_exclusions(now).left_out()
+        if excluded:
+            exposures = exposures.filter(left_out) if left_out else exposures.none()
+        elif left_out:
+            exposures = exposures.exclude(left_out)
+    search = (search or "").strip()
+    if search:
+        exposures = exposures.filter(
+            Q(vulnerability__vuln_id__icontains=search)
+            | Q(vulnerability__summary__icontains=search)
+            | Q(software_name__icontains=search)
+            | Q(product__icontains=search)
+            | Q(version__icontains=search)
+            | Q(fixed_version__icontains=search)
+            | Q(advisory_id__icontains=search)
+        )
+    if ordering:
+        field = F(EXPOSURE_ORDERING[ordering.removeprefix("-")])
+        sort = [
+            (
+                field.desc(nulls_last=True)
+                if ordering.startswith("-")
+                else field.asc(nulls_last=True)
+            )
+        ]
+    else:
+        sort = [RANKING[c] for c in priority() if c != "machines"]
+    # a total order: a page never repeats nor skips a row
+    return exposures.order_by(*sort, "vulnerability__vuln_id", "product", "id")
+
+
+def asset_exposure_rows(exposures, asset_id, now=None):
+    """The rows of a machine's exposures, a page or all of them."""
+    exclusions = active_exclusions(now)
     names = dict(InventoryBase.objects.filter(id=asset_id).values_list("id", "name"))
     rows = []
     for exposure in exposures:
@@ -393,13 +430,27 @@ def asset_exposures(asset_id, status="open", now=None):
                 "level": vulnerability.level,
                 "kev": vulnerability.kev,
                 "epss": vulnerability.epss,
+                "machines": 1,
             }
         )
         rows.append(row)
-    order = priority()
-    for row in rows:
-        row["machines"] = 1
-    return sort_rows(rows, order)
+    return rows
+
+
+def asset_exposure_counts(asset_id, now=None):
+    """
+    A machine's open exposures, those an exclusion leaves out, and the
+    vulnerabilities with a fix among the others.
+    """
+    exposures = Exposure.objects.filter(asset_id=asset_id, closed_at__isnull=True)
+    shown = active_exclusions(now).exclude_from(exposures)
+    with_fix = shown.exclude(fixed_version="").values("vulnerability_id").distinct()
+    count = shown.count()
+    return {
+        "open": count,
+        "fix": with_fix.count(),
+        "excluded": exposures.count() - count,
+    }
 
 
 def sources(now=None):

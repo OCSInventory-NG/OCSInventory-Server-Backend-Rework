@@ -31,9 +31,15 @@ class ActiveExclusions:
         return bool(vuln_ids) and (WHOLE_SCAN in vuln_ids or vuln_id in vuln_ids)
 
     def exclude_from(self, exposures):
+        """The exposures these exclusions leave in."""
+        excluded = self.left_out()
+        return exposures.exclude(excluded) if excluded else exposures
+
+    def left_out(self):
         """
-        The exposures these exclusions leave in, filtered on machine and
-        vulnerability ids: faster than visible_exposures() on a large list.
+        The exposures these exclusions leave out, as a filter on machine and
+        vulnerability ids, empty when none: faster than visible_exposures() on
+        a large list.
         """
         whole_scan = self.scan_wide_assets()
         machines_of = defaultdict(set)
@@ -44,7 +50,7 @@ class ActiveExclusions:
         excluded = Q(asset_id__in=whole_scan) if whole_scan else Q()
         for vuln_id, asset_ids in machines_of.items():
             excluded |= Q(vulnerability__vuln_id=vuln_id, asset_id__in=asset_ids)
-        return exposures.exclude(excluded) if excluded else exposures
+        return excluded
 
 
 def in_force(now=None):
