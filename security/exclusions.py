@@ -30,15 +30,6 @@ class ActiveExclusions:
         vuln_ids = self.per_asset.get(asset_id)
         return bool(vuln_ids) and (WHOLE_SCAN in vuln_ids or vuln_id in vuln_ids)
 
-    def excluded_vulnerability_assets(self):
-        """{vuln_id: {asset_id}} of the per vulnerability exclusions."""
-        result = defaultdict(set)
-        for asset_id, vuln_ids in self.per_asset.items():
-            for vuln_id in vuln_ids:
-                if vuln_id != WHOLE_SCAN:
-                    result[vuln_id].add(asset_id)
-        return result
-
 
 def in_force(now=None):
     now = now or timezone.now()

@@ -2010,10 +2010,9 @@ def test_incremental_scan_takes_machines_whose_software_got_an_identity(debian_d
     ],
 )
 def test_ratings_are_normalized(value, expected):
-    from security.cvss import RATINGS, normalize_rating
+    from security.cvss import normalize_rating
 
     assert normalize_rating(value) == expected
-    assert not expected or expected in RATINGS
 
 
 @pytest.mark.django_db

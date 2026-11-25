@@ -1,6 +1,5 @@
 from collections import namedtuple
 from dataclasses import dataclass, field
-from typing import Protocol
 
 MATCHED = "matched"
 VALIDATED = "validated"
@@ -41,9 +40,3 @@ class IdentityResult:
     score: float | None = None
     candidates: list = field(default_factory=list)
     decision_id: int | None = None
-
-
-class Normalizer(Protocol):
-    family: str
-
-    def normalize(self, record: SoftwareRecord) -> IdentityResult: ...
