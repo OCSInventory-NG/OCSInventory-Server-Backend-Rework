@@ -306,15 +306,6 @@ def vcmp(a, b):
     return (ka > kb) - (ka < kb)
 
 
-# Known mistakes of the NVD data, never reported: {CVE: why}
-ERRATA = {
-    "CVE-2024-20701": (
-        "lists the SQL Server builds of the July 2024 security updates that fix"
-        " it (15.0.2116.2, 15.0.4382.1) as the vulnerable ones"
-    ),
-}
-
-
 def _major_digits(version):
     major = re.match(r"\d+", version or "")
     return len(major.group(0)) if major else 0
