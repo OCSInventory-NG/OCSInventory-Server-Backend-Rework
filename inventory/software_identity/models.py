@@ -64,20 +64,13 @@ FAMILY_CHOICES = (("windows", "windows"), ("macos", "macos"))
 class IdentityDecision(models.Model):
     """
     Catalog entry: the product of a Windows or macOS software name, for every
-    version and machine. An admin decision overrides a shipped one.
+    version and machine.
     """
-
-    SOURCE_SHIPPED = "shipped"
-    SOURCE_ADMIN = "admin"
-    SOURCE_CHOICES = ((SOURCE_SHIPPED, SOURCE_SHIPPED), (SOURCE_ADMIN, SOURCE_ADMIN))
 
     family = models.CharField(max_length=16, choices=FAMILY_CHOICES)
     match_key = models.CharField(max_length=255)
     # vendor:product of the CPE index, null means "no CPE"
     product = models.CharField(max_length=511, null=True, blank=True)
-    source = models.CharField(
-        max_length=8, choices=SOURCE_CHOICES, default=SOURCE_ADMIN
-    )
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL
     )
@@ -86,7 +79,7 @@ class IdentityDecision(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=["family", "match_key", "source"],
+                fields=["family", "match_key"],
                 name="unique_identity_decision",
             )
         ]
@@ -153,17 +146,10 @@ class CpeAlias(models.Model):
     its former name): the CVEs of the alias are read for the product too.
     """
 
-    SOURCE_SHIPPED = "shipped"
-    SOURCE_ADMIN = "admin"
-    SOURCE_CHOICES = ((SOURCE_SHIPPED, SOURCE_SHIPPED), (SOURCE_ADMIN, SOURCE_ADMIN))
-
     # vendor:product of the identity
     product = models.CharField(max_length=511)
     # vendor:product whose CVEs are read for it
     alias = models.CharField(max_length=511)
-    source = models.CharField(
-        max_length=8, choices=SOURCE_CHOICES, default=SOURCE_ADMIN
-    )
 
     class Meta:
         constraints = [

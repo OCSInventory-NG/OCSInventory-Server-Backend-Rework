@@ -571,13 +571,12 @@ def make_entry(name, version, family, key, installations=1, **values):
 
 
 @pytest.fixture
-def shipped_edge(db):
-    """A shipped decision for Edge: Chromium Edge, not EdgeHTML."""
+def edge_decision(db):
+    """A decision for Edge: Chromium Edge, not EdgeHTML."""
     return IdentityDecision.objects.create(
         family="windows",
         match_key="microsoft edge",
         product="microsoft:edge_chromium",
-        source="shipped",
     )
 
 
@@ -642,8 +641,8 @@ class TestIdentityService:
         identity = SoftwareIdentity.objects.get(entry=entry)
         assert (identity.status, identity.reason) == ("unsupported", "unknown_platform")
 
-    def test_windows_entries_use_the_index_and_shipped_decisions(
-        self, cpe_index, shipped_edge
+    def test_windows_entries_use_the_index_and_the_decisions(
+        self, cpe_index, edge_decision
     ):
         firefox = make_entry(
             "Mozilla Firefox (x64 fr)",
@@ -667,10 +666,10 @@ class TestIdentityService:
             "validated",
             "microsoft:edge_chromium",
         )
-        assert edge_identity.decision.source == "shipped"
+        assert edge_identity.decision == edge_decision
 
     def test_a_new_index_recomputes_undecided_identities_only(
-        self, cpe_index, shipped_edge
+        self, cpe_index, edge_decision
     ):
         make_entry("Mozilla Firefox (x64 fr)", "154.0.1", "windows", "windows")
         make_entry("Microsoft Edge", "152.0.4191.53", "windows", "windows")
@@ -706,23 +705,6 @@ class TestIdentityService:
         assert set(SoftwareIdentity.objects.values_list("status", flat=True)) == {
             "validated"
         }
-
-    def test_revert_falls_back_on_the_shipped_decision(
-        self, cpe_index, admin_user, shipped_edge
-    ):
-        entry = make_entry("Microsoft Edge", "152.0.4191.53", "windows", "windows")
-        IdentityService.refresh()
-        decision = IdentityService.decide("windows", "microsoft edge", None, admin_user)
-        assert SoftwareIdentity.objects.get(entry=entry).status == "none"
-
-        IdentityService.revert(decision)
-
-        identity = SoftwareIdentity.objects.get(entry=entry)
-        assert (identity.status, identity.decision.source) == ("validated", "shipped")
-
-    def test_shipped_decisions_cannot_be_reverted(self, shipped_edge):
-        with pytest.raises(ValueError):
-            IdentityService.revert(shipped_edge)
 
     def test_decide_and_revert_without_index(self, admin_user):
         entry = make_entry("Kyber", "1.2", "windows", "windows")
@@ -951,7 +933,6 @@ class TestIdentityApi:
         )
 
         assert response.status_code == 201
-        assert response.data["source"] == "admin"
         assert SoftwareIdentity.objects.get(entry=entry).status == "validated"
 
     def test_decision_on_an_unknown_product_is_rejected(self, api_client, cpe_index):
@@ -986,12 +967,6 @@ class TestIdentityApi:
 
         assert response.status_code == 201
         assert IdentityDecision.objects.get(match_key="x").product is None
-
-    def test_shipped_decisions_cannot_be_deleted(self, api_client, shipped_edge):
-        response = api_client.delete(f"/software_identity_decisions/{shipped_edge.id}/")
-
-        assert response.status_code == 400
-        assert IdentityDecision.objects.filter(id=shipped_edge.id).exists()
 
     def test_admin_decisions_can_be_deleted(self, api_client, admin_user):
         decision = IdentityService.decide("windows", "kyber", None, admin_user)

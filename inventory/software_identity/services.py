@@ -82,7 +82,6 @@ class IdentityService:
         decision, _ = IdentityDecision.objects.update_or_create(
             family=family,
             match_key=key,
-            source=IdentityDecision.SOURCE_ADMIN,
             defaults={"product": product, "user": user},
         )
         cls._recompute(family, key)
@@ -91,24 +90,19 @@ class IdentityService:
     @classmethod
     @transaction.atomic
     def revert(cls, decision):
-        if decision.source != IdentityDecision.SOURCE_ADMIN:
-            raise ValueError("Shipped decisions cannot be deleted")
         family, key = decision.family, decision.match_key
         decision.delete()
         cls._recompute(family, key)
 
     @staticmethod
     def effective_decisions():
-        """
-        {(family, match_key): EffectiveDecision}, admin decisions over shipped ones.
-        """
-        decisions = {}
-        for source in (IdentityDecision.SOURCE_SHIPPED, IdentityDecision.SOURCE_ADMIN):
-            for decision in IdentityDecision.objects.filter(source=source):
-                decisions[(decision.family, decision.match_key)] = EffectiveDecision(
-                    decision.id, decision.product
-                )
-        return decisions
+        """{(family, match_key): EffectiveDecision}"""
+        return {
+            (decision.family, decision.match_key): EffectiveDecision(
+                decision.id, decision.product
+            )
+            for decision in IdentityDecision.objects.all()
+        }
 
     @staticmethod
     def thresholds():

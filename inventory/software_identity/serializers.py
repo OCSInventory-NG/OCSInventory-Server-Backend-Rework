@@ -46,14 +46,13 @@ class IdentityDecisionSerializer(ModelSerializer):
             "family",
             "match_key",
             "product",
-            "source",
             "user",
             "created_at",
         ]
-        read_only_fields = ["source", "user", "created_at"]
+        read_only_fields = ["user", "created_at"]
         # A missing product must not record "no CPE": null has to be explicit
         extra_kwargs = {"product": {"required": True, "allow_null": True}}
-        # decide() replaces an existing admin decision for the same key
+        # decide() replaces an existing decision for the same key
         validators = []
 
     def validate_product(self, value):
@@ -116,8 +115,7 @@ CPE_PRODUCT = re.compile(r"[^:\s]+:[^:\s]+")
 class CpeAliasSerializer(ModelSerializer):
     class Meta:
         model = CpeAlias
-        fields = ["id", "product", "alias", "source"]
-        read_only_fields = ["source"]
+        fields = ["id", "product", "alias"]
 
     @staticmethod
     def _product(value):

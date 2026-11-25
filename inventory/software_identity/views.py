@@ -154,17 +154,14 @@ class IdentityDecisionViewSet(viewsets.OCSViewSet):
     queryset = IdentityDecision.objects.all()
     serializer_class = IdentityDecisionSerializer
     model = IdentityDecision
-    filterset_fields = ["family", "match_key", "source", "product"]
-    ordering = ["family", "match_key", "source"]
+    filterset_fields = ["family", "match_key", "product"]
+    ordering = ["family", "match_key"]
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
     def perform_destroy(self, instance):
-        try:
-            IdentityService.revert(instance)
-        except ValueError as error:
-            raise ValidationError(str(error))
+        IdentityService.revert(instance)
 
 
 class CpeProductViewSet(viewsets.OCSViewSet):
@@ -209,11 +206,6 @@ class CpeAliasViewSet(viewsets.OCSViewSet):
     queryset = CpeAlias.objects.all()
     serializer_class = CpeAliasSerializer
     model = CpeAlias
-    filterset_fields = ["id", "product", "alias", "source"]
+    filterset_fields = ["id", "product", "alias"]
     search_fields = ["product", "alias"]
     ordering = ["product", "alias"]
-
-    def perform_destroy(self, instance):
-        if instance.source != CpeAlias.SOURCE_ADMIN:
-            raise ValidationError("Shipped aliases cannot be deleted")
-        instance.delete()

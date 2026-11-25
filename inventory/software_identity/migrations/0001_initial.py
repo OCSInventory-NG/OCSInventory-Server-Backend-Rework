@@ -127,14 +127,6 @@ class Migration(migrations.Migration):
                 ),
                 ("product", models.CharField(max_length=511)),
                 ("alias", models.CharField(max_length=511)),
-                (
-                    "source",
-                    models.CharField(
-                        choices=[("shipped", "shipped"), ("admin", "admin")],
-                        default="admin",
-                        max_length=8,
-                    ),
-                ),
             ],
             options={
                 "constraints": [
@@ -227,14 +219,6 @@ class Migration(migrations.Migration):
                 ),
                 ("match_key", models.CharField(max_length=255)),
                 ("product", models.CharField(blank=True, max_length=511, null=True)),
-                (
-                    "source",
-                    models.CharField(
-                        choices=[("shipped", "shipped"), ("admin", "admin")],
-                        default="admin",
-                        max_length=8,
-                    ),
-                ),
                 ("created_at", models.DateTimeField(auto_now_add=True)),
                 (
                     "user",
@@ -331,7 +315,7 @@ class Migration(migrations.Migration):
         migrations.AddConstraint(
             model_name="identitydecision",
             constraint=models.UniqueConstraint(
-                fields=("family", "match_key", "source"),
+                fields=("family", "match_key"),
                 name="unique_identity_decision",
             ),
         ),
