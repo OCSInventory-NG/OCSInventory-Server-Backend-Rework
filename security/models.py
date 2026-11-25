@@ -387,6 +387,8 @@ class AssetSecurity(models.Model):
     low = models.IntegerField(default=0)
     unknown = models.IntegerField(default=0)
     updated_at = models.DateTimeField()
+    # When the scan last copied the findings to the machine
+    scanned_at = models.DateTimeField(null=True, blank=True)
 
 
 class ScanLock(models.Model):

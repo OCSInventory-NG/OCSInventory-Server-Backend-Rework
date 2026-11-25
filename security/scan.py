@@ -336,6 +336,7 @@ class ScanService:
             cls._evaluate(installations, context, products, counts)
             installations.load_evaluations()
             touched |= cls._expose(installations, batch, counts)
+            asset_security.mark_scanned(batch, now)
             progress(
                 f"Machines {start + 1} to {start + len(batch)} of {len(asset_ids)}:"
                 f" {counts['evaluated']} identities evaluated,"

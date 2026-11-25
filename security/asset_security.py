@@ -1,7 +1,8 @@
 """
 Each machine's security, stored for the asset list and the search: excluded
-from the scan, not scanned (not covered, or none of its software evaluated
-yet), else the worst level of its open vulnerabilities, or not vulnerable;
+from the scan, not scanned (not covered, not through the scan yet, or none of
+its software evaluated), else the worst level of its open vulnerabilities, or
+not vulnerable;
 with its open vulnerabilities (exclusions applied, one counted once whatever
 the products), those whose every open exposure has a fix, and per level.
 """
@@ -36,10 +37,14 @@ BATCH = 1000
 
 
 def _scanned(asset_ids):
-    """Machines with a product of their software evaluated, fresh data or not."""
+    """
+    Machines the scan went through, with a product of their software
+    evaluated, fresh data or not.
+    """
     return set(
         SoftwareDictionary.assets.through.objects.filter(
             inventorybase_id__in=asset_ids,
+            inventorybase__security__scanned_at__isnull=False,
             softwaredictionary__identity__product__in=Evaluation.objects.values(
                 "product"
             ),
@@ -98,6 +103,28 @@ def compute(asset_ids=None, now=None):
             **{name: counts[name] for name in LEVELS},
         )
     return result
+
+
+def mark_scanned(asset_ids, now):
+    """Records that the scan copied the findings to these machines."""
+    AssetSecurity.objects.bulk_create(
+        [
+            AssetSecurity(
+                asset_id=asset_id,
+                status=NOT_SCANNED,
+                rank=RANKS[NOT_SCANNED],
+                updated_at=now,
+                scanned_at=now,
+            )
+            for asset_id in InventoryBase.objects.filter(id__in=asset_ids).values_list(
+                "id", flat=True
+            )
+        ],
+        batch_size=BATCH,
+        update_conflicts=True,
+        unique_fields=["asset"],
+        update_fields=["scanned_at"],
+    )
 
 
 def refresh(asset_ids=None, now=None):

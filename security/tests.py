@@ -2203,6 +2203,21 @@ def test_machine_security_gives_the_worst_level_and_the_vulnerabilities(
 
 
 @pytest.mark.django_db
+def test_a_machine_is_not_scanned_before_its_own_scan(debian_data):
+    install(make_asset("a"), "curl", "8.0-1", CURL)
+    ScanService.run(now=NOW)
+    # the same curl, already evaluated for the first machine
+    new = make_asset("b")
+    install(new, "curl", "8.0-1", CURL)
+
+    asset_security.refresh(now=NOW)
+    assert asset_security.summaries([new.id])[0]["status"] == "not_scanned"
+
+    ScanService.run(asset_ids=[new.id], now=NOW)
+    assert asset_security.summaries([new.id])[0]["status"] == "medium"
+
+
+@pytest.mark.django_db
 def test_the_asset_list_sorts_on_the_machine_security(api_client):
     def stored(name, status, rank, cves):
         asset = make_asset(name)
