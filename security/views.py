@@ -99,13 +99,17 @@ class VulnerabilityViewSet(viewsets.OCSViewSet):
 
     def list(self, request, *args, **kwargs):
         params = request.query_params
-        rows, order = reading.vulnerability_rows(
+        filters = _filters(params)
+        ranked, order = reading.ranked_vulnerabilities(
             ordering=_list(params, "ordering", PRIORITY_CRITERIA) or None,
-            **_filters(params),
+            **filters,
         )
-        page = self.paginate_queryset(rows)
+        page = self.paginate_queryset(ranked)
+        rows = reading.vulnerability_page(
+            ranked if page is None else page, filters["family"], filters["asset_id"]
+        )
         if page is not None:
-            response = self.get_paginated_response(page)
+            response = self.get_paginated_response(rows)
         else:
             response = Response({"count": len(rows), "results": rows})
         response.data["ordering"] = order

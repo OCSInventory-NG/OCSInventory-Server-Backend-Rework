@@ -1179,6 +1179,44 @@ CURL = "pkg:deb/debian/curl"
 OPENSSL_RHEL = "pkg:rpm/redhat/openssl"
 
 
+def expose(asset, vulnerability, product, **fields):
+    """An exposure written directly, its fields as given."""
+    seen = fields.pop("seen", NOW)
+    values = {
+        "scheme": "purl",
+        "software_name": product,
+        "version": "1.0",
+        "platform_family": "deb",
+        "method": "osv",
+        "first_seen": seen,
+        "last_seen": seen,
+        **fields,
+    }
+    return Exposure.objects.create(
+        asset=asset, vulnerability=vulnerability, product=product, **values
+    )
+
+
+@pytest.fixture
+def two_vulns(db):
+    """
+    CVE-2026-10: critical, fixed (one fix on Ubuntu Pro), two products on two
+    machines; CVE-2026-11: no score, no fix, found by OSV and the NVD.
+    """
+    first, second = make_asset("a"), make_asset("b")
+    grouped = Vulnerability.objects.create(vuln_id="CVE-2026-10", cvss_score=9.8)
+    expose(first, grouped, "libfoo", fixed_version="1.1", seen=NOW - timedelta(days=2))
+    expose(second, grouped, "libfoo", fixed_version="1.1", fix_channel="ubuntu_pro")
+    expose(second, grouped, "foo-bin", version="2.0", software_name="Foo Tools")
+    expose(first, grouped, "libold", closed_at=NOW, resolution="fixed")
+    mixed = Vulnerability.objects.create(vuln_id="CVE-2026-11")
+    expose(
+        first, mixed, "bar", scheme="cpe", method="nvd_range", platform_family="windows"
+    )
+    expose(second, mixed, "bar")
+    return first, second
+
+
 @pytest.mark.django_db
 class TestScan:
     def test_findings_are_evaluated_once_and_copied_to_machines(self, debian_data):
@@ -1761,6 +1799,52 @@ class TestReading:
         assert reading.vulnerability_summary(now=NOW)["total"] == 0
         # exclusions are never stored on the exposures
         assert Exposure.objects.filter(closed_at__isnull=True).count() == 4
+
+    def test_a_row_groups_the_open_exposures_of_its_vulnerability(self, two_vulns):
+        rows, _ = reading.vulnerability_rows(now=NOW)
+
+        assert [(row["vuln_id"], row["machines"]) for row in rows] == [
+            ("CVE-2026-10", 2),
+            ("CVE-2026-11", 2),
+        ]
+        grouped, mixed = rows
+        assert [
+            (p["product"], p["version"], p["name"]) for p in grouped["products"]
+        ] == [("foo-bin", "2.0", "Foo Tools"), ("libfoo", "1.0", "libfoo")]
+        assert grouped["product_count"] == 2
+        assert grouped["fixed_versions"] == ["1.1"]
+        assert grouped["fix_channels"] == ["standard", "ubuntu_pro"]
+        assert (grouped["fix_available"], grouped["source"]) == (True, "osv")
+        assert grouped["first_seen"] == NOW - timedelta(days=2)
+        assert (mixed["fix_available"], mixed["fixed_versions"]) == (False, [])
+        assert (mixed["fix_channels"], mixed["source"]) == ([], "nvd")
+
+    def test_the_filters_keep_whole_vulnerabilities(self, two_vulns):
+        first, _ = two_vulns
+
+        def listed(**filters):
+            rows, _ = reading.vulnerability_rows(now=NOW, **filters)
+            return [(row["vuln_id"], row["machines"]) for row in rows]
+
+        assert listed(fix=True) == [("CVE-2026-10", 2)]
+        assert listed(fix=False) == [("CVE-2026-11", 2)]
+        assert listed(level_filter="critical") == [("CVE-2026-10", 2)]
+        assert listed(kev=True) == []
+        # the vulnerability id, a product or a software name, in any case
+        assert listed(search="cve-2026-11") == [("CVE-2026-11", 2)]
+        assert listed(search="FOO TOOLS") == [("CVE-2026-10", 2)]
+        assert listed(search="libfoo") == [("CVE-2026-10", 2)]
+        # a machine or a family narrows the exposures counted
+        assert listed(asset_id=first.id) == [("CVE-2026-10", 1), ("CVE-2026-11", 1)]
+        assert listed(family="windows") == [("CVE-2026-11", 1)]
+
+    def test_the_list_pages_in_the_priority_order(self, api_client, two_vulns):
+        response = api_client.get("/vulnerabilities/?limit=1&offset=1")
+
+        assert response.data["count"] == 2
+        assert [row["vuln_id"] for row in response.data["results"]] == ["CVE-2026-11"]
+        searched = api_client.get("/vulnerabilities/summary/?search=foo").data
+        assert (searched["total"], searched["machines"]) == (1, 2)
 
 
 @pytest.mark.django_db

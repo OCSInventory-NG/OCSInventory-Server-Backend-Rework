@@ -30,6 +30,22 @@ class ActiveExclusions:
         vuln_ids = self.per_asset.get(asset_id)
         return bool(vuln_ids) and (WHOLE_SCAN in vuln_ids or vuln_id in vuln_ids)
 
+    def exclude_from(self, exposures):
+        """
+        The exposures these exclusions leave in, filtered on machine and
+        vulnerability ids: faster than visible_exposures() on a large list.
+        """
+        whole_scan = self.scan_wide_assets()
+        machines_of = defaultdict(set)
+        for asset_id, vuln_ids in self.per_asset.items():
+            if asset_id not in whole_scan:
+                for vuln_id in vuln_ids:
+                    machines_of[vuln_id].add(asset_id)
+        excluded = Q(asset_id__in=whole_scan) if whole_scan else Q()
+        for vuln_id, asset_ids in machines_of.items():
+            excluded |= Q(vulnerability__vuln_id=vuln_id, asset_id__in=asset_ids)
+        return exposures.exclude(excluded) if excluded else exposures
+
 
 def in_force(now=None):
     now = now or timezone.now()

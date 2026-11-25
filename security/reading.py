@@ -7,7 +7,7 @@ state of its software; the coverage of the fleet.
 from collections import Counter, defaultdict
 
 from asset.inventory_base.models import InventoryBase
-from django.db.models import Max
+from django.db.models import Count, F, Max, Q
 from security import config as security_config
 from security.config import PRIORITY_CRITERIA
 from security.evaluation import Context
@@ -86,7 +86,26 @@ def sort_rows(rows, order):
     return rows
 
 
-def _rows(
+# The priority criteria in SQL: larger first, unknown last
+RANKING = {
+    "kev": F("vulnerability__kev").desc(),
+    "score": F("vulnerability__cvss_score").desc(nulls_last=True),
+    "epss": F("vulnerability__epss").desc(nulls_last=True),
+    "machines": F("machines").desc(),
+}
+
+
+def _exposures(family=None, asset_id=None, now=None):
+    """The open exposures, of a machine or a family when given, exclusions applied."""
+    exposures = Exposure.objects.filter(closed_at__isnull=True)
+    if asset_id is not None:
+        exposures = exposures.filter(asset_id=asset_id)
+    if family:
+        exposures = exposures.filter(platform_family=family)
+    return active_exclusions(now).exclude_from(exposures)
+
+
+def _matching(
     level_filter=None,
     fix=None,
     family=None,
@@ -96,24 +115,57 @@ def _rows(
     now=None,
 ):
     """
-    One row per vulnerability open on at least one machine, exclusions and
-    filters applied; each row keeps the ids of its machines under
-    "asset_ids".
+    The exposures of the vulnerabilities the filters keep: a vulnerability
+    is kept or left out whole, with all its products and machines.
     """
-    exclusions = active_exclusions(now)
-    exposures = Exposure.objects.filter(closed_at__isnull=True)
-    if asset_id is not None:
-        exposures = exposures.filter(asset_id=asset_id)
-    if family:
-        exposures = exposures.filter(platform_family=family)
-    vuln_names = dict(
-        Vulnerability.objects.filter(
-            id__in=exposures.values("vulnerability_id")
-        ).values_list("id", "vuln_id")
+    exposures = _exposures(family, asset_id, now)
+    matching = exposures
+    if level_filter:
+        matching = matching.filter(vulnerability__level=level_filter)
+    if kev is not None:
+        matching = matching.filter(vulnerability__kev=kev)
+    if fix is not None:
+        fixed = exposures.exclude(fixed_version="").values("vulnerability_id")
+        matching = (
+            matching.filter(vulnerability_id__in=fixed)
+            if fix
+            else matching.exclude(vulnerability_id__in=fixed)
+        )
+    search = (search or "").strip()
+    if search:
+        named = exposures.filter(
+            Q(product__icontains=search) | Q(software_name__icontains=search)
+        ).values("vulnerability_id")
+        matching = matching.filter(
+            Q(vulnerability__vuln_id__icontains=search) | Q(vulnerability_id__in=named)
+        )
+    return matching
+
+
+def ranked_vulnerabilities(ordering=None, **filters):
+    """
+    (queryset, active order): one row per vulnerability the list shows, its
+    id and its machine count, in the active priority order, paged in SQL.
+    """
+    order = priority(ordering)
+    ranked = (
+        _matching(**filters)
+        .values("vulnerability_id")
+        .annotate(machines=Count("asset_id", distinct=True))
+        .order_by(*(RANKING[c] for c in order), "vulnerability__vuln_id")
     )
-    grouped = defaultdict(
+    return ranked, order
+
+
+def vulnerability_page(ranked, family=None, asset_id=None, now=None):
+    """
+    The rows of the list for ranked rows, a page or all of them: products and
+    fixes read for these vulnerabilities only.
+    """
+    ranked = list(ranked)
+    ids = [row["vulnerability_id"] for row in ranked]
+    details = defaultdict(
         lambda: {
-            "machines": set(),
             "products": {},
             "fixed": set(),
             "channels": set(),
@@ -121,8 +173,8 @@ def _rows(
             "first_seen": None,
         }
     )
+    exposures = _exposures(family, asset_id, now).filter(vulnerability_id__in=ids)
     for exposure in exposures.values(
-        "asset_id",
         "vulnerability_id",
         "product",
         "software_name",
@@ -130,85 +182,69 @@ def _rows(
         "fixed_version",
         "fix_channel",
         "method",
-        "rating",
         "first_seen",
     ):
-        vuln_id = vuln_names.get(exposure["vulnerability_id"], "")
-        if exclusions.excludes(exposure["asset_id"], vuln_id):
-            continue
-        group = grouped[exposure["vulnerability_id"]]
-        group["machines"].add(exposure["asset_id"])
-        group["products"][(exposure["product"], exposure["version"])] = exposure[
+        detail = details[exposure["vulnerability_id"]]
+        detail["products"][(exposure["product"], exposure["version"])] = exposure[
             "software_name"
         ]
         if exposure["fixed_version"]:
-            group["fixed"].add(exposure["fixed_version"])
-            group["channels"].add(exposure["fix_channel"])
-        group["methods"].add(exposure["method"])
-        if group["first_seen"] is None or exposure["first_seen"] < group["first_seen"]:
-            group["first_seen"] = exposure["first_seen"]
+            detail["fixed"].add(exposure["fixed_version"])
+            detail["channels"].add(exposure["fix_channel"])
+        detail["methods"].add(exposure["method"])
+        if (
+            detail["first_seen"] is None
+            or exposure["first_seen"] < detail["first_seen"]
+        ):
+            detail["first_seen"] = exposure["first_seen"]
 
-    search = (search or "").strip().lower()
+    vulnerabilities = Vulnerability.objects.in_bulk(ids)
     rows = []
-    for vulnerability in Vulnerability.objects.filter(id__in=list(grouped)):
-        group = grouped[vulnerability.id]
+    for row in ranked:
+        vulnerability = vulnerabilities[row["vulnerability_id"]]
+        detail = details[vulnerability.id]
         products = sorted(
             (
                 {"product": product, "version": version, "name": name}
-                for (product, version), name in group["products"].items()
+                for (product, version), name in detail["products"].items()
             ),
             key=lambda p: (p["product"], p["version"]),
         )
-        row = {
-            "vuln_id": vulnerability.vuln_id,
-            "summary": vulnerability.summary,
-            "kev": vulnerability.kev,
-            "kev_date_added": vulnerability.kev_date_added,
-            "cvss_score": vulnerability.cvss_score,
-            "cvss_version": vulnerability.cvss_version,
-            "epss": vulnerability.epss,
-            "epss_percentile": vulnerability.epss_percentile,
-            "level": vulnerability.level,
-            "distro_rating": vulnerability.distro_rating,
-            "source": "osv" if group["methods"] == {METHOD_OSV} else "nvd",
-            "machines": len(group["machines"]),
-            "products": products[:PRODUCTS_SHOWN],
-            "product_count": len(products),
-            "fix_available": bool(group["fixed"]),
-            "fixed_versions": sorted(group["fixed"])[:PRODUCTS_SHOWN],
-            "fix_channels": sorted(c or "standard" for c in group["channels"]),
-            "first_seen": group["first_seen"],
-            "asset_ids": group["machines"],
-        }
-        if level_filter and row["level"] != level_filter:
-            continue
-        if fix is not None and row["fix_available"] != fix:
-            continue
-        if kev is not None and row["kev"] != kev:
-            continue
-        if (
-            search
-            and search not in vulnerability.vuln_id.lower()
-            and not any(
-                search in p["product"].lower() or search in (p["name"] or "").lower()
-                for p in products
-            )
-        ):
-            continue
-        rows.append(row)
+        rows.append(
+            {
+                "vuln_id": vulnerability.vuln_id,
+                "summary": vulnerability.summary,
+                "kev": vulnerability.kev,
+                "kev_date_added": vulnerability.kev_date_added,
+                "cvss_score": vulnerability.cvss_score,
+                "cvss_version": vulnerability.cvss_version,
+                "epss": vulnerability.epss,
+                "epss_percentile": vulnerability.epss_percentile,
+                "level": vulnerability.level,
+                "distro_rating": vulnerability.distro_rating,
+                "source": "osv" if detail["methods"] == {METHOD_OSV} else "nvd",
+                "machines": row["machines"],
+                "products": products[:PRODUCTS_SHOWN],
+                "product_count": len(products),
+                "fix_available": bool(detail["fixed"]),
+                "fixed_versions": sorted(detail["fixed"])[:PRODUCTS_SHOWN],
+                "fix_channels": sorted(c or "standard" for c in detail["channels"]),
+                "first_seen": detail["first_seen"],
+            }
+        )
     return rows
 
 
 def vulnerability_rows(ordering=None, **filters):
     """
-    (rows, active order): the vulnerabilities shown by the
-    list, in the active priority order. Filters as _rows.
+    (rows, active order): the vulnerabilities shown by the list, all of them,
+    in the active priority order. Filters as _matching.
     """
-    rows = _rows(**filters)
-    for row in rows:
-        del row["asset_ids"]
-    order = priority(ordering)
-    return sort_rows(rows, order), order
+    ranked, order = ranked_vulnerabilities(ordering, **filters)
+    rows = vulnerability_page(
+        ranked, filters.get("family"), filters.get("asset_id"), filters.get("now")
+    )
+    return rows, order
 
 
 def vulnerability_summary(**filters):
@@ -218,18 +254,25 @@ def vulnerability_summary(**filters):
     machines the scan does not cover, counted apart (machine and family
     filters only: the others select vulnerabilities, not machines).
     """
-    rows = _rows(**filters)
-    levels = Counter(row["level"] for row in rows)
+    matching = _matching(**filters)
+    levels = Counter()
+    exploited = with_fix = 0
+    for row in matching.values(
+        "vulnerability_id", "vulnerability__level", "vulnerability__kev"
+    ).annotate(fixes=Count("id", filter=~Q(fixed_version=""))):
+        levels[row["vulnerability__level"]] += 1
+        exploited += row["vulnerability__kev"]
+        with_fix += row["fixes"] > 0
     asset_id = filters.get("asset_id")
     machines = machine_rows(
         None if asset_id is None else [asset_id], filters.get("family")
     )
     return {
-        "total": len(rows),
+        "total": sum(levels.values()),
         "levels": {name: levels[name] for name in LEVELS},
-        "kev": sum(1 for row in rows if row["kev"]),
-        "fix_available": sum(1 for row in rows if row["fix_available"]),
-        "machines": len(set().union(*(row["asset_ids"] for row in rows))),
+        "kev": exploited,
+        "fix_available": with_fix,
+        "machines": matching.values("asset_id").distinct().count(),
         "coverage": machine_counts(machines),
     }
 
