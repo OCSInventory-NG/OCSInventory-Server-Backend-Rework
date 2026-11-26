@@ -62,7 +62,6 @@ class SoftwareDictionarySerializer(ModelSerializer):
     """Serialize aggregated asset/software relationships"""
 
     assets = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-    installation_number = serializers.IntegerField(read_only=True)
     identity_status = serializers.CharField(
         source="identity.status", read_only=True, default=None
     )
@@ -72,6 +71,11 @@ class SoftwareDictionarySerializer(ModelSerializer):
     identity_identifier = serializers.CharField(
         source="identity.identifier", read_only=True, default=None
     )
+
+    installation_number = serializers.SerializerMethodField()
+
+    def get_installation_number(self, obj) -> int:
+        return getattr(obj, "visible_installation_number", obj.installation_number)
 
     class Meta:
         model = SoftwareDictionary

@@ -2,6 +2,7 @@ from collections import defaultdict
 
 from accountinfo.viewsets import AccountinfoSearchMixin
 from asset.inventory_base.models import InventoryBase
+from asset.inventory_base.scope import AssetScopeMixin
 from asset.inventory_base.serializers import InventoryBaseSerializer
 from asset.inventory_field.models import InventoryField
 from django.db.models import F, OuterRef, Q, Subquery
@@ -14,7 +15,9 @@ from rest_framework.response import Response
 from virtualcolumn.models import VirtualCol
 
 
-class InventoryBaseViewSet(AccountinfoSearchMixin, viewsets.OCSViewSet):
+class InventoryBaseViewSet(
+    AssetScopeMixin, AccountinfoSearchMixin, viewsets.OCSViewSet
+):
     """
     This class will define the view behavior
 

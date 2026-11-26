@@ -29,3 +29,6 @@ python-dateutil>=2.9
 
 # vulnerability data downloads: read(-1) fails before 2.2.2
 urllib3>=2.2.2
+
+# reading a legacy OCS 2.X database (import_legacy_accountinfo)
+PyMySQL>=1.1
