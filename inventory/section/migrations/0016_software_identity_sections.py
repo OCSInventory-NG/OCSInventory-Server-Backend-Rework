@@ -233,7 +233,7 @@ def remove_identity_sections(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("section", "0014_section_is_active"),
+        ("section", "0015_containers"),
     ]
 
     operations = [

@@ -233,7 +233,7 @@ def merge_duplicates(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("field", "0014_software_identity_fields"),
+        ("field", "0015_software_identity_fields"),
         ("inventory_base", "0001_initial"),
         ("software", "0006_legacy"),
     ]

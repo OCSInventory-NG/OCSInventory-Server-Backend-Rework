@@ -1343,7 +1343,7 @@ class TestDefaultTemplates:
 
     def test_command_changes_reverse_to_the_original_commands(self):
         migration = importlib.import_module(
-            "inventory.section.migrations.0015_software_identity_sections"
+            "inventory.section.migrations.0016_software_identity_sections"
         )
         for (template_name, _), changes in migration.SOFTWARES_CHANGES.items():
             target = default_target(template_name, "SOFTWARES")
@@ -1360,7 +1360,7 @@ class TestDefaultTemplates:
 @pytest.mark.django_db(transaction=True, serialized_rollback=True)
 def test_identity_migrations_reverse_and_apply_again():
     executor = MigrationExecutor(connection)
-    executor.migrate([("section", "0014_section_is_active")])
+    executor.migrate([("section", "0015_containers")])
 
     assert not Section.objects.filter(name="OS RELEASE").exists()
     assert "Source:" not in default_target("Linux (Debian based)", "SOFTWARES")

@@ -100,8 +100,8 @@ def remove_identity_fields(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("field", "0013_linux_extended_rhel"),
-        ("section", "0015_software_identity_sections"),
+        ("field", "0014_containers"),
+        ("section", "0016_software_identity_sections"),
     ]
 
     operations = [
