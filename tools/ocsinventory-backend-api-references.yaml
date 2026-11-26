@@ -1239,7 +1239,9 @@ paths:
   /asset/collection/:
     post:
       operationId: asset_collection_create
-      description: Create an asset and its inventory (if template_inventory is provided).
+      description: 'Create an asset and its inventory (if template_inventory is provided).
+        Optional admin_data ({name: value}) fills the empty administrative data of
+        the asset.'
       parameters:
       - in: query
         name: format
@@ -1306,8 +1308,9 @@ paths:
           description: ''
     put:
       operationId: asset_collection_update
-      description: Update an asset and fully overwrite its inventory (missing sections/fields
-        are deleted).
+      description: 'Update an asset and fully overwrite its inventory (missing sections/fields
+        are deleted). Optional admin_data ({name: value}) fills the empty administrative
+        data of the asset.'
       parameters:
       - in: query
         name: format
@@ -1374,8 +1377,9 @@ paths:
           description: ''
     patch:
       operationId: asset_collection_partial_update
-      description: Partially update an asset and its inventory (only the provided
-        sections/fields are affected).
+      description: 'Partially update an asset and its inventory (only the provided
+        sections/fields are affected). Optional admin_data ({name: value}) fills the
+        empty administrative data of the asset.'
       parameters:
       - in: query
         name: format
@@ -5946,11 +5950,7 @@ paths:
   /compliance/results/:
     get:
       operationId: compliance_results_list
-      description: |-
-        This class will define the general view behavior for the framework
-
-        Args:
-            viewsets ([ModelViewSet])
+      description: Limit the queryset to the machines the user may see, placed first
       parameters:
       - in: query
         name: asset
@@ -6081,11 +6081,7 @@ paths:
   /compliance/results/{id}/:
     get:
       operationId: compliance_results_retrieve
-      description: |-
-        This class will define the general view behavior for the framework
-
-        Args:
-            viewsets ([ModelViewSet])
+      description: Limit the queryset to the machines the user may see, placed first
       parameters:
       - in: query
         name: format
@@ -6116,11 +6112,7 @@ paths:
           description: ''
     put:
       operationId: compliance_results_update
-      description: |-
-        This class will define the general view behavior for the framework
-
-        Args:
-            viewsets ([ModelViewSet])
+      description: Limit the queryset to the machines the user may see, placed first
       parameters:
       - in: query
         name: format
@@ -6166,11 +6158,7 @@ paths:
           description: ''
     patch:
       operationId: compliance_results_partial_update
-      description: |-
-        This class will define the general view behavior for the framework
-
-        Args:
-            viewsets ([ModelViewSet])
+      description: Limit the queryset to the machines the user may see, placed first
       parameters:
       - in: query
         name: format
@@ -6215,11 +6203,7 @@ paths:
           description: ''
     delete:
       operationId: compliance_results_destroy
-      description: |-
-        This class will define the general view behavior for the framework
-
-        Args:
-            viewsets ([ModelViewSet])
+      description: Limit the queryset to the machines the user may see, placed first
       parameters:
       - in: query
         name: format
@@ -12716,12 +12700,20 @@ paths:
           enum:
           - json
           - xml
+      - in: query
+        name: id
+        schema:
+          type: integer
       - name: limit
         required: false
         in: query
         description: Number of results to return per page.
         schema:
           type: integer
+      - in: query
+        name: name
+        schema:
+          type: string
       - name: offset
         required: false
         in: query
@@ -15625,6 +15617,12 @@ components:
         is_protected:
           type: boolean
           writeOnly: true
+        asset_groups:
+          type: array
+          items:
+            type: integer
+          writeOnly: true
+          nullable: true
       required:
       - id
       - name
@@ -17679,6 +17677,12 @@ components:
         is_protected:
           type: boolean
           writeOnly: true
+        asset_groups:
+          type: array
+          items:
+            type: integer
+          writeOnly: true
+          nullable: true
     PatchedHistory:
       type: object
       description: This serialize class provide the API representation
