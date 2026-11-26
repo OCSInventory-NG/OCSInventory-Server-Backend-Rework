@@ -1,0 +1,228 @@
+{
+ "DEBIAN-CVE-2026-29167": {
+  "id": "DEBIAN-CVE-2026-29167",
+  "details": "Use After Free vulnerability in Apache HTTP Server with mod_ldap in per-directory configuration  This issue affects Apache HTTP Server: from 2.4.0 through 2.4.67.  Users are recommended to upgrade to version 2.4.68, which fixes the issue.",
+  "modified": "2026-10-01T03:02:34.682133081Z",
+  "published": "2026-06-08T16:16:37.967Z",
+  "upstream": [
+   "CVE-2026-29167"
+  ],
+  "affected": [
+   {
+    "package": {
+     "name": "apache2",
+     "ecosystem": "Debian:12",
+     "purl": "pkg:deb/debian/apache2?arch=source&distro=bookworm"
+    },
+    "ranges": [
+     {
+      "type": "ECOSYSTEM",
+      "events": [
+       {
+        "introduced": "0"
+       },
+       {
+        "fixed": "2.4.68-1~deb12u1"
+       }
+      ]
+     }
+    ],
+    "ecosystem_specific": {
+     "urgency": "not yet assigned"
+    }
+   },
+   {
+    "package": {
+     "name": "apache2",
+     "ecosystem": "Debian:13",
+     "purl": "pkg:deb/debian/apache2?arch=source&distro=trixie"
+    },
+    "ranges": [
+     {
+      "type": "ECOSYSTEM",
+      "events": [
+       {
+        "introduced": "0"
+       },
+       {
+        "fixed": "2.4.68-1~deb13u1"
+       }
+      ]
+     }
+    ],
+    "ecosystem_specific": {
+     "urgency": "not yet assigned"
+    }
+   },
+   {
+    "package": {
+     "name": "apache2",
+     "ecosystem": "Debian:14",
+     "purl": "pkg:deb/debian/apache2?arch=source&distro=forky"
+    },
+    "ranges": [
+     {
+      "type": "ECOSYSTEM",
+      "events": [
+       {
+        "introduced": "0"
+       },
+       {
+        "fixed": "2.4.68-1"
+       }
+      ]
+     }
+    ],
+    "ecosystem_specific": {
+     "urgency": "not yet assigned"
+    }
+   }
+  ],
+  "severity": [
+   {
+    "type": "CVSS_V3",
+    "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
+   }
+  ]
+ },
+ "UBUNTU-CVE-2026-13608": {
+  "id": "UBUNTU-CVE-2026-13608",
+  "details": "A flaw in the libcurl SASL negotiation for LDAP authentication allows an incomplete handshake sequence to be misinterpreted as a successful cryptographic verification. An attacker executing a Man-in-the-Middle (MITM) attack can inject a premature or shortcut response that bypasses complete peer vali",
+  "modified": "2026-09-26T04:30:03.240144998Z",
+  "published": "2026-09-06T18:17:00Z",
+  "related": [
+   "USN-8820-1"
+  ],
+  "upstream": [
+   "CVE-2026-13608"
+  ],
+  "affected": [
+   {
+    "package": {
+     "name": "curl",
+     "ecosystem": "Ubuntu:24.04:LTS",
+     "purl": "pkg:deb/ubuntu/curl?arch=source&distro=noble"
+    },
+    "ranges": [
+     {
+      "type": "ECOSYSTEM",
+      "events": [
+       {
+        "introduced": "0"
+       },
+       {
+        "fixed": "8.5.0-2ubuntu10.15"
+       }
+      ]
+     }
+    ],
+    "ecosystem_specific": {
+     "binaries": [
+      {
+       "binary_name": "curl",
+       "binary_version": "8.5.0-2ubuntu10.15"
+      },
+      {
+       "binary_version": "8.5.0-2ubuntu10.15",
+       "binary_name": "libcurl3t64-gnutls"
+      },
+      {
+       "binary_name": "libcurl4t64",
+       "binary_version": "8.5.0-2ubuntu10.15"
+      }
+     ],
+     "availability": "No subscription required"
+    }
+   },
+   {
+    "package": {
+     "name": "curl",
+     "ecosystem": "Ubuntu:26.04:LTS",
+     "purl": "pkg:deb/ubuntu/curl?arch=source&distro=resolute"
+    },
+    "ranges": [
+     {
+      "type": "ECOSYSTEM",
+      "events": [
+       {
+        "introduced": "0"
+       },
+       {
+        "fixed": "8.18.0-1ubuntu2.7"
+       }
+      ]
+     }
+    ],
+    "ecosystem_specific": {
+     "binaries": [
+      {
+       "binary_name": "curl",
+       "binary_version": "8.18.0-1ubuntu2.7"
+      },
+      {
+       "binary_name": "libcurl3t64-gnutls",
+       "binary_version": "8.18.0-1ubuntu2.7"
+      },
+      {
+       "binary_name": "libcurl4t64",
+       "binary_version": "8.18.0-1ubuntu2.7"
+      }
+     ],
+     "availability": "No subscription required"
+    }
+   }
+  ],
+  "severity": [
+   {
+    "type": "CVSS_V3",
+    "score": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N"
+   },
+   {
+    "type": "Ubuntu",
+    "score": "medium"
+   }
+  ]
+ },
+ "RLSA-2026:42736": {
+  "id": "RLSA-2026:42736",
+  "summary": "Important: acl security update",
+  "details": "Access Control Lists (ACLs) are used to define fine-grained discretionary access rights for files and directories. The acl packages contain the getfacl and setfacl utilities needed for manipulating access control lists.\n\nSecurity Fix(es):\n\n* acl: Symlink traversal privilege escalation via libacl fun",
+  "modified": "2026-07-22T12:30:07.066520967Z",
+  "published": "2026-07-22T12:03:41.844500Z",
+  "upstream": [
+   "CVE-2026-54369",
+   "CVE-2026-54370"
+  ],
+  "affected": [
+   {
+    "package": {
+     "name": "acl",
+     "ecosystem": "Rocky Linux:9",
+     "purl": "pkg:rpm/rocky-linux/acl?distro=rocky-linux-9&epoch=0"
+    },
+    "ranges": [
+     {
+      "type": "ECOSYSTEM",
+      "events": [
+       {
+        "introduced": "0"
+       },
+       {
+        "fixed": "0:2.4.0-1.el9_8"
+       }
+      ],
+      "database_specific": {
+       "yum_repository": "BaseOS"
+      }
+     }
+    ]
+   }
+  ],
+  "severity": [
+   {
+    "type": "CVSS_V3",
+    "score": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:N"
+   }
+  ]
+ }
+}

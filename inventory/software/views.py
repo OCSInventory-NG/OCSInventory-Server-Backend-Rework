@@ -3,8 +3,13 @@ from asset.inventory_base.scope import visible_asset_ids_for
 from django import forms
 from django.db.models import Count, Prefetch, Q
 from django_filters import rest_framework as filters
-from inventory.software.models import SoftwareDictionary, SoftwareMapping
+from inventory.software.models import (
+    DistroRelease,
+    SoftwareDictionary,
+    SoftwareMapping,
+)
 from inventory.software.serializers import (
+    DistroReleaseSerializer,
     SoftwareDictionarySerializer,
     SoftwareMappingSerializer,
 )
@@ -31,6 +36,16 @@ class SoftwareMappingViewSet(viewsets.OCSViewSet):
         "major_version",
         "minor_version",
         "patch_version",
+        "architecture",
+        "package_format",
+        "source_package",
+        "source_version",
+        "package_origin",
+        "os_id",
+        "os_like",
+        "os_release",
+        "os_codename",
+        "running_kernel",
     ]
 
 
@@ -51,6 +66,14 @@ class SoftwareDictionaryFilterSet(filters.FilterSet):
             "major_version",
             "minor_version",
             "patch_version",
+            "platform_family",
+            "platform_key",
+            "architecture",
+            "package_format",
+            "source_package",
+            "source_version",
+            "package_origin",
+            "identity__status",
         ]
 
     def filter_installation_number(self, queryset, name, value):
@@ -63,7 +86,7 @@ class SoftwareDictionaryFilterSet(filters.FilterSet):
 class SoftwareDictionaryViewSet(viewsets.OCSViewSet):
     permission_classes = [DefaultModelPermissions]
 
-    queryset = SoftwareDictionary.objects.all()
+    queryset = SoftwareDictionary.objects.select_related("identity")
     serializer_class = SoftwareDictionarySerializer
     model = SoftwareDictionary
     search_fields = [
@@ -73,6 +96,10 @@ class SoftwareDictionaryViewSet(viewsets.OCSViewSet):
         "major_version",
         "minor_version",
         "patch_version",
+        "platform_key",
+        "source_package",
+        "source_version",
+        "package_origin",
     ]
     ordering_fields = [
         "id",
@@ -82,6 +109,13 @@ class SoftwareDictionaryViewSet(viewsets.OCSViewSet):
         "major_version",
         "minor_version",
         "patch_version",
+        "platform_family",
+        "platform_key",
+        "architecture",
+        "package_format",
+        "source_package",
+        "source_version",
+        "package_origin",
         "installation_number",
     ]
     filterset_class = SoftwareDictionaryFilterSet
@@ -115,3 +149,11 @@ class SoftwareDictionaryViewSet(viewsets.OCSViewSet):
             direction = "-" if ordering.startswith("-") else ""
             queryset = queryset.order_by(f"{direction}{VISIBLE_COUNT}", "id")
         return queryset
+
+
+class DistroReleaseViewSet(viewsets.OCSViewSet):
+    permission_classes = [DefaultModelPermissions]
+    queryset = DistroRelease.objects.all()
+    serializer_class = DistroReleaseSerializer
+    model = DistroRelease
+    filterset_fields = ["id", "base", "version", "codename"]

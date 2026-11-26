@@ -33,7 +33,11 @@ class SearchConditionSerializer(serializers.Serializer):
     object = serializers.CharField(
         help_text="Target model key, e.g. 'InventoryBase', 'AccountinfoConfig', "
         "'results', 'logs', 'snmpscanner', 'inventory_sections', "
-        "'software_dictionary_entries'."
+        "'software_dictionary_entries', 'vulnerabilities' (open vulnerabilities, "
+        "exclusions applied: vuln_id, level, cvss_score, epss, kev, "
+        "fix_available, software_name, version, first_seen) or 'security' "
+        "(the machine: status, cves, cves_fixable); these two need the "
+        "permission to see the vulnerabilities."
     )
     route = serializers.CharField(
         required=False, help_text="Frontend route associated with the condition."
@@ -44,8 +48,9 @@ class SearchConditionSerializer(serializers.Serializer):
         help_text="Field type hint, e.g. 'string', 'select', 'checkbox'.",
     )
     operator = serializers.CharField(
-        help_text="Lookup operator, e.g. 'exact', 'iexact', 'icontains', "
-        "'istartswith', 'iendswith'."
+        help_text="Lookup operator: 'exact', 'iexact', 'contains', 'icontains', "
+        "'startswith', 'istartswith', 'endswith', 'iendswith', 'gt', 'gte', "
+        "'lt', 'lte'."
     )
     value = serializers.JSONField(help_text="Value to compare the field against.")
     link = serializers.ChoiceField(

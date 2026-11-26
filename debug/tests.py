@@ -112,7 +112,10 @@ def test_plain_api_view():
     call = resolve_one("POST", "search/")["calls"][0]
 
     assert call["operation"] == "post"
-    assert call["access"] == "public"
+    assert call["access"] == "permissions"
+    assert [entry["codename"] for entry in call["permissions"]] == [
+        "inventory_base.view_inventorybase"
+    ]
 
 
 @pytest.mark.django_db

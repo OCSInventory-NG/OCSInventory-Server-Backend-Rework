@@ -1,5 +1,9 @@
+import io
+import logging
+
 import pytest
 from notes.models import Note
+from ocsinventory_backend.ocs_framework.progress import Progress, ProgressStream
 from virtualcolumn.models import ColumnLayout
 
 
@@ -136,3 +140,43 @@ class TestBulkDestroyOfRestrictedObjects:
 
         assert response.status_code == 403
         assert ColumnLayout.objects.filter(id__in=[own_id, foreign.id]).count() == 2
+
+
+class FakeClock:
+    def __init__(self):
+        self.now = 0.0
+
+    def __call__(self):
+        return self.now
+
+
+def test_progress_logs_at_most_every_interval(caplog):
+    logger = logging.getLogger("tests.progress")
+    clock = FakeClock()
+    with caplog.at_level(logging.DEBUG, logger="tests.progress"):
+        progress = Progress(
+            logger, "Downloading", 4 << 20, in_bytes=True, interval=5, clock=clock
+        )
+        stream = ProgressStream(io.BytesIO(b"x" * (4 << 20)), progress)
+        stream.read(1 << 20)
+        clock.now = 2
+        stream.read(1 << 20)
+        clock.now = 6
+        stream.read(1 << 20)
+        clock.now = 7
+        stream.read()
+        stream.read()
+        stream.read()
+    assert [record.getMessage() for record in caplog.records] == [
+        "Downloading: 3.0 MB / 4.0 MB (75%)",
+        "Downloading: 4.0 MB / 4.0 MB (100%) in 7 s",
+    ]
+
+
+def test_progress_counts_an_iterable_and_stays_quiet_above_debug(caplog):
+    logger = logging.getLogger("tests.progress")
+    with caplog.at_level(logging.INFO, logger="tests.progress"):
+        progress = Progress(logger, "Rows written", 3, interval=0)
+        assert list(progress.count("abc")) == ["a", "b", "c"]
+    assert progress.message() == "Rows written: 3 / 3 (100%)"
+    assert caplog.records == []

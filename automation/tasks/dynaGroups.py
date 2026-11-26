@@ -3,7 +3,7 @@ import logging
 from asset.asset_group.models import AssetGroup
 from automation.tasks.abstractTask import AbstractTask
 from django.db import DatabaseError
-from search.views import SearchView
+from search.views import SearchError, SearchView
 
 logger = logging.getLogger("mgmt.management.commands.DynaGroups")
 
@@ -87,6 +87,9 @@ class DynaGroups(AbstractTask):
             logger.debug(f"Search query returned {asset_count} assets")
             assets = assets.values_list("id", flat=True)
             return assets
+        except SearchError:
+            # Not emptied: the group keeps its machines and counts as failed
+            raise
         except DatabaseError as e:
             logger.error(
                 f"Database error while running search query: {e}", exc_info=True
