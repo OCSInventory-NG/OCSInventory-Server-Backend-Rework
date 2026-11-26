@@ -1,8 +1,62 @@
 import logging
+import re
+from functools import total_ordering
 
 from automation.rule.context import FIELD_OBJECT, BaseContextResolver
 
 LOGGER = logging.getLogger(__name__)
+
+VERSION_PATTERN = re.compile(r"^\d+(?:\.\d+)*")
+
+
+@total_ordering
+class SoftwareVersion:
+    """Compared by leading numeric components: 2.8.100.0 > 2.8.53.0, 2.8 == 2.8.0"""
+
+    def __init__(self, raw, components):
+        self.raw = raw
+        # trailing zeros dropped so that 2.8 and 2.8.0 compare equal
+        while components and components[-1] == 0:
+            components = components[:-1]
+        self.components = components
+
+    @classmethod
+    def parse(cls, value):
+        """Return a SoftwareVersion, or None when value has no leading number"""
+        if value is None:
+            return None
+        match = VERSION_PATTERN.match(str(value).strip())
+        if not match:
+            return None
+        return cls(str(value), tuple(int(part) for part in match.group(0).split(".")))
+
+    @classmethod
+    def _coerce(cls, other):
+        if isinstance(other, cls):
+            return other
+        return cls.parse(other)
+
+    def __eq__(self, other):
+        other = self._coerce(other)
+        if other is None:
+            return NotImplemented
+        return self.components == other.components
+
+    def __lt__(self, other):
+        other = self._coerce(other)
+        if other is None:
+            return NotImplemented
+        return self.components < other.components
+
+    def __str__(self):
+        return self.raw
+
+
+class CaseInsensitiveDict(dict):
+    """Lowercase keys, case-insensitive lookup: the editor keeps the name as typed"""
+
+    def __getitem__(self, key):
+        return super().__getitem__(str(key).lower())
 
 
 class ComplianceContextResolver(BaseContextResolver):
@@ -16,7 +70,7 @@ class ComplianceContextResolver(BaseContextResolver):
 
     Extra context keys (beyond the base scalar fields):
         - softwares.names    : flat lowercase list for blacklist/presence checks
-        - softwares.versions : {software_name: major_version}
+        - softwares.versions : {software_name: lowest SoftwareVersion}
         - inventory          : custom inventory field values keyed by template
                                field id (surfaced in the UI via inventory fields)
         - group_ids          : list of asset group ids
@@ -40,19 +94,25 @@ class ComplianceContextResolver(BaseContextResolver):
 
         try:
             softwares = list(
-                asset.software_dictionary_entries.values("name", "major_version")
+                asset.software_dictionary_entries.values("name", "version")
             )
         except Exception:
             LOGGER.exception("Failed to fetch softwares for asset %s", asset.id)
             softwares = []
 
+        versions = CaseInsensitiveDict()
+        for software in softwares:
+            version = SoftwareVersion.parse(software["version"])
+            if not software["name"] or version is None:
+                continue
+            name = software["name"].lower()
+            # same software installed several times: the lowest version is checked
+            if name not in versions or version < versions[name]:
+                versions[name] = version
+
         context["softwares"] = {
             "names": [s["name"].lower() for s in softwares if s["name"]],
-            "versions": {
-                s["name"].lower(): s["major_version"]
-                for s in softwares
-                if s["name"] and s["major_version"] is not None
-            },
+            "versions": versions,
         }
 
         try:
