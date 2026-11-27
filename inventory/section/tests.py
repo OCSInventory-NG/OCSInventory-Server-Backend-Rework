@@ -164,3 +164,21 @@ class TestSectionDelete:
 
         assert response.status_code == 204
         assert Field.objects.filter(section_id=section.id).count() == 0
+
+
+@pytest.mark.django_db
+class TestWindowsSoftwaresTarget:
+    @pytest.mark.parametrize("template_name", ["Windows", "Windows Extended"])
+    def test_drops_registry_values_named_like_computed_columns(self, template_name):
+        section = Section.objects.get(
+            name="SOFTWARES",
+            template__name=template_name,
+            template__os="WIN",
+            template__is_protected=True,
+        )
+
+        assert (
+            "Select-Object -Property * -ExcludeProperty LanguageName, "
+            "InstallDateFormatted, InstallPath, ExecutableName, VersionPatch | "
+            "Select-Object -Property *, @{Name='LanguageName'"
+        ) in section.target
