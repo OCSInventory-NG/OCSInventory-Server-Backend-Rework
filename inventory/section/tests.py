@@ -164,3 +164,30 @@ class TestSectionDelete:
 
         assert response.status_code == 204
         assert Field.objects.filter(section_id=section.id).count() == 0
+
+
+@pytest.mark.django_db
+class TestConnectedUserSection:
+    @pytest.mark.parametrize(
+        "template_name, os",
+        [
+            ("Windows", "WIN"),
+            ("Windows Extended", "WIN"),
+            ("MacOS", "MAC"),
+            ("Linux (Debian based)", "DEB"),
+            ("Linux (RHEL based)", "RHEL"),
+            ("Linux Extended (Debian based)", "DEB"),
+            ("Linux Extended (RHEL based)", "RHEL"),
+        ],
+    )
+    def test_shipped_templates_collect_the_connected_user(self, template_name, os):
+        section = Section.objects.get(
+            name="CONNECTED USER",
+            template__name=template_name,
+            template__os=os,
+            template__is_protected=True,
+        )
+
+        assert section.is_active is True
+        assert [field.name for field in section.fields.all()] == ["USER NAME"]
+        assert section.category_set.filter(name="Administrative data").exists()
